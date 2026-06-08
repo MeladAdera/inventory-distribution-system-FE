@@ -1,0 +1,19 @@
+export enum UserRole {
+  WAREHOUSE_ADMIN = 'WAREHOUSE_ADMIN',
+  SHOP_OWNER = 'SHOP_OWNER',
+  EMPLOYEE = 'EMPLOYEE',
+}
+
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum ProductSource {
+  WAREHOUSE = 'WAREHOUSE',
+  SUPPLIER = 'SUPPLIER',
+  IMPORTED = 'IMPORTED',
+}
