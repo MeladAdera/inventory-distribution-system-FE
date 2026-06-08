@@ -1,0 +1,15 @@
+@import 'tailwindcss';
+
+@layer base {
+  :root {
+    --primary: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --destructive: 0 84.2% 60.2%;
+    --muted: 215.4 16.3% 46.9%;
+    --accent: 217.2 91.2% 59.8%;
+  }
+
+  body {
+    @apply bg-white text-gray-900;
+  }
+}
