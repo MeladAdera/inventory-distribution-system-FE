@@ -3,10 +3,11 @@
   "style": "default",
   "rsc": true,
   "tsx": true,
-  "aliasPrefix": "@",
+  "baseColor": "neutral",
+  "cssVariables": true,
+  "prefix": "",
   "aliases": {
     "components": "@/common/components",
-    "lib": "@/common/utils",
-    "ui": "@/common/components/ui"
+    "utils": "@/common/utils"
   }
 }
