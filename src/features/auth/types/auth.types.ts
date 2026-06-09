@@ -31,8 +31,6 @@ export type CurrentUserResponse = ApiResponse<RequestUser>;
 
 export interface AuthState {
   user: RequestUser | null;
-  accessToken: string | null;
-  refreshToken: string | null;
   isAuthenticated: boolean;
   isInitializing: boolean;
 }

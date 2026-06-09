@@ -3,7 +3,7 @@
 **Status**: ✅ Complete (Phase 1)
 **Created**: 2026-06-09
 **Last Updated**: 2026-06-09
-**Tickets**: TICKET-009, TICKET-010, TICKET-011, TICKET-012, TICKET-013, TICKET-014
+**Tickets**: TICKET-009, TICKET-010, TICKET-011, TICKET-012, TICKET-013, TICKET-014, TICKET-015
 
 ---
 
@@ -63,9 +63,8 @@ useLogin hook
                                       ↓
                           { user, accessToken, refreshToken }
       ↓
-setAuth()               →  Zustand store (isAuthenticated, user, tokens)
-tokenUtils.setTokens()  →  localStorage['accessToken'], localStorage['refreshToken']
-                           + cookie['auth_token'] (read by Edge middleware)
+tokenUtils.setTokens()  →  cookie['auth_token'] + cookie['refresh_token']
+setAuth(user)           →  Zustand store (user, isAuthenticated)
       ↓
 router.replace('/dashboard')
 ```
@@ -147,11 +146,11 @@ The interceptor lives outside React so it uses `useAuthStore.getState()` (Zustan
 
 | Layer | What it stores | Key | Read by |
 |---|---|---|---|
-| Zustand (`auth-storage`) | `user`, `accessToken`, `refreshToken`, `isAuthenticated`, `isInitializing` | `localStorage['auth-storage']` (except `isInitializing`) | React components |
-| tokenUtils | `accessToken`, `refreshToken` (plain strings) | `localStorage['accessToken']`, `localStorage['refreshToken']` | Axios interceptor |
-| Cookie | `accessToken` (copy) | `cookie['auth_token']` | Next.js Edge middleware |
+| Zustand (memory only) | `user`, `isAuthenticated`, `isInitializing` | — (not persisted) | React components |
+| Cookie | `accessToken` | `cookie['auth_token']` | Axios interceptor + Next.js Edge middleware |
+| Cookie | `refreshToken` | `cookie['refresh_token']` | Axios refresh interceptor |
 
-All three must be written together on login and cleared together on logout. Zustand is the source of truth for UI state; the cookie is the source of truth for server-side route protection. `isInitializing` is never persisted — it always starts as `true` on page load and becomes `false` once `GET /auth/me` resolves.
+Cookies are the single source of truth for tokens. Zustand is in-memory UI state only — it resets on page refresh and is refilled by `AuthProvider` calling `GET /auth/me`. `localStorage` is not used anywhere in the auth system.
 
 ---
 
@@ -300,8 +299,8 @@ Red box with `role="alert"` for screen reader announcement.
 
 ## Security Notes
 
-- Tokens are stored in `localStorage` (not `httpOnly` cookies). This is acceptable for the current scope but makes the app vulnerable to XSS. A future hardening step would move to `httpOnly` cookies managed by the backend.
-- The `auth_token` cookie used by the middleware is **not** `httpOnly` (it is set by client-side JS). It provides routing protection, not cryptographic security — JWT validation remains the backend's responsibility.
+- Tokens are stored in JS-set cookies (`auth_token`, `refresh_token`). These are not `httpOnly` because they are set by client-side JavaScript. The ideal next step is for the backend to issue `httpOnly` cookies directly — that would fully eliminate token exposure to JavaScript.
+- `withCredentials: true` is set on the Axios instance, ready for when the backend switches to cookie-based auth.
 - The Axios interceptor uses a `_retry` flag to prevent infinite refresh loops on persistent 401s.
 - The `AuthProvider` treats any error from `/auth/me` as an expired session and clears all local state, forcing a clean re-login.
 - The middleware uses a `matcher` that excludes `_next/static`, `_next/image`, `api`, and `favicon.ico` to avoid running on non-page requests.

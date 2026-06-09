@@ -29,6 +29,7 @@ Full authentication flow implemented — login, session hydration, route protect
 | TICKET-012 | Route Protection Middleware | ✅ Complete |
 | TICKET-013 | Token Refresh Synchronization | ✅ Complete |
 | TICKET-014 | Auth Initialization State | ✅ Complete |
+| TICKET-015 | Migrate Auth to Cookies + Zustand | ✅ Complete |
 
 ---
 
@@ -208,6 +209,6 @@ See `.env.example` for template.
 
 ---
 
-**Last Commit**: feat: Implement TICKET-014 auth initialization state  
+**Last Commit**: refactor: Migrate auth token storage to cookies (TICKET-015)  
 **Next Up**: PHASE 2 — Feature implementation
 

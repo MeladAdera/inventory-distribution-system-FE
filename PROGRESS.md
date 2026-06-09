@@ -354,9 +354,34 @@ After:   useAuthStore.getState().clearAuth()          ← Place 1 cleared
 
 ---
 
+---
+
+### TICKET-015 — Migrate Auth Persistence to Cookies + Zustand
+**Status**: ✅ Complete
+
+**Files modified**:
+- `src/features/auth/types/auth.types.ts` — removed `accessToken`, `refreshToken` from `AuthState`
+- `src/features/auth/utils/token.utils.ts` — replaced all localStorage operations with cookie reads/writes; now manages `auth_token` + `refresh_token` cookies
+- `src/features/auth/store/authStore.ts` — removed `persist` middleware (no more localStorage); removed `accessToken`, `refreshToken`, `setTokens`; `setAuth` now only takes `user`
+- `src/common/api/client.ts` — request interceptor reads from `tokenUtils.getAccessToken()` (cookie); refresh interceptor reads from `tokenUtils.getRefreshToken()` (cookie); removed `useAuthStore.getState().setTokens()` call; added `withCredentials: true`
+- `src/providers/AuthProvider.tsx` — `setAuth` call updated to pass only `user`
+- `src/features/auth/hooks/useLogin.ts` — `setAuth` call updated to pass only `user`; `tokenUtils.setTokens()` called first so cookie is written before re-render
+- `src/features/auth/hooks/useAuth.ts` — removed `accessToken`, `refreshToken` from return
+
+**Architecture after this ticket**:
+```
+Cookies (auth_token, refresh_token)  ← single source of truth for tokens
+Zustand (memory only)                ← user + isAuthenticated + isInitializing
+localStorage                         ← REMOVED from auth system entirely
+```
+
+**Why removing Zustand persistence is safe**: `AuthProvider` refills the store from `GET /auth/me` on every page load. Zustand doesn't need to survive a refresh — the cookie does.
+
+---
+
 ## 🎯 Upcoming Work (PHASE 2)
 
-Phase 1 authentication is fully complete. All token stores stay in sync, routes are protected at the Edge, and protected content never renders before auth is verified.
+Phase 1 authentication is fully complete. Tokens live only in cookies, Zustand holds only UI state, and localStorage is no longer part of the auth system.
 
 ---
 

@@ -35,8 +35,8 @@ export function useLogin() {
     try {
       const response = await authApi.login(data);
       const { user, accessToken, refreshToken } = response.data;
-      setAuth(user, accessToken, refreshToken);
       tokenUtils.setTokens(accessToken, refreshToken);
+      setAuth(user);
       router.replace('/dashboard');
     } catch (error) {
       if (isAxiosError(error)) {

@@ -1,32 +1,28 @@
-const ACCESS_TOKEN_KEY = 'accessToken';
-const REFRESH_TOKEN_KEY = 'refreshToken';
-// Cookie read by Edge middleware for route protection (localStorage is not available there)
 const AUTH_COOKIE_NAME = 'auth_token';
-const AUTH_COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days
+const REFRESH_COOKIE_NAME = 'refresh_token';
+const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days
+
+function readCookie(name: string): string | null {
+  if (typeof window === 'undefined') return null;
+  const match = document.cookie.split('; ').find((row) => row.startsWith(`${name}=`));
+  return match ? match.slice(name.length + 1) : null;
+}
 
 export const tokenUtils = {
-  getAccessToken: () => {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem(ACCESS_TOKEN_KEY);
-  },
+  getAccessToken: (): string | null => readCookie(AUTH_COOKIE_NAME),
 
-  getRefreshToken: () => {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem(REFRESH_TOKEN_KEY);
-  },
+  getRefreshToken: (): string | null => readCookie(REFRESH_COOKIE_NAME),
 
-  setTokens: (accessToken: string, refreshToken: string) => {
+  setTokens: (accessToken: string, refreshToken: string): void => {
     if (typeof window === 'undefined') return;
-    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-    document.cookie = `${AUTH_COOKIE_NAME}=${accessToken}; path=/; max-age=${AUTH_COOKIE_MAX_AGE}; SameSite=Lax`;
+    document.cookie = `${AUTH_COOKIE_NAME}=${accessToken}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
+    document.cookie = `${REFRESH_COOKIE_NAME}=${refreshToken}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
   },
 
-  clearTokens: () => {
+  clearTokens: (): void => {
     if (typeof window === 'undefined') return;
-    localStorage.removeItem(ACCESS_TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
     document.cookie = `${AUTH_COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax`;
+    document.cookie = `${REFRESH_COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax`;
   },
 
   isTokenExpired: (token: string): boolean => {

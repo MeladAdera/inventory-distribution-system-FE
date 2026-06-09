@@ -11,6 +11,7 @@ if (!API_URL) {
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_URL,
   timeout: 10000,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -18,15 +19,13 @@ export const apiClient: AxiosInstance = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+    const token = tokenUtils.getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 apiClient.interceptors.response.use(
@@ -38,7 +37,7 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = tokenUtils.getRefreshToken();
         if (!refreshToken) {
           if (typeof window !== 'undefined') {
             window.location.href = '/login';
@@ -46,15 +45,11 @@ apiClient.interceptors.response.use(
           return Promise.reject(error);
         }
 
-        const response = await axios.post(`${API_URL}/auth/refresh`, {
-          refreshToken,
-        });
-
+        const response = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
         const { accessToken, refreshToken: newRefreshToken } = response.data;
 
-        // Sync all three token stores so no layer has stale values
+        // Sync all token stores so no layer has stale values
         tokenUtils.setTokens(accessToken, newRefreshToken);
-        useAuthStore.getState().setTokens(accessToken, newRefreshToken);
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return apiClient(originalRequest);

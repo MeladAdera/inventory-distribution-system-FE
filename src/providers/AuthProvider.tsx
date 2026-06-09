@@ -12,7 +12,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const accessToken = tokenUtils.getAccessToken();
-    const refreshToken = tokenUtils.getRefreshToken();
 
     if (!accessToken) {
       setInitializing(false);
@@ -22,7 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     authApi
       .getCurrentUser()
       .then((response) => {
-        setAuth(response.data, accessToken, refreshToken ?? '');
+        setAuth(response.data);
       })
       .catch(() => {
         clearAuth();
