@@ -82,18 +82,18 @@ Check `docs/api/` folder:
 ### Features
 | Feature | Document | Status |
 |---------|----------|--------|
-| Authentication | [auth.md](features/auth.md) | ✅ PHASE 0 |
-| Inventory | [inventory.md](features/inventory.md) | 🔄 PHASE 1 |
-| Orders | [orders.md](features/orders.md) | 🔄 PHASE 1 |
-| Products | [products.md](features/products.md) | 🔄 PHASE 1 |
+| Authentication | [auth.md](features/auth.md) | ✅ PHASE 1 Complete |
+| Inventory | [inventory.md](features/inventory.md) | 📋 PHASE 2 |
+| Orders | [orders.md](features/orders.md) | 📋 PHASE 2 |
+| Products | [products.md](features/products.md) | 📋 PHASE 2 |
 
 ### API Documentation
-| Topic | Document |
-|-------|----------|
-| API Architecture | [api/overview.md](api/overview.md) |
-| Endpoints | [api/endpoints.md](api/endpoints.md) |
-| Authentication | [api/authentication.md](api/authentication.md) |
-| Error Handling | [api/error-handling.md](api/error-handling.md) |
+| Topic | Document | Status |
+|-------|----------|--------|
+| API Architecture | [api/overview.md](api/overview.md) | 📋 Pending |
+| Endpoints | [api/endpoints.md](api/endpoints.md) | 📋 Pending |
+| Authentication | [api/authentication.md](api/authentication.md) | ✅ Complete |
+| Error Handling | [api/error-handling.md](api/error-handling.md) | 📋 Pending |
 
 ### Deployment
 | Document | Purpose |
@@ -322,7 +322,7 @@ Instead use:
 
 **Last Updated**: June 9, 2026  
 **Maintainer**: Melad Adera  
-**Status**: PHASE 0 Complete (70% coverage)
+**Status**: PHASE 1 Authentication Complete
 
 For project overview, see **[PROJECT_STATUS.md](../PROJECT_STATUS.md)**  
 For recent updates, see **[UPDATES.md](../UPDATES.md)**  
