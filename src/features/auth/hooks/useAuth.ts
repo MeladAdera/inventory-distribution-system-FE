@@ -5,7 +5,8 @@ import { authApi } from '../api/auth.api';
 import { tokenUtils } from '../utils/token.utils';
 
 export function useAuth() {
-  const { user, accessToken, refreshToken, isAuthenticated, setAuth, clearAuth } = useAuthStore();
+  const { user, accessToken, refreshToken, isAuthenticated, isInitializing, setAuth, clearAuth } =
+    useAuthStore();
 
   const logout = async () => {
     try {
@@ -26,6 +27,7 @@ export function useAuth() {
     accessToken,
     refreshToken,
     isAuthenticated,
+    isInitializing,
     setAuth,
     clearAuth,
     logout,

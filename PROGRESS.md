@@ -336,9 +336,27 @@ After:   useAuthStore.getState().clearAuth()          ← Place 1 cleared
 
 ---
 
+---
+
+### TICKET-014 — Auth Initialization State
+**Status**: ✅ Complete
+
+**Files modified**:
+- `src/features/auth/types/auth.types.ts` — added `isInitializing: boolean` to `AuthState`
+- `src/features/auth/store/authStore.ts` — added `isInitializing: true` default + `setInitializing` action; excluded from `partialize` so it is never persisted
+- `src/providers/AuthProvider.tsx` — sets `isInitializing(false)` in `.finally()` after every auth check; added `router.replace('/login')` in `.catch()` (previously missing)
+- `src/features/auth/hooks/useAuth.ts` — exposed `isInitializing` in the hook return value
+- `src/app/(dashboard)/layout.tsx` — renders `<LoadingSpinner />` while `isInitializing` is true, blocks all dashboard content until auth is resolved
+
+**Root cause addressed**: Dashboard content rendered immediately on page load before `GET /auth/me` completed. Users with expired tokens would see the dashboard with no redirect because `AuthProvider` cleared auth state but never redirected.
+
+**Why `isInitializing` is not persisted**: If it were saved to localStorage, a returning user would reload with `isInitializing: false` already set — the spinner would never show and content would flash before auth resolved. Starting as `true` on every page load guarantees the gate is always active.
+
+---
+
 ## 🎯 Upcoming Work (PHASE 2)
 
-Phase 1 authentication is fully complete. All token stores (Zustand, localStorage, cookie) are kept in sync across login, logout, silent refresh, and refresh failure.
+Phase 1 authentication is fully complete. All token stores stay in sync, routes are protected at the Edge, and protected content never renders before auth is verified.
 
 ---
 

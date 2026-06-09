@@ -5,6 +5,7 @@ import { AuthState, RequestUser } from '../types/auth.types';
 interface AuthActions {
   setAuth: (user: RequestUser, accessToken: string, refreshToken: string) => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
+  setInitializing: (value: boolean) => void;
   clearAuth: () => void;
 }
 
@@ -15,6 +16,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
+      isInitializing: true,
       setAuth: (user, accessToken, refreshToken) =>
         set({
           user,
@@ -27,6 +29,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           accessToken,
           refreshToken,
         }),
+      setInitializing: (value) => set({ isInitializing: value }),
       clearAuth: () =>
         set({
           user: null,
@@ -42,6 +45,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
+        // isInitializing is intentionally excluded — must always start as true
       }),
     }
   )

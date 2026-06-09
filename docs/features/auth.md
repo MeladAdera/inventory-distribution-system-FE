@@ -3,7 +3,7 @@
 **Status**: ✅ Complete (Phase 1)
 **Created**: 2026-06-09
 **Last Updated**: 2026-06-09
-**Tickets**: TICKET-009, TICKET-010, TICKET-011, TICKET-012 (Route Protection)
+**Tickets**: TICKET-009, TICKET-010, TICKET-011, TICKET-012, TICKET-013, TICKET-014
 
 ---
 
@@ -75,14 +75,24 @@ router.replace('/dashboard')
 ```
 Page loads
       ↓
-AuthProvider (mounted in providers/index.tsx)
+Store initializes → isInitializing: true
+      ↓
+Dashboard layout sees isInitializing = true → renders <LoadingSpinner /> only
+      ↓
+AuthProvider mounts
       ↓
 tokenUtils.getAccessToken()  →  reads localStorage['accessToken']
       ↓
+  no token  →  setInitializing(false) → return (middleware handles redirect)
+      ↓
 authApi.getCurrentUser()     →  GET /auth/me
       ↓
-    200 OK                   →  setAuth(user, accessToken, refreshToken)
-    401 / error              →  clearAuth() + tokenUtils.clearTokens()
+    200 OK   →  setAuth(user, accessToken, refreshToken)
+               setInitializing(false)  →  Dashboard renders
+      ↓
+    error    →  clearAuth() + tokenUtils.clearTokens()
+               router.replace('/login')
+               setInitializing(false)  →  Login renders
 ```
 
 ### Route Protection (Next.js Middleware)
@@ -137,11 +147,11 @@ The interceptor lives outside React so it uses `useAuthStore.getState()` (Zustan
 
 | Layer | What it stores | Key | Read by |
 |---|---|---|---|
-| Zustand (`auth-storage`) | `user`, `accessToken`, `refreshToken`, `isAuthenticated` | `localStorage['auth-storage']` | React components |
+| Zustand (`auth-storage`) | `user`, `accessToken`, `refreshToken`, `isAuthenticated`, `isInitializing` | `localStorage['auth-storage']` (except `isInitializing`) | React components |
 | tokenUtils | `accessToken`, `refreshToken` (plain strings) | `localStorage['accessToken']`, `localStorage['refreshToken']` | Axios interceptor |
 | Cookie | `accessToken` (copy) | `cookie['auth_token']` | Next.js Edge middleware |
 
-All three must be written together on login and cleared together on logout. Zustand is the source of truth for UI state; the cookie is the source of truth for server-side route protection.
+All three must be written together on login and cleared together on logout. Zustand is the source of truth for UI state; the cookie is the source of truth for server-side route protection. `isInitializing` is never persisted — it always starts as `true` on page load and becomes `false` once `GET /auth/me` resolves.
 
 ---
 
