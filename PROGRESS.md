@@ -174,34 +174,121 @@ Real-time development progress and detailed work logs.
 
 ---
 
-## 🎯 Upcoming Work (PHASE 1)
+---
 
-### Week 1 (June 10-13)
-- [ ] **Day 1**: Login page implementation
-  - Form validation with react-hook-form
-  - Integration with auth API
-  - Error handling and user feedback
-  
-- [ ] **Day 2**: Auth middleware & guards
-  - Create middleware.ts
-  - ProtectedRoute component
-  - RoleGuard component
-  
-- [ ] **Day 3**: Session management
-  - Logout flow
-  - Token refresh integration
-  - Auto-logout on expiry
-  
-- [ ] **Day 4**: Testing & refinement
-  - Manual testing
-  - Bug fixes
-  - Performance optimization
+## 📅 June 9, 2026 - PHASE 1: Authentication & Access Control
 
-### Estimated Metrics for Phase 1
-- **New Files**: 15-20
-- **Modified Files**: 10-15
-- **Duration**: 3-4 days
-- **Commits**: 8-10
+### Session
+**Focus**: Complete authentication flow — API layer, login UI, session management, E2E integration
+
+---
+
+### TICKET-009 — Authentication API Layer
+**Status**: ✅ Complete
+
+**Files changed**:
+- `src/features/auth/api/auth.api.ts` — implemented & fully typed
+- `src/features/auth/types/auth.types.ts` — added `LoginCredentials`, `RefreshTokenResponse`, `CurrentUserResponse`, aligned `LoginResponse` with `ApiResponse<T>`
+
+**Deliverables**:
+- `authApi.login(credentials)` → `Promise<LoginResponse>`
+- `authApi.refreshToken(token)` → `Promise<RefreshTokenResponse>`
+- `authApi.logout()` → `Promise<void>`
+- `authApi.getCurrentUser()` → `Promise<CurrentUserResponse>`
+- All return types use shared `ApiResponse<T>` wrapper
+- Zero TypeScript errors, ESLint clean
+
+---
+
+### TICKET-010 — Login Page
+**Status**: ✅ Complete
+
+**Files created**:
+- `src/features/auth/hooks/useLogin.ts` — form + API + error mapping + redirect
+- `src/common/components/FormField.tsx` — label + input + inline error
+- `src/common/components/LoadingSpinner.tsx` — SVG spinner, sm/md/lg sizes
+- `src/common/components/ErrorAlert.tsx` — accessible error box (`role="alert"`)
+
+**Files modified**:
+- `src/app/(auth)/login/page.tsx` — fully wired login form
+- `src/common/components/index.ts` — exported new components
+- `src/features/auth/index.ts` — exported new hook and types
+
+**Deliverables**:
+- Zod schema validation (email format, password min 6)
+- Field-level error messages
+- Server error mapping: 401 → "Invalid email or password", network → "Unable to connect…", other → "Something went wrong…"
+- Loading state: spinner + disabled button + "Signing in…" text
+- Already-authenticated redirect via `useEffect` → `/dashboard`
+- Successful login redirects with `router.replace('/dashboard')`
+
+---
+
+### TICKET-011 — Fix API Base URL Misconfiguration
+**Status**: ✅ Complete
+
+**Files modified**:
+- `.env.local` — corrected `NEXT_PUBLIC_API_URL` to backend port
+- `src/common/api/client.ts` — removed unsafe fallback; throws hard error if env var is missing
+
+**Root cause**: Axios client had a silent `|| 'http://localhost:3001'` fallback that masked a missing env variable and sent all requests to the Next.js dev server instead of the NestJS backend.
+
+---
+
+### TICKET-012 — E2E Authentication Flow Validation & Bug Fixes
+**Status**: ✅ Complete
+
+**Critical bug fixed — token storage mismatch**:
+
+| Layer | Was reading from | Was writing to |
+|---|---|---|
+| Axios interceptor | `localStorage['accessToken']` | `localStorage['accessToken']` |
+| `useLogin` (setAuth) | — | `localStorage['auth-storage']` (Zustand blob) |
+
+After login, `setAuth()` stored tokens inside the Zustand JSON blob, but the Axios request interceptor read the direct `accessToken` key — which was never written. Every API call after login sent no `Authorization` header.
+
+**Files modified**:
+- `src/features/auth/hooks/useLogin.ts` — added `tokenUtils.setTokens()` after `setAuth()` to write both storage systems
+- `src/features/auth/hooks/useAuth.ts` — logout now calls `authApi.logout()` (backend session invalidated) then `clearAuth()` + `tokenUtils.clearTokens()` in `finally`
+- `src/common/api/client.ts` — removed debug `console.log` left from testing
+
+**Files created**:
+- `src/providers/AuthProvider.tsx` — on app mount, reads token from localStorage, calls `GET /auth/me`, syncs Zustand with fresh user; clears everything if token is invalid
+
+**Files modified**:
+- `src/providers/index.tsx` — wrapped app in `AuthProvider` inside `QueryProvider`
+
+---
+
+### Phase 1 Build Status
+```
+✅ TypeScript check — 0 errors (1 pre-existing tsconfig deprecation warning, unrelated)
+✅ ESLint          — 0 errors
+✅ Login flow      — end-to-end working (frontend → NestJS → response)
+✅ Token storage   — Zustand + localStorage in sync
+✅ Session refresh — AuthProvider calls /auth/me on page load
+✅ Logout          — backend + local state both cleared
+```
+
+### Phase 1 Files Summary
+| Type | Count |
+|---|---|
+| New files | 5 |
+| Modified files | 10 |
+
+---
+
+## 🎯 Upcoming Work (PHASE 1 — Remaining)
+
+- [ ] **TICKET-013**: Route Protection / Next.js Middleware
+  - `middleware.ts` — server-side token check, redirect unauthenticated users to `/login`
+  - Redirect already-authenticated users away from `/login`
+  - Define protected vs public route matchers
+
+- [ ] **TICKET-014**: Role-Based Access Control
+  - `RoleGuard` component
+  - `usePermission` hook integration
+  - Per-role route/feature access
 
 ---
 

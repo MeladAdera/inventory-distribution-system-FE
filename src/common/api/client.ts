@@ -1,6 +1,10 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_URL) {
+  throw new Error('NEXT_PUBLIC_API_URL is not defined. Check your .env.local file.');
+}
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_URL,

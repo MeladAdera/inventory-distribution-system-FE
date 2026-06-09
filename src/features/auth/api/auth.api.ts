@@ -1,9 +1,14 @@
 import { apiClient } from '@/common/api';
-import { LoginResponse } from '../types/auth.types';
+import {
+  LoginCredentials,
+  LoginResponse,
+  RefreshTokenResponse,
+  CurrentUserResponse,
+} from '../types/auth.types';
 
 export const authApi = {
-  login: async (email: string, password: string): Promise<LoginResponse> => {
-    const response = await apiClient.post('/auth/login', { email, password });
+  login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
+    const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
     return response.data;
   },
 
@@ -11,13 +16,13 @@ export const authApi = {
     await apiClient.post('/auth/logout');
   },
 
-  refresh: async (refreshToken: string) => {
-    const response = await apiClient.post('/auth/refresh', { refreshToken });
+  refreshToken: async (refreshToken: string): Promise<RefreshTokenResponse> => {
+    const response = await apiClient.post<RefreshTokenResponse>('/auth/refresh', { refreshToken });
     return response.data;
   },
 
-  getCurrentUser: async () => {
-    const response = await apiClient.get('/auth/me');
+  getCurrentUser: async (): Promise<CurrentUserResponse> => {
+    const response = await apiClient.get<CurrentUserResponse>('/auth/me');
     return response.data;
   },
 };

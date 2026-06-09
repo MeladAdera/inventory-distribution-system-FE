@@ -1,3 +1,4 @@
+import { ApiResponse } from '@/common/types/api.types';
 import { UserRole } from './enums';
 
 export interface RequestUser {
@@ -8,14 +9,25 @@ export interface RequestUser {
   createdAt: string;
 }
 
-export interface LoginResponse {
-  success: boolean;
-  data: {
-    user: RequestUser;
-    accessToken: string;
-    refreshToken: string;
-  };
+export interface LoginCredentials {
+  email: string;
+  password: string;
 }
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export type LoginResponse = ApiResponse<{
+  user: RequestUser;
+  accessToken: string;
+  refreshToken: string;
+}>;
+
+export type RefreshTokenResponse = ApiResponse<AuthTokens>;
+
+export type CurrentUserResponse = ApiResponse<RequestUser>;
 
 export interface AuthState {
   user: RequestUser | null;
