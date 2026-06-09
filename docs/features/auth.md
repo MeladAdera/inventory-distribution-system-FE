@@ -122,9 +122,16 @@ reads localStorage['refreshToken']
       ↓
 POST /auth/refresh
       ↓
-  success  →  update localStorage tokens, retry original request
-  failure  →  window.location.href = '/login'
+  success  →  tokenUtils.setTokens()          — localStorage + cookie updated
+             useAuthStore.getState().setTokens() — Zustand updated
+             retry original request
+      ↓
+  failure  →  useAuthStore.getState().clearAuth() — Zustand cleared
+             tokenUtils.clearTokens()           — localStorage + cookie cleared
+             window.location.href = '/login'
 ```
+
+The interceptor lives outside React so it uses `useAuthStore.getState()` (Zustand's static accessor) instead of the `useAuthStore()` hook. Both reach the same store — the static form just works without a React component context.
 
 ### State Management
 
@@ -293,16 +300,14 @@ Red box with `role="alert"` for screen reader announcement.
 
 ## Known Issues
 
-| Issue | Severity | Status |
-|---|---|---|
-| Zustand `auth-storage` not updated when interceptor refreshes tokens | Low | Open — only affects `useAuth().accessToken` mid-session; Axios always has the correct token |
+None.
 
 ---
 
 ## Related Features
 
 - **Route Protection** (TICKET-012) ✅ — `src/middleware.ts` protects all dashboard routes using the `auth_token` cookie
-- **Token Refresh Sync** (TICKET-013, upcoming) — fix Zustand not being updated when the Axios interceptor refreshes tokens mid-session
+- **Token Refresh Sync** (TICKET-013) ✅ — Axios interceptor now calls `useAuthStore.getState().setTokens()` and `tokenUtils.setTokens()` after a successful refresh; failure path clears all three stores before redirecting
 - **Role-Based Access** (upcoming) — depends on `user.role` from this feature
 - All other features — all authenticated API calls rely on the token written by `useLogin`
 

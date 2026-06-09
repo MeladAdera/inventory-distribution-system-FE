@@ -1,4 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import { tokenUtils } from '@/features/auth/utils/token.utils';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -49,12 +51,17 @@ apiClient.interceptors.response.use(
         });
 
         const { accessToken, refreshToken: newRefreshToken } = response.data;
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', newRefreshToken);
+
+        // Sync all three token stores so no layer has stale values
+        tokenUtils.setTokens(accessToken, newRefreshToken);
+        useAuthStore.getState().setTokens(accessToken, newRefreshToken);
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return apiClient(originalRequest);
       } catch {
+        // Refresh failed — clear every token store and force re-login
+        useAuthStore.getState().clearAuth();
+        tokenUtils.clearTokens();
         if (typeof window !== 'undefined') {
           window.location.href = '/login';
         }

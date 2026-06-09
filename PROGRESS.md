@@ -305,12 +305,40 @@ After login, `setAuth()` stored tokens inside the Zustand JSON blob, but the Axi
 
 ---
 
-## 🎯 Upcoming Work (PHASE 1 — Remaining)
+---
 
-- [ ] **TICKET-013**: Fix Token Refresh Synchronization
-  - Axios interceptor refreshes tokens but does not update Zustand store
-  - Components using `useAuthStore` receive stale token values after a silent refresh
-  - Fix: call `useAuthStore.getState().setTokens()` inside the interceptor after a successful refresh
+### TICKET-013 — Fix Token Refresh Synchronization
+**Status**: ✅ Complete
+
+**File modified**: `src/common/api/client.ts`
+
+**Root cause**: The Axios response interceptor was calling `localStorage.setItem` directly for the two raw token keys, but never touching the Zustand store or the `auth_token` cookie. After a silent refresh, localStorage was current but Zustand held stale tokens — so any component reading `useAuthStore().accessToken` would see the old value for the rest of the session.
+
+**Fix — success path**:
+```
+Before:  localStorage.setItem('accessToken', ...)    ← only Place 2 updated
+         localStorage.setItem('refreshToken', ...)
+
+After:   tokenUtils.setTokens(...)                   ← Place 2 (localStorage) + Place 3 (cookie)
+         useAuthStore.getState().setTokens(...)       ← Place 1 (Zustand)
+```
+
+**Fix — failure path**:
+```
+Before:  window.location.href = '/login'             ← redirect only, stores left dirty
+
+After:   useAuthStore.getState().clearAuth()          ← Place 1 cleared
+         tokenUtils.clearTokens()                    ← Place 2 + Place 3 cleared
+         window.location.href = '/login'
+```
+
+**Key technique**: `useAuthStore.getState()` is Zustand's static accessor — it reads and writes the store without needing a React component context. This is the correct pattern for updating Zustand from Axios interceptors, event listeners, or any non-React code.
+
+---
+
+## 🎯 Upcoming Work (PHASE 2)
+
+Phase 1 authentication is fully complete. All token stores (Zustand, localStorage, cookie) are kept in sync across login, logout, silent refresh, and refresh failure.
 
 ---
 
