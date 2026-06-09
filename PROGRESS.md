@@ -278,17 +278,39 @@ After login, `setAuth()` stored tokens inside the Zustand JSON blob, but the Axi
 
 ---
 
+---
+
+### TICKET-012 — Route Protection Middleware
+**Status**: ✅ Complete
+
+**Files created**:
+- `src/middleware.ts` — Next.js Edge middleware, runs before every page load
+- `src/features/auth/utils/middleware.utils.ts` — route lists + cookie reader
+
+**Files modified**:
+- `src/features/auth/utils/token.utils.ts` — `setTokens()` now also writes `auth_token` cookie; `clearTokens()` now expires it
+
+**Root cause addressed**: Next.js middleware runs on the server Edge and cannot access `localStorage`. The only value it can read from the browser is cookies. Previously, tokens existed only in localStorage, so there was nothing the middleware could check — every route was effectively unprotected at the server level.
+
+**Solution**: `tokenUtils.setTokens()` now writes a client-side `auth_token` cookie (7-day max-age, `SameSite=Lax`) alongside localStorage. The middleware reads this cookie. `tokenUtils.clearTokens()` expires the cookie on logout.
+
+**Middleware logic**:
+| Situation | Action |
+|---|---|
+| Unauthenticated user → protected route | Redirect to `/login` |
+| Authenticated user → `/login` | Redirect to `/dashboard` |
+| All other cases | Pass through (`NextResponse.next()`) |
+
+**Protected routes**: `/dashboard`, `/inventory`, `/orders`, `/products`, `/shops`, `/users`, `/notifications`, `/audit-logs`
+
+---
+
 ## 🎯 Upcoming Work (PHASE 1 — Remaining)
 
-- [ ] **TICKET-013**: Route Protection / Next.js Middleware
-  - `middleware.ts` — server-side token check, redirect unauthenticated users to `/login`
-  - Redirect already-authenticated users away from `/login`
-  - Define protected vs public route matchers
-
-- [ ] **TICKET-014**: Role-Based Access Control
-  - `RoleGuard` component
-  - `usePermission` hook integration
-  - Per-role route/feature access
+- [ ] **TICKET-013**: Fix Token Refresh Synchronization
+  - Axios interceptor refreshes tokens but does not update Zustand store
+  - Components using `useAuthStore` receive stale token values after a silent refresh
+  - Fix: call `useAuthStore.getState().setTokens()` inside the interceptor after a successful refresh
 
 ---
 

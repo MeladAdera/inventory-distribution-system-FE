@@ -3,7 +3,7 @@
 **Status**: ✅ Complete (Phase 1)
 **Created**: 2026-06-09
 **Last Updated**: 2026-06-09
-**Tickets**: TICKET-009, TICKET-010, TICKET-011, TICKET-012
+**Tickets**: TICKET-009, TICKET-010, TICKET-011, TICKET-012 (Route Protection)
 
 ---
 
@@ -20,29 +20,32 @@ The authentication feature handles user identity across the entire application. 
 ```
 src/features/auth/
 ├── api/
-│   └── auth.api.ts          # All auth HTTP calls
+│   └── auth.api.ts              # All auth HTTP calls
 ├── hooks/
-│   ├── useAuth.ts           # Access auth state + logout
-│   └── useLogin.ts          # Login form + submission logic
+│   ├── useAuth.ts               # Access auth state + logout
+│   └── useLogin.ts              # Login form + submission logic
 ├── store/
-│   └── authStore.ts         # Zustand global auth state
+│   └── authStore.ts             # Zustand global auth state
 ├── types/
-│   ├── auth.types.ts        # All auth-related TypeScript types
-│   └── enums.ts             # UserRole, OrderStatus, ProductSource
+│   ├── auth.types.ts            # All auth-related TypeScript types
+│   └── enums.ts                 # UserRole, OrderStatus, ProductSource
 └── utils/
-    └── token.utils.ts       # Direct localStorage token helpers
+    ├── token.utils.ts           # localStorage + cookie token helpers
+    └── middleware.utils.ts      # Route lists + cookie reader for Edge middleware
+
+src/middleware.ts                # Next.js Edge middleware — route protection
 
 src/providers/
-└── AuthProvider.tsx         # Session hydration on app mount
+└── AuthProvider.tsx             # Session hydration on app mount
 
 src/common/components/
-├── FormField.tsx            # Label + input + inline error
-├── LoadingSpinner.tsx       # Reusable SVG spinner
-└── ErrorAlert.tsx           # Accessible error message box
+├── FormField.tsx                # Label + input + inline error
+├── LoadingSpinner.tsx           # Reusable SVG spinner
+└── ErrorAlert.tsx               # Accessible error message box
 
 src/app/(auth)/
 └── login/
-    └── page.tsx             # Login page
+    └── page.tsx                 # Login page
 ```
 
 ### Data Flow
@@ -60,8 +63,9 @@ useLogin hook
                                       ↓
                           { user, accessToken, refreshToken }
       ↓
-setAuth()          →  Zustand store (isAuthenticated, user, tokens)
+setAuth()               →  Zustand store (isAuthenticated, user, tokens)
 tokenUtils.setTokens()  →  localStorage['accessToken'], localStorage['refreshToken']
+                           + cookie['auth_token'] (read by Edge middleware)
       ↓
 router.replace('/dashboard')
 ```
@@ -81,6 +85,32 @@ authApi.getCurrentUser()     →  GET /auth/me
     401 / error              →  clearAuth() + tokenUtils.clearTokens()
 ```
 
+### Route Protection (Next.js Middleware)
+
+```
+Browser requests /dashboard (or any protected route)
+      ↓
+src/middleware.ts runs on the server edge — BEFORE the page loads
+      ↓
+reads cookie['auth_token']
+      ↓
+  token exists   →  NextResponse.next() — allow the request through
+  no token       →  NextResponse.redirect('/login')
+
+Browser requests /login while already authenticated
+      ↓
+src/middleware.ts
+      ↓
+  token exists   →  NextResponse.redirect('/dashboard')
+  no token       →  NextResponse.next() — allow
+```
+
+**Protected routes**: `/dashboard`, `/inventory`, `/orders`, `/products`, `/shops`, `/users`, `/notifications`, `/audit-logs`
+
+**Why cookies and not localStorage**: The middleware runs on the server edge — it has no access to the browser's localStorage. Cookies are sent with every HTTP request automatically, so the middleware can read them. `tokenUtils.setTokens()` writes the `auth_token` cookie at login; `tokenUtils.clearTokens()` expires it at logout.
+
+---
+
 ### Token Refresh (Axios Interceptor)
 
 ```
@@ -98,12 +128,13 @@ POST /auth/refresh
 
 ### State Management
 
-| Layer | What it stores | Key |
-|---|---|---|
-| Zustand (`auth-storage`) | `user`, `accessToken`, `refreshToken`, `isAuthenticated` | `localStorage['auth-storage']` |
-| tokenUtils | `accessToken`, `refreshToken` (plain strings) | `localStorage['accessToken']`, `localStorage['refreshToken']` |
+| Layer | What it stores | Key | Read by |
+|---|---|---|---|
+| Zustand (`auth-storage`) | `user`, `accessToken`, `refreshToken`, `isAuthenticated` | `localStorage['auth-storage']` | React components |
+| tokenUtils | `accessToken`, `refreshToken` (plain strings) | `localStorage['accessToken']`, `localStorage['refreshToken']` | Axios interceptor |
+| Cookie | `accessToken` (copy) | `cookie['auth_token']` | Next.js Edge middleware |
 
-Both must be written together on login and cleared together on logout. The Axios interceptor reads only from the plain keys; Zustand is the source of truth for UI state.
+All three must be written together on login and cleared together on logout. Zustand is the source of truth for UI state; the cookie is the source of truth for server-side route protection.
 
 ---
 
@@ -196,7 +227,7 @@ const { user, isAuthenticated, logout } = useAuth();
 **`logout()` flow:**
 1. `POST /auth/logout` — invalidates session on backend
 2. `clearAuth()` — resets Zustand state
-3. `tokenUtils.clearTokens()` — removes `localStorage['accessToken']` and `['refreshToken']`
+3. `tokenUtils.clearTokens()` — removes `localStorage['accessToken']`, `localStorage['refreshToken']`, and expires the `auth_token` cookie
 4. `window.location.href = '/login'` — hard redirect (clears all React state)
 
 The backend call is wrapped in `try/finally` — local cleanup always runs even if the backend is unreachable.
@@ -253,8 +284,10 @@ Red box with `role="alert"` for screen reader announcement.
 ## Security Notes
 
 - Tokens are stored in `localStorage` (not `httpOnly` cookies). This is acceptable for the current scope but makes the app vulnerable to XSS. A future hardening step would move to `httpOnly` cookies managed by the backend.
+- The `auth_token` cookie used by the middleware is **not** `httpOnly` (it is set by client-side JS). It provides routing protection, not cryptographic security — JWT validation remains the backend's responsibility.
 - The Axios interceptor uses a `_retry` flag to prevent infinite refresh loops on persistent 401s.
 - The `AuthProvider` treats any error from `/auth/me` as an expired session and clears all local state, forcing a clean re-login.
+- The middleware uses a `matcher` that excludes `_next/static`, `_next/image`, `api`, and `favicon.ico` to avoid running on non-page requests.
 
 ---
 
@@ -268,8 +301,9 @@ Red box with `role="alert"` for screen reader announcement.
 
 ## Related Features
 
-- **Route Protection** (TICKET-013, upcoming) — depends on `isAuthenticated` from this feature
-- **Role-Based Access** (TICKET-014, upcoming) — depends on `user.role` from this feature
+- **Route Protection** (TICKET-012) ✅ — `src/middleware.ts` protects all dashboard routes using the `auth_token` cookie
+- **Token Refresh Sync** (TICKET-013, upcoming) — fix Zustand not being updated when the Axios interceptor refreshes tokens mid-session
+- **Role-Based Access** (upcoming) — depends on `user.role` from this feature
 - All other features — all authenticated API calls rely on the token written by `useLogin`
 
 ---
