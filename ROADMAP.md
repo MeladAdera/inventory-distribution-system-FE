@@ -159,7 +159,7 @@ interface UpdateShopStatusInput { isActive: boolean; }
 
 ---
 
-### TICKET-019 — `features/categories` scaffold
+### TICKET-019 — `features/categories` scaffold `[x]`
 
 **Files to create:**
 ```
@@ -189,11 +189,11 @@ interface UpdateCategoryInput { name: string; }
 **Validation:** `categorySchema` — name 3–100 chars
 
 **AC:**
-- [ ] `npx tsc --noEmit` passes
+- [x] `npx tsc --noEmit` passes
 
 ---
 
-### TICKET-020 — `features/notifications` scaffold
+### TICKET-020 — `features/notifications` scaffold `[x]`
 
 **Files to create:**
 ```
@@ -224,7 +224,7 @@ interface NotificationListParams { page?: number; limit?: number; isRead?: boole
 **Hook:** `useNotifications(params?)` — list query + markRead, markAllRead mutations. Also expose `unreadCount` (derived from list data where `is_read === false`).
 
 **AC:**
-- [ ] `npx tsc --noEmit` passes
+- [x] `npx tsc --noEmit` passes
 
 ---
 
@@ -868,7 +868,7 @@ Apply to: Products, Inventory, Orders, Users, Shops, Categories, Notifications, 
 |-------|---------|-------------|
 | 0 | 001–008 | ✅ Infrastructure |
 | 1 | 009–015 | ✅ Auth layer |
-| 2 | 016–021 | Feature scaffolds (types, API, hooks) — 016, 017, 018 ✅ |
+| 2 | 016–021 | Feature scaffolds (types, API, hooks) — 016, 017, 018, 019, 020 ✅ |
 | 3 | 022–027 | ✅ Shared UI components (DataTable, Modal, Badge, Pagination, Toast) |
 | 4 | 028 | Real dashboard |
 | 5 | 029–032 | Products CRUD |
@@ -882,4 +882,4 @@ Apply to: Products, Inventory, Orders, Users, Shops, Categories, Notifications, 
 | 13 | 052–053 | Role-based UI |
 | 14 | 054–056 | Polish (skeletons, empty states, error pages) |
 
-**Total: 56 tickets** — 19 done, 37 remaining.
+**Total: 56 tickets** — 21 done, 35 remaining.
