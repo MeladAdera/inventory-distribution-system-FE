@@ -42,13 +42,13 @@
 
 ---
 
-## Phase 2 — Shared Type Fixes & Missing Feature Scaffolds
+## Phase 2 — Shared Type Fixes & Missing Feature Scaffolds ✅ (partial)
 
 > Fix the shared API envelope types and create the 5 missing feature scaffolds before building any pages.
 
 ---
 
-### TICKET-016 — Fix shared API envelope types
+### TICKET-016 — Fix shared API envelope types `[x]`
 
 **Files:** `src/common/types/api.types.ts`
 
@@ -72,7 +72,7 @@ interface PaginatedResponse<T> { data: T[]; total: number; page: number; limit: 
 
 ---
 
-### TICKET-017 — `features/users` scaffold
+### TICKET-017 — `features/users` scaffold `[x]`
 
 **Files to create:**
 ```
@@ -265,13 +265,13 @@ interface AuditLogListParams {
 
 ---
 
-## Phase 3 — Shared UI Components
+## Phase 3 — Shared UI Components ✅
 
 > These components are used by multiple feature pages. Build them before the pages.
 
 ---
 
-### TICKET-022 — `DataTable` component
+### TICKET-022 — `DataTable` component `[x]`
 
 **File:** `src/common/components/DataTable.tsx`
 
@@ -301,7 +301,7 @@ interface DataTableProps<T> {
 
 ---
 
-### TICKET-023 — `Modal` component
+### TICKET-023 — `Modal` component `[x]`
 
 **File:** `src/common/components/Modal.tsx`
 
@@ -325,7 +325,7 @@ interface ModalProps {
 
 ---
 
-### TICKET-024 — `ConfirmDialog` component
+### TICKET-024 — `ConfirmDialog` component `[x]`
 
 **File:** `src/common/components/ConfirmDialog.tsx`
 
@@ -350,7 +350,7 @@ interface ConfirmDialogProps {
 
 ---
 
-### TICKET-025 — `Badge` component
+### TICKET-025 — `Badge` component `[x]`
 
 **File:** `src/common/components/Badge.tsx`
 
@@ -368,7 +368,7 @@ Used for: order status, low-stock indicator, user role, shop active/inactive.
 
 ---
 
-### TICKET-026 — `Pagination` component
+### TICKET-026 — `Pagination` component `[x]`
 
 **File:** `src/common/components/Pagination.tsx`
 
@@ -390,7 +390,7 @@ Shows "Showing X–Y of Z results" and Prev / page numbers / Next buttons.
 
 ---
 
-### TICKET-027 — Toast notification system
+### TICKET-027 — Toast notification system `[x]`
 
 **File:** `src/common/components/Toast.tsx` + `src/providers/ToastProvider.tsx`
 
@@ -588,13 +588,13 @@ src/features/orders/components/OrdersTable.tsx
 
 ---
 
-## Phase 8 — Users Pages
+## Phase 8 — Users Pages ✅
 
 **Depends on:** TICKET-022 – TICKET-027
 
 ---
 
-### TICKET-040 — Users list page
+### TICKET-040 — Users list page `[x]`
 
 **Files:**
 ```
@@ -612,7 +612,7 @@ src/features/users/components/UserFilters.tsx
 
 ---
 
-### TICKET-041 — Create shop owner modal
+### TICKET-041 — Create shop owner modal `[x]`
 
 **File:** `src/features/users/components/CreateShopOwnerModal.tsx`
 
@@ -624,7 +624,7 @@ src/features/users/components/UserFilters.tsx
 
 ---
 
-### TICKET-042 — Create employee modal
+### TICKET-042 — Create employee modal `[x]`
 
 **File:** `src/features/users/components/CreateEmployeeModal.tsx`
 
@@ -636,7 +636,7 @@ src/features/users/components/UserFilters.tsx
 
 ---
 
-### TICKET-043 — Edit user modal
+### TICKET-043 — Edit user modal `[x]`
 
 **File:** `src/features/users/components/EditUserModal.tsx`
 
@@ -647,7 +647,7 @@ src/features/users/components/UserFilters.tsx
 
 ---
 
-### TICKET-044 — Deactivate user confirmation
+### TICKET-044 — Deactivate user confirmation `[x]`
 
 **AC:**
 - [ ] Uses `ConfirmDialog`

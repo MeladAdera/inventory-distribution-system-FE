@@ -3,6 +3,12 @@ export { Button } from './Button';
 export { FormField } from './FormField';
 export { LoadingSpinner } from './LoadingSpinner';
 export { ErrorAlert } from './ErrorAlert';
+export { Badge } from './Badge';
+export { DataTable } from './DataTable';
+export type { Column } from './DataTable';
+export { Modal } from './Modal';
+export { ConfirmDialog } from './ConfirmDialog';
+export { Pagination } from './Pagination';
 
 // Layout Components
 export { Navbar, Sidebar, DashboardLayout } from '@/common/layout';
