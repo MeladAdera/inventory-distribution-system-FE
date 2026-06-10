@@ -1,4 +1,10 @@
-import { OrderStatus } from '@/features/auth/types/enums';
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+}
 
 export interface OrderItem {
   id: string;

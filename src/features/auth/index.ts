@@ -18,7 +18,7 @@ export type {
   RefreshTokenResponse,
   CurrentUserResponse,
 } from './types/auth.types';
-export { UserRole, OrderStatus, ProductSource } from './types/enums';
+export { UserRole } from './types/enums';
 
 // Utils
 export { tokenUtils } from './utils/token.utils';

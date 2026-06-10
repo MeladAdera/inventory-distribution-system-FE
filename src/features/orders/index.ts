@@ -6,4 +6,4 @@ export { useOrders } from './hooks/useOrders';
 
 // Types
 export type { Order, OrderItem, CreateOrderInput, UpdateOrderInput } from './types/orders.types';
-export { OrderStatus } from '@/features/auth/types/enums';
+export { OrderStatus } from './types/orders.types';

@@ -1,4 +1,8 @@
-import { ProductSource } from '@/features/auth/types/enums';
+export enum ProductSource {
+  WAREHOUSE = 'WAREHOUSE',
+  SUPPLIER = 'SUPPLIER',
+  IMPORTED = 'IMPORTED',
+}
 
 export interface Product {
   id: string;
