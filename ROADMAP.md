@@ -228,7 +228,7 @@ interface NotificationListParams { page?: number; limit?: number; isRead?: boole
 
 ---
 
-### TICKET-021 — `features/audit-logs` scaffold
+### TICKET-021 — `features/audit-logs` scaffold `[x]`
 
 **Files to create:**
 ```
@@ -261,7 +261,7 @@ interface AuditLogListParams {
 **Hook:** `useAuditLogs(params?)` — list query only (read-only feature)
 
 **AC:**
-- [ ] `npx tsc --noEmit` passes
+- [x] `npx tsc --noEmit` passes
 
 ---
 
@@ -868,7 +868,7 @@ Apply to: Products, Inventory, Orders, Users, Shops, Categories, Notifications, 
 |-------|---------|-------------|
 | 0 | 001–008 | ✅ Infrastructure |
 | 1 | 009–015 | ✅ Auth layer |
-| 2 | 016–021 | Feature scaffolds (types, API, hooks) — 016, 017, 018, 019, 020 ✅ |
+| 2 | 016–021 | ✅ Feature scaffolds (types, API, hooks) |
 | 3 | 022–027 | ✅ Shared UI components (DataTable, Modal, Badge, Pagination, Toast) |
 | 4 | 028 | Real dashboard |
 | 5 | 029–032 | Products CRUD |
@@ -882,4 +882,4 @@ Apply to: Products, Inventory, Orders, Users, Shops, Categories, Notifications, 
 | 13 | 052–053 | Role-based UI |
 | 14 | 054–056 | Polish (skeletons, empty states, error pages) |
 
-**Total: 56 tickets** — 21 done, 35 remaining.
+**Total: 56 tickets** — 22 done, 34 remaining.
