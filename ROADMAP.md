@@ -120,7 +120,7 @@ interface UpdateUserInput { name?: string; email?: string; }
 
 ---
 
-### TICKET-018 — `features/shops` scaffold
+### TICKET-018 — `features/shops` scaffold `[x]`
 
 **Files to create:**
 ```
@@ -134,7 +134,7 @@ src/features/shops/
 
 **Types:**
 ```ts
-enum ShopType { WAREHOUSE = 'WAREHOUSE', RETAIL = 'RETAIL' }
+enum ShopType { WAREHOUSE = 'WAREHOUSE', SHOP = 'SHOP' }
 
 interface Shop {
   id: number; name: string; address: string | null; phone: string | null;
@@ -154,8 +154,8 @@ interface UpdateShopStatusInput { isActive: boolean; }
 **Hook:** `useShops()` — list query + update, updateStatus mutations
 
 **AC:**
-- [ ] `ShopType` enum values match backend exactly
-- [ ] `npx tsc --noEmit` passes
+- [x] `ShopType` enum values match backend exactly
+- [x] `npx tsc --noEmit` passes
 
 ---
 
@@ -663,7 +663,7 @@ src/features/users/components/UserFilters.tsx
 
 ---
 
-### TICKET-045 — Shops list page
+### TICKET-045 — Shops list page `[x]`
 
 **Files:**
 ```
@@ -672,32 +672,32 @@ src/features/shops/components/ShopsTable.tsx
 ```
 
 **AC:**
-- [ ] Table: columns = Name, Address, Phone, Type, Active, Actions
-- [ ] Type badge: WAREHOUSE → blue, RETAIL → gray
-- [ ] Active badge: green / red
-- [ ] Edit button visible to `WAREHOUSE_ADMIN` and `SHOP_OWNER`
-- [ ] Toggle Status button visible to `WAREHOUSE_ADMIN` only
+- [x] Table: columns = Name, Address, Phone, Type, Active, Actions
+- [x] Type badge: WAREHOUSE → blue, SHOP → gray
+- [x] Active badge: green / red
+- [x] Edit button visible to `WAREHOUSE_ADMIN` and `SHOP_OWNER`
+- [x] Toggle Status button visible to `WAREHOUSE_ADMIN` only
 
 ---
 
-### TICKET-046 — Edit shop modal
+### TICKET-046 — Edit shop modal `[x]`
 
 **File:** `src/features/shops/components/EditShopModal.tsx`
 
 **AC:**
-- [ ] Fields: Name, Address, Phone (all optional)
-- [ ] Pre-fills current values
-- [ ] On success: toast, invalidates `['shops']`
+- [x] Fields: Name, Address, Phone (all optional)
+- [x] Pre-fills current values
+- [x] On success: toast, invalidates `['shops']`
 
 ---
 
-### TICKET-047 — Toggle shop status
+### TICKET-047 — Toggle shop status `[x]`
 
 **AC:**
-- [ ] Uses `ConfirmDialog`
-- [ ] Message: "Deactivate [Shop Name]?" or "Activate [Shop Name]?"
-- [ ] Calls `PATCH /shops/:id/status` with `{ isActive: !current }`
-- [ ] On success: toast, invalidates `['shops']`
+- [x] Uses `ConfirmDialog`
+- [x] Message: "Deactivate [Shop Name]?" or "Activate [Shop Name]?"
+- [x] Calls `PATCH /shops/:id/status` with `{ isActive: !current }`
+- [x] On success: toast, invalidates `['shops']`
 
 ---
 
@@ -868,18 +868,18 @@ Apply to: Products, Inventory, Orders, Users, Shops, Categories, Notifications, 
 |-------|---------|-------------|
 | 0 | 001–008 | ✅ Infrastructure |
 | 1 | 009–015 | ✅ Auth layer |
-| 2 | 016–021 | Feature scaffolds (types, API, hooks) |
-| 3 | 022–027 | Shared UI components (DataTable, Modal, Badge, Pagination, Toast) |
+| 2 | 016–021 | Feature scaffolds (types, API, hooks) — 016, 017, 018 ✅ |
+| 3 | 022–027 | ✅ Shared UI components (DataTable, Modal, Badge, Pagination, Toast) |
 | 4 | 028 | Real dashboard |
 | 5 | 029–032 | Products CRUD |
 | 6 | 033–035 | Inventory management |
 | 7 | 036–039 | Orders lifecycle |
-| 8 | 040–044 | Users management |
-| 9 | 045–047 | Shops management |
+| 8 | 040–044 | ✅ Users management |
+| 9 | 045–047 | ✅ Shops management |
 | 10 | 048 | Categories CRUD |
 | 11 | 049–050 | Notifications |
 | 12 | 051 | Audit logs |
 | 13 | 052–053 | Role-based UI |
 | 14 | 054–056 | Polish (skeletons, empty states, error pages) |
 
-**Total: 56 tickets** — 15 done, 41 remaining.
+**Total: 56 tickets** — 19 done, 37 remaining.
