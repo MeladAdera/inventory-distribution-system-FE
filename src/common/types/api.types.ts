@@ -1,7 +1,6 @@
 export interface ApiResponse<T> {
-  success: boolean;
   data: T;
-  message?: string;
+  statusCode: number;
   timestamp: string;
 }
 
@@ -10,12 +9,10 @@ export interface PaginatedResponse<T> {
   total: number;
   page: number;
   limit: number;
-  totalPages: number;
 }
 
 export interface ApiError {
-  success: boolean;
+  statusCode: number;
   message: string;
-  errors?: Record<string, string[]>;
-  timestamp: string;
+  error: string;
 }
