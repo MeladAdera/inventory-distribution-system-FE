@@ -1,0 +1,14 @@
+{
+  "brand": { "name": "اليامن", "sub": "إدارة المخزون" },
+  "sections": { "main": "الرئيسية", "manage": "الإدارة" },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "products": "المنتجات",
+    "clients": "العملاء",
+    "transfers": "نقل المخزون",
+    "shortages": "نقص المخزون",
+    "settings": "الإعدادات"
+  },
+  "collapse": "طي القائمة",
+  "user": { "defaultName": "سالم المنصوري", "role": "مالك المستودع" }
+}

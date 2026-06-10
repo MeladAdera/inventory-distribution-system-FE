@@ -1,8 +1,8 @@
 # Project Status: Inventory Distribution System (Frontend)
 
 **Last Updated**: June 10, 2026  
-**Version**: 0.3.0  
-**Status**: PHASE 2 IN PROGRESS 🔄
+**Version**: 0.4.0  
+**Status**: FIGMA DESIGN IMPLEMENTATION IN PROGRESS 🎨
 
 ---
 
@@ -12,11 +12,29 @@ Frontend application for the Inventory Distribution System built with Next.js, R
 
 ---
 
-## 🎯 Current Phase: PHASE 2 — Feature Implementation
+## 🎨 Current Phase: FIGMA DESIGN IMPLEMENTATION
 
 **Status**: 🔄 **IN PROGRESS**
 
-Building all domain features one by one. Each feature goes through: build → test → document → commit.
+Implementing the Figma designs page by page before wiring real API data. Each page is built as a pixel-accurate UI shell first, then integrated with its feature hook.
+
+### Design Phase Progress
+
+| Component | Description | Status |
+|-----------|-------------|--------|
+| Admin Layout Shell | Sidebar, TopBar, NavDrawer, BottomNav, BottomSheet, i18n (AR/EN) | ✅ Complete |
+| Dashboard page | Stats cards, recent activity | ⬜ Next |
+| Products page | List table, create/edit modals | ⬜ Pending |
+| Clients page | List table, create modal | ⬜ Pending |
+| Transfers page | List, new transfer flow | ⬜ Pending |
+| Shortages page | Low-stock list, restock action | ⬜ Pending |
+| Settings page | Profile, preferences | ⬜ Pending |
+
+---
+
+## 📦 Previous Phase: PHASE 2 — Feature Scaffolds ✅
+
+**Status**: ✅ **COMPLETE**
 
 ### Phase 2 Progress
 
@@ -79,8 +97,21 @@ src/features/
 
 src/common/components/
 ├── Button, FormField, LoadingSpinner, ErrorAlert  ✅
-├── Badge, DataTable, Modal, ConfirmDialog, Pagination, Toast  ✅ (added this phase)
-└── Layout: DashboardLayout, Navbar, Sidebar  ✅
+├── Badge, DataTable, Modal, ConfirmDialog, Pagination, Toast  ✅
+└── Layout: DashboardLayout, Sidebar, TopBar, NavDrawer, BottomNav, BottomSheet  ✅ Figma
+
+src/common/layout/
+├── navConfig.ts          ✅  nav items, icons, badges (single source of truth)
+├── sidebarStore.ts       ✅  Zustand collapse state
+└── mockNotifications.ts  ✅  typed AR/EN mock notifications
+
+src/i18n/                  ✅  React 18 context-based i18n (no library)
+├── index.ts               ✅  assembled typed translations
+├── en/{sidebar,topbar,bottomnav}.json
+└── ar/{sidebar,topbar,bottomnav}.json
+
+src/providers/
+└── I18nProvider.tsx       ✅  locale context + useI18n hook
 ```
 
 ---
@@ -112,5 +143,5 @@ Backend runs on port 3000. Frontend dev server on port 3001.
 
 ---
 
-**Last Commit**: feat(TICKET-017–027, 040–044): Complete users feature with shared UI components  
-**Next Up**: TICKET-018 — `features/shops` scaffold → then shops pages
+**Last Commit**: feat: Implement Figma admin layout shell (Sidebar, TopBar, NavDrawer, BottomNav, i18n)  
+**Next Up**: Dashboard page UI — stats cards + recent activity (Figma design)

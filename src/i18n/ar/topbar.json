@@ -1,0 +1,32 @@
+{
+  "searchPlaceholder": "ابحث عن منتجات أو عملاء…",
+  "menuLabel": "القائمة",
+  "langSwitchLabel": "EN",
+  "user": {
+    "defaultName": "سالم المنصوري",
+    "role": "مالك المستودع",
+    "accountLabel": "حساب المستخدم"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "viewAll": "عرض جميع الإشعارات"
+  },
+  "avatar": {
+    "profile": "الملف الشخصي",
+    "clientPortal": "بوابة العملاء",
+    "logout": "تسجيل الخروج"
+  },
+  "pageTitles": {
+    "/dashboard": "لوحة التحكم",
+    "/products": "المنتجات",
+    "/clients": "العملاء",
+    "/transfers": "نقل المخزون",
+    "/shortages": "نقص المخزون",
+    "/settings": "الإعدادات",
+    "/users": "المستخدمون",
+    "/shops": "المحلات",
+    "/audit-logs": "سجلات التدقيق",
+    "/notifications": "الإشعارات"
+  }
+}

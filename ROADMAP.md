@@ -23,7 +23,7 @@
 | TICKET-004 | Path aliases (`@/*`) | `[x]` |
 | TICKET-005 | Common UI components: `Button`, `FormField`, `ErrorAlert`, `LoadingSpinner` | `[x]` |
 | TICKET-006 | Common hooks: `usePagination`, `usePermission` | `[x]` |
-| TICKET-007 | Layout shell: `DashboardLayout`, `Navbar`, `Sidebar` | `[x]` |
+| TICKET-007 | Layout shell: `DashboardLayout`, `Sidebar`, `TopBar`, `NavDrawer`, `BottomNav`, `BottomSheet`, i18n | `[x]` |
 | TICKET-008 | App constants and route map (`ROUTES`, `PAGINATION`) | `[x]` |
 
 ---
@@ -404,7 +404,27 @@ A lightweight toast (success / error / info) shown after mutations.
 
 ---
 
-## Phase 4 — Dashboard Page
+## Phase 3.5 — Figma Design Implementation 🎨
+
+> Build every page as a pixel-accurate UI shell using the Figma designs **before** wiring real API data.
+> Each page delivers a fully responsive, bilingual (AR/EN) layout that can be filled with live data in the next pass.
+> Work order follows the sidebar navigation top-to-bottom.
+
+| ID | Page | Key components | Status |
+|----|------|----------------|--------|
+| FIGMA-001 | Admin Layout Shell | Sidebar, TopBar, NavDrawer, BottomNav, BottomSheet, i18n | `[x]` |
+| FIGMA-002 | Dashboard | Stats cards (6×), recent transfers list, low-stock summary | `[ ]` |
+| FIGMA-003 | Products | Data table, category filter, create/edit slide-over | `[ ]` |
+| FIGMA-004 | Clients (Shops) | Cards grid + table, status badge, edit drawer | `[ ]` |
+| FIGMA-005 | Transfers (نقل المخزون) | Timeline list, new transfer wizard, status stepper | `[ ]` |
+| FIGMA-006 | Shortages (نقص المخزون) | Low-stock table, restock request action | `[ ]` |
+| FIGMA-007 | Settings | Profile section, preferences, security | `[ ]` |
+
+**Docs:** `docs/features/admin-layout-shell.md` ✅ — one doc per page as it completes.
+
+---
+
+## Phase 4 — Dashboard Page (API Integration)
 
 ### TICKET-028 — Dashboard stats cards
 
@@ -870,7 +890,8 @@ Apply to: Products, Inventory, Orders, Users, Shops, Categories, Notifications, 
 | 1 | 009–015 | ✅ Auth layer |
 | 2 | 016–021 | ✅ Feature scaffolds (types, API, hooks) |
 | 3 | 022–027 | ✅ Shared UI components (DataTable, Modal, Badge, Pagination, Toast) |
-| 4 | 028 | Real dashboard |
+| 3.5 | FIGMA-001–007 | 🔄 Figma UI shells — layout shell ✅, pages ⬜ |
+| 4 | 028 | Dashboard (API integration) |
 | 5 | 029–032 | Products CRUD |
 | 6 | 033–035 | Inventory management |
 | 7 | 036–039 | Orders lifecycle |
@@ -882,4 +903,4 @@ Apply to: Products, Inventory, Orders, Users, Shops, Categories, Notifications, 
 | 13 | 052–053 | Role-based UI |
 | 14 | 054–056 | Polish (skeletons, empty states, error pages) |
 
-**Total: 56 tickets** — 22 done, 34 remaining.
+**Total: 63 tickets** (56 original + 7 Figma) — 23 done, 40 remaining.

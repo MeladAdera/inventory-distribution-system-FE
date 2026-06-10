@@ -1,5 +1,29 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-sand-100: #F5EFE4;
+  --color-sand-200: #ECE3D2;
+  --color-ink-200: #C8D0DA;
+  --color-ink-400: #7A8899;
+  --color-ink-500: #5C6B7A;
+  --color-ink-600: #3F4D60;
+  --color-ink-700: #2C3E52;
+  --color-ink-800: #1C2D3E;
+  --color-ink-900: #0E1B2C;
+  --color-page: #FBF8F3;
+  --color-paper: #FFFFFF;
+  --color-border: #E8E2D6;
+  --color-danger-100: #FEE2E2;
+  --color-danger-700: #A8312B;
+  --color-amber-50:   #FFFBEB;
+  --color-amber-500:  #F59E0B;
+  --color-amber-600:  #D97706;
+  --color-amber-700:  #B45309;
+  --color-warning-700: #92400E;
+  --color-info-700:    #1D4ED8;
+  --color-success-700: #15803D;
+}
+
 @layer base {
   :root {
     --primary: 222.2 47.4% 11.2%;
@@ -7,15 +31,31 @@
     --destructive: 0 84.2% 60.2%;
     --muted: 215.4 16.3% 46.9%;
     --accent: 217.2 91.2% 59.8%;
+    --shadow-md: 0 4px 16px rgba(14, 27, 44, 0.10);
+    --shadow-lg: 0 8px 32px rgba(14, 27, 44, 0.16);
   }
 
   body {
-    @apply bg-white text-gray-900;
+    background-color: #FBF8F3;
+    color: #0E1B2C;
   }
 }
 
 @layer components {
   .input {
-    @apply block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500;
+    @apply block w-full rounded-md border border-border px-3 py-2 text-sm placeholder-ink-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500;
   }
 }
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.animate-pop-in   { animation: popIn   0.16s ease-out forwards; }
+.animate-sheet-up { animation: sheetUp 0.3s  cubic-bezier(0.32, 0.72, 0, 1) forwards; }

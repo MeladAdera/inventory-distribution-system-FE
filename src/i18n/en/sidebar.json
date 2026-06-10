@@ -1,0 +1,14 @@
+{
+  "brand": { "name": "Alyamn", "sub": "Inventory" },
+  "sections": { "main": "Main", "manage": "Manage" },
+  "nav": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "clients": "Clients",
+    "transfers": "Transfers",
+    "shortages": "Shortages",
+    "settings": "Settings"
+  },
+  "collapse": "Collapse",
+  "user": { "defaultName": "Salem Al Mansoori", "role": "Warehouse Owner" }
+}
