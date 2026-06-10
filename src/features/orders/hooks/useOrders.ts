@@ -1,16 +1,26 @@
 'use client';
 
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ordersApi } from '../api/orders.api';
+import type { OrderListParams, UpdateOrderStatusInput } from '../types/orders.types';
 
-export function useOrders() {
+export function useOrders(params?: OrderListParams) {
+  const queryClient = useQueryClient();
+
   const listQuery = useQuery({
-    queryKey: ['orders'],
-    queryFn: () => ordersApi.list(),
+    queryKey: ['orders', params],
+    queryFn: () => ordersApi.list(params),
   });
 
   const createMutation = useMutation({
     mutationFn: ordersApi.create,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: UpdateOrderStatusInput }) =>
+      ordersApi.updateStatus(id, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
   });
 
   return {
@@ -18,5 +28,6 @@ export function useOrders() {
     isLoading: listQuery.isLoading,
     error: listQuery.error,
     createOrder: createMutation.mutateAsync,
+    updateOrderStatus: updateStatusMutation.mutateAsync,
   };
 }

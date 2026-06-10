@@ -5,5 +5,13 @@ export { productsApi } from './api/products.api';
 export { useProducts } from './hooks/useProducts';
 
 // Types
-export type { Product, CreateProductInput, UpdateProductInput } from './types/products.types';
+export type {
+  Product,
+  CreateProductInput,
+  UpdateProductInput,
+  ProductListParams,
+} from './types/products.types';
 export { ProductSource } from './types/products.types';
+
+// Validations
+export { createProductSchema, updateProductSchema } from './validations/products.schema';

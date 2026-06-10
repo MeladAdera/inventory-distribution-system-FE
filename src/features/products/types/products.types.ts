@@ -1,36 +1,41 @@
 export enum ProductSource {
   WAREHOUSE = 'WAREHOUSE',
-  SUPPLIER = 'SUPPLIER',
-  IMPORTED = 'IMPORTED',
+  LOCAL = 'LOCAL',
 }
 
 export interface Product {
-  id: string;
+  id: number;
+  shop_id: number;
+  category_id: number;
   name: string;
-  description: string;
-  sku: string;
+  description: string | null;
+  barcode: string | null;
   price: number;
   source: ProductSource;
-  category: string;
-  imageUrl?: string;
-  createdAt: string;
-  updatedAt: string;
+  is_global: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProductListParams {
+  page?: number;
+  limit?: number;
+  source?: ProductSource;
+  category_id?: number;
+  shop_id?: number;
 }
 
 export interface CreateProductInput {
   name: string;
-  description: string;
-  sku: string;
+  description?: string;
+  barcode?: string;
   price: number;
-  source: ProductSource;
-  category: string;
-  imageUrl?: string;
+  category_id: number;
 }
 
 export interface UpdateProductInput {
   name?: string;
   description?: string;
   price?: number;
-  category?: string;
-  imageUrl?: string;
 }

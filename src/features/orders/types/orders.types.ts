@@ -2,34 +2,43 @@ export enum OrderStatus {
   PENDING = 'PENDING',
   PROCESSING = 'PROCESSING',
   SHIPPED = 'SHIPPED',
-  DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED',
+  RECEIVED = 'RECEIVED',
+  COMPLETED = 'COMPLETED',
 }
 
 export interface OrderItem {
-  id: string;
-  productId: string;
+  product_id: number;
+  product_name: string;
   quantity: number;
   price: number;
 }
 
 export interface Order {
-  id: string;
-  orderNumber: string;
-  shopId: string;
-  items: OrderItem[];
+  id: number;
+  from_shop_id: number;
+  to_shop_id: number;
   status: OrderStatus;
-  totalAmount: number;
-  createdAt: string;
-  updatedAt: string;
+  total_items: number;
+  created_at: string;
+  updated_at: string;
+  items?: OrderItem[];
+}
+
+export interface OrderListParams {
+  page?: number;
+  limit?: number;
+  status?: OrderStatus;
+}
+
+export interface CreateOrderItem {
+  productId: number;
+  quantity: number;
 }
 
 export interface CreateOrderInput {
-  shopId: string;
-  items: OrderItem[];
+  items: CreateOrderItem[];
 }
 
-export interface UpdateOrderInput {
-  status?: OrderStatus;
-  items?: OrderItem[];
+export interface UpdateOrderStatusInput {
+  status: OrderStatus;
 }

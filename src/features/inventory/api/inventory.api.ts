@@ -1,29 +1,33 @@
 import { apiClient } from '@/common/api';
-import type { CreateInventoryInput, UpdateInventoryInput } from '../types/inventory.types';
+import type {
+  StockInInput,
+  AdjustInventoryInput,
+  InventoryListParams,
+} from '../types/inventory.types';
 
 export const inventoryApi = {
-  list: async () => {
-    const response = await apiClient.get('/inventory');
+  list: async (params?: InventoryListParams) => {
+    const response = await apiClient.get('/inventory', { params });
     return response.data;
   },
 
-  getById: async (id: string) => {
+  getLowStock: async () => {
+    const response = await apiClient.get('/inventory/low-stock');
+    return response.data;
+  },
+
+  getById: async (id: number) => {
     const response = await apiClient.get(`/inventory/${id}`);
     return response.data;
   },
 
-  create: async (data: CreateInventoryInput) => {
-    const response = await apiClient.post('/inventory', data);
+  stockIn: async (data: StockInInput) => {
+    const response = await apiClient.post('/inventory/stock-in', data);
     return response.data;
   },
 
-  update: async (id: string, data: UpdateInventoryInput) => {
-    const response = await apiClient.put(`/inventory/${id}`, data);
-    return response.data;
-  },
-
-  delete: async (id: string) => {
-    const response = await apiClient.delete(`/inventory/${id}`);
+  adjust: async (id: number, data: AdjustInventoryInput) => {
+    const response = await apiClient.patch(`/inventory/${id}`, data);
     return response.data;
   },
 };

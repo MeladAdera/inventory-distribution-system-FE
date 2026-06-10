@@ -7,6 +7,10 @@ export { useInventory } from './hooks/useInventory';
 // Types
 export type {
   InventoryItem,
-  CreateInventoryInput,
-  UpdateInventoryInput,
+  StockInInput,
+  AdjustInventoryInput,
+  InventoryListParams,
 } from './types/inventory.types';
+
+// Validations
+export { stockInSchema, adjustInventorySchema } from './validations/inventory.schema';

@@ -1,22 +1,33 @@
 'use client';
 
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { inventoryApi } from '../api/inventory.api';
+import type { InventoryListParams, AdjustInventoryInput } from '../types/inventory.types';
 
-export function useInventory() {
+export function useInventory(params?: InventoryListParams) {
+  const queryClient = useQueryClient();
+
   const listQuery = useQuery({
-    queryKey: ['inventory'],
-    queryFn: () => inventoryApi.list(),
+    queryKey: ['inventory', params],
+    queryFn: () => inventoryApi.list(params),
   });
 
-  const createMutation = useMutation({
-    mutationFn: inventoryApi.create,
+  const stockInMutation = useMutation({
+    mutationFn: inventoryApi.stockIn,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['inventory'] }),
+  });
+
+  const adjustMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: AdjustInventoryInput }) =>
+      inventoryApi.adjust(id, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['inventory'] }),
   });
 
   return {
     inventory: listQuery.data,
     isLoading: listQuery.isLoading,
     error: listQuery.error,
-    createInventory: createMutation.mutateAsync,
+    stockIn: stockInMutation.mutateAsync,
+    adjustInventory: adjustMutation.mutateAsync,
   };
 }

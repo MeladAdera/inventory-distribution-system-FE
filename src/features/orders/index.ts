@@ -5,5 +5,15 @@ export { ordersApi } from './api/orders.api';
 export { useOrders } from './hooks/useOrders';
 
 // Types
-export type { Order, OrderItem, CreateOrderInput, UpdateOrderInput } from './types/orders.types';
+export type {
+  Order,
+  OrderItem,
+  CreateOrderInput,
+  CreateOrderItem,
+  UpdateOrderStatusInput,
+  OrderListParams,
+} from './types/orders.types';
 export { OrderStatus } from './types/orders.types';
+
+// Validations
+export { createOrderSchema, updateOrderStatusSchema } from './validations/orders.schema';
