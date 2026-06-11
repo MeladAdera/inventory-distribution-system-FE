@@ -1,7 +1,7 @@
 # Project Status: Inventory Distribution System (Frontend)
 
 **Last Updated**: June 11, 2026  
-**Version**: 0.5.0  
+**Version**: 0.6.0  
 **Status**: FIGMA DESIGN IMPLEMENTATION IN PROGRESS 🎨
 
 ---
@@ -24,8 +24,8 @@ Implementing the Figma designs page by page before wiring real API data. Each pa
 |-----------|-------------|--------|
 | Admin Layout Shell | Sidebar, TopBar, NavDrawer, BottomNav, BottomSheet, i18n (AR/EN) | ✅ Complete |
 | Dashboard page | 6× KPI cards, consumption trend chart, top-consumed bars, low-stock table, activity feed | ✅ Complete |
-| Products page | List table, create/edit modals | ⬜ Next |
-| Clients page | List table, create modal | ⬜ Pending |
+| Products page | 8-col grid table, 4 modals (add/edit/detail/restock/delete), search/filter, skeleton | ✅ Complete |
+| Clients page | List table, create modal | ⬜ Next |
 | Transfers page | List, new transfer flow | ⬜ Pending |
 | Shortages page | Low-stock list, restock action | ⬜ Pending |
 | Settings page | Profile, preferences | ⬜ Pending |
@@ -87,7 +87,7 @@ Next.js setup, ESLint, Prettier, Husky, Tailwind, Axios, TanStack Query, Zustand
 src/features/
 ├── auth/          ✅ Complete
 ├── users/         ✅ Complete (types + API + hooks + components + page)
-├── products/      🔧 Scaffold fixed (no page yet)
+├── products/      ✅ Complete (types + API + hooks + components + page + modals + mock)
 ├── orders/        🔧 Scaffold fixed (no page yet)
 ├── inventory/     🔧 Scaffold fixed (no page yet)
 ├── categories/    ⬜ Not started
@@ -107,8 +107,8 @@ src/common/layout/
 
 src/i18n/                  ✅  React 18 context-based i18n (no library)
 ├── index.ts               ✅  assembled typed translations
-├── en/{sidebar,topbar,bottomnav,dashboard}.json
-└── ar/{sidebar,topbar,bottomnav,dashboard}.json
+├── en/{sidebar,topbar,bottomnav,dashboard,products}.json
+└── ar/{sidebar,topbar,bottomnav,dashboard,products}.json
 
 src/providers/
 └── I18nProvider.tsx       ✅  locale context + useI18n hook
@@ -143,5 +143,5 @@ Backend runs on port 3000. Frontend dev server on port 3001.
 
 ---
 
-**Last Commit**: feat(FIGMA-002): Implement Dashboard page — KPI cards, charts, low-stock table, activity feed  
-**Next Up**: Products page UI (FIGMA-003)
+**Last Commit**: feat(FIGMA-003): Implement Products admin page — table, filters, skeleton, 4 modals  
+**Next Up**: Clients/Shops page UI (FIGMA-004)

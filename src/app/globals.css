@@ -67,3 +67,13 @@
 
 .animate-pop-in   { animation: popIn   0.16s ease-out forwards; }
 .animate-sheet-up { animation: sheetUp 0.3s  cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #F5EFE4 25%, #ECE3D2 50%, #F5EFE4 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}

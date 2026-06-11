@@ -4,6 +4,48 @@ All changes documented chronologically with details.
 
 ---
 
+## [0.6.0] - 2026-06-11 - FIGMA-003: Products Admin Page
+
+### Products Page ✅
+
+#### Added
+- **`src/app/(dashboard)/products/page.tsx`** — page with full CRUD state, filtering, pagination, modal routing
+- **`src/features/products/components/ProductsTableCard.tsx`** — toolbar (search + 2 selects + export), 8-column CSS grid table, skeleton shimmer, empty state, pagination
+- **`src/features/products/components/ProductThumb.tsx`** — coloured square + Package icon, size prop
+- **`src/features/products/components/StatusBadge.tsx`** — dot + label pill for in_stock / low / out / inactive
+- **`src/features/products/components/ProductFormModal.tsx`** — add/edit modal with React Hook Form + Zod; `z.number()` + `valueAsNumber: true` pattern
+- **`src/features/products/components/ProductDetailModal.tsx`** — view-only detail (6 rows: WH qty, min stock, cost/sell price, total value, category)
+- **`src/features/products/components/RestockModal.tsx`** — stepper + before/after summary boxes
+- **`src/features/products/components/DeleteConfirmModal.tsx`** — danger confirm, intentionally no backdrop close
+- **`src/features/products/mock/productsData.ts`** — 12 `MOCK_PRODUCTS` with correct SKUs, prices, colours, categories
+
+#### Updated
+- **`src/features/products/types/products.types.ts`** — added `AdminProduct`, `ProductCategory`, `ProductStatus`, `getProductStatus()`, `CATEGORY_COLORS`
+- **`src/features/products/validations/products.schema.ts`** — added `adminProductFormSchema` using `z.number()` (not coerce) + `AdminProductFormData` type
+- **`src/features/products/index.ts`** — full barrel export of all new types, functions, components, schema, mock
+- **`src/i18n/en/products.json`** + **`src/i18n/ar/products.json`** — full AR/EN translations for page, toolbar, table, modals, pagination
+- **`src/i18n/index.ts`** — wired `products` translations into the typed i18n object
+- **`src/app/globals.css`** — added `@keyframes shimmer` + `.skeleton-shimmer` utility class
+
+#### Bugs fixed during audit
+- `RestockModal`: hardcoded `product.name_ar` → `locale === 'ar' ? product.name_ar : product.name_en`
+- `ProductsTableCard`: table header keys were translated strings used as React `key` → replaced with stable `HEADER_KEYS` constant
+- `ProductsTableCard`: verbose `ReturnType<typeof useI18n>['t']['products']` inline type → extracted as `ProductsT` module alias
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+✅ All Tailwind classes canonical (linter clean)
+```
+
+---
+
+## [0.5.0] - 2026-06-11 - FIGMA-002: Dashboard Page
+
+*(previously recorded as in-progress — marked complete)*
+
+---
+
 ## [0.1.0] - 2026-06-09 - PHASE 0 Complete
 
 ### Infrastructure Setup ✅
@@ -104,6 +146,9 @@ All changes documented chronologically with details.
 
 | Version | Date | Status | Highlights |
 |---------|------|--------|-----------|
+| 0.6.0 | 2026-06-11 | ✅ Release | FIGMA-003 Products admin page |
+| 0.5.0 | 2026-06-11 | ✅ Release | FIGMA-002 Dashboard page |
+| 0.4.0 | 2026-06-10 | ✅ Release | FIGMA-001 Admin layout shell |
 | 0.1.0 | 2026-06-09 | ✅ Release | PHASE 0 Complete |
 | 0.0.1 | 2026-06-08 | ✅ Initial | Project setup |
 

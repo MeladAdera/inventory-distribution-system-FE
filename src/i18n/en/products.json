@@ -1,0 +1,95 @@
+{
+  "page": {
+    "title": "Products",
+    "count": "{n} products",
+    "addProduct": "+ Add product"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Search name or SKU",
+    "allCategories": "All categories",
+    "allStatuses": "All statuses",
+    "export": "Export",
+    "categories": {
+      "bev": "Beverages",
+      "snk": "Snacks",
+      "dry": "Dairy",
+      "cln": "Cleaning",
+      "can": "Canned",
+      "bky": "Bakery"
+    },
+    "statuses": {
+      "in_stock": "In stock",
+      "low": "Low stock",
+      "out": "Out of stock",
+      "inactive": "Inactive"
+    }
+  },
+  "table": {
+    "num": "#",
+    "product": "Product",
+    "sku": "SKU",
+    "category": "Category",
+    "warehouseQty": "Warehouse qty",
+    "unitPrice": "Unit price",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "emptyState": {
+    "title": "No matching results",
+    "sub": "Try adjusting your search or filter to find what you're looking for.",
+    "addProduct": "+ Add product"
+  },
+  "pagination": {
+    "showing": "Showing {n} of {total}"
+  },
+  "form": {
+    "addTitle": "Add product",
+    "editTitle": "Edit product",
+    "save": "Save",
+    "cancel": "Cancel",
+    "image": "Product image",
+    "imageDrag": "Drag an image or click to upload",
+    "nameAr": "Arabic name",
+    "nameArPlaceholder": "e.g. Mineral Water 500ml",
+    "nameEn": "English name",
+    "nameEnPlaceholder": "e.g. Mineral Water 500ml",
+    "sku": "SKU",
+    "skuPlaceholder": "BVG-WTR-500",
+    "category": "Category",
+    "description": "Description",
+    "costPrice": "Cost price (AED)",
+    "pricePlaceholder": "0.00",
+    "sellPrice": "Selling price (AED)",
+    "initialQty": "Initial qty",
+    "qtyPlaceholder": "0",
+    "minStock": "Min stock",
+    "errNameAr": "Arabic name is required",
+    "errSku": "SKU is required",
+    "errSellPrice": "Selling price must be greater than 0",
+    "errQty": "Quantity is required"
+  },
+  "detail": {
+    "title": "Product details",
+    "warehouseQty": "WH Qty",
+    "minStock": "Min stock",
+    "costPrice": "Cost price",
+    "sellPrice": "Selling price",
+    "totalValue": "Total value",
+    "category": "Category",
+    "units": "{n} units"
+  },
+  "restock": {
+    "title": "Add stock",
+    "qtyLabel": "Quantity to add",
+    "currentQty": "Current qty",
+    "newTotal": "New total",
+    "addStock": "Add stock",
+    "cancel": "Cancel"
+  },
+  "delete": {
+    "title": "Confirm delete?",
+    "warning": "This action cannot be undone.",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  }
+}

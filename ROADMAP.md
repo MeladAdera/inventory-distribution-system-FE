@@ -414,13 +414,13 @@ A lightweight toast (success / error / info) shown after mutations.
 |----|------|----------------|--------|
 | FIGMA-001 | Admin Layout Shell | Sidebar, TopBar, NavDrawer, BottomNav, BottomSheet, i18n | `[x]` |
 | FIGMA-002 | Dashboard | 6× KPI cards, consumption trend chart, top-consumed bars, low-stock table, activity feed | `[x]` |
-| FIGMA-003 | Products | Data table, category filter, create/edit slide-over | `[ ]` |
+| FIGMA-003 | Products | Data table, category filter, 4 modals (add/edit/detail/restock/delete) | `[x]` |
 | FIGMA-004 | Clients (Shops) | Cards grid + table, status badge, edit drawer | `[ ]` |
 | FIGMA-005 | Transfers (نقل المخزون) | Timeline list, new transfer wizard, status stepper | `[ ]` |
 | FIGMA-006 | Shortages (نقص المخزون) | Low-stock table, restock request action | `[ ]` |
 | FIGMA-007 | Settings | Profile section, preferences, security | `[ ]` |
 
-**Docs:** `docs/features/admin-layout-shell.md` ✅  `docs/features/dashboard.md` ✅ — one doc per page as it completes.
+**Docs:** `docs/features/admin-layout-shell.md` ✅  `docs/features/dashboard.md` ✅  `docs/features/products.md` ✅ — one doc per page as it completes.
 
 ---
 
@@ -890,7 +890,7 @@ Apply to: Products, Inventory, Orders, Users, Shops, Categories, Notifications, 
 | 1 | 009–015 | ✅ Auth layer |
 | 2 | 016–021 | ✅ Feature scaffolds (types, API, hooks) |
 | 3 | 022–027 | ✅ Shared UI components (DataTable, Modal, Badge, Pagination, Toast) |
-| 3.5 | FIGMA-001–007 | 🔄 Figma UI shells — layout shell ✅, dashboard ✅, pages ⬜ |
+| 3.5 | FIGMA-001–007 | 🔄 Figma UI shells — layout shell ✅, dashboard ✅, products ✅, pages ⬜ |
 | 4 | 028 | Dashboard (API integration) |
 | 5 | 029–032 | Products CRUD |
 | 6 | 033–035 | Inventory management |
@@ -903,4 +903,4 @@ Apply to: Products, Inventory, Orders, Users, Shops, Categories, Notifications, 
 | 13 | 052–053 | Role-based UI |
 | 14 | 054–056 | Polish (skeletons, empty states, error pages) |
 
-**Total: 63 tickets** (56 original + 7 Figma) — 24 done, 39 remaining.
+**Total: 63 tickets** (56 original + 7 Figma) — 25 done, 38 remaining.

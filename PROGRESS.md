@@ -4,6 +4,77 @@ Real-time development progress and detailed work logs.
 
 ---
 
+## 📅 June 11, 2026 - FIGMA-003: Products Admin Page
+
+### Session
+**Focus**: Build the `/products` admin page — full CRUD UI shell with mock data  
+**Ticket**: FIGMA-003  
+**Version**: 0.6.0
+
+---
+
+### Tasks Completed
+
+1. ✅ **i18n** — Created `src/i18n/en/products.json` + `src/i18n/ar/products.json` with full AR/EN translations; wired into `src/i18n/index.ts`
+
+2. ✅ **Types & helpers** — Extended `products.types.ts` with `AdminProduct`, `ProductCategory`, `ProductStatus`, `getProductStatus()`, `CATEGORY_COLORS`
+
+3. ✅ **Validation schema** — Added `adminProductFormSchema` to `products.schema.ts` using `z.number()` + `valueAsNumber: true` (not `z.coerce.number()`)
+
+4. ✅ **Mock data** — Created `src/features/products/mock/productsData.ts` with 12 `MOCK_PRODUCTS`
+
+5. ✅ **`ProductThumb`** — Coloured square + Package icon; `size` prop scales icon proportionally
+
+6. ✅ **`StatusBadge`** — Dot + label pill; 4 statuses mapped to design tokens
+
+7. ✅ **`ProductsTableCard`** — Toolbar, 8-col CSS grid, skeleton shimmer, empty state, pagination. `HEADER_KEYS` constant for stable React keys; `ProductsT` type alias
+
+8. ✅ **`ProductFormModal`** — Add/edit, pre-fills via `reset()`, `valueAsNumber: true` on all number inputs, colour swatch preview
+
+9. ✅ **`ProductDetailModal`** — 6-row info card; computes total value live
+
+10. ✅ **`RestockModal`** — Stepper + before/after summary; locale-aware product name; RTL/LTR arrow
+
+11. ✅ **`DeleteConfirmModal`** — No backdrop close; danger delete button
+
+12. ✅ **`src/app/(dashboard)/products/page.tsx`** — Full state (products, isLoading, search, filters, page, modal discriminated union); `useMemo` filtering; 650ms skeleton; all CRUD handlers
+
+13. ✅ **`src/features/products/index.ts`** — Updated barrel export
+
+14. ✅ **`src/app/globals.css`** — Added `@keyframes shimmer` + `.skeleton-shimmer`
+
+---
+
+### Bugs Found & Fixed (post-implementation audit)
+
+| # | Location | Bug | Fix |
+|---|----------|-----|-----|
+| 1 | `RestockModal.tsx` | Hardcoded `product.name_ar` ignoring locale | `locale === 'ar' ? product.name_ar : product.name_en` |
+| 2 | `ProductsTableCard.tsx` | Translated strings used as React `key` (fragile) | Added `HEADER_KEYS` constant with stable string keys |
+| 3 | `ProductsTableCard.tsx` | Verbose `ReturnType<typeof useI18n>['t']['products']` repeated in 2 interfaces | Extracted as `type ProductsT = ...` at module level |
+
+---
+
+### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+✅ All Tailwind classes canonical (linter clean)
+```
+
+### Files Created/Modified
+| Type | Count |
+|------|-------|
+| New components | 7 |
+| New i18n files | 2 |
+| New mock/data | 1 |
+| Updated feature files | 3 (types, schema, index) |
+| Updated i18n index | 1 |
+| Updated globals.css | 1 |
+| New page | 1 |
+| New doc | 1 |
+
+---
+
 ## 📅 June 9, 2026 - PHASE 0 Completion
 
 ### Morning Session
