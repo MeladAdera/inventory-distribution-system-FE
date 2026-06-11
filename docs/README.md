@@ -85,9 +85,11 @@ Check `docs/api/` folder:
 | Authentication | [auth.md](features/auth.md) | ✅ PHASE 1 Complete |
 | Admin Layout Shell | [admin-layout-shell.md](features/admin-layout-shell.md) | ✅ FIGMA-001 Complete |
 | Dashboard | [dashboard.md](features/dashboard.md) | ✅ FIGMA-002 Complete |
-| Inventory | [inventory.md](features/inventory.md) | 📋 PHASE 2 |
-| Orders | [orders.md](features/orders.md) | 📋 PHASE 2 |
-| Products | [products.md](features/products.md) | 📋 PHASE 2 |
+| Products | [products.md](features/products.md) | ✅ FIGMA-003 Complete |
+| Clients | [clients.md](features/clients.md) | ✅ FIGMA-004 Complete |
+| Transfers | — | ⬜ FIGMA-005 Next |
+| Shortages | — | ⬜ FIGMA-006 Pending |
+| Settings | — | ⬜ FIGMA-007 Pending |
 
 ### API Documentation
 | Topic | Document | Status |
@@ -322,9 +324,9 @@ Instead use:
 
 ---
 
-**Last Updated**: June 9, 2026  
+**Last Updated**: June 11, 2026  
 **Maintainer**: Melad Adera  
-**Status**: PHASE 1 Authentication Complete
+**Status**: FIGMA-004 Clients Complete — Transfers (FIGMA-005) next
 
 For project overview, see **[PROJECT_STATUS.md](../PROJECT_STATUS.md)**  
 For recent updates, see **[UPDATES.md](../UPDATES.md)**  

@@ -1,0 +1,58 @@
+{
+  "page": {
+    "title": "العملاء",
+    "count": "{n} عميل",
+    "addClient": "+ إضافة عميل"
+  },
+  "toolbar": {
+    "searchPlaceholder": "بحث بالاسم أو الهاتف",
+    "allStatuses": "كل الحالات",
+    "export": "تصدير",
+    "statuses": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    }
+  },
+  "table": {
+    "num": "#",
+    "client": "العميل",
+    "phone": "الهاتف",
+    "address": "العنوان",
+    "products": "عدد المنتجات",
+    "lastActivity": "آخر نشاط",
+    "status": "الحالة",
+    "actions": "إجراءات"
+  },
+  "emptyState": {
+    "title": "لا توجد نتائج مطابقة",
+    "sub": "حاول تعديل البحث أو الفلتر للعثور على ما تبحث عنه.",
+    "addClient": "+ إضافة عميل"
+  },
+  "pagination": {
+    "showing": "عرض {n} من {total}"
+  },
+  "form": {
+    "addTitle": "إضافة عميل",
+    "editTitle": "تعديل العميل",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "nameAr": "الاسم بالعربية",
+    "nameArPlaceholder": "مثال: بقالة الواحة",
+    "nameEn": "الاسم بالإنجليزية",
+    "nameEnPlaceholder": "e.g. Al Waha Grocery",
+    "phone": "رقم الهاتف",
+    "phonePlaceholder": "05X XXX XXXX",
+    "address": "العنوان",
+    "addressPlaceholder": "المدينة / المنطقة",
+    "notes": "ملاحظات",
+    "credentialsBanner": "يقوم النظام بإنشاء بيانات الدخول تلقائياً.",
+    "errNameAr": "الاسم العربي مطلوب",
+    "errPhone": "رقم الهاتف مطلوب"
+  },
+  "delete": {
+    "title": "هل أنت متأكد من الحذف؟",
+    "warning": "لا يمكن التراجع عن هذا الإجراء.",
+    "delete": "حذف",
+    "cancel": "إلغاء"
+  }
+}

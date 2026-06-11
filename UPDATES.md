@@ -4,6 +4,34 @@ All changes documented chronologically with details.
 
 ---
 
+## [0.7.0] - 2026-06-11 - FIGMA-004: Clients Admin Page
+
+### Clients Page ✅
+
+#### Added
+- **`src/app/(dashboard)/clients/page.tsx`** — page with full CRUD state (add/edit/delete), search + status filter, pagination, discriminated-union modal routing
+- **`src/features/clients/components/ClientsTableCard.tsx`** — toolbar (name/phone search + status select + export), 8-column CSS grid table, skeleton shimmer, empty state, pagination; phone cell forced `ltr`
+- **`src/features/clients/components/ClientAvatar.tsx`** — 34px initials circle (`bg-ink-900`, `text-amber-500`); initials = first letter per word, max 2; font-size = 40% of size prop
+- **`src/features/clients/components/ClientStatusBadge.tsx`** — dot + label pill for active / inactive
+- **`src/features/clients/components/ClientFormModal.tsx`** — add/edit modal with React Hook Form + Zod; amber credentials info banner (`key-round` icon); fields: nameAr (required), nameEn, phone (required), address, notes
+- **`src/features/clients/components/ClientDeleteConfirmModal.tsx`** — danger confirm, intentionally no backdrop close
+- **`src/features/clients/mock/clientsData.ts`** — 6 `MOCK_CLIENTS` (5 active, 1 inactive) across 5 UAE cities
+
+#### Updated
+- **`src/features/clients/types/clients.types.ts`** — new file: `AdminClient`, `ClientStatus`
+- **`src/features/clients/validations/clients.schema.ts`** — new file: `clientFormSchema`, `ClientFormData`
+- **`src/features/clients/index.ts`** — barrel export
+- **`src/i18n/en/clients.json`** + **`src/i18n/ar/clients.json`** — full AR/EN translations for page, toolbar, table, form, delete modal
+- **`src/i18n/index.ts`** — wired `clients` translations into the typed i18n object
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+✅ All Tailwind classes canonical
+```
+
+---
+
 ## [0.6.0] - 2026-06-11 - FIGMA-003: Products Admin Page
 
 ### Products Page ✅
@@ -146,6 +174,7 @@ All changes documented chronologically with details.
 
 | Version | Date | Status | Highlights |
 |---------|------|--------|-----------|
+| 0.7.0 | 2026-06-11 | ✅ Release | FIGMA-004 Clients admin page |
 | 0.6.0 | 2026-06-11 | ✅ Release | FIGMA-003 Products admin page |
 | 0.5.0 | 2026-06-11 | ✅ Release | FIGMA-002 Dashboard page |
 | 0.4.0 | 2026-06-10 | ✅ Release | FIGMA-001 Admin layout shell |

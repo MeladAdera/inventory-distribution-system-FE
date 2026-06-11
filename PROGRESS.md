@@ -4,6 +4,60 @@ Real-time development progress and detailed work logs.
 
 ---
 
+## 📅 June 11, 2026 - FIGMA-004: Clients Admin Page
+
+### Session
+**Focus**: Build the `/clients` admin page — full CRUD UI shell with mock data  
+**Ticket**: FIGMA-004  
+**Version**: 0.7.0
+
+---
+
+### Tasks Completed
+
+1. ✅ **i18n** — Created `src/i18n/en/clients.json` + `src/i18n/ar/clients.json` with full AR/EN translations; wired into `src/i18n/index.ts`
+
+2. ✅ **Types** — Created `clients.types.ts` with `AdminClient` (id, name_ar, name_en, phone, city_ar, city_en, product_count, last_activity_ar/en, status, notes) and `ClientStatus`
+
+3. ✅ **Validation schema** — Created `clients.schema.ts` with `clientFormSchema`; `nameAr` and `phone` required; all others optional
+
+4. ✅ **Mock data** — Created `src/features/clients/mock/clientsData.ts` with 6 `MOCK_CLIENTS` covering 5 UAE cities (Dubai, Sharjah, Al Ain, Abu Dhabi, Ajman), 5 active + 1 inactive
+
+5. ✅ **`ClientAvatar`** — 34px circle, `bg-ink-900` / `text-amber-500`; initials extracted as first letter of each word (max 2); font-size scales at 40% of size prop
+
+6. ✅ **`ClientStatusBadge`** — dot + label pill; active → `success-100/700`, inactive → `ink-200/400`
+
+7. ✅ **`ClientsTableCard`** — Toolbar (search name/phone + status select + export), 8-col CSS grid `40px 2fr 1.2fr 1fr 1fr 1fr 1fr 120px`, skeleton shimmer, empty state, pagination; phone cell forced `dir="ltr"` in both locales
+
+8. ✅ **`ClientFormModal`** — Add/edit; 4 fields (nameAr required, nameEn, phone required, address) + notes textarea + amber credentials info banner with `key-round` icon
+
+9. ✅ **`ClientDeleteConfirmModal`** — No backdrop close; danger delete button; mirrors products pattern
+
+10. ✅ **`src/app/(dashboard)/clients/page.tsx`** — Full state (clients, isLoading, search, statusFilter, page, modal discriminated union); `useMemo` filtering; 650ms skeleton; all CRUD handlers; `UserPlus` icon on add button
+
+11. ✅ **`src/features/clients/index.ts`** — Barrel export
+
+---
+
+### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+✅ All Tailwind classes canonical
+```
+
+### Files Created/Modified
+| Type | Count |
+|------|-------|
+| New components | 5 |
+| New i18n files | 2 |
+| New mock/data | 1 |
+| New feature files | 3 (types, schema, index) |
+| Updated i18n index | 1 |
+| New page | 1 |
+| New doc | 1 |
+
+---
+
 ## 📅 June 11, 2026 - FIGMA-003: Products Admin Page
 
 ### Session

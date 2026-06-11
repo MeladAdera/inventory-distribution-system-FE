@@ -1,0 +1,58 @@
+{
+  "page": {
+    "title": "Clients",
+    "count": "{n} clients",
+    "addClient": "+ Add client"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Search name or phone",
+    "allStatuses": "All statuses",
+    "export": "Export",
+    "statuses": {
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "table": {
+    "num": "#",
+    "client": "Client",
+    "phone": "Phone",
+    "address": "Address",
+    "products": "Products",
+    "lastActivity": "Last activity",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "emptyState": {
+    "title": "No matching results",
+    "sub": "Try adjusting your search or filter to find what you're looking for.",
+    "addClient": "+ Add client"
+  },
+  "pagination": {
+    "showing": "Showing {n} of {total}"
+  },
+  "form": {
+    "addTitle": "Add client",
+    "editTitle": "Edit client",
+    "save": "Save",
+    "cancel": "Cancel",
+    "nameAr": "Arabic name",
+    "nameArPlaceholder": "e.g. Al Waha Grocery",
+    "nameEn": "English name",
+    "nameEnPlaceholder": "e.g. Al Waha Grocery",
+    "phone": "Phone number",
+    "phonePlaceholder": "05X XXX XXXX",
+    "address": "Address",
+    "addressPlaceholder": "City / District",
+    "notes": "Notes",
+    "credentialsBanner": "Login credentials are generated automatically.",
+    "errNameAr": "Arabic name is required",
+    "errPhone": "Phone number is required"
+  },
+  "delete": {
+    "title": "Confirm delete?",
+    "warning": "This action cannot be undone.",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  }
+}
