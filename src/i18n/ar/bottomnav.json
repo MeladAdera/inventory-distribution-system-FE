@@ -4,6 +4,13 @@
     "products": "المنتجات",
     "clients": "العملاء",
     "transfers": "النقل",
+    "shortages": "النقص",
     "more": "المزيد"
+  },
+  "sheet": {
+    "transfers": "نقل المخزون",
+    "settings": "الإعدادات",
+    "clientPortal": "بوابة العميل",
+    "logout": "تسجيل الخروج"
   }
 }

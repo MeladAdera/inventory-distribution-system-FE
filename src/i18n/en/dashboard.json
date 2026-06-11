@@ -1,0 +1,42 @@
+{
+  "header": {
+    "eyebrow": "Overview",
+    "greeting": "Good morning, Salem.",
+    "subtitle": "Latakia Warehouse · 5 products need replenishment today.",
+    "newTransfer": "New transfer"
+  },
+  "kpi": {
+    "totalProducts": "Total products",
+    "totalProductsSub": "Across 6 categories",
+    "totalClients": "Total clients",
+    "totalClientsSub": "5 active",
+    "stockValue": "Stock value",
+    "stockValueSub": "At selling price",
+    "runningLow": "Running low",
+    "runningLowSub": "Need replenishment",
+    "todayUsage": "Today's usage",
+    "todayUsageSub": "units across clients",
+    "monthlyUsage": "Monthly usage",
+    "monthlyUsageSub": "May 2026"
+  },
+  "charts": {
+    "consumptionTrend": "Consumption Trend",
+    "topConsumed": "Top Consumed",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "today": "Today"
+  },
+  "lowStock": {
+    "title": "Low Stock Alerts",
+    "viewAll": "View all →",
+    "colProduct": "Product",
+    "colClient": "Client",
+    "colRemaining": "Remaining",
+    "colMin": "Min",
+    "replenish": "Replenish"
+  },
+  "activity": {
+    "title": "Recent Activity"
+  }
+}

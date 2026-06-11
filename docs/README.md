@@ -83,6 +83,8 @@ Check `docs/api/` folder:
 | Feature | Document | Status |
 |---------|----------|--------|
 | Authentication | [auth.md](features/auth.md) | ✅ PHASE 1 Complete |
+| Admin Layout Shell | [admin-layout-shell.md](features/admin-layout-shell.md) | ✅ FIGMA-001 Complete |
+| Dashboard | [dashboard.md](features/dashboard.md) | ✅ FIGMA-002 Complete |
 | Inventory | [inventory.md](features/inventory.md) | 📋 PHASE 2 |
 | Orders | [orders.md](features/orders.md) | 📋 PHASE 2 |
 | Products | [products.md](features/products.md) | 📋 PHASE 2 |

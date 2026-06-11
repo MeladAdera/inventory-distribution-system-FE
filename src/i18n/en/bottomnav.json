@@ -4,6 +4,13 @@
     "products": "Products",
     "clients": "Clients",
     "transfers": "Transfers",
+    "shortages": "Shortages",
     "more": "More"
+  },
+  "sheet": {
+    "transfers": "Stock Transfer",
+    "settings": "Settings",
+    "clientPortal": "Client Portal",
+    "logout": "Log out"
   }
 }

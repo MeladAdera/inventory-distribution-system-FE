@@ -82,7 +82,7 @@ export function TopBar({ onMenuClick }: TopBarProps) {
       {/* Hamburger — tablet + mobile only */}
       <button
         onClick={onMenuClick}
-        className="lg:hidden p-2.5 rounded-lg text-ink-800 hover:bg-sand-100 transition-colors"
+        className="hidden md:block lg:hidden p-2.5 rounded-lg text-ink-800 hover:bg-sand-100 transition-colors"
         aria-label={t.topbar.menuLabel}
       >
         <Menu size={22} />
@@ -183,8 +183,8 @@ export function TopBar({ onMenuClick }: TopBarProps) {
           )}
         </div>
 
-        {/* Avatar button */}
-        <div className="relative" ref={avatarRef}>
+        {/* Avatar button — hidden on mobile (user info lives in the More sheet) */}
+        <div className="relative hidden md:block" ref={avatarRef}>
           <button
             onClick={() => {
               setAvatarOpen((v) => !v);

@@ -23,7 +23,7 @@ export function BottomNav({ onMoreClick }: BottomNavProps) {
   const nav = t.bottomnav.nav as Record<string, string>;
 
   return (
-    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-paper border-t border-border h-14 flex items-stretch">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-paper border-t border-border h-14 flex items-stretch">
       {NAV_ITEMS.map((item) => {
         const active = pathname === item.href || pathname.startsWith(item.href + '/');
         const Icon = item.icon;

@@ -16,21 +16,21 @@ export function NavDrawer({ open, onClose }: NavDrawerProps) {
 
   return (
     <>
-      {/* Scrim */}
+      {/* Scrim — tablet only */}
       {open && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-ink-900/30 backdrop-blur-[2px]"
+          className="hidden md:block lg:hidden fixed inset-0 z-40 bg-ink-900/30 backdrop-blur-[2px]"
           onClick={onClose}
         />
       )}
 
-      {/* Drawer panel */}
+      {/* Drawer panel — tablet only */}
       <div
         className={cn(
-          'lg:hidden fixed top-0 z-50 h-screen w-70 max-w-[85vw]',
+          'hidden md:block lg:hidden fixed top-0 z-50 h-screen w-70 max-w-[85vw]',
           'transition-transform duration-220 ease-[cubic-bezier(0.2,0,0,1)]',
           isRtl ? 'right-0' : 'left-0',
-          open ? 'translate-x-0' : isRtl ? 'translate-x-10' : '-translate-x-10'
+          open ? 'translate-x-0' : isRtl ? 'translate-x-full' : '-translate-x-full'
         )}
       >
         {/* Close button overlay */}

@@ -1,0 +1,42 @@
+{
+  "header": {
+    "eyebrow": "نظرة عامة",
+    "greeting": "صباح الخير، يامن.",
+    "subtitle": "مستودع اللاذقية · ٥ منتجات بحاجة إلى تعبئة اليوم.",
+    "newTransfer": "نقل جديد"
+  },
+  "kpi": {
+    "totalProducts": "إجمالي المنتجات",
+    "totalProductsSub": "عبر ٦ فئات",
+    "totalClients": "إجمالي العملاء",
+    "totalClientsSub": "٥ نشطون",
+    "stockValue": "قيمة المخزون",
+    "stockValueSub": "سعر البيع",
+    "runningLow": "منتجات منخفضة",
+    "runningLowSub": "بحاجة إلى تعبئة",
+    "todayUsage": "استهلاك اليوم",
+    "todayUsageSub": "وحدة عبر العملاء",
+    "monthlyUsage": "استهلاك الشهر",
+    "monthlyUsageSub": "مايو ٢٠٢٦"
+  },
+  "charts": {
+    "consumptionTrend": "اتجاه الاستهلاك",
+    "topConsumed": "الأكثر استهلاكاً",
+    "daily": "يومي",
+    "weekly": "أسبوعي",
+    "monthly": "شهري",
+    "today": "اليوم"
+  },
+  "lowStock": {
+    "title": "تنبيهات نقص المخزون",
+    "viewAll": "← عرض الكل",
+    "colProduct": "المنتج",
+    "colClient": "العميل",
+    "colRemaining": "الكمية المتبقية",
+    "colMin": "الحد الأدنى",
+    "replenish": "نقل مخزون"
+  },
+  "activity": {
+    "title": "النشاط الأخير"
+  }
+}
