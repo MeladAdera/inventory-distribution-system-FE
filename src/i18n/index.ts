@@ -5,6 +5,7 @@ import dashboardEn from './en/dashboard.json';
 import productsEn from './en/products.json';
 import clientsEn from './en/clients.json';
 import transfersEn from './en/transfers.json';
+import shortagesEn from './en/shortages.json';
 import sidebarAr from './ar/sidebar.json';
 import topbarAr from './ar/topbar.json';
 import bottomnavAr from './ar/bottomnav.json';
@@ -12,6 +13,7 @@ import dashboardAr from './ar/dashboard.json';
 import productsAr from './ar/products.json';
 import clientsAr from './ar/clients.json';
 import transfersAr from './ar/transfers.json';
+import shortagesAr from './ar/shortages.json';
 
 export type Locale = 'ar' | 'en';
 
@@ -24,6 +26,7 @@ export const translations = {
     products: productsEn,
     clients: clientsEn,
     transfers: transfersEn,
+    shortages: shortagesEn,
   },
   ar: {
     sidebar: sidebarAr,
@@ -33,6 +36,7 @@ export const translations = {
     products: productsAr,
     clients: clientsAr,
     transfers: transfersAr,
+    shortages: shortagesAr,
   },
 } as const;
 

@@ -88,7 +88,7 @@ Check `docs/api/` folder:
 | Products | [products.md](features/products.md) | ✅ FIGMA-003 Complete |
 | Clients | [clients.md](features/clients.md) | ✅ FIGMA-004 Complete |
 | Transfers | [transfers.md](features/transfers.md) | ✅ FIGMA-005 Complete |
-| Shortages | — | ⬜ FIGMA-006 Pending |
+| Shortages | [shortages.md](features/shortages.md) | ✅ FIGMA-006 Complete |
 | Settings | — | ⬜ FIGMA-007 Pending |
 
 ### API Documentation
@@ -326,7 +326,7 @@ Instead use:
 
 **Last Updated**: June 14, 2026  
 **Maintainer**: Melad Adera  
-**Status**: FIGMA-005 Transfers Complete — Shortages (FIGMA-006) next
+**Status**: FIGMA-006 Shortages Complete — Settings (FIGMA-007) next
 
 For project overview, see **[PROJECT_STATUS.md](../PROJECT_STATUS.md)**  
 For recent updates, see **[UPDATES.md](../UPDATES.md)**  

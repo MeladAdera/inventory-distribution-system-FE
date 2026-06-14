@@ -47,7 +47,7 @@ Backend API is complete. Replacing mock data with real API calls page by page.
 | Products page | 8-col grid table, 4 modals (add/edit/detail/restock/delete), search/filter, skeleton | ✅ Complete |
 | Clients page | 8-col grid table, 3 modals (add/edit/delete), ClientAvatar, StatusBadge, search/filter | ✅ Complete |
 | Transfers page | 6-col table, client/product filters, TransferModal with availability banner, mobile cards | ✅ Complete |
-| Shortages page | Low-stock list, restock action | ⬜ Not started |
+| Shortages page | Summary strip (out/low counts), 7-col table, status/client filters, replenish → TransferModal prefill | ✅ Complete |
 | Settings page | Profile, preferences | ⬜ Not started |
 
 ---
@@ -110,6 +110,7 @@ src/features/
 ├── products/      ✅ Complete (types + API + hooks + components + page + modals + mock)
 ├── clients/       ✅ Complete (types + validations + components + page + modals + mock)
 ├── transfers/     ✅ Complete (types + components + page + modal + mock)
+├── shortages/     ✅ Complete (types + components + page + mock)
 ├── orders/        🔧 Scaffold fixed (no page yet)
 ├── inventory/     🔧 Scaffold fixed (no page yet)
 ├── categories/    ✅ Scaffold + hook working (non-paginated; WAREHOUSE_ADMIN filtered by shopId)
@@ -165,5 +166,5 @@ Backend runs on port 3000. Frontend dev server on port 3001.
 
 ---
 
-**Last Commit**: feat(transfers): implement Transfers admin page (FIGMA-005)  
-**Next Up**: Shortages page (FIGMA-006)
+**Last Commit**: feat(shortages): implement Shortages admin page (FIGMA-006)  
+**Next Up**: Settings page (FIGMA-007)

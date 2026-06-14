@@ -1,0 +1,35 @@
+{
+  "page": {
+    "title": "Shortages",
+    "subtitle": "Clients whose stock has dropped below the minimum."
+  },
+  "summary": {
+    "outOfStock": "Out of stock",
+    "lowStock": "Low stock"
+  },
+  "toolbar": {
+    "allClients": "All clients",
+    "allStatuses": "All statuses",
+    "statusLow": "Low stock",
+    "statusOut": "Out of stock",
+    "export": "Export"
+  },
+  "table": {
+    "client": "Client",
+    "product": "Product",
+    "remaining": "Remaining qty",
+    "minLevel": "Min level",
+    "status": "Status",
+    "suggested": "Suggested refill",
+    "actions": ""
+  },
+  "status": {
+    "low": "Low stock",
+    "out": "Out of stock"
+  },
+  "emptyState": {
+    "title": "No shortages",
+    "sub": "All clients are within safe levels."
+  },
+  "replenish": "Replenish"
+}

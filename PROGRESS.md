@@ -4,6 +4,63 @@ Real-time development progress and detailed work logs.
 
 ---
 
+## 📅 June 14, 2026 - FIGMA-006: Shortages Admin Page
+
+### Session
+**Focus**: Build the `/shortages` admin page — summary strip, shortage table, replenish → TransferModal prefill flow  
+**Ticket**: FIGMA-006  
+**Version**: 0.9.1
+
+---
+
+### Tasks Completed
+
+1. ✅ **i18n** — Created `src/i18n/en/shortages.json` + `src/i18n/ar/shortages.json`; wired into `src/i18n/index.ts`
+
+2. ✅ **Types** — Created `shortages.types.ts` with `Shortage`, `ShortageClient`, `ShortageStatus`
+
+3. ✅ **Mock data** — Created `shortagesData.ts` with `MOCK_SHORTAGES` (5 records: 2 out, 3 low) and `MOCK_SHORTAGE_CLIENTS` (6 clients)
+
+4. ✅ **`ShortageStatusBadge`** (module-private) — danger pill (out) / warning pill (low) with dot + label
+
+5. ✅ **`ShortagesTableCard`** — Toolbar (client select 180px + status select 160px + export), 7-col CSS grid `1.6fr 1.8fr 1fr 1fr 1.1fr 1.1fr 130px`, 5 skeleton rows, PartyPopper empty state (no button — good news!), mobile stacked cards; replenish button opens TransferModal
+
+6. ✅ **`src/app/(dashboard)/shortages/page.tsx`** — Summary strip with 2 stat boxes (out-of-stock danger border `#F6DDDB`, low-stock warning border `#FAEACB`); counts use `font-serif text-[22px]`; `useMemo` filtering; replenish → sets `TransferPrefill` (client_id, product_id, suggested qty) and opens `TransferModal`; on save → toast + close
+
+7. ✅ **`src/features/shortages/index.ts`** — Barrel export
+
+8. ✅ **`docs/features/shortages.md`** — Full feature doc
+
+---
+
+### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+✅ npx next build  — /shortages route listed
+```
+
+### Files Created
+| File | Description |
+|------|-------------|
+| `src/i18n/en/shortages.json` | English translations |
+| `src/i18n/ar/shortages.json` | Arabic translations |
+| `src/features/shortages/types/shortages.types.ts` | 3 types |
+| `src/features/shortages/mock/shortagesData.ts` | 5 shortages, 6 clients |
+| `src/features/shortages/components/ShortagesTableCard.tsx` | Table card component |
+| `src/features/shortages/index.ts` | Barrel export |
+| `src/app/(dashboard)/shortages/page.tsx` | Page route |
+| `docs/features/shortages.md` | Feature documentation |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/i18n/index.ts` | Added shortages EN + AR imports and entries |
+| `docs/README.md` | Marked FIGMA-006 complete, linked doc |
+| `PROJECT_STATUS.md` | Marked Shortages complete |
+| `PROGRESS.md` | Added this session |
+
+---
+
 ## 📅 June 14, 2026 - FIGMA-005: Transfers Admin Page
 
 ### Session
