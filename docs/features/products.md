@@ -17,6 +17,7 @@ The Products admin page (`/products`) is the primary interface for warehouse man
 - Single-screen product management: create, view detail, edit, restock, delete
 - Live `current_quantity` fetched per-product when the detail modal opens
 - Source filter (WAREHOUSE / LOCAL) via `GET /products?source=`
+- Category filter via `GET /products?category_name=` — dropdown populated from live categories
 - Bilingual (AR/EN) with full RTL/LTR layout support
 
 ---
@@ -77,7 +78,7 @@ src/i18n/ar/products.json               # Arabic translations
 | `page` | number | Default 1 |
 | `limit` | number | Default 10, max 100 |
 | `source` | `WAREHOUSE \| LOCAL` | Exposed in toolbar dropdown |
-| `category_name` | string | Case-insensitive substring — typed but not yet in toolbar UI |
+| `category_name` | string | Case-insensitive substring — exposed in toolbar category dropdown |
 | `shop_id` | number | Admin only |
 | `is_active` | boolean | `false` includes soft-deleted — not yet in toolbar UI |
 | `stock_status` | `OUT_OF_STOCK \| LOW_STOCK \| HIGH_STOCK` | Not yet in toolbar UI |
@@ -135,10 +136,10 @@ interface ProductListParams {
 ```
 page.tsx
   │
-  ├── useProducts({ page, limit, search, source })    ← list + mutations
-  ├── useCategories({ shopId? })                        ← dropdown in ProductFormModal
+  ├── useProducts({ page, limit, search, source, category_name })  ← list + mutations
+  ├── useCategories({ shopId? })     ← toolbar category filter + ProductFormModal dropdown
   │     WAREHOUSE_ADMIN: shopId from authStore → GET /categories?shopId=X
-  ├── search / sourceFilter / page  ← useState; search/source reset page to 1
+  ├── search / sourceFilter / categoryFilter / page  ← useState; all three reset page to 1
   └── modal: ModalState             ← 'none' | 'add' | 'edit' | 'view' | 'restock' | 'delete'
 
 ProductDetailModal
@@ -198,10 +199,10 @@ useProduct(open && product ? product.id : null)
 
 | Gap | Location | Impact | Fix Ticket |
 |-----|----------|--------|------------|
-| Search field ignored by backend | Toolbar → `ProductListParams.search` | Typing in search has no effect | Need backend `search` param or replace with `category_name` filter |
+| Search field ignored by backend | Toolbar → `ProductListParams.search` | Typing in search has no effect | Need backend `search` param |
 | Edit form only sends `{name, description, price}` | `ProductFormModal.tsx:74` | Barcode and category changes on edit are not saved | Fix `onSubmit` to include `barcode` and `category_id` |
 | No error feedback on failed mutations | `page.tsx` handlers | Silent failure on API errors | Add toast on mutation `.catch()` |
-| `category_name`, `is_active`, `stock_status` filters not in UI | `ProductListParams` has them, toolbar doesn't | Advanced filtering not accessible | Add filter controls to toolbar |
+| `is_active`, `stock_status` filters not in UI | `ProductListParams` has them, toolbar doesn't | Advanced filtering not accessible | Add filter controls to toolbar |
 
 ---
 
@@ -220,7 +221,7 @@ Both `src/i18n/en/products.json` and `src/i18n/ar/products.json` cover:
 
 ```
 products.page.{title, count, addProduct}
-products.toolbar.{searchPlaceholder, allSources, allStatuses, export, sources.*, statuses.*}
+products.toolbar.{searchPlaceholder, allCategories, allSources, allStatuses, export, sources.*, statuses.*}
 products.table.{num, product, barcode, category, price, source, status, actions}
 products.emptyState.{title, sub, addProduct}
 products.pagination.{showing}
@@ -238,6 +239,7 @@ products.delete.{title, warning, delete, cancel}
 
 - [x] Table renders live products from `GET /products` with correct columns
 - [x] Source filter (WAREHOUSE / LOCAL) passes `source` param to API
+- [x] Category filter dropdown passes `category_name` param to API; resets page to 1 on change
 - [x] Pagination: page/limit sent to API; total from response drives page count
 - [x] Skeleton shimmer shows while `isLoading`
 - [x] Empty state shown when `products.length === 0`

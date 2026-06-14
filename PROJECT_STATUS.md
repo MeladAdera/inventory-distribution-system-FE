@@ -22,7 +22,7 @@ Backend API is complete. Replacing mock data with real API calls page by page.
 
 | Page | Description | Status |
 |------|-------------|--------|
-| Products | `useProducts` + `useProduct(id)` hooks wired; all 4 modals hit real endpoints; category dropdown + product create bugfixes applied | ✅ Complete (2 gaps remaining) |
+| Products | `useProducts` + `useProduct(id)` hooks wired; all 4 modals hit real endpoints; category filter in toolbar; bugfixes applied | ✅ Complete (2 gaps remaining) |
 | Clients | Still on mock data | ⬜ Next |
 | Dashboard | Still on mock data | ⬜ Pending |
 
@@ -30,8 +30,9 @@ Backend API is complete. Replacing mock data with real API calls page by page.
 | Gap | Status |
 |-----|--------|
 | Search field (backend has no name search param for products) | ⬜ Open |
-| Edit form drops barcode + category_id changes | ⬜ Open — fix in progress |
+| Edit form drops barcode + category_id changes | ⬜ Open |
 | No error toast on failed mutations | ⬜ Open |
+| Category filter by name | ✅ Done — toolbar dropdown, resets page on change |
 
 ---
 
@@ -163,5 +164,5 @@ Backend runs on port 3000. Frontend dev server on port 3001.
 
 ---
 
-**Last Commit**: fix(products/categories): Category dropdown 400 + empty dropdown + shop_id on create  
+**Last Commit**: feat(products): add category filter dropdown to products toolbar  
 **Next Up**: Fix edit form (barcode + category_id), add error toasts, then Clients API integration
