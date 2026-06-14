@@ -68,7 +68,7 @@ src/i18n/ar/products.json               # Arabic translations
 | Update product | PATCH | `/products/:id` | `useProducts().updateProduct` |
 | Soft-delete product | DELETE | `/products/:id` | `useProducts().deleteProduct` |
 | Add stock | POST | `/inventory/stock-in` | `inventoryApi.stockIn` (direct) |
-| Category dropdown | GET | `/categories?page=1&limit=100` | `useCategories()` |
+| Category dropdown | GET | `/categories` (+ `?shopId=X` for WAREHOUSE_ADMIN) | `useCategories({ shopId? })` |
 
 ### Supported Query Params (`GET /products`)
 
@@ -136,7 +136,8 @@ interface ProductListParams {
 page.tsx
   │
   ├── useProducts({ page, limit, search, source })    ← list + mutations
-  ├── useCategories()                                  ← dropdown in ProductFormModal
+  ├── useCategories({ shopId? })                        ← dropdown in ProductFormModal
+  │     WAREHOUSE_ADMIN: shopId from authStore → GET /categories?shopId=X
   ├── search / sourceFilter / page  ← useState; search/source reset page to 1
   └── modal: ModalState             ← 'none' | 'add' | 'edit' | 'view' | 'restock' | 'delete'
 
@@ -246,7 +247,7 @@ products.delete.{title, warning, delete, cancel}
 - [x] Detail modal fetches `GET /products/:id`; shows `current_quantity` with loading skeleton
 - [x] Restock calls `POST /inventory/stock-in`
 - [x] Delete calls `DELETE /products/:id`; invalidates query on success
-- [x] Category dropdown populated from `GET /categories` (fixed: sends `page=1&limit=100`)
+- [x] Category dropdown populated from `GET /categories`; WAREHOUSE_ADMIN passes `?shopId=X` from auth store
 - [x] All text switches AR ↔ EN on locale toggle
 - [x] `npx tsc --noEmit` passes with zero errors
 - [ ] Search field works against backend (backend gap)

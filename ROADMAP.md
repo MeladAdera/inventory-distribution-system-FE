@@ -509,12 +509,14 @@ src/features/products/components/ProductsTableCard.tsx
 
 ---
 
-### Categories Fix (applied during Phase 5)
+### Categories + Product Create Bugfixes (applied 2026-06-14)
 
-**File:** `src/features/categories/api/categories.api.ts`, `hooks/useCategories.ts`
+**Files:** `categories/api/categories.api.ts`, `categories/hooks/useCategories.ts`, `auth/types/auth.types.ts`, `auth/utils/token.utils.ts`, `products/page.tsx`
 
-- Fixed: `GET /categories` returned 400 because NestJS `ParseIntPipe` requires `page`/`limit` to be explicit numbers. Fix: always send `page: 1, limit: 100` as defaults.
-- Fixed: response type was `ApiResponse<Category[]>` but backend returns `ApiResponse<PaginatedResponse<Category>>`. Updated type + unwrapping to `.data?.data?.data`.
+- Fixed: `GET /categories` 400 — removed hardcoded `page: 1, limit: 100` params; backend endpoint is non-paginated and rejected them.
+- Fixed: category dropdown always empty — response type was `ApiResponse<PaginatedResponse<Category>>` (wrong); backend returns `ApiResponse<Category[]>`. Accessor corrected from `.data?.data?.data` → `.data?.data`.
+- Fixed: `shopId` added to `RequestUser` type — was in the JWT but silently dropped by the TypeScript interface.
+- Fixed: `POST /products` 400 for WAREHOUSE_ADMIN — `handleAdd` now passes `shop_id` from the auth store (with JWT-decode fallback via `tokenUtils.getShopId()`). Backend requires `?shop_id=X` when the caller is a warehouse admin.
 
 ---
 

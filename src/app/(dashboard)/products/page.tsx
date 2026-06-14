@@ -5,6 +5,9 @@ import { Plus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useProducts } from '@/features/products/hooks/useProducts';
 import { useCategories } from '@/features/categories/hooks/useCategories';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import { UserRole } from '@/features/auth/types/enums';
+import { tokenUtils } from '@/features/auth/utils/token.utils';
 import { inventoryApi } from '@/features/inventory/api/inventory.api';
 import { ProductsTableCard } from '@/features/products/components/ProductsTableCard';
 import { ProductFormModal } from '@/features/products/components/ProductFormModal';
@@ -48,12 +51,15 @@ export default function ProductsPage() {
     source: (sourceFilter as Product['source']) || undefined,
   });
 
-  const { categories } = useCategories();
+  const { user } = useAuthStore();
+  const categoryShopId = user?.role === UserRole.WAREHOUSE_ADMIN ? user.shopId : undefined;
+  const { categories } = useCategories(categoryShopId ? { shopId: categoryShopId } : undefined);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
   const handleAdd = async (input: CreateProductInput) => {
-    await createProduct({ data: input });
+    const shop_id = user?.shopId ?? tokenUtils.getShopId();
+    await createProduct({ data: input, shop_id });
   };
 
   const handleEdit = async (id: number, input: UpdateProductInput) => {

@@ -8,12 +8,12 @@ import type {
   CreateCategoryInput,
   UpdateCategoryInput,
 } from '../types/categories.types';
-import type { ApiResponse, PaginatedResponse } from '@/common/types/api.types';
+import type { ApiResponse } from '@/common/types/api.types';
 
 export function useCategories(params?: CategoryListParams) {
   const queryClient = useQueryClient();
 
-  const listQuery = useQuery<ApiResponse<PaginatedResponse<Category>>>({
+  const listQuery = useQuery<ApiResponse<Category[]>>({
     queryKey: ['categories', params],
     queryFn: () => categoriesApi.list(params),
   });
@@ -36,7 +36,7 @@ export function useCategories(params?: CategoryListParams) {
   });
 
   return {
-    categories: listQuery.data?.data?.data ?? [],
+    categories: listQuery.data?.data ?? [],
     isLoading: listQuery.isLoading,
     error: listQuery.error,
     createCategory: createMutation.mutateAsync,

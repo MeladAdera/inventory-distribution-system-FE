@@ -6,6 +6,7 @@ export interface RequestUser {
   email: string;
   name: string;
   role: UserRole;
+  shopId?: number;
   createdAt: string;
 }
 

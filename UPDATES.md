@@ -4,6 +4,30 @@ All changes documented chronologically with details.
 
 ---
 
+## [0.8.1] - 2026-06-14 - Category Dropdown & Product Create Bugfixes
+
+### Bug Fixes
+
+#### Bug 1 — `GET /categories` returned 400 (wrong query params)
+- **`categories.api.ts`** — removed hardcoded `page: 1, limit: 100` defaults from `list()`. The backend `/categories` endpoint is non-paginated and rejected those params with "Validation failed (numeric string is expected)". Now passes only `params` as-is.
+
+#### Bug 2 — Category dropdown always empty (wrong response type + accessor)
+- **`useCategories.ts`** — corrected query type from `ApiResponse<PaginatedResponse<Category>>` to `ApiResponse<Category[]>` (backend returns a flat array, not a paginated wrapper). Fixed unwrap accessor from `.data?.data?.data` (one level too deep) to `.data?.data`. Removed unused `PaginatedResponse` import.
+
+#### Bug 3 — `shopId` missing from auth store
+- **`auth/types/auth.types.ts`** — added `shopId?: number` to `RequestUser`. The JWT payload includes `shopId` but the TypeScript interface didn't declare it, so it was silently dropped when the user was stored on login.
+
+#### Bug 4 — `POST /products` returned 400 for WAREHOUSE_ADMIN (missing `shop_id`)
+- **`auth/utils/token.utils.ts`** — added `getShopId()` utility that decodes `shopId` directly from the JWT cookie, providing a reliable fallback even if the login response body doesn't include it.
+- **`products/page.tsx`** — `handleAdd` now passes `shop_id: user?.shopId ?? tokenUtils.getShopId()` to `createProduct`. WAREHOUSE_ADMIN requires `?shop_id=X` on the create endpoint; without it the backend had no shop context and returned 400.
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
 ## [0.8.0] - 2026-06-14 - Products API Integration + Categories Fix
 
 ### Products Page — Real API Wired ✅

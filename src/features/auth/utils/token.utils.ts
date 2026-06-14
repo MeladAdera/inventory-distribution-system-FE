@@ -33,4 +33,15 @@ export const tokenUtils = {
       return true;
     }
   },
+
+  getShopId: (): number | undefined => {
+    try {
+      const token = readCookie('auth_token');
+      if (!token) return undefined;
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return typeof payload.shopId === 'number' ? payload.shopId : undefined;
+    } catch {
+      return undefined;
+    }
+  },
 };

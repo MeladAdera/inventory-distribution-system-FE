@@ -22,7 +22,7 @@ Backend API is complete. Replacing mock data with real API calls page by page.
 
 | Page | Description | Status |
 |------|-------------|--------|
-| Products | `useProducts` + `useProduct(id)` hooks wired; all 4 modals hit real endpoints; categories dropdown fixed | ✅ Complete (2 gaps remaining) |
+| Products | `useProducts` + `useProduct(id)` hooks wired; all 4 modals hit real endpoints; category dropdown + product create bugfixes applied | ✅ Complete (2 gaps remaining) |
 | Clients | Still on mock data | ⬜ Next |
 | Dashboard | Still on mock data | ⬜ Pending |
 
@@ -110,7 +110,7 @@ src/features/
 ├── clients/       ✅ Complete (types + validations + components + page + modals + mock)
 ├── orders/        🔧 Scaffold fixed (no page yet)
 ├── inventory/     🔧 Scaffold fixed (no page yet)
-├── categories/    ✅ Scaffold + hook working (GET /categories fixed with pagination defaults)
+├── categories/    ✅ Scaffold + hook working (non-paginated; WAREHOUSE_ADMIN filtered by shopId)
 ├── shops/         ⬜ Not started
 ├── notifications/ ⬜ Not started
 └── audit-logs/    ⬜ Not started
@@ -163,5 +163,5 @@ Backend runs on port 3000. Frontend dev server on port 3001.
 
 ---
 
-**Last Commit**: feat(api/products): Wire Products page to real backend — useProducts, useProduct, categories fix  
+**Last Commit**: fix(products/categories): Category dropdown 400 + empty dropdown + shop_id on create  
 **Next Up**: Fix edit form (barcode + category_id), add error toasts, then Clients API integration
