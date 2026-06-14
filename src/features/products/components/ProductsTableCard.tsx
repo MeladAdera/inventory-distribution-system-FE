@@ -17,6 +17,7 @@ import { cn } from '@/common/utils/cn';
 import { ProductThumb } from './ProductThumb';
 import { StatusBadge } from './StatusBadge';
 import type { Product, ProductSource } from '../types/products.types';
+import type { Category } from '@/features/categories/types/categories.types';
 
 const GRID = '40px 2fr 1.2fr 1.2fr 1fr 1fr 1fr 156px';
 const HEADER_KEYS = [
@@ -95,8 +96,11 @@ interface ProductsTableCardProps {
   startIndex: number;
   search: string;
   sourceFilter: string;
+  categoryFilter: string;
+  categories: Category[];
   onSearchChange: (v: string) => void;
   onSourceChange: (v: string) => void;
+  onCategoryChange: (v: string) => void;
   onPageChange: (p: number) => void;
   onAddProduct: () => void;
   onView: (p: Product) => void;
@@ -116,8 +120,11 @@ export function ProductsTableCard({
   startIndex,
   search,
   sourceFilter,
+  categoryFilter,
+  categories,
   onSearchChange,
   onSourceChange,
+  onCategoryChange,
   onPageChange,
   onAddProduct,
   onView,
@@ -150,6 +157,20 @@ export function ProductsTableCard({
             className="flex-1 text-[13px] text-ink-900 placeholder-ink-400 bg-transparent focus:outline-none"
           />
         </div>
+
+        {/* Category filter */}
+        <select
+          value={categoryFilter}
+          onChange={(e) => onCategoryChange(e.target.value)}
+          className={selectCls}
+        >
+          <option value="">{p.toolbar.allCategories}</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.name}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
 
         {/* Source filter */}
         <select

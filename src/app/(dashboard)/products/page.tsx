@@ -36,19 +36,21 @@ export default function ProductsPage() {
 
   const [search, setSearch] = useState('');
   const [sourceFilter, setSourceFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setPage(1);
-  }, [search, sourceFilter]);
+  }, [search, sourceFilter, categoryFilter]);
 
   const { products, total, isLoading, createProduct, updateProduct, deleteProduct } = useProducts({
     page,
     limit: PAGE_SIZE,
     search: search || undefined,
     source: (sourceFilter as Product['source']) || undefined,
+    category_name: categoryFilter || undefined,
   });
 
   const { user } = useAuthStore();
@@ -103,8 +105,11 @@ export default function ProductsPage() {
         startIndex={(page - 1) * PAGE_SIZE}
         search={search}
         sourceFilter={sourceFilter}
+        categoryFilter={categoryFilter}
+        categories={categories}
         onSearchChange={setSearch}
         onSourceChange={setSourceFilter}
+        onCategoryChange={setCategoryFilter}
         onPageChange={setPage}
         onAddProduct={() => setModal({ type: 'add' })}
         onView={(prod) => setModal({ type: 'view', product: prod })}

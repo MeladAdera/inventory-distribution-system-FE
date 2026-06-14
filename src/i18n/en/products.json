@@ -6,6 +6,7 @@
   },
   "toolbar": {
     "searchPlaceholder": "Search name or barcode",
+    "allCategories": "All categories",
     "allSources": "All sources",
     "allStatuses": "All statuses",
     "export": "Export",

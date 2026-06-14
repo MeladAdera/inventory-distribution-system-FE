@@ -6,6 +6,7 @@
   },
   "toolbar": {
     "searchPlaceholder": "بحث بالاسم أو الباركود",
+    "allCategories": "كل الفئات",
     "allSources": "كل المصادر",
     "allStatuses": "كل الحالات",
     "export": "تصدير",
