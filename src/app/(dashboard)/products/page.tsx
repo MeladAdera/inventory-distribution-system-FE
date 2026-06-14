@@ -1,136 +1,82 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
-import { MOCK_PRODUCTS } from '@/features/products/mock/productsData';
-import { getProductStatus, CATEGORY_COLORS } from '@/features/products/types/products.types';
+import { useProducts } from '@/features/products/hooks/useProducts';
+import { useCategories } from '@/features/categories/hooks/useCategories';
+import { inventoryApi } from '@/features/inventory/api/inventory.api';
 import { ProductsTableCard } from '@/features/products/components/ProductsTableCard';
 import { ProductFormModal } from '@/features/products/components/ProductFormModal';
 import { ProductDetailModal } from '@/features/products/components/ProductDetailModal';
 import { RestockModal } from '@/features/products/components/RestockModal';
 import { DeleteConfirmModal } from '@/features/products/components/DeleteConfirmModal';
-import type { AdminProduct, ProductCategory } from '@/features/products/types/products.types';
-import type { AdminProductFormData } from '@/features/products/validations/products.schema';
+import type {
+  Product,
+  CreateProductInput,
+  UpdateProductInput,
+} from '@/features/products/types/products.types';
 
 const PAGE_SIZE = 10;
 
 type ModalState =
   | { type: 'none' }
   | { type: 'add' }
-  | { type: 'edit'; product: AdminProduct }
-  | { type: 'view'; product: AdminProduct }
-  | { type: 'restock'; product: AdminProduct }
-  | { type: 'delete'; product: AdminProduct };
+  | { type: 'edit'; product: Product }
+  | { type: 'view'; product: Product }
+  | { type: 'restock'; product: Product }
+  | { type: 'delete'; product: Product };
 
 export default function ProductsPage() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const p = t.products;
 
-  const [products, setProducts] = useState<AdminProduct[]>(MOCK_PRODUCTS);
-  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [sourceFilter, setSourceFilter] = useState('');
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
 
-  // Simulate initial data fetch
-  useEffect(() => {
-    const id = setTimeout(() => setIsLoading(false), 650);
-    return () => clearTimeout(id);
-  }, []);
-
-  // Reset page when filters change
+  // Reset to page 1 when filters change
   useEffect(() => {
     setPage(1);
-  }, [search, categoryFilter, statusFilter]);
+  }, [search, sourceFilter]);
 
-  const filtered = useMemo(() => {
-    return products.filter((prod) => {
-      const name = locale === 'ar' ? prod.name_ar : prod.name_en;
-      const matchSearch =
-        !search ||
-        name.toLowerCase().includes(search.toLowerCase()) ||
-        prod.sku.toLowerCase().includes(search.toLowerCase());
-      const matchCat = !categoryFilter || prod.category === categoryFilter;
-      const status = getProductStatus(prod);
-      const matchStatus = !statusFilter || status === statusFilter;
-      return matchSearch && matchCat && matchStatus;
-    });
-  }, [products, search, categoryFilter, statusFilter, locale]);
+  const { products, total, isLoading, createProduct, updateProduct, deleteProduct } = useProducts({
+    page,
+    limit: PAGE_SIZE,
+    search: search || undefined,
+    source: (sourceFilter as Product['source']) || undefined,
+  });
 
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const { categories } = useCategories();
 
-  // ── CRUD handlers ──────────────────────────────────────────────────────
+  // ── Handlers ──────────────────────────────────────────────────────────────
 
-  const handleAdd = (data: AdminProductFormData) => {
-    const nextId = products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
-    const newProduct: AdminProduct = {
-      id: nextId,
-      name_ar: data.nameAr,
-      name_en: data.nameEn ?? '',
-      sku: data.sku,
-      category: data.category as ProductCategory,
-      warehouse_qty: data.warehouseQty,
-      cost_price: data.costPrice ?? 0,
-      sell_price: data.sellPrice,
-      min_stock: data.minStock ?? 0,
-      color: CATEGORY_COLORS[data.category as ProductCategory],
-      is_active: true,
-      description: data.description || undefined,
-    };
-    setProducts((prev) => [...prev, newProduct]);
-    setModal({ type: 'none' });
+  const handleAdd = async (input: CreateProductInput) => {
+    await createProduct({ data: input });
   };
 
-  const handleEdit = (product: AdminProduct, data: AdminProductFormData) => {
-    setProducts((prev) =>
-      prev.map((pr) =>
-        pr.id === product.id
-          ? {
-              ...pr,
-              name_ar: data.nameAr,
-              name_en: data.nameEn ?? '',
-              sku: data.sku,
-              category: data.category as ProductCategory,
-              warehouse_qty: data.warehouseQty,
-              cost_price: data.costPrice ?? 0,
-              sell_price: data.sellPrice,
-              min_stock: data.minStock ?? 0,
-              description: data.description || undefined,
-            }
-          : pr
-      )
-    );
-    setModal({ type: 'none' });
+  const handleEdit = async (id: number, input: UpdateProductInput) => {
+    await updateProduct({ id, data: input });
   };
 
-  const handleRestock = (product: AdminProduct, qty: number) => {
-    setProducts((prev) =>
-      prev.map((pr) =>
-        pr.id === product.id ? { ...pr, warehouse_qty: pr.warehouse_qty + qty } : pr
-      )
-    );
-    setModal({ type: 'none' });
+  const handleDelete = async (product: Product) => {
+    await deleteProduct(product.id);
   };
 
-  const handleDelete = (product: AdminProduct) => {
-    setProducts((prev) => prev.filter((pr) => pr.id !== product.id));
-    setModal({ type: 'none' });
+  const handleRestock = async (product: Product, qty: number) => {
+    await inventoryApi.stockIn({ productId: product.id, quantity: qty });
   };
 
   // ── Render ─────────────────────────────────────────────────────────────
 
   return (
     <div className="max-w-330 mx-auto pb-16 lg:pb-6">
-      {/* ── Layer 1: Page Header ── */}
+      {/* ── Page Header ── */}
       <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
           <h1 className="text-[26px] font-semibold leading-tight text-ink-900">{p.page.title}</h1>
-          <p className="mt-1 text-sm text-ink-500">
-            {p.page.count.replace('{n}', String(products.length))}
-          </p>
+          <p className="mt-1 text-sm text-ink-500">{p.page.count.replace('{n}', String(total))}</p>
         </div>
         <button
           onClick={() => setModal({ type: 'add' })}
@@ -141,20 +87,18 @@ export default function ProductsPage() {
         </button>
       </div>
 
-      {/* ── Layer 2: Table Card ── */}
+      {/* ── Table ── */}
       <ProductsTableCard
-        products={paginated}
-        filteredCount={filtered.length}
+        products={products}
+        total={total}
         isLoading={isLoading}
         page={page}
         pageSize={PAGE_SIZE}
         startIndex={(page - 1) * PAGE_SIZE}
         search={search}
-        categoryFilter={categoryFilter}
-        statusFilter={statusFilter}
+        sourceFilter={sourceFilter}
         onSearchChange={setSearch}
-        onCategoryChange={setCategoryFilter}
-        onStatusChange={setStatusFilter}
+        onSourceChange={setSourceFilter}
         onPageChange={setPage}
         onAddProduct={() => setModal({ type: 'add' })}
         onView={(prod) => setModal({ type: 'view', product: prod })}
@@ -168,6 +112,7 @@ export default function ProductsPage() {
         open={modal.type === 'add' || modal.type === 'edit'}
         mode={modal.type === 'edit' ? 'edit' : 'add'}
         product={modal.type === 'edit' ? modal.product : null}
+        categories={categories}
         onClose={() => setModal({ type: 'none' })}
         onAdd={handleAdd}
         onEdit={handleEdit}

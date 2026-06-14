@@ -7,7 +7,9 @@ import type {
 
 export const categoriesApi = {
   list: async (params?: CategoryListParams) => {
-    const response = await apiClient.get('/categories', { params });
+    const response = await apiClient.get('/categories', {
+      params: { page: 1, limit: 100, ...params },
+    });
     return response.data;
   },
 

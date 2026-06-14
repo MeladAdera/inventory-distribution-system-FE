@@ -4,19 +4,25 @@ import { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { cn } from '@/common/utils/cn';
-import { getProductStatus, type AdminProduct } from '../types/products.types';
+import type { Product } from '../types/products.types';
+import { useProduct } from '../hooks/useProducts';
 import { ProductThumb } from './ProductThumb';
 import { StatusBadge } from './StatusBadge';
 
 interface ProductDetailModalProps {
   open: boolean;
-  product: AdminProduct | null;
+  product: Product | null;
   onClose: () => void;
 }
 
 export function ProductDetailModal({ open, product, onClose }: ProductDetailModalProps) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const p = t.products;
+
+  const { data: detailData, isLoading: isLoadingDetail } = useProduct(
+    open && product ? product.id : null
+  );
+  const detail = detailData?.data ?? null;
 
   useEffect(() => {
     if (!open) return;
@@ -28,24 +34,26 @@ export function ProductDetailModal({ open, product, onClose }: ProductDetailModa
 
   if (!open || !product) return null;
 
-  const name = locale === 'ar' ? product.name_ar : product.name_en;
-  const status = getProductStatus(product);
-  const totalValue = (product.warehouse_qty * product.sell_price).toLocaleString('en', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  const categoryName = product.category_name;
+  const sourceLabel = p.toolbar.sources[product.source];
+  const statusLabel = product.is_active ? p.toolbar.statuses.active : p.toolbar.statuses.inactive;
+  const createdAt = new Date(product.created_at).toLocaleDateString();
 
-  const rows: { label: string; value: string }[] = [
+  const rows: { label: string; value: string | null }[] = [
     {
-      label: p.detail.warehouseQty,
-      value: p.detail.units.replace('{n}', String(product.warehouse_qty.toLocaleString())),
+      label: p.detail.currentQty,
+      value: isLoadingDetail ? null : String(detail?.current_quantity ?? 0),
     },
-    { label: p.detail.minStock, value: String(product.min_stock) },
-    { label: p.detail.costPrice, value: `د.إ ${product.cost_price.toFixed(2)}` },
-    { label: p.detail.sellPrice, value: `د.إ ${product.sell_price.toFixed(2)}` },
-    { label: p.detail.totalValue, value: `د.إ ${totalValue}` },
-    { label: p.detail.category, value: p.toolbar.categories[product.category] },
+    { label: p.detail.price, value: `د.إ ${Number(product.price).toFixed(2)}` },
+    { label: p.detail.source, value: sourceLabel },
+    { label: p.detail.barcode, value: product.barcode ?? '—' },
+    { label: p.detail.category, value: categoryName },
+    { label: p.detail.createdAt, value: createdAt },
   ];
+
+  if (product.description) {
+    rows.push({ label: p.detail.description, value: product.description });
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
@@ -71,14 +79,14 @@ export function ProductDetailModal({ open, product, onClose }: ProductDetailModa
 
         {/* Body */}
         <div className="px-6 py-6">
-          {/* Top: thumb + sku + status */}
+          {/* Top: thumb + name + status */}
           <div className="flex items-center gap-4 mb-5">
-            <ProductThumb color={product.color} size={64} />
+            <ProductThumb id={product.id} size={64} />
             <div>
-              <p className="font-semibold text-ink-900">{name}</p>
-              <p className="font-mono text-[13px] text-ink-500 mt-0.5">{product.sku}</p>
+              <p className="font-semibold text-ink-900">{product.name}</p>
+              <p className="font-mono text-[13px] text-ink-500 mt-0.5">{product.barcode ?? '—'}</p>
               <div className="mt-2">
-                <StatusBadge status={status} label={p.toolbar.statuses[status]} />
+                <StatusBadge isActive={product.is_active} label={statusLabel} />
               </div>
             </div>
           </div>
@@ -94,7 +102,11 @@ export function ProductDetailModal({ open, product, onClose }: ProductDetailModa
                 )}
               >
                 <span className="text-[13px] text-ink-500">{row.label}</span>
-                <span className="text-[13px] font-medium text-ink-900">{row.value}</span>
+                {row.value === null ? (
+                  <span className="h-3 w-12 rounded skeleton-shimmer" />
+                ) : (
+                  <span className="text-[13px] font-medium text-ink-900">{row.value}</span>
+                )}
               </div>
             ))}
           </div>

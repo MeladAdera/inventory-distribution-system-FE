@@ -3,7 +3,9 @@ import type {
   CreateProductInput,
   UpdateProductInput,
   ProductListParams,
+  ProductDetail,
 } from '../types/products.types';
+import type { ApiResponse } from '@/common/types/api.types';
 
 export const productsApi = {
   list: async (params?: ProductListParams) => {
@@ -11,7 +13,7 @@ export const productsApi = {
     return response.data;
   },
 
-  getById: async (id: number) => {
+  getById: async (id: number): Promise<ApiResponse<ProductDetail>> => {
     const response = await apiClient.get(`/products/${id}`);
     return response.data;
   },

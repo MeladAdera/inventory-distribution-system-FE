@@ -4,6 +4,43 @@ All changes documented chronologically with details.
 
 ---
 
+## [0.8.0] - 2026-06-14 - Products API Integration + Categories Fix
+
+### Products Page — Real API Wired ✅
+
+#### Added
+- **`useProduct(id)`** hook in `useProducts.ts` — calls `GET /products/:id`, enabled only when `id !== null`; used by `ProductDetailModal` to fetch `current_quantity`
+- **`ProductDetail`** type in `products.types.ts` — extends `Product` with `current_quantity: number`
+- **`StockStatus`** enum — `OUT_OF_STOCK | LOW_STOCK | HIGH_STOCK`
+- **`productsApi.getById`** now explicitly typed as `Promise<ApiResponse<ProductDetail>>`
+- **`totalPages`** added to `PaginatedResponse<T>` in `api.types.ts`
+
+#### Updated
+- **`products.types.ts`**
+  - `price` type changed `number → string` (backend returns `"1200.00"` as string; code uses `Number(price)` for display)
+  - `ProductListParams` expanded: added `category_name`, `is_active`, `stock_status`
+  - `UpdateProductInput` expanded: added `barcode`, `category_id`
+- **`ProductDetailModal`** — now fires `useProduct(id)` when it opens; shows `current_quantity` row with shimmer skeleton while loading
+- **`ProductFormModal`** — edit mode `reset` converts `Number(product.price)` since `price` is now `string`
+- **`products/index.ts`** — exports `useProduct`, `ProductDetail`, `StockStatus`
+- **`i18n/en/products.json`** + **`i18n/ar/products.json`** — added `detail.currentQty` ("Current stock" / "المخزون الحالي")
+
+#### Categories Fix
+- **`categories.api.ts`** — `list()` now always sends `{ page: 1, limit: 100, ...params }` — fixes 400 Bad Request ("Validation failed: numeric string is expected") caused by NestJS `ParseIntPipe` requiring explicit numeric pagination params
+- **`useCategories.ts`** — query type corrected from `ApiResponse<Category[]>` to `ApiResponse<PaginatedResponse<Category>>`; unwrap updated from `.data?.data` to `.data?.data?.data` to reach the actual `Category[]`
+
+#### Known Gaps (open)
+- Search field in toolbar sends `search` param that the backend ignores for products
+- Edit form only sends `{name, description, price}` — barcode and category_id changes on edit are not saved
+- No error toast / feedback when API mutations fail
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
 ## [0.7.0] - 2026-06-11 - FIGMA-004: Clients Admin Page
 
 ### Clients Page ✅

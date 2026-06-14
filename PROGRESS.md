@@ -4,6 +4,75 @@ Real-time development progress and detailed work logs.
 
 ---
 
+## 📅 June 14, 2026 - Products API Integration + Categories Fix
+
+### Session
+**Focus**: Wire the Products page to the real backend API; fix categories 400 error  
+**Tickets**: TICKET-029, TICKET-030, TICKET-031, TICKET-032  
+**Version**: 0.8.0
+
+---
+
+### Tasks Completed
+
+1. ✅ **Backend handoff review** — Audited all Product and Category API endpoints; identified mismatches between existing frontend types and actual backend response shapes
+
+2. ✅ **`price` type fix** — Changed `Product.price` from `number` to `string` (backend returns `"1200.00"`); added `Number(price)` where display formatting is needed; fixed `ProductFormModal` edit pre-fill to use `Number(product.price)`
+
+3. ✅ **`ProductDetail` type** — Added `ProductDetail extends Product` with `current_quantity: number` to represent the `GET /products/:id` response
+
+4. ✅ **`StockStatus` enum** — Added `OUT_OF_STOCK | LOW_STOCK | HIGH_STOCK` to types; exported from barrel
+
+5. ✅ **`ProductListParams` expanded** — Added `category_name`, `is_active`, `stock_status` (backend-supported filters not previously typed); kept `search` as a placeholder
+
+6. ✅ **`UpdateProductInput` expanded** — Added `barcode` and `category_id` (backend accepts them on `PATCH /products/:id`)
+
+7. ✅ **`PaginatedResponse` updated** — Added `totalPages` field (backend returns it; was missing from the shared type)
+
+8. ✅ **`productsApi.getById` typed** — Returns `Promise<ApiResponse<ProductDetail>>` explicitly
+
+9. ✅ **`useProduct(id)` hook** — New hook in `useProducts.ts`; fires `GET /products/:id`; disabled when `id === null`; used by detail modal
+
+10. ✅ **`ProductDetailModal` updated** — Calls `useProduct(product.id)` when open; renders `current_quantity` row at top; shows shimmer skeleton while loading; handles `null` gracefully
+
+11. ✅ **i18n** — Added `detail.currentQty` to both `en/products.json` and `ar/products.json`
+
+12. ✅ **Categories 400 fix** — Root cause: NestJS `ParseIntPipe` throws when `page`/`limit` are absent. Fix: `categoriesApi.list()` always sends `{ page: 1, limit: 100, ...params }`
+
+13. ✅ **Categories response type fix** — Changed hook query type from `ApiResponse<Category[]>` to `ApiResponse<PaginatedResponse<Category>>`; fixed unwrapping from `.data?.data` to `.data?.data?.data`
+
+---
+
+### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/common/types/api.types.ts` | Added `totalPages` to `PaginatedResponse` |
+| `src/features/products/types/products.types.ts` | price string, ProductDetail, StockStatus, expanded params |
+| `src/features/products/api/products.api.ts` | Typed `getById` return |
+| `src/features/products/hooks/useProducts.ts` | Added `useProduct(id)` hook |
+| `src/features/products/components/ProductDetailModal.tsx` | Fetch by ID, currentQty row, shimmer |
+| `src/features/products/components/ProductFormModal.tsx` | `Number(product.price)` in edit reset |
+| `src/features/products/index.ts` | Export `useProduct`, `ProductDetail`, `StockStatus` |
+| `src/features/categories/api/categories.api.ts` | Always send `page=1&limit=100` |
+| `src/features/categories/hooks/useCategories.ts` | Correct response type + unwrapping |
+| `src/i18n/en/products.json` | Added `detail.currentQty` |
+| `src/i18n/ar/products.json` | Added `detail.currentQty` |
+| `docs/features/products.md` | Full rewrite for API integration |
+
+### Known Open Gaps
+| Gap | Priority |
+|-----|----------|
+| Search field ignored by backend | Medium |
+| Edit form doesn't send barcode/category_id | High — fixing next |
+| No error toast on mutation failure | Medium |
+
+---
+
 ## 📅 June 11, 2026 - FIGMA-004: Clients Admin Page
 
 ### Session

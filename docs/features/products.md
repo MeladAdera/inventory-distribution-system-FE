@@ -1,24 +1,23 @@
-# Feature: Products Admin Page (FIGMA-003)
+# Feature: Products Admin Page (FIGMA-003 + Phase 5 API Integration)
 
-**Status**: Complete  
+**Status**: API Integrated — Known gaps documented below  
 **Created Date**: 2026-06-11  
-**Last Updated**: 2026-06-11  
+**Last Updated**: 2026-06-14  
 **Assignee**: Melad Adera  
-**Ticket**: FIGMA-003
+**Tickets**: FIGMA-003, TICKET-029, TICKET-030, TICKET-031, TICKET-032
 
 ---
 
 ## 📋 Overview
 
 ### Purpose
-The Products admin page (`/products`) is the primary interface for warehouse managers to view, search, filter, and manage the product catalogue. It provides full CRUD operations through modal dialogs without leaving the page.
+The Products admin page (`/products`) is the primary interface for warehouse managers to view, search, filter, and manage the product catalogue. It provides full CRUD operations through modal dialogs. All data is fetched from the real backend API — mock data is no longer used.
 
 ### Business Value
 - Single-screen product management: create, view detail, edit, restock, delete
-- Live status derived from qty + min-stock thresholds — no manual status updates needed
-- Client-side search and filter with instant feedback
+- Live `current_quantity` fetched per-product when the detail modal opens
+- Source filter (WAREHOUSE / LOCAL) via `GET /products?source=`
 - Bilingual (AR/EN) with full RTL/LTR layout support
-- 650ms skeleton load simulation ready to swap for a real API hook
 
 ---
 
@@ -29,105 +28,105 @@ The Products admin page (`/products`) is the primary interface for warehouse man
 ```
 src/features/products/
 ├── api/
-│   └── products.api.ts              # Backend CRUD API (Phase 5 integration)
+│   └── products.api.ts              # Typed API methods — list, getById, create, update, delete
 ├── components/
 │   ├── ProductThumb.tsx             # Coloured square + package icon
-│   ├── StatusBadge.tsx              # Dot + label pill (in_stock / low / out / inactive)
-│   ├── ProductsTableCard.tsx        # Full table card: toolbar + grid + skeleton + pagination
+│   ├── StatusBadge.tsx              # Active / Inactive dot + label pill
+│   ├── ProductsTableCard.tsx        # Table card: toolbar + CSS grid + skeleton + pagination
 │   ├── ProductFormModal.tsx         # Add / Edit modal (react-hook-form + zod)
-│   ├── ProductDetailModal.tsx       # View-only detail modal (6 info rows)
-│   ├── RestockModal.tsx             # Qty stepper + before/after summary
-│   └── DeleteConfirmModal.tsx       # Danger confirm (no backdrop close)
+│   ├── ProductDetailModal.tsx       # View-only modal; fetches GET /products/:id for current_quantity
+│   ├── RestockModal.tsx             # Qty stepper → POST /inventory/stock-in
+│   └── DeleteConfirmModal.tsx       # Danger confirm → DELETE /products/:id
 ├── hooks/
-│   └── useProducts.ts               # React Query hook (Phase 5 integration)
+│   ├── useProducts(params?)         # List query + create / update / delete mutations
+│   └── useProduct(id)              # Single product query (GET /products/:id) — enables/disables by id
 ├── mock/
-│   └── productsData.ts              # 12 MOCK_PRODUCTS — used until API integration
+│   └── productsData.ts              # Legacy mock — no longer used by the page
 ├── types/
-│   └── products.types.ts            # AdminProduct, ProductStatus, ProductCategory,
-│                                    # getProductStatus(), CATEGORY_COLORS
+│   └── products.types.ts            # Product, ProductDetail, ProductSource, StockStatus,
+│                                    # ProductListParams, CreateProductInput, UpdateProductInput
 ├── validations/
-│   └── products.schema.ts           # adminProductFormSchema (z.number + valueAsNumber)
+│   └── products.schema.ts           # createProductSchema, updateProductSchema, productFormSchema
 └── index.ts                         # Barrel export
 
-src/app/(dashboard)/products/page.tsx   # Page — state, filtering, CRUD, modal routing
+src/app/(dashboard)/products/page.tsx   # Page — params state, modal routing, CRUD handlers
 src/i18n/en/products.json               # English translations
 src/i18n/ar/products.json               # Arabic translations
-src/app/globals.css                      # Added: @keyframes shimmer + .skeleton-shimmer
-```
-
-### Page Layout (2 layers)
-
-```
-Layer 1 — Page Header
-  ├── Title: "المنتجات / Products"
-  ├── Count: "N منتج / N products"  (total, not filtered)
-  └── "+ إضافة منتج / Add product" button → opens ProductFormModal (add mode)
-
-Layer 2 — Table Card  (bg-paper, border, rounded-xl)
-  ├── Toolbar
-  │   ├── Search input  (name + SKU, instant)
-  │   ├── Category select  (bev / snk / dry / cln / can / bky)
-  │   ├── Status select  (in_stock / low / out / inactive)
-  │   └── Export button  (stub)
-  ├── Header row  (hidden on mobile)
-  │   └── CSS grid: 40px 2fr 1.2fr 1fr 1fr 0.9fr 1fr 156px
-  ├── Body
-  │   ├── Skeleton (6 shimmer rows, 650ms on first load)
-  │   ├── Data rows (desktop grid / mobile stacked card)
-  │   └── Empty state  (PackageSearch icon + "no results" + add button)
-  └── Pagination  (shown only when filtered count > 1 page)
 ```
 
 ---
 
-## 🧩 Component Reference
+## 🔌 API Integration
 
-### `ProductThumb`
-```tsx
-<ProductThumb color="#DCEBE9" size={38} />
-// Renders: coloured rounded-lg square with a Package icon overlay (opacity 50%)
-// size prop controls both width/height and scales icon proportionally (47%)
+### Endpoints Used
+
+| Action | Method | Path | Hook |
+|--------|--------|------|------|
+| List products | GET | `/products` | `useProducts(params)` |
+| Product detail + qty | GET | `/products/:id` | `useProduct(id)` |
+| Create product | POST | `/products` | `useProducts().createProduct` |
+| Update product | PATCH | `/products/:id` | `useProducts().updateProduct` |
+| Soft-delete product | DELETE | `/products/:id` | `useProducts().deleteProduct` |
+| Add stock | POST | `/inventory/stock-in` | `inventoryApi.stockIn` (direct) |
+| Category dropdown | GET | `/categories?page=1&limit=100` | `useCategories()` |
+
+### Supported Query Params (`GET /products`)
+
+| Param | Type | Notes |
+|-------|------|-------|
+| `page` | number | Default 1 |
+| `limit` | number | Default 10, max 100 |
+| `source` | `WAREHOUSE \| LOCAL` | Exposed in toolbar dropdown |
+| `category_name` | string | Case-insensitive substring — typed but not yet in toolbar UI |
+| `shop_id` | number | Admin only |
+| `is_active` | boolean | `false` includes soft-deleted — not yet in toolbar UI |
+| `stock_status` | `OUT_OF_STOCK \| LOW_STOCK \| HIGH_STOCK` | Not yet in toolbar UI |
+
+> **Note:** The backend does NOT support a `search` (name/barcode) param for `GET /products`. The current search input in the toolbar sends a param the backend ignores — this is a known gap (see below).
+
+---
+
+## 🧩 Type Reference
+
+### `Product` (list response)
+```ts
+interface Product {
+  id: number;
+  shop_id: number;
+  category_id: number;
+  category_name: string;
+  name: string;
+  description: string | null;
+  barcode: string | null;
+  price: string;           // Backend returns string — use Number(price) to format
+  source: ProductSource;   // 'WAREHOUSE' | 'LOCAL'
+  is_global: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
 ```
 
-### `StatusBadge`
-```tsx
-<StatusBadge status="low" label="مخزون منخفض" />
-// Renders: dot + label pill. Dot and text share the same colour token.
+### `ProductDetail` (single GET /products/:id response)
+```ts
+interface ProductDetail extends Product {
+  current_quantity: number;  // 0 if no inventory record exists yet
+}
 ```
 
-Status → colour mapping:
-
-| Status | Dot / text | Background |
-|--------|-----------|------------|
-| `in_stock` | `success-700` | `success-100` |
-| `low` | `warning-700` | `warning-100` |
-| `out` | `danger-700` | `danger-100` |
-| `inactive` | `ink-500` | `sand-200` |
-
-### `ProductsTableCard`
-
-Receives paginated products + filter state + callbacks. Owns the toolbar UI, skeleton, and pagination UI. Status is derived inside `ProductRow` via `getProductStatus()`.
-
-Key prop: `startIndex` — so row numbers are correct across pages (e.g. page 2 starts at 11, not 1).
-
-### `ProductFormModal`
-
-- `mode: 'add' | 'edit'` controls title and whether the form pre-fills.
-- Image upload zone is **visual-only** — shows a colour swatch derived from `product.color` (edit) or `CATEGORY_COLORS[watchCategory]` (add).
-- Form uses `z.number()` fields with `{ valueAsNumber: true }` on number inputs — **not** `z.coerce.number()` which would break the zodResolver generic.
-- Required fields: Arabic name, SKU, selling price, initial qty.
-
-### `ProductDetailModal`
-
-View-only. Derives total value: `warehouse_qty × sell_price`. Formats with `toLocaleString`.
-
-### `RestockModal`
-
-Stepper with `+` / `-` buttons. Shows "Current qty" → arrow → "New total" summary boxes. "Add stock" button disabled when qty = 0. Arrow direction respects `dir` (RTL ← / LTR →).
-
-### `DeleteConfirmModal`
-
-Backdrop click is **intentionally disabled** (`closeOnBackdrop: false`). User must choose Delete or Cancel explicitly.
+### `ProductListParams`
+```ts
+interface ProductListParams {
+  page?: number;
+  limit?: number;
+  source?: ProductSource;
+  category_name?: string;
+  shop_id?: number;
+  is_active?: boolean;
+  stock_status?: StockStatus;
+  search?: string;           // Ignored by backend — here for future use
+}
+```
 
 ---
 
@@ -136,91 +135,72 @@ Backdrop click is **intentionally disabled** (`closeOnBackdrop: false`). User mu
 ```
 page.tsx
   │
-  ├── products: AdminProduct[]       ← useState(MOCK_PRODUCTS), updated by CRUD handlers
-  ├── isLoading: boolean             ← setTimeout(650ms) on mount, simulates fetch
-  ├── search / categoryFilter / statusFilter  ← useState, reset page on change
-  ├── page: number                   ← pagination cursor
-  └── modal: ModalState              ← discriminated union: none | add | edit | view | restock | delete
-       │
-       ├── filtered = useMemo(...)   ← client-side filter on products array
-       └── paginated = filtered.slice(...)
+  ├── useProducts({ page, limit, search, source })    ← list + mutations
+  ├── useCategories()                                  ← dropdown in ProductFormModal
+  ├── search / sourceFilter / page  ← useState; search/source reset page to 1
+  └── modal: ModalState             ← 'none' | 'add' | 'edit' | 'view' | 'restock' | 'delete'
+
+ProductDetailModal
+  └── useProduct(product.id)        ← fires GET /products/:id when modal opens
+                                       shows skeleton shimmer on current_quantity row while loading
 ```
 
-### CRUD Operations (local state, swappable with API mutations)
-
-| Action | Handler | Effect |
-|--------|---------|--------|
-| Add | `handleAdd(data)` | Appends `AdminProduct` with next id + `CATEGORY_COLORS[category]` |
-| Edit | `handleEdit(product, data)` | Updates matching product by id |
-| Restock | `handleRestock(product, qty)` | Increments `warehouse_qty` |
-| Delete | `handleDelete(product)` | Filters out by id |
-
----
-
-## 📊 Status Derivation
-
-Status is **never stored** — always computed from the product record:
-
-```typescript
-function getProductStatus(product: AdminProduct): ProductStatus {
-  if (!product.is_active) return 'inactive';
-  if (product.warehouse_qty === 0) return 'out';
-  if (product.warehouse_qty <= product.min_stock) return 'low';
-  return 'in_stock';
+### `useProducts` Return Shape
+```ts
+{
+  products: Product[];        // listQuery.data?.data?.data ?? []
+  total: number;              // listQuery.data?.data?.total ?? 0
+  isLoading: boolean;
+  error: unknown;
+  createProduct(args): Promise<void>;
+  isCreating: boolean;
+  updateProduct(args): Promise<void>;
+  isUpdating: boolean;
+  deleteProduct(id): Promise<void>;
+  isDeleting: boolean;
 }
 ```
 
----
-
-## 🎨 Design Tokens Used
-
-| Token | Used for |
-|-------|---------|
-| `--color-sand-100` / `sand-200` | Shimmer gradient, table header bg, inactive badge bg |
-| `--color-ink-500/600/700/800/900` | Text hierarchy |
-| `--color-amber-600/700` | Primary action buttons |
-| `--color-success-100/700` | In-stock badge, restock new-total box |
-| `--color-warning-100/700` | Low-stock badge |
-| `--color-danger-100/700` | Out-of-stock badge, delete button, error text |
-| `--color-border` | All borders |
-| `--color-paper` | Card / modal backgrounds |
-
-New global CSS added:
-
-```css
-@keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-.skeleton-shimmer {
-  background: linear-gradient(90deg, #F5EFE4 25%, #ECE3D2 50%, #F5EFE4 75%);
-  background-size: 400% 100%;
-  animation: shimmer 1.4s ease infinite;
-}
+### `useProduct(id)` — Detail Hook
+```ts
+// Enabled only when id !== null (i.e. modal is open)
+useProduct(open && product ? product.id : null)
+// Returns ApiResponse<ProductDetail> — unwrap with .data
 ```
 
 ---
 
-## 🌐 i18n Keys
+## 🧩 Component Reference
 
-Both `src/i18n/en/products.json` and `src/i18n/ar/products.json` cover:
+### `ProductDetailModal`
+- Receives a `Product` (from list) — uses it immediately for all fields
+- In parallel, fires `useProduct(id)` to fetch `current_quantity`
+- The `current_quantity` row shows a shimmer skeleton while loading; renders the value once resolved
+- If the product has no inventory record yet, backend returns `current_quantity: 0`
 
-```
-products.page.{title, count, addProduct}
-products.toolbar.{searchPlaceholder, allCategories, allStatuses, export, categories.*, statuses.*}
-products.table.{num, product, sku, category, warehouseQty, unitPrice, status, actions}
-products.emptyState.{title, sub, addProduct}
-products.pagination.{showing}
-products.form.{addTitle, editTitle, save, cancel, image, imageDrag,
-               nameAr, nameArPlaceholder, nameEn, nameEnPlaceholder,
-               sku, skuPlaceholder, category, description,
-               costPrice, sellPrice, pricePlaceholder,
-               initialQty, minStock, qtyPlaceholder,
-               errNameAr, errSku, errSellPrice, errQty}
-products.detail.{title, warehouseQty, minStock, costPrice, sellPrice, totalValue, category, units}
-products.restock.{title, qtyLabel, currentQty, newTotal, addStock, cancel}
-products.delete.{title, warning, delete, cancel}
-```
+### `ProductFormModal`
+- `mode: 'add' | 'edit'` controls title and pre-fill
+- Edit pre-fills: `name`, `description`, `barcode`, `price` (converted `Number(price)`), `category_id`
+- `price` uses `{ valueAsNumber: true }` on the input — form value is `number`, stored as `string` in backend
+- Category dropdown populated from `useCategories()`
+
+### `RestockModal`
+- Stepper (+/-) with manual input (min 1)
+- On confirm → calls `inventoryApi.stockIn({ productId, quantity })` directly (no mutation hook)
+
+### `DeleteConfirmModal`
+- Backdrop click intentionally disabled — user must choose Delete or Cancel
+
+---
+
+## ⚠️ Known Gaps
+
+| Gap | Location | Impact | Fix Ticket |
+|-----|----------|--------|------------|
+| Search field ignored by backend | Toolbar → `ProductListParams.search` | Typing in search has no effect | Need backend `search` param or replace with `category_name` filter |
+| Edit form only sends `{name, description, price}` | `ProductFormModal.tsx:74` | Barcode and category changes on edit are not saved | Fix `onSubmit` to include `barcode` and `category_id` |
+| No error feedback on failed mutations | `page.tsx` handlers | Silent failure on API errors | Add toast on mutation `.catch()` |
+| `category_name`, `is_active`, `stock_status` filters not in UI | `ProductListParams` has them, toolbar doesn't | Advanced filtering not accessible | Add filter controls to toolbar |
 
 ---
 
@@ -233,43 +213,51 @@ products.delete.{title, warning, delete, cancel}
 
 ---
 
-## ⚠️ Known Stubs (future tickets)
+## 🌐 i18n Keys
 
-| Location | Stub | Future ticket |
-|----------|------|---------------|
-| All product data | `MOCK_PRODUCTS` + local state | Phase 5 — TICKET-029 API wiring |
-| Export button | No-op | TICKET-TBD |
-| Image upload zone | Visual only, no file input | TICKET-TBD |
-| `productsApi` + `useProducts` hook | Exists but unused by page | Phase 5 TICKET-029 |
+Both `src/i18n/en/products.json` and `src/i18n/ar/products.json` cover:
+
+```
+products.page.{title, count, addProduct}
+products.toolbar.{searchPlaceholder, allSources, allStatuses, export, sources.*, statuses.*}
+products.table.{num, product, barcode, category, price, source, status, actions}
+products.emptyState.{title, sub, addProduct}
+products.pagination.{showing}
+products.form.{addTitle, editTitle, save, cancel, name, namePlaceholder, barcode,
+               barcodePlaceholder, category, categoryPlaceholder, description,
+               price, pricePlaceholder, errName, errPrice, errCategory}
+products.detail.{title, currentQty, price, source, barcode, category, description, createdAt}
+products.restock.{title, qtyLabel, addStock, cancel}
+products.delete.{title, warning, delete, cancel}
+```
 
 ---
 
 ## ✅ Acceptance Criteria
 
-- [x] Table renders 12 mock products with correct columns and values
-- [x] Status badge derived live (in_stock / low / out / inactive)
-- [x] Search filters by name (AR + EN) and SKU instantly
-- [x] Category + status dropdowns filter the list
-- [x] Page resets to 1 when any filter changes
-- [x] Pagination renders only when filtered count > page size (10)
-- [x] 650ms skeleton shimmer shows on first load
-- [x] Empty state shown when all filters yield zero results
+- [x] Table renders live products from `GET /products` with correct columns
+- [x] Source filter (WAREHOUSE / LOCAL) passes `source` param to API
+- [x] Pagination: page/limit sent to API; total from response drives page count
+- [x] Skeleton shimmer shows while `isLoading`
+- [x] Empty state shown when `products.length === 0`
 - [x] Row numbers correct across pages (startIndex offset)
-- [x] Add modal opens with empty form; valid submit appends product
-- [x] Edit modal pre-fills from selected product; valid submit updates product
-- [x] Restock modal updates `warehouse_qty` and re-derives status
-- [x] Delete removes product from list; resets derived counts
-- [x] Detail modal shows all 6 info rows including computed total value
+- [x] Add modal creates product via `POST /products`; invalidates query on success
+- [x] Edit modal pre-fills; submits via `PATCH /products/:id`
+- [x] Detail modal fetches `GET /products/:id`; shows `current_quantity` with loading skeleton
+- [x] Restock calls `POST /inventory/stock-in`
+- [x] Delete calls `DELETE /products/:id`; invalidates query on success
+- [x] Category dropdown populated from `GET /categories` (fixed: sends `page=1&limit=100`)
 - [x] All text switches AR ↔ EN on locale toggle
-- [x] Modals slide up from bottom on mobile, centred on desktop
-- [x] DeleteConfirmModal does NOT close on backdrop click
 - [x] `npx tsc --noEmit` passes with zero errors
+- [ ] Search field works against backend (backend gap)
+- [ ] Edit saves barcode + category changes
+- [ ] Error feedback on failed mutations
 
 ---
 
 ## 🔗 Related
 
-- Admin layout shell: [admin-layout-shell.md](admin-layout-shell.md)
-- Dashboard: [dashboard.md](dashboard.md)
-- API integration: [ROADMAP.md](../../ROADMAP.md) — TICKET-029 through TICKET-032
-- Phase 5 Products CRUD (API): depends on `productsApi` + `useProducts` already scaffolded
+- Categories feature: `src/features/categories/` — `useCategories` hook
+- Inventory feature: `src/features/inventory/api/inventory.api.ts` — `stockIn` method
+- Backend API docs: `http://localhost:3001/api` (Swagger)
+- Roadmap tickets: TICKET-029 through TICKET-032

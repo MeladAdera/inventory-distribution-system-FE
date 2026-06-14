@@ -2,30 +2,25 @@
 export { productsApi } from './api/products.api';
 
 // Hooks
-export { useProducts } from './hooks/useProducts';
+export { useProducts, useProduct } from './hooks/useProducts';
 
 // Types
 export type {
   Product,
+  ProductDetail,
   CreateProductInput,
   UpdateProductInput,
   ProductListParams,
-  AdminProduct,
-  ProductCategory,
-  ProductStatus,
 } from './types/products.types';
-export { ProductSource, getProductStatus, CATEGORY_COLORS } from './types/products.types';
+export { ProductSource, StockStatus } from './types/products.types';
 
 // Validations
 export {
   createProductSchema,
   updateProductSchema,
-  adminProductFormSchema,
+  productFormSchema,
 } from './validations/products.schema';
-export type { AdminProductFormData } from './validations/products.schema';
-
-// Mock
-export { MOCK_PRODUCTS } from './mock/productsData';
+export type { ProductFormData } from './validations/products.schema';
 
 // Components
 export { ProductThumb } from './components/ProductThumb';

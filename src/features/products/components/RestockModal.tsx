@@ -1,23 +1,24 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { X, Plus, Minus, ArrowRight, ArrowLeft, PackagePlus } from 'lucide-react';
+import { X, Plus, Minus, PackagePlus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { cn } from '@/common/utils/cn';
-import type { AdminProduct } from '../types/products.types';
+import type { Product } from '../types/products.types';
 import { ProductThumb } from './ProductThumb';
 
 interface RestockModalProps {
   open: boolean;
-  product: AdminProduct | null;
+  product: Product | null;
   onClose: () => void;
-  onConfirm: (product: AdminProduct, qty: number) => void;
+  onConfirm: (product: Product, qty: number) => Promise<void>;
 }
 
 export function RestockModal({ open, product, onClose, onConfirm }: RestockModalProps) {
-  const { t, dir, locale } = useI18n();
+  const { t } = useI18n();
   const p = t.products;
   const [qty, setQty] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (open) setQty(1);
@@ -33,16 +34,23 @@ export function RestockModal({ open, product, onClose, onConfirm }: RestockModal
 
   if (!open || !product) return null;
 
-  const newTotal = product.warehouse_qty + qty;
-
-  const adjust = (delta: number) => {
-    setQty((v) => Math.max(0, v + delta));
-  };
+  const adjust = (delta: number) => setQty((v) => Math.max(1, v + delta));
 
   const handleQtyInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value, 10);
-    if (!isNaN(val) && val >= 0) setQty(val);
-    else if (e.target.value === '') setQty(0);
+    if (!isNaN(val) && val >= 1) setQty(val);
+    else if (e.target.value === '') setQty(1);
+  };
+
+  const handleConfirm = async () => {
+    if (qty < 1) return;
+    setIsSubmitting(true);
+    try {
+      await onConfirm(product, qty);
+      onClose();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -71,17 +79,15 @@ export function RestockModal({ open, product, onClose, onConfirm }: RestockModal
         <div className="px-6 py-6">
           {/* Product info */}
           <div className="flex items-center gap-3.5 mb-5">
-            <ProductThumb color={product.color} size={48} />
+            <ProductThumb id={product.id} size={48} />
             <div>
-              <p className="font-semibold text-ink-900">
-                {locale === 'ar' ? product.name_ar : product.name_en}
-              </p>
-              <p className="font-mono text-xs text-ink-500 mt-0.5">{product.sku}</p>
+              <p className="font-semibold text-ink-900">{product.name}</p>
+              <p className="font-mono text-xs text-ink-500 mt-0.5">{product.barcode ?? '—'}</p>
             </div>
           </div>
 
           {/* Qty stepper */}
-          <div className="mb-4.5">
+          <div>
             <label className="text-xs font-medium text-ink-600 block mb-2">
               {p.restock.qtyLabel}
               <span className="text-danger-700 ms-0.75">*</span>
@@ -89,7 +95,7 @@ export function RestockModal({ open, product, onClose, onConfirm }: RestockModal
             <div className="flex items-center border border-border rounded-lg overflow-hidden w-fit">
               <button
                 onClick={() => adjust(-1)}
-                disabled={qty <= 0}
+                disabled={qty <= 1}
                 className="w-11 h-11 flex items-center justify-center text-ink-600 hover:bg-sand-100 transition-colors disabled:opacity-35"
               >
                 <Minus size={16} />
@@ -110,40 +116,14 @@ export function RestockModal({ open, product, onClose, onConfirm }: RestockModal
               </button>
             </div>
           </div>
-
-          {/* Summary boxes */}
-          <div className="flex items-center gap-3 mt-4.5">
-            {/* Current qty */}
-            <div className="flex-1 bg-sand-100 border border-border rounded-lg px-3.5 py-3">
-              <p className="text-xs text-ink-500 mb-1">{p.restock.currentQty}</p>
-              <p className="font-mono text-xl font-semibold text-ink-700">
-                {product.warehouse_qty.toLocaleString()}
-              </p>
-            </div>
-
-            {/* Arrow */}
-            <div className="text-ink-400 shrink-0">
-              {dir === 'rtl' ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
-            </div>
-
-            {/* New total */}
-            <div className="flex-1 bg-success-100 border border-success-700/20 rounded-lg px-3.5 py-3">
-              <p className="text-xs text-success-700 mb-1">{p.restock.newTotal}</p>
-              <p className="font-mono text-xl font-bold text-success-700">
-                {newTotal.toLocaleString()}
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Footer */}
         <div className="flex items-center gap-2.5 px-6 py-4 border-t border-border">
           <button
-            onClick={() => {
-              if (qty > 0) onConfirm(product, qty);
-            }}
-            disabled={qty <= 0}
-            className="inline-flex items-center gap-2 h-10 px-5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+            onClick={handleConfirm}
+            disabled={qty < 1 || isSubmitting}
+            className="inline-flex items-center gap-2 h-10 px-5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-60"
           >
             <PackagePlus size={15} />
             {p.restock.addStock}

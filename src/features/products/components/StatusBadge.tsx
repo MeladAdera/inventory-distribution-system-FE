@@ -1,20 +1,15 @@
 import { cn } from '@/common/utils/cn';
-import type { ProductStatus } from '../types/products.types';
-
-const CFG: Record<ProductStatus, { dot: string; text: string; bg: string }> = {
-  in_stock: { dot: 'bg-success-700', text: 'text-success-700', bg: 'bg-success-100' },
-  low: { dot: 'bg-warning-700', text: 'text-warning-700', bg: 'bg-warning-100' },
-  out: { dot: 'bg-danger-700', text: 'text-danger-700', bg: 'bg-danger-100' },
-  inactive: { dot: 'bg-ink-500', text: 'text-ink-500', bg: 'bg-sand-200' },
-};
 
 interface StatusBadgeProps {
-  status: ProductStatus;
+  isActive: boolean;
   label: string;
 }
 
-export function StatusBadge({ status, label }: StatusBadgeProps) {
-  const { dot, text, bg } = CFG[status];
+export function StatusBadge({ isActive, label }: StatusBadgeProps) {
+  const { dot, text, bg } = isActive
+    ? { dot: 'bg-success-700', text: 'text-success-700', bg: 'bg-success-100' }
+    : { dot: 'bg-ink-500', text: 'text-ink-500', bg: 'bg-sand-200' };
+
   return (
     <span
       className={cn(

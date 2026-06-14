@@ -1,11 +1,14 @@
 import { Package } from 'lucide-react';
 
+const PALETTE = ['#FAEACB', '#F8EBD3', '#DDE6F3', '#DCEBE9', '#F6DDDB', '#F5EFE4'];
+
 interface ProductThumbProps {
-  color: string;
+  id?: number;
   size?: number;
 }
 
-export function ProductThumb({ color, size = 38 }: ProductThumbProps) {
+export function ProductThumb({ id = 0, size = 38 }: ProductThumbProps) {
+  const color = PALETTE[id % PALETTE.length];
   const iconSize = Math.round(size * 0.47);
   return (
     <div

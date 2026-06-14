@@ -5,32 +5,26 @@
     "addProduct": "+ Add product"
   },
   "toolbar": {
-    "searchPlaceholder": "Search name or SKU",
-    "allCategories": "All categories",
+    "searchPlaceholder": "Search name or barcode",
+    "allSources": "All sources",
     "allStatuses": "All statuses",
     "export": "Export",
-    "categories": {
-      "bev": "Beverages",
-      "snk": "Snacks",
-      "dry": "Dairy",
-      "cln": "Cleaning",
-      "can": "Canned",
-      "bky": "Bakery"
+    "sources": {
+      "WAREHOUSE": "Warehouse",
+      "LOCAL": "Local"
     },
     "statuses": {
-      "in_stock": "In stock",
-      "low": "Low stock",
-      "out": "Out of stock",
+      "active": "Active",
       "inactive": "Inactive"
     }
   },
   "table": {
     "num": "#",
     "product": "Product",
-    "sku": "SKU",
+    "barcode": "Barcode",
     "category": "Category",
-    "warehouseQty": "Warehouse qty",
-    "unitPrice": "Unit price",
+    "price": "Price",
+    "source": "Source",
     "status": "Status",
     "actions": "Actions"
   },
@@ -47,42 +41,33 @@
     "editTitle": "Edit product",
     "save": "Save",
     "cancel": "Cancel",
-    "image": "Product image",
-    "imageDrag": "Drag an image or click to upload",
-    "nameAr": "Arabic name",
-    "nameArPlaceholder": "e.g. Mineral Water 500ml",
-    "nameEn": "English name",
-    "nameEnPlaceholder": "e.g. Mineral Water 500ml",
-    "sku": "SKU",
-    "skuPlaceholder": "BVG-WTR-500",
+    "name": "Product name",
+    "namePlaceholder": "e.g. Mineral Water 500ml",
+    "barcode": "Barcode",
+    "barcodePlaceholder": "e.g. 6281234567890",
     "category": "Category",
+    "categoryPlaceholder": "Select a category",
     "description": "Description",
-    "costPrice": "Cost price (AED)",
+    "price": "Price (AED)",
     "pricePlaceholder": "0.00",
-    "sellPrice": "Selling price (AED)",
-    "initialQty": "Initial qty",
-    "qtyPlaceholder": "0",
-    "minStock": "Min stock",
-    "errNameAr": "Arabic name is required",
-    "errSku": "SKU is required",
-    "errSellPrice": "Selling price must be greater than 0",
-    "errQty": "Quantity is required"
+    "errName": "Name must be at least 3 characters",
+    "errPrice": "Price must be greater than 0",
+    "errCategory": "Category is required"
   },
   "detail": {
     "title": "Product details",
-    "warehouseQty": "WH Qty",
-    "minStock": "Min stock",
-    "costPrice": "Cost price",
-    "sellPrice": "Selling price",
-    "totalValue": "Total value",
+    "currentQty": "Current stock",
+    "price": "Price",
+    "source": "Source",
+    "barcode": "Barcode",
     "category": "Category",
-    "units": "{n} units"
+    "description": "Description",
+    "status": "Status",
+    "createdAt": "Created"
   },
   "restock": {
     "title": "Add stock",
     "qtyLabel": "Quantity to add",
-    "currentQty": "Current qty",
-    "newTotal": "New total",
     "addStock": "Add stock",
     "cancel": "Cancel"
   },

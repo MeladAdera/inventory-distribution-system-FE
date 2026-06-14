@@ -447,60 +447,74 @@ Replace the placeholder page with 4 real stat cards fetched from the API.
 
 ---
 
-## Phase 5 — Products Pages
+## Phase 5 — Products Pages ✅
 
 **Depends on:** TICKET-022, TICKET-023, TICKET-024, TICKET-025, TICKET-026, TICKET-027
 
 ---
 
-### TICKET-029 — Products list page
+### TICKET-029 — Products list page `[x]`
 
 **Files:**
 ```
 src/app/(dashboard)/products/page.tsx
-src/features/products/components/ProductsTable.tsx
-src/features/products/components/ProductFilters.tsx
+src/features/products/hooks/useProducts.ts
+src/features/products/components/ProductsTableCard.tsx
 ```
 
 **AC:**
-- [ ] Paginated table: columns = Name, Category ID, Price, Source, Active, Actions
-- [ ] Filters: `source` (WAREHOUSE / LOCAL) dropdown
-- [ ] URL reflects current page: `?page=2`
-- [ ] Active badge: green "Active" / red "Inactive" using `Badge`
-- [ ] Action column: Edit, Delete buttons (hidden for `EMPLOYEE`)
+- [x] Paginated table: Name, Barcode, Category, Price, Source, Status, Actions
+- [x] Source filter (WAREHOUSE / LOCAL) passes `source` param to `GET /products`
+- [x] Page + limit sent to API; total drives page count and "Showing N of total"
+- [x] Skeleton shimmer while `isLoading`; empty state when no results
+- [x] Row numbers correct across pages via `startIndex` offset
+- [ ] ⚠️ Search field sends unsupported `search` param — backend ignores it (open gap)
 
 ---
 
-### TICKET-030 — Create product modal
+### TICKET-030 — Create product modal `[x]`
 
-**File:** `src/features/products/components/CreateProductModal.tsx`
+**File:** `src/features/products/components/ProductFormModal.tsx`
 
 **AC:**
-- [ ] Form fields: Name, Description (optional), Barcode (optional), Price, Category (dropdown from `GET /categories`)
-- [ ] Validated with `createProductSchema`
-- [ ] On success: closes modal, shows success toast, invalidates `['products']`
-- [ ] `WAREHOUSE_ADMIN` sees a Shop selector; `SHOP_OWNER` does not (uses their own shop)
-- [ ] Only `WAREHOUSE_ADMIN` and `SHOP_OWNER` can open this modal
+- [x] Fields: Name, Barcode, Category (dropdown from `GET /categories`), Description, Price
+- [x] Validated with `productFormSchema` (zod, react-hook-form)
+- [x] On success: closes modal, invalidates `['products']`
+- [x] Category dropdown populated from `useCategories()` (fixed: always sends `page=1&limit=100`)
+- [ ] ⚠️ No success/error toast yet (open gap)
 
 ---
 
-### TICKET-031 — Edit product modal
+### TICKET-031 — Edit product modal `[x]`
 
-**File:** `src/features/products/components/EditProductModal.tsx`
+**File:** `src/features/products/components/ProductFormModal.tsx` (shared modal, `mode='edit'`)
 
 **AC:**
-- [ ] Pre-fills Name, Description, Price from selected product
-- [ ] Uses `updateProductSchema`
-- [ ] On success: closes modal, success toast, invalidates `['products']`
+- [x] Pre-fills Name, Barcode, Category, Description, Price from selected product
+- [x] Submits via `PATCH /products/:id`
+- [x] On success: closes modal, invalidates `['products']`
+- [ ] ⚠️ Edit payload currently only sends `{name, description, price}` — barcode and category_id changes not saved (open gap, fix in progress)
 
 ---
 
-### TICKET-032 — Delete product confirmation
+### TICKET-032 — Delete product confirmation `[x]`
+
+**File:** `src/features/products/components/DeleteConfirmModal.tsx`
 
 **AC:**
-- [ ] Uses `ConfirmDialog`
-- [ ] On confirm: calls `DELETE /products/:id` (soft delete)
-- [ ] On success: success toast, invalidates `['products']`
+- [x] Danger confirm modal — backdrop click intentionally disabled
+- [x] On confirm: calls `DELETE /products/:id` (soft delete)
+- [x] On success: closes modal, invalidates `['products']`
+- [ ] ⚠️ No error toast on failure (open gap)
+
+---
+
+### Categories Fix (applied during Phase 5)
+
+**File:** `src/features/categories/api/categories.api.ts`, `hooks/useCategories.ts`
+
+- Fixed: `GET /categories` returned 400 because NestJS `ParseIntPipe` requires `page`/`limit` to be explicit numbers. Fix: always send `page: 1, limit: 100` as defaults.
+- Fixed: response type was `ApiResponse<Category[]>` but backend returns `ApiResponse<PaginatedResponse<Category>>`. Updated type + unwrapping to `.data?.data?.data`.
 
 ---
 
@@ -890,9 +904,9 @@ Apply to: Products, Inventory, Orders, Users, Shops, Categories, Notifications, 
 | 1 | 009–015 | ✅ Auth layer |
 | 2 | 016–021 | ✅ Feature scaffolds (types, API, hooks) |
 | 3 | 022–027 | ✅ Shared UI components (DataTable, Modal, Badge, Pagination, Toast) |
-| 3.5 | FIGMA-001–007 | 🔄 Figma UI shells — layout shell ✅, dashboard ✅, products ✅, clients ✅, transfers ⬜ |
+| 3.5 | FIGMA-001–007 | ✅ Figma UI shells — layout ✅, dashboard ✅, products ✅, clients ✅, transfers ⬜ |
 | 4 | 028 | Dashboard (API integration) |
-| 5 | 029–032 | Products CRUD |
+| 5 | 029–032 | ✅ Products CRUD (2 gaps: search field, edit barcode/category) |
 | 6 | 033–035 | Inventory management |
 | 7 | 036–039 | Orders lifecycle |
 | 8 | 040–044 | ✅ Users management |

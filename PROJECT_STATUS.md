@@ -1,8 +1,8 @@
 # Project Status: Inventory Distribution System (Frontend)
 
-**Last Updated**: June 11, 2026  
-**Version**: 0.7.0  
-**Status**: FIGMA DESIGN IMPLEMENTATION IN PROGRESS 🎨
+**Last Updated**: June 14, 2026  
+**Version**: 0.8.0  
+**Status**: API INTEGRATION IN PROGRESS 🔌
 
 ---
 
@@ -12,13 +12,32 @@ Frontend application for the Inventory Distribution System built with Next.js, R
 
 ---
 
-## 🎨 Current Phase: FIGMA DESIGN IMPLEMENTATION
+## 🔌 Current Phase: API INTEGRATION
 
 **Status**: 🔄 **IN PROGRESS**
 
-Implementing the Figma designs page by page before wiring real API data. Each page is built as a pixel-accurate UI shell first, then integrated with its feature hook.
+Backend API is complete. Replacing mock data with real API calls page by page.
 
-### Design Phase Progress
+### API Integration Progress
+
+| Page | Description | Status |
+|------|-------------|--------|
+| Products | `useProducts` + `useProduct(id)` hooks wired; all 4 modals hit real endpoints; categories dropdown fixed | ✅ Complete (2 gaps remaining) |
+| Clients | Still on mock data | ⬜ Next |
+| Dashboard | Still on mock data | ⬜ Pending |
+
+### Products API — Known Gaps
+| Gap | Status |
+|-----|--------|
+| Search field (backend has no name search param for products) | ⬜ Open |
+| Edit form drops barcode + category_id changes | ⬜ Open — fix in progress |
+| No error toast on failed mutations | ⬜ Open |
+
+---
+
+## 🎨 Previous Phase: FIGMA DESIGN IMPLEMENTATION ✅
+
+**Status**: ✅ **COMPLETE** (FIGMA-001 through FIGMA-004)
 
 | Component | Description | Status |
 |-----------|-------------|--------|
@@ -26,9 +45,9 @@ Implementing the Figma designs page by page before wiring real API data. Each pa
 | Dashboard page | 6× KPI cards, consumption trend chart, top-consumed bars, low-stock table, activity feed | ✅ Complete |
 | Products page | 8-col grid table, 4 modals (add/edit/detail/restock/delete), search/filter, skeleton | ✅ Complete |
 | Clients page | 8-col grid table, 3 modals (add/edit/delete), ClientAvatar, StatusBadge, search/filter | ✅ Complete |
-| Transfers page | List, new transfer flow | ⬜ Next |
-| Shortages page | Low-stock list, restock action | ⬜ Pending |
-| Settings page | Profile, preferences | ⬜ Pending |
+| Transfers page | List, new transfer flow | ⬜ Not started |
+| Shortages page | Low-stock list, restock action | ⬜ Not started |
+| Settings page | Profile, preferences | ⬜ Not started |
 
 ---
 
@@ -91,7 +110,7 @@ src/features/
 ├── clients/       ✅ Complete (types + validations + components + page + modals + mock)
 ├── orders/        🔧 Scaffold fixed (no page yet)
 ├── inventory/     🔧 Scaffold fixed (no page yet)
-├── categories/    ⬜ Not started
+├── categories/    ✅ Scaffold + hook working (GET /categories fixed with pagination defaults)
 ├── shops/         ⬜ Not started
 ├── notifications/ ⬜ Not started
 └── audit-logs/    ⬜ Not started
@@ -144,5 +163,5 @@ Backend runs on port 3000. Frontend dev server on port 3001.
 
 ---
 
-**Last Commit**: feat(FIGMA-004): Implement Clients admin page — table, filters, 3 modals, ClientAvatar, mock data  
-**Next Up**: Transfers page UI (FIGMA-005)
+**Last Commit**: feat(api/products): Wire Products page to real backend — useProducts, useProduct, categories fix  
+**Next Up**: Fix edit form (barcode + category_id), add error toasts, then Clients API integration

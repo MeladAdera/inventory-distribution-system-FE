@@ -16,21 +16,16 @@ import { useI18n } from '@/providers/I18nProvider';
 import { cn } from '@/common/utils/cn';
 import { ProductThumb } from './ProductThumb';
 import { StatusBadge } from './StatusBadge';
-import {
-  getProductStatus,
-  type AdminProduct,
-  type ProductCategory,
-  type ProductStatus,
-} from '../types/products.types';
+import type { Product, ProductSource } from '../types/products.types';
 
-const GRID = '40px 2fr 1.2fr 1fr 1fr 0.9fr 1fr 156px';
+const GRID = '40px 2fr 1.2fr 1.2fr 1fr 1fr 1fr 156px';
 const HEADER_KEYS = [
   'num',
   'product',
-  'sku',
+  'barcode',
   'category',
-  'warehouseQty',
-  'unitPrice',
+  'price',
+  'source',
   'status',
   'actions',
 ] as const;
@@ -45,12 +40,13 @@ function SkeletonRow() {
       className="grid gap-4 px-5 py-4 border-t border-border"
       style={{ gridTemplateColumns: 'repeat(6, 1fr)' }}
     >
-      <div className="h-3 rounded skeleton-shimmer" style={{ width: '70%' }} />
-      <div className="h-3 rounded skeleton-shimmer" style={{ width: '55%' }} />
-      <div className="h-3 rounded skeleton-shimmer" style={{ width: '55%' }} />
-      <div className="h-3 rounded skeleton-shimmer" style={{ width: '55%' }} />
-      <div className="h-3 rounded skeleton-shimmer" style={{ width: '55%' }} />
-      <div className="h-3 rounded skeleton-shimmer" style={{ width: '40%' }} />
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div
+          key={i}
+          className="h-3 rounded skeleton-shimmer"
+          style={{ width: i === 0 ? '70%' : '55%' }}
+        />
+      ))}
     </div>
   );
 }
@@ -91,41 +87,37 @@ function IconBtn({ onClick, title, colorClass, children }: IconBtnProps) {
 // ── Props ──────────────────────────────────────────────────────────────────
 
 interface ProductsTableCardProps {
-  products: AdminProduct[];
-  filteredCount: number;
+  products: Product[];
+  total: number;
   isLoading: boolean;
   page: number;
   pageSize: number;
   startIndex: number;
   search: string;
-  categoryFilter: string;
-  statusFilter: string;
+  sourceFilter: string;
   onSearchChange: (v: string) => void;
-  onCategoryChange: (v: string) => void;
-  onStatusChange: (v: string) => void;
+  onSourceChange: (v: string) => void;
   onPageChange: (p: number) => void;
   onAddProduct: () => void;
-  onView: (p: AdminProduct) => void;
-  onEdit: (p: AdminProduct) => void;
-  onRestock: (p: AdminProduct) => void;
-  onDelete: (p: AdminProduct) => void;
+  onView: (p: Product) => void;
+  onEdit: (p: Product) => void;
+  onRestock: (p: Product) => void;
+  onDelete: (p: Product) => void;
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
 
 export function ProductsTableCard({
   products,
-  filteredCount,
+  total,
   isLoading,
   page,
   pageSize,
   startIndex,
   search,
-  categoryFilter,
-  statusFilter,
+  sourceFilter,
   onSearchChange,
-  onCategoryChange,
-  onStatusChange,
+  onSourceChange,
   onPageChange,
   onAddProduct,
   onView,
@@ -133,10 +125,10 @@ export function ProductsTableCard({
   onRestock,
   onDelete,
 }: ProductsTableCardProps) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const p = t.products;
 
-  const pageCount = Math.ceil(filteredCount / pageSize);
+  const pageCount = Math.ceil(total / pageSize);
   const showPagination = pageCount > 1;
   const pages = getPageNumbers(page, pageCount);
 
@@ -159,30 +151,16 @@ export function ProductsTableCard({
           />
         </div>
 
-        {/* Category filter */}
+        {/* Source filter */}
         <select
-          value={categoryFilter}
-          onChange={(e) => onCategoryChange(e.target.value)}
+          value={sourceFilter}
+          onChange={(e) => onSourceChange(e.target.value)}
           className={selectCls}
         >
-          <option value="">{p.toolbar.allCategories}</option>
-          {(['bev', 'snk', 'dry', 'cln', 'can', 'bky'] as ProductCategory[]).map((cat) => (
-            <option key={cat} value={cat}>
-              {p.toolbar.categories[cat]}
-            </option>
-          ))}
-        </select>
-
-        {/* Status filter */}
-        <select
-          value={statusFilter}
-          onChange={(e) => onStatusChange(e.target.value)}
-          className={selectCls}
-        >
-          <option value="">{p.toolbar.allStatuses}</option>
-          {(['in_stock', 'low', 'out', 'inactive'] as ProductStatus[]).map((s) => (
-            <option key={s} value={s}>
-              {p.toolbar.statuses[s]}
+          <option value="">{p.toolbar.allSources}</option>
+          {(['WAREHOUSE', 'LOCAL'] as ProductSource[]).map((src) => (
+            <option key={src} value={src}>
+              {p.toolbar.sources[src]}
             </option>
           ))}
         </select>
@@ -220,7 +198,6 @@ export function ProductsTableCard({
             key={product.id}
             product={product}
             rowNum={startIndex + idx + 1}
-            locale={locale}
             p={p}
             onView={onView}
             onEdit={onEdit}
@@ -236,7 +213,7 @@ export function ProductsTableCard({
           <span className="text-[13px] text-ink-500">
             {p.pagination.showing
               .replace('{n}', String(products.length))
-              .replace('{total}', String(filteredCount))}
+              .replace('{total}', String(total))}
           </span>
           <div className="flex items-center gap-1">
             <PageBtn onClick={() => onPageChange(page - 1)} disabled={page === 1}>
@@ -317,30 +294,19 @@ function EmptyState({ onAdd, p }: { onAdd: () => void; p: ProductsT }) {
 // ── Table row ──────────────────────────────────────────────────────────────
 
 interface ProductRowProps {
-  product: AdminProduct;
+  product: Product;
   rowNum: number;
-  locale: string;
   p: ProductsT;
-  onView: (p: AdminProduct) => void;
-  onEdit: (p: AdminProduct) => void;
-  onRestock: (p: AdminProduct) => void;
-  onDelete: (p: AdminProduct) => void;
+  onView: (p: Product) => void;
+  onEdit: (p: Product) => void;
+  onRestock: (p: Product) => void;
+  onDelete: (p: Product) => void;
 }
 
-function ProductRow({
-  product,
-  rowNum,
-  locale,
-  p,
-  onView,
-  onEdit,
-  onRestock,
-  onDelete,
-}: ProductRowProps) {
-  const name = locale === 'ar' ? product.name_ar : product.name_en;
-  const status = getProductStatus(product);
-  const statusLabel = p.toolbar.statuses[status];
-  const categoryLabel = p.toolbar.categories[product.category];
+function ProductRow({ product, rowNum, p, onView, onEdit, onRestock, onDelete }: ProductRowProps) {
+  const categoryName = product.category_name;
+  const sourceLabel = p.toolbar.sources[product.source as ProductSource];
+  const statusLabel = product.is_active ? p.toolbar.statuses.active : p.toolbar.statuses.inactive;
 
   const actions = (
     <div className="flex items-center gap-0.5 justify-end">
@@ -374,40 +340,27 @@ function ProductRow({
         className="hidden md:grid items-center px-5 min-h-15 text-[13px] text-ink-800"
         style={{ gridTemplateColumns: GRID }}
       >
-        {/* # */}
         <span className="font-mono text-xs text-ink-400">{rowNum}</span>
 
-        {/* Product */}
         <div className="flex items-center gap-3 min-w-0">
-          <ProductThumb color={product.color} size={38} />
-          <span className="font-medium text-ink-900 truncate">{name}</span>
+          <ProductThumb id={product.id} size={38} />
+          <span className="font-medium text-ink-900 truncate">{product.name}</span>
         </div>
 
-        {/* SKU */}
-        <span className="font-mono text-xs text-ink-500 whitespace-nowrap">{product.sku}</span>
-
-        {/* Category */}
-        <span className="text-ink-600 whitespace-nowrap">{categoryLabel}</span>
-
-        {/* WH Qty */}
-        <span
-          className={cn(
-            'font-mono font-medium',
-            product.warehouse_qty === 0 ? 'text-danger-700' : 'text-ink-800'
-          )}
-        >
-          {product.warehouse_qty.toLocaleString()}
+        <span className="font-mono text-xs text-ink-500 whitespace-nowrap">
+          {product.barcode ?? '—'}
         </span>
 
-        {/* Unit price */}
+        <span className="text-ink-600 whitespace-nowrap">{categoryName}</span>
+
         <span className="font-mono text-ink-700 whitespace-nowrap">
-          د.إ {product.sell_price.toFixed(2)}
+          د.إ {Number(product.price).toFixed(2)}
         </span>
 
-        {/* Status */}
-        <StatusBadge status={status} label={statusLabel} />
+        <span className="text-ink-600">{sourceLabel}</span>
 
-        {/* Actions */}
+        <StatusBadge isActive={product.is_active} label={statusLabel} />
+
         {actions}
       </div>
 
@@ -415,60 +368,27 @@ function ProductRow({
       <div className="md:hidden p-4 flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <ProductThumb color={product.color} size={42} />
+            <ProductThumb id={product.id} size={42} />
             <div className="min-w-0">
-              <p className="font-medium text-ink-900 text-sm truncate">{name}</p>
-              <p className="font-mono text-xs text-ink-500 mt-0.5">{product.sku}</p>
+              <p className="font-medium text-ink-900 text-sm truncate">{product.name}</p>
+              <p className="font-mono text-xs text-ink-500 mt-0.5">{product.barcode ?? '—'}</p>
             </div>
           </div>
-          <StatusBadge status={status} label={statusLabel} />
+          <StatusBadge isActive={product.is_active} label={statusLabel} />
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
           <span className="text-ink-500">
-            {p.table.category}: <span className="text-ink-700">{categoryLabel}</span>
+            {p.table.category}: <span className="text-ink-700">{categoryName}</span>
           </span>
           <span className="text-ink-500">
-            {p.table.warehouseQty}:{' '}
-            <span
-              className={cn(
-                'font-mono font-medium',
-                product.warehouse_qty === 0 ? 'text-danger-700' : 'text-ink-700'
-              )}
-            >
-              {product.warehouse_qty.toLocaleString()}
-            </span>
+            {p.table.price}:{' '}
+            <span className="font-mono text-ink-700">د.إ {Number(product.price).toFixed(2)}</span>
           </span>
           <span className="text-ink-500">
-            {p.table.unitPrice}:{' '}
-            <span className="font-mono text-ink-700">د.إ {product.sell_price.toFixed(2)}</span>
+            {p.table.source}: <span className="text-ink-700">{sourceLabel}</span>
           </span>
         </div>
-        <div className="flex items-center gap-0.5">
-          <IconBtn
-            onClick={() => onRestock(product)}
-            title={p.restock.title}
-            colorClass="text-success-700"
-          >
-            <PackagePlus size={15} />
-          </IconBtn>
-          <IconBtn onClick={() => onView(product)} title={p.detail.title} colorClass="text-ink-600">
-            <Eye size={15} />
-          </IconBtn>
-          <IconBtn
-            onClick={() => onEdit(product)}
-            title={p.form.editTitle}
-            colorClass="text-ink-600"
-          >
-            <Pencil size={15} />
-          </IconBtn>
-          <IconBtn
-            onClick={() => onDelete(product)}
-            title={p.delete.delete}
-            colorClass="text-danger-700"
-          >
-            <Trash2 size={15} />
-          </IconBtn>
-        </div>
+        <div className="flex items-center gap-0.5">{actions}</div>
       </div>
     </div>
   );

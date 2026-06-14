@@ -5,32 +5,26 @@
     "addProduct": "+ إضافة منتج"
   },
   "toolbar": {
-    "searchPlaceholder": "بحث بالاسم أو الرمز",
-    "allCategories": "كل الفئات",
+    "searchPlaceholder": "بحث بالاسم أو الباركود",
+    "allSources": "كل المصادر",
     "allStatuses": "كل الحالات",
     "export": "تصدير",
-    "categories": {
-      "bev": "مشروبات",
-      "snk": "وجبات خفيفة",
-      "dry": "ألبان",
-      "cln": "منظفات",
-      "can": "معلبات",
-      "bky": "مخبوزات"
+    "sources": {
+      "WAREHOUSE": "المستودع",
+      "LOCAL": "محلي"
     },
     "statuses": {
-      "in_stock": "متوفر",
-      "low": "مخزون منخفض",
-      "out": "نفد المخزون",
+      "active": "نشط",
       "inactive": "غير نشط"
     }
   },
   "table": {
     "num": "#",
     "product": "المنتج",
-    "sku": "الرمز",
+    "barcode": "الباركود",
     "category": "الفئة",
-    "warehouseQty": "كمية المستودع",
-    "unitPrice": "سعر الوحدة",
+    "price": "السعر",
+    "source": "المصدر",
     "status": "الحالة",
     "actions": "إجراءات"
   },
@@ -47,42 +41,33 @@
     "editTitle": "تعديل منتج",
     "save": "حفظ",
     "cancel": "إلغاء",
-    "image": "صورة المنتج",
-    "imageDrag": "اسحب صورة أو انقر للرفع",
-    "nameAr": "الاسم بالعربية",
-    "nameArPlaceholder": "مثال: ماء معدني ٥٠٠ مل",
-    "nameEn": "الاسم بالإنجليزية",
-    "nameEnPlaceholder": "e.g. Mineral Water 500ml",
-    "sku": "رمز المنتج (SKU)",
-    "skuPlaceholder": "BVG-WTR-500",
+    "name": "اسم المنتج",
+    "namePlaceholder": "مثال: ماء معدني ٥٠٠ مل",
+    "barcode": "الباركود",
+    "barcodePlaceholder": "مثال: 6281234567890",
     "category": "الفئة",
+    "categoryPlaceholder": "اختر فئة",
     "description": "الوصف",
-    "costPrice": "سعر التكلفة (د.إ)",
+    "price": "السعر (د.إ)",
     "pricePlaceholder": "0.00",
-    "sellPrice": "سعر البيع (د.إ)",
-    "initialQty": "الكمية الابتدائية",
-    "qtyPlaceholder": "0",
-    "minStock": "الحد الأدنى للمخزون",
-    "errNameAr": "الاسم العربي مطلوب",
-    "errSku": "رمز المنتج مطلوب",
-    "errSellPrice": "يجب أن يكون سعر البيع أكبر من صفر",
-    "errQty": "الكمية مطلوبة"
+    "errName": "الاسم يجب أن يكون 3 أحرف على الأقل",
+    "errPrice": "يجب أن يكون السعر أكبر من صفر",
+    "errCategory": "الفئة مطلوبة"
   },
   "detail": {
     "title": "تفاصيل المنتج",
-    "warehouseQty": "كمية المستودع",
-    "minStock": "الحد الأدنى للمخزون",
-    "costPrice": "سعر التكلفة",
-    "sellPrice": "سعر البيع",
-    "totalValue": "القيمة الإجمالية",
+    "currentQty": "المخزون الحالي",
+    "price": "السعر",
+    "source": "المصدر",
+    "barcode": "الباركود",
     "category": "الفئة",
-    "units": "{n} وحدة"
+    "description": "الوصف",
+    "status": "الحالة",
+    "createdAt": "تاريخ الإنشاء"
   },
   "restock": {
     "title": "إضافة مخزون",
     "qtyLabel": "الكمية المضافة",
-    "currentQty": "الكمية الحالية",
-    "newTotal": "الإجمالي الجديد",
     "addStock": "إضافة كمية",
     "cancel": "إلغاء"
   },
