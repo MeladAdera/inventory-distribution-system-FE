@@ -1,0 +1,50 @@
+{
+  "page": {
+    "title": "نقل المخزون",
+    "count": "{n} عملية نقل",
+    "newTransfer": "+ نقل جديد"
+  },
+  "toolbar": {
+    "allClients": "كل العملاء",
+    "allProducts": "كل المنتجات",
+    "export": "تصدير"
+  },
+  "table": {
+    "date": "تاريخ النقل",
+    "client": "العميل",
+    "product": "المنتج",
+    "qty": "الكمية المنقولة",
+    "notes": "ملاحظات",
+    "recordedBy": "سُجّل بواسطة"
+  },
+  "emptyState": {
+    "title": "لا توجد عمليات نقل",
+    "sub": "أنشئ عملية نقل جديدة لنقل المخزون إلى عملائك."
+  },
+  "modal": {
+    "title": "نقل جديد",
+    "clientLabel": "العميل",
+    "clientPlaceholder": "اختر عميلاً",
+    "productLabel": "المنتج",
+    "productPlaceholder": "اختر منتجاً",
+    "qtyLabel": "الكمية",
+    "qtyHint": "المتوفر في المستودع: {n}",
+    "dateLabel": "تاريخ النقل",
+    "notesLabel": "ملاحظات",
+    "availableBanner": "المتوفر في المستودع: {n} وحدة",
+    "exceedsBanner": "الكمية تتجاوز المخزون المتاح",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "errClient": "الرجاء اختيار عميل",
+    "errProduct": "الرجاء اختيار منتج",
+    "errQtyRequired": "الكمية مطلوبة",
+    "errQtyPositive": "يجب أن تكون الكمية أكبر من صفر",
+    "errQtyExceeds": "الكمية تتجاوز المخزون المتاح"
+  },
+  "pagination": {
+    "showing": "عرض {n} من {total}"
+  },
+  "toast": {
+    "success": "تم نقل المخزون بنجاح"
+  }
+}

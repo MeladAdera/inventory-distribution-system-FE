@@ -4,6 +4,73 @@ Real-time development progress and detailed work logs.
 
 ---
 
+## 📅 June 14, 2026 - FIGMA-005: Transfers Admin Page
+
+### Session
+**Focus**: Build the `/transfers` admin page — table, filters, shared TransferModal with real-time availability banner  
+**Ticket**: FIGMA-005  
+**Version**: 0.9.0
+
+---
+
+### Tasks Completed
+
+1. ✅ **i18n** — Created `src/i18n/en/transfers.json` + `src/i18n/ar/transfers.json` with full AR/EN translations for page header, toolbar, table columns, modal form, error messages, and success toast; wired into `src/i18n/index.ts`
+
+2. ✅ **Types** — Created `transfers.types.ts` with `Transfer` (bilingual date/name/notes fields), `TransferProduct` (available_qty), `TransferClient`, `TransferPrefill` (for prefill from Dashboard/Shortages)
+
+3. ✅ **Mock data** — Created `transfersData.ts` with:
+   - `MOCK_TRANSFERS` — 8 records (30 May → 26 May 2026)
+   - `MOCK_TRANSFER_CLIENTS` — 6 clients (5 active, 1 inactive), aligned with clients page
+   - `MOCK_TRANSFER_PRODUCTS` — 12 products with realistic warehouse quantities
+
+4. ✅ **`TransfersTableCard`** — Toolbar (client select 180px + product select 180px + spacer + export), 6-col CSS grid `1.1fr 1.6fr 1.8fr 1fr 1.4fr 1.2fr`, 6 skeleton rows, Truck empty state, mobile stacked cards; `ClientAvatar` + `ProductThumb` reused in rows; date displayed in Eastern Arabic numerals (AR) or "D Mon YYYY" (EN)
+
+5. ✅ **`TransferModal`** — Shared modal (520px, `sm:max-w-130`); 5 fields: client select, product select, qty+date 2-col row, availability feedback banner, notes textarea:
+   - Product dropdown shows `"Name — availableQty"` — active & qty>0 only
+   - Qty hint below field: "Available in warehouse: N"
+   - Real-time availability banner: green (`#DDEEE3`) when OK, red (`#F6DDDB`) when exceeds
+   - Confirm button disabled in real-time: !client || !product || !qty || qty≤0 || qtyExceeds
+   - `prefill` prop allows Dashboard/Shortages to pre-select client, product, qty
+   - `formatDateAR` / `formatDateEN` helpers convert ISO date string to display format
+
+6. ✅ **`src/app/(dashboard)/transfers/page.tsx`** — State (transfers, isLoading 650ms, clientFilter, productFilter, page, modalOpen); `useMemo` filtering by client_id + product_id; on save: prepends new transfer + toast.success
+
+7. ✅ **`src/features/transfers/index.ts`** — Barrel export
+
+8. ✅ **`docs/features/transfers.md`** — Full feature doc with type reference, mock data tables, component API, i18n key list, responsive behaviour, integration points, known gaps, acceptance criteria
+
+---
+
+### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+✅ npx next build  — /transfers route listed
+```
+
+### Files Created
+| File | Description |
+|------|-------------|
+| `src/i18n/en/transfers.json` | English translations |
+| `src/i18n/ar/transfers.json` | Arabic translations |
+| `src/features/transfers/types/transfers.types.ts` | 4 interfaces |
+| `src/features/transfers/mock/transfersData.ts` | 8 transfers, 6 clients, 12 products |
+| `src/features/transfers/components/TransfersTableCard.tsx` | Table card component |
+| `src/features/transfers/components/TransferModal.tsx` | Shared form modal |
+| `src/features/transfers/index.ts` | Barrel export |
+| `src/app/(dashboard)/transfers/page.tsx` | Page route |
+| `docs/features/transfers.md` | Feature documentation |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/i18n/index.ts` | Added transfers EN + AR imports and entries |
+| `docs/README.md` | Marked FIGMA-005 complete, linked doc |
+| `PROJECT_STATUS.md` | Marked Transfers complete, updated file tree and last commit |
+| `PROGRESS.md` | Added this session |
+
+---
+
 ## 📅 June 14, 2026 - Products API Integration + Categories Fix
 
 ### Session

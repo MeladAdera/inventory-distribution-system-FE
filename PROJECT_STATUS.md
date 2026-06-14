@@ -46,7 +46,7 @@ Backend API is complete. Replacing mock data with real API calls page by page.
 | Dashboard page | 6× KPI cards, consumption trend chart, top-consumed bars, low-stock table, activity feed | ✅ Complete |
 | Products page | 8-col grid table, 4 modals (add/edit/detail/restock/delete), search/filter, skeleton | ✅ Complete |
 | Clients page | 8-col grid table, 3 modals (add/edit/delete), ClientAvatar, StatusBadge, search/filter | ✅ Complete |
-| Transfers page | List, new transfer flow | ⬜ Not started |
+| Transfers page | 6-col table, client/product filters, TransferModal with availability banner, mobile cards | ✅ Complete |
 | Shortages page | Low-stock list, restock action | ⬜ Not started |
 | Settings page | Profile, preferences | ⬜ Not started |
 
@@ -109,6 +109,7 @@ src/features/
 ├── users/         ✅ Complete (types + API + hooks + components + page)
 ├── products/      ✅ Complete (types + API + hooks + components + page + modals + mock)
 ├── clients/       ✅ Complete (types + validations + components + page + modals + mock)
+├── transfers/     ✅ Complete (types + components + page + modal + mock)
 ├── orders/        🔧 Scaffold fixed (no page yet)
 ├── inventory/     🔧 Scaffold fixed (no page yet)
 ├── categories/    ✅ Scaffold + hook working (non-paginated; WAREHOUSE_ADMIN filtered by shopId)
@@ -128,8 +129,8 @@ src/common/layout/
 
 src/i18n/                  ✅  React 18 context-based i18n (no library)
 ├── index.ts               ✅  assembled typed translations
-├── en/{sidebar,topbar,bottomnav,dashboard,products,clients}.json
-└── ar/{sidebar,topbar,bottomnav,dashboard,products,clients}.json
+├── en/{sidebar,topbar,bottomnav,dashboard,products,clients,transfers}.json
+└── ar/{sidebar,topbar,bottomnav,dashboard,products,clients,transfers}.json
 
 src/providers/
 └── I18nProvider.tsx       ✅  locale context + useI18n hook
@@ -164,5 +165,5 @@ Backend runs on port 3000. Frontend dev server on port 3001.
 
 ---
 
-**Last Commit**: feat(products): add category filter dropdown to products toolbar  
-**Next Up**: Fix edit form (barcode + category_id), add error toasts, then Clients API integration
+**Last Commit**: feat(transfers): implement Transfers admin page (FIGMA-005)  
+**Next Up**: Shortages page (FIGMA-006)
