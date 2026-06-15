@@ -2,7 +2,7 @@
 
 **Status**: API-Integrated — Live  
 **Created Date**: 2026-06-14  
-**Last Updated**: 2026-06-15  
+**Last Updated**: 2026-06-15 (multi-product modal)  
 **Assignee**: Melad Adera  
 **Ticket**: FIGMA-005
 
@@ -80,12 +80,19 @@ interface TransferItem {
 }
 ```
 
+### `TransferOrderItem`
+```ts
+interface TransferOrderItem {
+  productId: number;
+  quantity: number;
+}
+```
+
 ### `CreateTransferInput`
 ```ts
 interface CreateTransferInput {
-  productId: number;
-  quantity: number;
-  shopId?: number;    // Required when isAdmin = true
+  items: TransferOrderItem[];   // One or more product rows
+  shopId?: number;              // Required when isAdmin = true
 }
 ```
 
@@ -199,7 +206,7 @@ React Query for `GET /products?source=WAREHOUSE`. `staleTime: 5 min`. Returns `A
 |------|------|---------|
 | `open` | `boolean` | Controls visibility |
 | `onClose` | `() => void` | Closes modal |
-| `onSave` | `(productId, quantity, shopId?) => Promise<void>` | Submit handler |
+| `onSave` | `(items: { productId: number; quantity: number }[], shopId?) => Promise<void>` | Submit handler |
 | `prefill?` | `TransferPrefill` | Pre-selects product + qty on open |
 | `isSaving?` | `boolean` | Disables confirm + shows `…` |
 | `isAdmin?` | `boolean` | Shows shop selector field |
@@ -209,18 +216,23 @@ React Query for `GET /products?source=WAREHOUSE`. `staleTime: 5 min`. Returns `A
 
 **Form fields:**
 1. **Shop select** (admin only, required) — list from `useTransferShops` via page prop
-2. **Product select** (required) — list from `useTransferProducts`; shows `prod.name`
-3. **Qty** — number input; validates: required, > 0, ≤ `availableQty`
+2. **Products list** — dynamic rows via `useFieldArray`; each row is an independent `ProductRow` component:
+   - Product `<select>` populated from `useTransferProducts`
+   - Qty `<input>` (required, > 0, ≤ `availableQty`)
+   - Remove button (hidden when only 1 row remains; shows `Trash2` icon otherwise)
+   - Per-row availability hint "Available in warehouse: N" and green/red banner
+   - Per-row `useProduct(productId)` call for real-time `current_quantity`
+3. **"+ Add product"** button appends a new empty row (no upper limit)
 
-**Availability hint & banner**: uses `useProduct(productId)` to fetch `current_quantity` in real time.
-- Qty hint below field: "Available in warehouse: N"
-- Green banner (`#DDEEE3`): qty ≤ available
-- Red banner (`#F6DDDB`): qty > available; confirm button disabled
+**Availability banner per row**:
+- Green (`#DDEEE3`): qty ≤ available
+- Red (`#F6DDDB`): qty > available; that row's qty field is highlighted in danger red
 
 **Confirm disabled when**:
 ```ts
-(isAdmin && !watchedShopId) || !watchedProductId || !watchedQty || qtyNum <= 0 || qtyExceeds || !!isSaving
+(isAdmin && !watchedShopId) || !!isSaving
 ```
+Per-row validation (required product, required qty > 0, ≤ stock) is enforced on submit via react-hook-form's `validate` function and shows inline errors.
 
 ---
 
@@ -264,6 +276,7 @@ transfers.status.{PENDING, PROCESSING, SHIPPED, RECEIVED, COMPLETED}
 transfers.actions.{process, ship, complete, awaitingReceipt}
 transfers.emptyState.{title, sub}
 transfers.modal.{title, shopLabel, shopPlaceholder, productLabel, productPlaceholder,
+                 productsLabel, addProduct,
                  qtyLabel, qtyHint, availableBanner, exceedsBanner, confirm, cancel,
                  errShop, errProduct, errQtyRequired, errQtyPositive, errQtyExceeds}
 transfers.pagination.{showing}
@@ -315,7 +328,6 @@ After any `createTransfer` or `updateStatus` call, `['transfers']` is invalidate
 | Gap | Impact | Fix When |
 |-----|--------|----------|
 | Shop-side RECEIVED action not in this UI | Shop staff must confirm receipt separately | Shop-facing view |
-| Bulk transfer (multiple products per order) not exposed in modal | API supports it via `items[]` array | Product-picker modal enhancement |
 | No date range filter on toolbar | Can't filter by date in UI | Backend adds `from`/`to` params |
 | `to_shop_name` may be absent if API doesn't embed it — falls back to shop list lookup | Minor flash if shops not yet loaded | Ensure API embeds `to_shop_name` |
 
@@ -334,8 +346,11 @@ After any `createTransfer` or `updateStatus` call, `['transfers']` is invalidate
 - [x] TransferModal: product dropdown populated from warehouse products API
 - [x] TransferModal: real-time availability fetched per selected product
 - [x] TransferModal: green banner when qty ≤ available; red when qty > available
-- [x] TransferModal: Confirm disabled until all required fields valid
-- [x] On save: `POST /orders` called; list invalidated; toast success
+- [x] TransferModal: dynamic product rows via `useFieldArray` — "+ Add product" appends a row
+- [x] TransferModal: each row independently validates product, qty, and stock availability
+- [x] TransferModal: remove button on rows beyond the first; unavailable when only 1 row
+- [x] TransferModal: Confirm disabled while saving or when admin hasn't selected a shop
+- [x] On save: `POST /orders` called with `items[]` array; list invalidated; toast success
 - [x] Admin action buttons advance status; `PATCH /orders/:id/status` called; toast success
 - [x] SHIPPED row shows "Awaiting receipt" (shop-side action)
 - [x] `prefill` prop pre-selects product + qty (Shortages integration)

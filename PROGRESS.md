@@ -4,6 +4,48 @@ Real-time development progress and detailed work logs.
 
 ---
 
+## June 15, 2026 — Multi-product Transfer Modal
+
+### Session
+**Focus**: Allow selecting multiple products per transfer order in the New Transfer modal  
+**Version**: 0.9.3
+
+---
+
+### Tasks Completed
+
+1. ✅ **`CreateTransferInput` type updated** — changed from `{ productId, quantity, shopId? }` to `{ items: TransferOrderItem[], shopId? }`. Added `TransferOrderItem` interface.
+
+2. ✅ **`transfersApi.create` simplified** — now passes the input object directly to `POST /orders`; the backend already accepted `items[]` but the API layer was manually wrapping a single product. No backend changes needed.
+
+3. ✅ **`TransferModal` rewritten with `useFieldArray`** — dynamic product rows; each row is an independent `ProductRow` sub-component. `ProductRow` calls `useProduct(productId)` internally so the availability hint and red/green banner work per product without cross-row interference. Remove button (`Trash2`) appears when there are 2+ rows. Confirm button only blocks on admin-missing-shop or isSaving; per-row validation (required, qty > 0, ≤ stock) runs on submit.
+
+4. ✅ **`handleSave` updated in `transfers/page.tsx`** — signature changed from `(productId, quantity, shopId?)` to `(items[], shopId?)`; passes `{ items, shopId }` to `createTransfer`.
+
+5. ✅ **`handleTransferSave` updated in `shortages/page.tsx`** — signature synced to `(_items, _shopId?)` so TypeScript compiles (shortages page still on mock data; API integration is a future task).
+
+6. ✅ **i18n updated** — added `modal.productsLabel` and `modal.addProduct` to both EN and AR JSON files. Types auto-updated via `as const` inference in `i18n/index.ts`.
+
+---
+
+### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/features/transfers/types/transfers.types.ts` | Added `TransferOrderItem`; `CreateTransferInput` now uses `items[]` |
+| `src/features/transfers/api/transfers.api.ts` | `create()` passes data directly — no manual item wrapping |
+| `src/features/transfers/components/TransferModal.tsx` | Full rewrite — `useFieldArray`, `ProductRow` sub-component |
+| `src/app/(dashboard)/transfers/page.tsx` | `handleSave` signature updated |
+| `src/app/(dashboard)/shortages/page.tsx` | `handleTransferSave` signature synced |
+| `src/i18n/en/transfers.json` | Added `modal.productsLabel`, `modal.addProduct` |
+| `src/i18n/ar/transfers.json` | Added `modal.productsLabel`, `modal.addProduct` |
+
+---
+
 ## June 15, 2026 — Transfers API Integration
 
 ### Session

@@ -87,7 +87,7 @@ Check `docs/api/` folder:
 | Dashboard | [dashboard.md](features/dashboard.md) | ✅ FIGMA-002 Complete |
 | Products | [products.md](features/products.md) | ✅ FIGMA-003 Complete |
 | Clients | [clients.md](features/clients.md) | ✅ FIGMA-004 Complete |
-| Transfers | [transfers.md](features/transfers.md) | ✅ FIGMA-005 Complete — API Integrated |
+| Transfers | [transfers.md](features/transfers.md) | ✅ FIGMA-005 Complete — API Integrated, multi-product modal |
 | Shortages | [shortages.md](features/shortages.md) | ✅ FIGMA-006 Complete |
 | Settings | — | ⬜ FIGMA-007 Pending |
 
@@ -326,7 +326,7 @@ Instead use:
 
 **Last Updated**: June 15, 2026  
 **Maintainer**: Melad Adera  
-**Status**: Transfers API-integrated — Settings (FIGMA-007) or Clients API next
+**Status**: Transfers complete (API + multi-product modal) — Settings (FIGMA-007) or Clients API next
 
 For project overview, see **[PROJECT_STATUS.md](../PROJECT_STATUS.md)**  
 For recent updates, see **[UPDATES.md](../UPDATES.md)**  

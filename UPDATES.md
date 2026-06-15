@@ -4,6 +4,30 @@ All changes documented chronologically with details.
 
 ---
 
+## [0.9.3] - 2026-06-15 - Multi-product Transfer Modal
+
+### Transfers — Multi-product selection ✅
+
+#### Changed
+- **`transfers.types.ts`** — `CreateTransferInput` updated from `{ productId, quantity, shopId? }` to `{ items: TransferOrderItem[], shopId? }`. New `TransferOrderItem` interface: `{ productId: number; quantity: number }`.
+- **`transfers.api.ts`** — `create()` now passes `data` directly to `POST /orders` (no more manual single-item wrapping). The backend already accepted `items[]`; the API layer now exposes that properly.
+- **`TransferModal.tsx`** — full rewrite using `useFieldArray`:
+  - Dynamic list of product rows; "+ Add product" button appends new empty rows
+  - Each row is a separate `ProductRow` component that independently calls `useProduct(productId)` so the availability hint and green/red banner update per product
+  - Remove button (`Trash2`) visible on rows beyond the first; spacer `div` keeps grid alignment when hidden
+  - Confirm button only checks admin-requires-shop and `isSaving`; per-row validation (required, qty > 0, qty ≤ stock) runs on submit
+  - `onSave` signature changed: `(productId, quantity, shopId?) → (items[], shopId?)`
+- **`transfers/page.tsx`** — `handleSave` updated to match new signature; passes `{ items, shopId }` to `createTransfer`
+- **`shortages/page.tsx`** — `handleTransferSave` signature updated to `(_items, _shopId?)` (still mock data; signature synced to compile)
+- **`i18n/en/transfers.json`** + **`i18n/ar/transfers.json`** — added `modal.productsLabel` ("Products" / "المنتجات") and `modal.addProduct` ("+ Add product" / "+ إضافة منتج")
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
 ## [0.8.1] - 2026-06-14 - Category Dropdown & Product Create Bugfixes
 
 ### Bug Fixes
