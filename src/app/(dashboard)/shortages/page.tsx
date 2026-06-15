@@ -50,7 +50,10 @@ export default function ShortagesPage() {
     setTransferOpen(true);
   };
 
-  const handleTransferSave = async (_productId: number, _quantity: number) => {
+  const handleTransferSave = async (
+    _items: { productId: number; quantity: number }[],
+    _shopId?: number
+  ) => {
     setTransferOpen(false);
     toast.success(t.transfers.toast.success);
   };

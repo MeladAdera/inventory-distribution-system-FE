@@ -48,6 +48,8 @@
     "cancel": "إلغاء",
     "errShop": "الرجاء اختيار المتجر المستلم",
     "errProduct": "الرجاء اختيار منتج",
+    "productsLabel": "المنتجات",
+    "addProduct": "+ إضافة منتج",
     "errQtyRequired": "الكمية مطلوبة",
     "errQtyPositive": "يجب أن تكون الكمية أكبر من صفر",
     "errQtyExceeds": "الكمية تتجاوز المخزون المتاح"

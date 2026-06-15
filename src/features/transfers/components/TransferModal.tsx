@@ -1,29 +1,171 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { X, Truck, CheckCircle, AlertCircle } from 'lucide-react';
+import {
+  useForm,
+  useFieldArray,
+  useWatch,
+  type Control,
+  type UseFormRegister,
+  type FieldErrors,
+} from 'react-hook-form';
+import { X, Truck, Plus, Trash2, CheckCircle, AlertCircle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { cn } from '@/common/utils/cn';
 import { useProduct } from '@/features/products/hooks/useProducts';
+import type { Product } from '@/features/products/types/products.types';
 import type { Shop } from '@/features/shops/types/shops.types';
 import { useTransferProducts } from '../hooks/useTransfers';
 import type { TransferPrefill } from '../types/transfers.types';
 
 interface TransferFormValues {
   shopId: string;
-  productId: string;
-  qty: string;
+  items: { productId: string; qty: string }[];
 }
 
 interface TransferModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (productId: number, quantity: number, shopId?: number) => Promise<void>;
+  onSave: (items: { productId: number; quantity: number }[], shopId?: number) => Promise<void>;
   prefill?: TransferPrefill;
   isSaving?: boolean;
   isAdmin?: boolean;
   shops?: Shop[];
+}
+
+interface ModalTranslations {
+  productPlaceholder: string;
+  qtyHint: string;
+  availableBanner: string;
+  exceedsBanner: string;
+  errProduct: string;
+  errQtyRequired: string;
+  errQtyPositive: string;
+  errQtyExceeds: string;
+}
+
+interface ProductRowProps {
+  index: number;
+  control: Control<TransferFormValues>;
+  register: UseFormRegister<TransferFormValues>;
+  errors: FieldErrors<TransferFormValues>;
+  products: Product[];
+  canRemove: boolean;
+  onRemove: () => void;
+  m: ModalTranslations;
+}
+
+function ProductRow({
+  index,
+  control,
+  register,
+  errors,
+  products,
+  canRemove,
+  onRemove,
+  m,
+}: ProductRowProps) {
+  const productId = useWatch({ control, name: `items.${index}.productId` });
+  const qty = useWatch({ control, name: `items.${index}.qty` });
+
+  const { data: productDetail } = useProduct(productId ? Number(productId) : null);
+  const availableQty = productDetail?.data?.current_quantity ?? 0;
+
+  const qtyNum = Number(qty);
+  const qtyExceeds = !!productId && qtyNum > 0 && availableQty > 0 && qtyNum > availableQty;
+  const showBanner = !!productId && qtyNum > 0 && availableQty > 0;
+
+  type RowErrors = { productId?: { message?: string }; qty?: { message?: string } };
+  const rowErrors = errors.items?.[index] as RowErrors | undefined;
+  const prodError = rowErrors?.productId;
+  const qtyError = rowErrors?.qty;
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-start gap-2">
+        {/* Product Select */}
+        <div className="flex-1 min-w-0">
+          <select
+            {...register(`items.${index}.productId`, { required: true })}
+            className={sel(!!prodError)}
+          >
+            <option value="">{m.productPlaceholder}</option>
+            {products.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Qty Input */}
+        <div className="w-24 shrink-0">
+          <input
+            type="number"
+            placeholder="0"
+            min="1"
+            {...register(`items.${index}.qty`, {
+              required: m.errQtyRequired,
+              validate: (val) => {
+                const n = Number(val);
+                if (!val || isNaN(n) || n <= 0) return m.errQtyPositive;
+                if (availableQty > 0 && n > availableQty) return m.errQtyExceeds;
+                return true;
+              },
+            })}
+            className={ipt(!!qtyError || qtyExceeds)}
+          />
+        </div>
+
+        {/* Remove Button */}
+        {canRemove ? (
+          <button
+            type="button"
+            onClick={onRemove}
+            aria-label="Remove"
+            className="shrink-0 w-10 h-10 flex items-center justify-center text-ink-400 hover:text-danger-700 hover:bg-danger-50 rounded-lg transition-colors"
+          >
+            <Trash2 size={15} />
+          </button>
+        ) : (
+          <div className="w-10 shrink-0" />
+        )}
+      </div>
+
+      {/* Inline errors */}
+      {prodError && <p className="text-xs text-danger-700">{m.errProduct}</p>}
+      {qtyError && <p className="text-xs text-danger-700">{qtyError.message}</p>}
+
+      {/* Qty hint */}
+      {productId && !qtyError && availableQty > 0 && (
+        <p className="text-xs text-ink-500">{m.qtyHint.replace('{n}', String(availableQty))}</p>
+      )}
+
+      {/* Availability banner */}
+      {showBanner && (
+        <div
+          className={cn(
+            'flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg',
+            qtyExceeds ? 'bg-[#F6DDDB]' : 'bg-[#DDEEE3]'
+          )}
+        >
+          {qtyExceeds ? (
+            <AlertCircle size={16} className="text-danger-700 shrink-0" />
+          ) : (
+            <CheckCircle size={16} className="text-success-700 shrink-0" />
+          )}
+          <p
+            className={cn(
+              'text-[13px] font-medium',
+              qtyExceeds ? 'text-danger-700' : 'text-success-700'
+            )}
+          >
+            {qtyExceeds ? m.exceedsBanner : m.availableBanner.replace('{n}', String(availableQty))}
+          </p>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function TransferModal({
@@ -44,19 +186,31 @@ export function TransferModal({
   const {
     register,
     handleSubmit,
+    control,
     watch,
     reset,
     formState: { errors },
   } = useForm<TransferFormValues>({
-    defaultValues: { shopId: '', productId: '', qty: '' },
+    defaultValues: {
+      shopId: '',
+      items: [{ productId: '', qty: '' }],
+    },
   });
+
+  const { fields, append, remove } = useFieldArray({ control, name: 'items' });
+
+  const watchedShopId = watch('shopId');
 
   useEffect(() => {
     if (open) {
       reset({
         shopId: '',
-        productId: prefill?.productId ? String(prefill.productId) : '',
-        qty: prefill?.quantity ? String(prefill.quantity) : '',
+        items: [
+          {
+            productId: prefill?.productId ? String(prefill.productId) : '',
+            qty: prefill?.quantity ? String(prefill.quantity) : '',
+          },
+        ],
       });
     }
   }, [open, prefill, reset]);
@@ -69,34 +223,16 @@ export function TransferModal({
     };
   }, [open]);
 
-  // All watch() and derived hooks must be above the early return
-  const watchedProductId = watch('productId');
-  const watchedQty = watch('qty');
-  const watchedShopId = watch('shopId');
-
-  const { data: productDetail } = useProduct(watchedProductId ? Number(watchedProductId) : null);
-  const availableQty = productDetail?.data?.current_quantity ?? 0;
-
   if (!open) return null;
 
-  const qtyNum = Number(watchedQty);
-  const qtyExceeds = !!watchedProductId && qtyNum > 0 && availableQty > 0 && qtyNum > availableQty;
-  const showBanner = !!watchedProductId && qtyNum > 0 && availableQty > 0;
-
-  const isConfirmDisabled =
-    (isAdmin && !watchedShopId) ||
-    !watchedProductId ||
-    !watchedQty ||
-    qtyNum <= 0 ||
-    qtyExceeds ||
-    !!isSaving;
+  const isConfirmDisabled = (isAdmin && !watchedShopId) || !!isSaving;
 
   const onSubmit = handleSubmit(async (data) => {
-    await onSave(
-      Number(data.productId),
-      qtyNum,
-      isAdmin && data.shopId ? Number(data.shopId) : undefined
-    );
+    const items = data.items.map((item) => ({
+      productId: Number(item.productId),
+      quantity: Number(item.qty),
+    }));
+    await onSave(items, isAdmin && data.shopId ? Number(data.shopId) : undefined);
   });
 
   return (
@@ -127,7 +263,7 @@ export function TransferModal({
           id="transfer-form"
           onSubmit={onSubmit}
           noValidate
-          className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-4.5"
+          className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-4.5"
         >
           {/* Shop Select (Admin only) */}
           {isAdmin && (
@@ -146,79 +282,42 @@ export function TransferModal({
             </Field>
           )}
 
-          {/* Product Select */}
-          <Field
-            label={m.productLabel}
-            required
-            error={errors.productId ? m.errProduct : undefined}
-          >
-            <select
-              {...register('productId', { required: true })}
-              className={sel(!!errors.productId)}
-            >
-              <option value="">{m.productPlaceholder}</option>
-              {products.map((prod) => (
-                <option key={prod.id} value={prod.id}>
-                  {prod.name}
-                </option>
-              ))}
-            </select>
-          </Field>
-
-          {/* Qty */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-ink-600">
-              {m.qtyLabel}
+          {/* Products Section */}
+          <div className="flex flex-col gap-0">
+            <p className="text-xs font-medium text-ink-600 mb-3">
+              {m.productsLabel}
               <span className="text-danger-700 ms-0.75">*</span>
-            </label>
-            <input
-              type="number"
-              placeholder="0"
-              min="1"
-              {...register('qty', {
-                required: m.errQtyRequired,
-                validate: (val) => {
-                  const n = Number(val);
-                  if (!val || isNaN(n) || n <= 0) return m.errQtyPositive;
-                  if (availableQty > 0 && n > availableQty) return m.errQtyExceeds;
-                  return true;
-                },
-              })}
-              className={ipt(!!errors.qty)}
-            />
-            {watchedProductId && !errors.qty && availableQty > 0 && (
-              <p className="text-xs text-ink-500">
-                {m.qtyHint.replace('{n}', String(availableQty))}
-              </p>
-            )}
-            {errors.qty && <p className="text-xs text-danger-700">{errors.qty.message}</p>}
-          </div>
+            </p>
 
-          {/* Availability Banner */}
-          {showBanner && (
-            <div
-              className={cn(
-                'flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg',
-                qtyExceeds ? 'bg-[#F6DDDB]' : 'bg-[#DDEEE3]'
-              )}
-            >
-              {qtyExceeds ? (
-                <AlertCircle size={16} className="text-danger-700 shrink-0" />
-              ) : (
-                <CheckCircle size={16} className="text-success-700 shrink-0" />
-              )}
-              <p
-                className={cn(
-                  'text-[13px] font-medium',
-                  qtyExceeds ? 'text-danger-700' : 'text-success-700'
-                )}
-              >
-                {qtyExceeds
-                  ? m.exceedsBanner
-                  : m.availableBanner.replace('{n}', String(availableQty))}
-              </p>
+            <div className="flex flex-col">
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className={cn('pb-3', index < fields.length - 1 && 'mb-3 border-b border-border')}
+                >
+                  <ProductRow
+                    index={index}
+                    control={control}
+                    register={register}
+                    errors={errors}
+                    products={products}
+                    canRemove={fields.length > 1}
+                    onRemove={() => remove(index)}
+                    m={m}
+                  />
+                </div>
+              ))}
             </div>
-          )}
+
+            <button
+              type="button"
+              onClick={() => append({ productId: '', qty: '' })}
+              className="mt-0.5 inline-flex items-center gap-1.5 text-sm font-medium text-amber-700 hover:text-amber-800 transition-colors"
+            >
+              <Plus size={14} />
+              {m.addProduct}
+            </button>
+          </div>
         </form>
 
         {/* Footer */}

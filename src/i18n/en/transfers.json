@@ -48,6 +48,8 @@
     "cancel": "Cancel",
     "errShop": "Please select a destination shop",
     "errProduct": "Please select a product",
+    "productsLabel": "Products",
+    "addProduct": "+ Add product",
     "errQtyRequired": "Quantity is required",
     "errQtyPositive": "Quantity must be greater than 0",
     "errQtyExceeds": "Quantity exceeds available stock"

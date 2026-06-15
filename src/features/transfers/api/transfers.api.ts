@@ -19,11 +19,7 @@ export const transfersApi = {
   },
 
   create: async (data: CreateTransferInput) => {
-    const body: { items: { productId: number; quantity: number }[]; shopId?: number } = {
-      items: [{ productId: data.productId, quantity: data.quantity }],
-    };
-    if (data.shopId) body.shopId = data.shopId;
-    const response = await apiClient.post('/orders', body);
+    const response = await apiClient.post('/orders', data);
     return response.data;
   },
 

@@ -9,6 +9,7 @@ import { TransfersTableCard } from '@/features/transfers/components/TransfersTab
 import { TransferModal } from '@/features/transfers/components/TransferModal';
 import { useTransfers, useTransferShops } from '@/features/transfers/hooks/useTransfers';
 import type { TransferStatus } from '@/features/transfers/types/transfers.types';
+import type { Shop } from '@/features/shops/types/shops.types';
 
 const PAGE_SIZE = 10;
 
@@ -38,7 +39,7 @@ export default function TransfersPage() {
   });
 
   const { data: shopsData } = useTransferShops();
-  const shops = shopsData?.data?.data ?? [];
+  const shops = (shopsData?.data ?? []) as Shop[];
 
   // Client-side shop filter applied on top of server-side status filter
   const visibleTransfers = shopFilter
@@ -55,9 +56,9 @@ export default function TransfersPage() {
     setPage(1);
   };
 
-  const handleSave = async (productId: number, quantity: number, shopId?: number) => {
+  const handleSave = async (items: { productId: number; quantity: number }[], shopId?: number) => {
     try {
-      await createTransfer({ productId, quantity, shopId });
+      await createTransfer({ items, shopId });
       setModalOpen(false);
       toast.success(p.toast.success);
     } catch {

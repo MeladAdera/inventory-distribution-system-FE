@@ -32,9 +32,13 @@ export interface TransferListParams {
   shop_id?: number;
 }
 
-export interface CreateTransferInput {
+export interface TransferOrderItem {
   productId: number;
   quantity: number;
+}
+
+export interface CreateTransferInput {
+  items: TransferOrderItem[];
   shopId?: number;
 }
 
