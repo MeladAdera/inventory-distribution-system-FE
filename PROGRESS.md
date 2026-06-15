@@ -4,6 +4,69 @@ Real-time development progress and detailed work logs.
 
 ---
 
+## June 15, 2026 — Transfers API Integration
+
+### Session
+**Focus**: Replace mock data in Transfers feature with real backend API calls  
+**Version**: 0.9.2
+
+---
+
+### Tasks Completed
+
+1. ✅ **Types rewritten** — `TransferStatus` enum (PENDING/PROCESSING/SHIPPED/RECEIVED/COMPLETED), `Transfer` with `from_shop_id`/`to_shop_id`/`items[]`, `CreateTransferInput`, `UpdateTransferStatusInput`, `NEXT_STATUS` map, `TransferPrefill` simplified to `{ productId?, quantity? }`
+
+2. ✅ **API layer** — `src/features/transfers/api/transfers.api.ts`: `list`, `getById`, `create`, `updateStatus`, `getShops`, `getProducts` — hits `/orders`, `/shops`, `/products` endpoints
+
+3. ✅ **Hooks** — `src/features/transfers/hooks/useTransfers.ts`: `useTransfers` (list + create + updateStatus with React Query invalidation), `useTransferShops`, `useTransferProducts`
+
+4. ✅ **TransferModal rewrite** — now uses `useTransferProducts()` for product list; `useProduct(productId)` for real-time availability; added `isAdmin` prop (shows shop selector), `isSaving` prop, `shops[]` prop; `onSave(productId, quantity, shopId?)` signature
+
+5. ✅ **TransfersTableCard rewrite** — real `Transfer` objects; 5-state coloured status badges; admin action buttons (Process / Ship / Complete); SHIPPED → "Awaiting receipt" italic; server-side pagination with smart ellipsis
+
+6. ✅ **Transfers page rewrite** — `usePermission()` gates "+ New transfer" button and action buttons for warehouse admin only; `useTransfers` + `useTransferShops`; `handleSave` → `createTransfer`; `handleUpdateStatus` → `updateStatus`; error toast on failure
+
+7. ✅ **Shortages page updated** — `handleReplenish` uses new `TransferPrefill` shape (`productId`, `quantity`); `handleTransferSave` signature updated to match new `onSave`
+
+8. ✅ **Mock data cleared** — `transfersData.ts` now just `export {}` with explanatory comment
+
+9. ✅ **i18n updated** — added `status.*`, `actions.*`, `toolbar.allShops`, `modal.errShop`, `toast.statusUpdated`, `toast.error` keys to both EN and AR files
+
+10. ✅ **Barrel export updated** — `index.ts` now exports API layer and hooks
+
+11. ✅ **docs/features/transfers.md** — fully rewritten for API-integrated version
+
+---
+
+### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+### Files Created
+| File | Description |
+|------|-------------|
+| `src/features/transfers/api/transfers.api.ts` | Axios API layer for /orders endpoints |
+| `src/features/transfers/hooks/useTransfers.ts` | React Query hooks: useTransfers, useTransferShops, useTransferProducts |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/features/transfers/types/transfers.types.ts` | Rewritten — real backend types + TransferStatus enum |
+| `src/features/transfers/components/TransferModal.tsx` | Uses API hooks; isAdmin/isSaving/shops props |
+| `src/features/transfers/components/TransfersTableCard.tsx` | Real types; status badges; admin actions; server pagination |
+| `src/features/transfers/mock/transfersData.ts` | Cleared — mock data removed |
+| `src/features/transfers/index.ts` | Added api/ and hooks/ to barrel exports |
+| `src/app/(dashboard)/transfers/page.tsx` | Rewritten — real hooks, permissions, error handling |
+| `src/app/(dashboard)/shortages/page.tsx` | Updated TransferPrefill usage to new shape |
+| `src/i18n/en/transfers.json` | Added status, actions, errShop, statusUpdated, error keys |
+| `src/i18n/ar/transfers.json` | Same in Arabic |
+| `docs/features/transfers.md` | Fully rewritten for API-integrated version |
+| `PROJECT_STATUS.md` | Transfers marked as API-integrated |
+| `PROGRESS.md` | Added this session |
+
+---
+
 ## 📅 June 14, 2026 - FIGMA-006: Shortages Admin Page
 
 ### Session

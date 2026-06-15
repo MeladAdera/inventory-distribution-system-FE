@@ -5,29 +5,41 @@ import { useForm } from 'react-hook-form';
 import { X, Truck, CheckCircle, AlertCircle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { cn } from '@/common/utils/cn';
-import type { Transfer, TransferPrefill } from '../types/transfers.types';
-import { MOCK_TRANSFER_CLIENTS, MOCK_TRANSFER_PRODUCTS } from '../mock/transfersData';
+import { useProduct } from '@/features/products/hooks/useProducts';
+import type { Shop } from '@/features/shops/types/shops.types';
+import { useTransferProducts } from '../hooks/useTransfers';
+import type { TransferPrefill } from '../types/transfers.types';
 
 interface TransferFormValues {
-  clientId: string;
+  shopId: string;
   productId: string;
   qty: string;
-  date: string;
-  notes: string;
 }
 
 interface TransferModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (transfer: Omit<Transfer, 'id'>) => void;
+  onSave: (productId: number, quantity: number, shopId?: number) => Promise<void>;
   prefill?: TransferPrefill;
+  isSaving?: boolean;
+  isAdmin?: boolean;
+  shops?: Shop[];
 }
 
-export function TransferModal({ open, onClose, onSave, prefill }: TransferModalProps) {
-  const { t, locale } = useI18n();
+export function TransferModal({
+  open,
+  onClose,
+  onSave,
+  prefill,
+  isSaving,
+  isAdmin,
+  shops = [],
+}: TransferModalProps) {
+  const { t } = useI18n();
   const m = t.transfers.modal;
 
-  const today = new Date().toISOString().split('T')[0];
+  const { data: productsData } = useTransferProducts();
+  const products = productsData?.data?.data ?? [];
 
   const {
     register,
@@ -36,25 +48,18 @@ export function TransferModal({ open, onClose, onSave, prefill }: TransferModalP
     reset,
     formState: { errors },
   } = useForm<TransferFormValues>({
-    defaultValues: {
-      clientId: '',
-      productId: '',
-      qty: '',
-      date: today,
-      notes: '',
-    },
+    defaultValues: { shopId: '', productId: '', qty: '' },
   });
 
   useEffect(() => {
-    if (!open) return;
-    reset({
-      clientId: prefill?.client_id ? String(prefill.client_id) : '',
-      productId: prefill?.product_id ? String(prefill.product_id) : '',
-      qty: prefill?.qty ? String(prefill.qty) : '',
-      date: today,
-      notes: '',
-    });
-  }, [open, prefill, reset, today]);
+    if (open) {
+      reset({
+        shopId: '',
+        productId: prefill?.productId ? String(prefill.productId) : '',
+        qty: prefill?.quantity ? String(prefill.quantity) : '',
+      });
+    }
+  }, [open, prefill, reset]);
 
   useEffect(() => {
     if (!open) return;
@@ -64,43 +69,34 @@ export function TransferModal({ open, onClose, onSave, prefill }: TransferModalP
     };
   }, [open]);
 
-  if (!open) return null;
-
-  const watchedClientId = watch('clientId');
+  // All watch() and derived hooks must be above the early return
   const watchedProductId = watch('productId');
   const watchedQty = watch('qty');
+  const watchedShopId = watch('shopId');
 
-  const activeClients = MOCK_TRANSFER_CLIENTS.filter((c) => c.status === 'active');
-  const availableProducts = MOCK_TRANSFER_PRODUCTS.filter(
-    (p) => p.is_active && p.available_qty > 0
-  );
+  const { data: productDetail } = useProduct(watchedProductId ? Number(watchedProductId) : null);
+  const availableQty = productDetail?.data?.current_quantity ?? 0;
 
-  const selectedProduct = MOCK_TRANSFER_PRODUCTS.find((p) => p.id === Number(watchedProductId));
+  if (!open) return null;
+
   const qtyNum = Number(watchedQty);
-  const qtyExceeds = !!selectedProduct && qtyNum > 0 && qtyNum > selectedProduct.available_qty;
-  const showBanner = !!selectedProduct && qtyNum > 0;
+  const qtyExceeds = !!watchedProductId && qtyNum > 0 && availableQty > 0 && qtyNum > availableQty;
+  const showBanner = !!watchedProductId && qtyNum > 0 && availableQty > 0;
 
   const isConfirmDisabled =
-    !watchedClientId || !watchedProductId || !watchedQty || qtyNum <= 0 || qtyExceeds;
+    (isAdmin && !watchedShopId) ||
+    !watchedProductId ||
+    !watchedQty ||
+    qtyNum <= 0 ||
+    qtyExceeds ||
+    !!isSaving;
 
-  const onSubmit = handleSubmit((data) => {
-    const client = MOCK_TRANSFER_CLIENTS.find((c) => c.id === Number(data.clientId))!;
-    const product = MOCK_TRANSFER_PRODUCTS.find((p) => p.id === Number(data.productId))!;
-    onSave({
-      date_ar: formatDateAR(data.date),
-      date_en: formatDateEN(data.date),
-      client_id: client.id,
-      client_name_ar: client.name_ar,
-      client_name_en: client.name_en,
-      product_id: product.id,
-      product_name_ar: product.name_ar,
-      product_name_en: product.name_en,
-      qty: qtyNum,
-      notes_ar: data.notes,
-      notes_en: data.notes,
-      recorded_by_ar: 'سالم المنصوري',
-      recorded_by_en: 'Salem Al Mansoori',
-    });
+  const onSubmit = handleSubmit(async (data) => {
+    await onSave(
+      Number(data.productId),
+      qtyNum,
+      isAdmin && data.shopId ? Number(data.shopId) : undefined
+    );
   });
 
   return (
@@ -133,22 +129,24 @@ export function TransferModal({ open, onClose, onSave, prefill }: TransferModalP
           noValidate
           className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-4.5"
         >
-          {/* 1. Client Select */}
-          <Field label={m.clientLabel} required error={errors.clientId ? m.errClient : undefined}>
-            <select
-              {...register('clientId', { required: true })}
-              className={sel(!!errors.clientId)}
-            >
-              <option value="">{m.clientPlaceholder}</option>
-              {activeClients.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {locale === 'ar' ? c.name_ar : c.name_en}
-                </option>
-              ))}
-            </select>
-          </Field>
+          {/* Shop Select (Admin only) */}
+          {isAdmin && (
+            <Field label={m.shopLabel} required error={errors.shopId ? m.errShop : undefined}>
+              <select
+                {...register('shopId', { required: isAdmin })}
+                className={sel(!!errors.shopId)}
+              >
+                <option value="">{m.shopPlaceholder}</option>
+                {shops.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          )}
 
-          {/* 2. Product Select */}
+          {/* Product Select */}
           <Field
             label={m.productLabel}
             required
@@ -159,58 +157,44 @@ export function TransferModal({ open, onClose, onSave, prefill }: TransferModalP
               className={sel(!!errors.productId)}
             >
               <option value="">{m.productPlaceholder}</option>
-              {availableProducts.map((prod) => (
+              {products.map((prod) => (
                 <option key={prod.id} value={prod.id}>
-                  {locale === 'ar' ? prod.name_ar : prod.name_en} — {prod.available_qty}
+                  {prod.name}
                 </option>
               ))}
             </select>
           </Field>
 
-          {/* 3. Qty + Date Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Qty */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-ink-600">
-                {m.qtyLabel}
-                <span className="text-danger-700 ms-0.75">*</span>
-              </label>
-              <input
-                type="number"
-                placeholder="0"
-                min="1"
-                {...register('qty', {
-                  required: m.errQtyRequired,
-                  validate: (val) => {
-                    const n = Number(val);
-                    if (!val || isNaN(n) || n <= 0) return m.errQtyPositive;
-                    if (selectedProduct && n > selectedProduct.available_qty)
-                      return m.errQtyExceeds;
-                    return true;
-                  },
-                })}
-                className={ipt(!!errors.qty)}
-              />
-              {selectedProduct && !errors.qty && (
-                <p className="text-xs text-ink-500">
-                  {m.qtyHint.replace('{n}', String(selectedProduct.available_qty))}
-                </p>
-              )}
-              {errors.qty && <p className="text-xs text-danger-700">{errors.qty.message}</p>}
-            </div>
-
-            {/* Date */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-ink-600">{m.dateLabel}</label>
-              <input
-                type="date"
-                {...register('date')}
-                className={cn(ipt(false), 'cursor-pointer')}
-              />
-            </div>
+          {/* Qty */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-ink-600">
+              {m.qtyLabel}
+              <span className="text-danger-700 ms-0.75">*</span>
+            </label>
+            <input
+              type="number"
+              placeholder="0"
+              min="1"
+              {...register('qty', {
+                required: m.errQtyRequired,
+                validate: (val) => {
+                  const n = Number(val);
+                  if (!val || isNaN(n) || n <= 0) return m.errQtyPositive;
+                  if (availableQty > 0 && n > availableQty) return m.errQtyExceeds;
+                  return true;
+                },
+              })}
+              className={ipt(!!errors.qty)}
+            />
+            {watchedProductId && !errors.qty && availableQty > 0 && (
+              <p className="text-xs text-ink-500">
+                {m.qtyHint.replace('{n}', String(availableQty))}
+              </p>
+            )}
+            {errors.qty && <p className="text-xs text-danger-700">{errors.qty.message}</p>}
           </div>
 
-          {/* 4. Availability Banner */}
+          {/* Availability Banner */}
           {showBanner && (
             <div
               className={cn(
@@ -231,19 +215,10 @@ export function TransferModal({ open, onClose, onSave, prefill }: TransferModalP
               >
                 {qtyExceeds
                   ? m.exceedsBanner
-                  : m.availableBanner.replace('{n}', String(selectedProduct!.available_qty))}
+                  : m.availableBanner.replace('{n}', String(availableQty))}
               </p>
             </div>
           )}
-
-          {/* 5. Notes */}
-          <Field label={m.notesLabel}>
-            <textarea
-              {...register('notes')}
-              rows={2}
-              className={cn(ipt(false), 'min-h-14 resize-y h-auto py-2')}
-            />
-          </Field>
         </form>
 
         {/* Footer */}
@@ -255,7 +230,7 @@ export function TransferModal({ open, onClose, onSave, prefill }: TransferModalP
             className="inline-flex items-center gap-2 h-10 px-5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-60 disabled:pointer-events-none"
           >
             <Truck size={15} />
-            {m.confirm}
+            {isSaving ? '...' : m.confirm}
           </button>
           <button
             type="button"
@@ -269,8 +244,6 @@ export function TransferModal({ open, onClose, onSave, prefill }: TransferModalP
     </div>
   );
 }
-
-// ── Helpers ────────────────────────────────────────────────────────────────
 
 function ipt(hasError: boolean) {
   return cn(
@@ -309,29 +282,4 @@ function Field({
       {error && <p className="text-xs text-danger-700">{error}</p>}
     </div>
   );
-}
-
-function formatDateEN(iso: string): string {
-  const [y, m, d] = iso.split('-');
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-  return `${parseInt(d)} ${months[parseInt(m) - 1]} ${y}`;
-}
-
-function formatDateAR(iso: string): string {
-  const eastern = (s: string) => s.replace(/[0-9]/g, (d) => '٠١٢٣٤٥٦٧٨٩'[parseInt(d)]);
-  const [y, m, d] = iso.split('-');
-  return `${eastern(y)}/${eastern(m)}/${eastern(d)}`;
 }

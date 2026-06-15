@@ -5,17 +5,30 @@
     "newTransfer": "+ New transfer"
   },
   "toolbar": {
-    "allClients": "All clients",
-    "allProducts": "All products",
+    "allShops": "All shops",
+    "allStatuses": "All statuses",
     "export": "Export"
   },
   "table": {
     "date": "Transfer date",
-    "client": "Client",
+    "shop": "Shop",
     "product": "Product",
-    "qty": "Qty transferred",
-    "notes": "Notes",
-    "recordedBy": "Recorded by"
+    "qty": "Qty",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "status": {
+    "PENDING": "Pending",
+    "PROCESSING": "Processing",
+    "SHIPPED": "Shipped",
+    "RECEIVED": "Received",
+    "COMPLETED": "Completed"
+  },
+  "actions": {
+    "process": "Process",
+    "ship": "Ship",
+    "complete": "Complete",
+    "awaitingReceipt": "Awaiting receipt"
   },
   "emptyState": {
     "title": "No transfers yet",
@@ -23,19 +36,17 @@
   },
   "modal": {
     "title": "New transfer",
-    "clientLabel": "Client",
-    "clientPlaceholder": "Select a client",
+    "shopLabel": "Destination shop",
+    "shopPlaceholder": "Select a shop",
     "productLabel": "Product",
     "productPlaceholder": "Select a product",
     "qtyLabel": "Quantity",
     "qtyHint": "Available in warehouse: {n}",
-    "dateLabel": "Transfer date",
-    "notesLabel": "Notes",
     "availableBanner": "Available in warehouse: {n} units",
     "exceedsBanner": "Quantity exceeds available stock",
-    "confirm": "Confirm",
+    "confirm": "Confirm transfer",
     "cancel": "Cancel",
-    "errClient": "Please select a client",
+    "errShop": "Please select a destination shop",
     "errProduct": "Please select a product",
     "errQtyRequired": "Quantity is required",
     "errQtyPositive": "Quantity must be greater than 0",
@@ -45,6 +56,8 @@
     "showing": "Showing {n} of {total}"
   },
   "toast": {
-    "success": "Stock transferred successfully"
+    "success": "Transfer created successfully",
+    "statusUpdated": "Status updated successfully",
+    "error": "Something went wrong"
   }
 }

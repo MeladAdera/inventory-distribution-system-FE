@@ -1,6 +1,6 @@
 # Project Status: Inventory Distribution System (Frontend)
 
-**Last Updated**: June 14, 2026  
+**Last Updated**: June 15, 2026  
 **Version**: 0.8.0  
 **Status**: API INTEGRATION IN PROGRESS 🔌
 
@@ -23,6 +23,7 @@ Backend API is complete. Replacing mock data with real API calls page by page.
 | Page | Description | Status |
 |------|-------------|--------|
 | Products | `useProducts` + `useProduct(id)` hooks wired; all 4 modals hit real endpoints; category filter in toolbar; bugfixes applied | ✅ Complete (2 gaps remaining) |
+| Transfers | `useTransfers` + `useTransferShops` + `useTransferProducts`; create via `POST /orders`; status advance via `PATCH /orders/:id/status`; permission-gated admin actions; server-side pagination | ✅ Complete |
 | Clients | Still on mock data | ⬜ Next |
 | Dashboard | Still on mock data | ⬜ Pending |
 
@@ -109,7 +110,7 @@ src/features/
 ├── users/         ✅ Complete (types + API + hooks + components + page)
 ├── products/      ✅ Complete (types + API + hooks + components + page + modals + mock)
 ├── clients/       ✅ Complete (types + validations + components + page + modals + mock)
-├── transfers/     ✅ Complete (types + components + page + modal + mock)
+├── transfers/     ✅ Complete (types + API + hooks + components + page + modal — real API)
 ├── shortages/     ✅ Complete (types + components + page + mock)
 ├── orders/        🔧 Scaffold fixed (no page yet)
 ├── inventory/     🔧 Scaffold fixed (no page yet)
@@ -166,5 +167,5 @@ Backend runs on port 3000. Frontend dev server on port 3001.
 
 ---
 
-**Last Commit**: feat(shortages): implement Shortages admin page (FIGMA-006)  
-**Next Up**: Settings page (FIGMA-007)
+**Last Commit**: feat(transfers): integrate Transfers page with real backend API  
+**Next Up**: Clients API integration or Settings page (FIGMA-007)

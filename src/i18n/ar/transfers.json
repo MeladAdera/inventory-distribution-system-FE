@@ -5,17 +5,30 @@
     "newTransfer": "+ نقل جديد"
   },
   "toolbar": {
-    "allClients": "كل العملاء",
-    "allProducts": "كل المنتجات",
+    "allShops": "كل المتاجر",
+    "allStatuses": "كل الحالات",
     "export": "تصدير"
   },
   "table": {
     "date": "تاريخ النقل",
-    "client": "العميل",
+    "shop": "المتجر",
     "product": "المنتج",
-    "qty": "الكمية المنقولة",
-    "notes": "ملاحظات",
-    "recordedBy": "سُجّل بواسطة"
+    "qty": "الكمية",
+    "status": "الحالة",
+    "actions": "إجراءات"
+  },
+  "status": {
+    "PENDING": "قيد الانتظار",
+    "PROCESSING": "قيد المعالجة",
+    "SHIPPED": "تم الشحن",
+    "RECEIVED": "تم الاستلام",
+    "COMPLETED": "مكتمل"
+  },
+  "actions": {
+    "process": "معالجة",
+    "ship": "شحن",
+    "complete": "إتمام",
+    "awaitingReceipt": "بانتظار الاستلام"
   },
   "emptyState": {
     "title": "لا توجد عمليات نقل",
@@ -23,19 +36,17 @@
   },
   "modal": {
     "title": "نقل جديد",
-    "clientLabel": "العميل",
-    "clientPlaceholder": "اختر عميلاً",
+    "shopLabel": "المتجر المستلم",
+    "shopPlaceholder": "اختر متجراً",
     "productLabel": "المنتج",
     "productPlaceholder": "اختر منتجاً",
     "qtyLabel": "الكمية",
     "qtyHint": "المتوفر في المستودع: {n}",
-    "dateLabel": "تاريخ النقل",
-    "notesLabel": "ملاحظات",
     "availableBanner": "المتوفر في المستودع: {n} وحدة",
     "exceedsBanner": "الكمية تتجاوز المخزون المتاح",
-    "confirm": "تأكيد",
+    "confirm": "تأكيد النقل",
     "cancel": "إلغاء",
-    "errClient": "الرجاء اختيار عميل",
+    "errShop": "الرجاء اختيار المتجر المستلم",
     "errProduct": "الرجاء اختيار منتج",
     "errQtyRequired": "الكمية مطلوبة",
     "errQtyPositive": "يجب أن تكون الكمية أكبر من صفر",
@@ -45,6 +56,8 @@
     "showing": "عرض {n} من {total}"
   },
   "toast": {
-    "success": "تم نقل المخزون بنجاح"
+    "success": "تم إنشاء النقل بنجاح",
+    "statusUpdated": "تم تحديث الحالة بنجاح",
+    "error": "حدث خطأ ما"
   }
 }

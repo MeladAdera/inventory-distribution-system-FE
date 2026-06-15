@@ -1,37 +1,54 @@
+export enum TransferStatus {
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  SHIPPED = 'SHIPPED',
+  RECEIVED = 'RECEIVED',
+  COMPLETED = 'COMPLETED',
+}
+
+export interface TransferItem {
+  product_id: number;
+  product_name: string;
+  quantity: number;
+  price: string;
+}
+
 export interface Transfer {
   id: number;
-  date_ar: string;
-  date_en: string;
-  client_id: number;
-  client_name_ar: string;
-  client_name_en: string;
-  product_id: number;
-  product_name_ar: string;
-  product_name_en: string;
-  qty: number;
-  notes_ar: string;
-  notes_en: string;
-  recorded_by_ar: string;
-  recorded_by_en: string;
+  from_shop_id: number;
+  to_shop_id: number;
+  to_shop_name?: string;
+  status: TransferStatus;
+  total_items: number;
+  created_at: string;
+  updated_at: string;
+  items?: TransferItem[];
 }
 
-export interface TransferProduct {
-  id: number;
-  name_ar: string;
-  name_en: string;
-  available_qty: number;
-  is_active: boolean;
+export interface TransferListParams {
+  page?: number;
+  limit?: number;
+  status?: TransferStatus;
+  shop_id?: number;
 }
 
-export interface TransferClient {
-  id: number;
-  name_ar: string;
-  name_en: string;
-  status: 'active' | 'inactive';
+export interface CreateTransferInput {
+  productId: number;
+  quantity: number;
+  shopId?: number;
 }
+
+export interface UpdateTransferStatusInput {
+  status: TransferStatus;
+}
+
+export const NEXT_STATUS: Partial<Record<TransferStatus, TransferStatus>> = {
+  [TransferStatus.PENDING]: TransferStatus.PROCESSING,
+  [TransferStatus.PROCESSING]: TransferStatus.SHIPPED,
+  [TransferStatus.RECEIVED]: TransferStatus.COMPLETED,
+};
 
 export interface TransferPrefill {
-  client_id?: number;
-  product_id?: number;
-  qty?: number;
+  productId?: number;
+  quantity?: number;
 }

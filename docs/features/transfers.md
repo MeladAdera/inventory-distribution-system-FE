@@ -1,147 +1,195 @@
 # Feature: Transfers Admin Page (FIGMA-005)
 
-**Status**: Mock Data — UI Complete  
+**Status**: API-Integrated — Live  
 **Created Date**: 2026-06-14  
-**Last Updated**: 2026-06-14  
+**Last Updated**: 2026-06-15  
 **Assignee**: Melad Adera  
 **Ticket**: FIGMA-005
 
 ---
 
-## 📋 Overview
+## Overview
 
-### Purpose
-The Transfers admin page (`/transfers`) is the central hub for recording and reviewing stock movements from the warehouse to clients. Each transfer deducts a quantity from a product's available stock and logs the client, product, quantity, date, and who recorded it.
+The Transfers admin page (`/transfers`) manages stock movements from the warehouse to shops via the `/orders` backend API. Warehouse admins can create transfers and advance them through a 5-stage status lifecycle. Non-admin users see the list in read-only mode.
 
-### Business Value
-- Full audit trail of every stock transfer per client and product
-- Client + product filter dropdowns for fast lookup
-- Shared `TransferModal` usable from the Dashboard and Shortages page via `prefill` prop
-- Real-time availability banner in the modal (green = OK, red = exceeds stock) prevents over-transfers
-- Bilingual (AR/EN) with full RTL/LTR support
+The shared `TransferModal` is reusable from any page (Dashboard, Shortages) via a `prefill` prop.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### File Structure
 
 ```
 src/features/transfers/
+├── api/
+│   └── transfers.api.ts           # Axios calls: list, getById, create, updateStatus, getShops, getProducts
+├── hooks/
+│   └── useTransfers.ts            # useTransfers (list+mutations), useTransferShops, useTransferProducts
 ├── components/
-│   ├── TransfersTableCard.tsx      # Table card: toolbar + 6-col CSS grid + skeleton + mobile cards
-│   └── TransferModal.tsx           # Shared new-transfer form modal with availability banner
-├── mock/
-│   └── transfersData.ts            # 8 MOCK_TRANSFERS + 6 MOCK_TRANSFER_CLIENTS + 12 MOCK_TRANSFER_PRODUCTS
+│   ├── TransfersTableCard.tsx     # Toolbar + 6-col CSS grid + status badges + admin actions + pagination
+│   └── TransferModal.tsx          # New-transfer form: shop (admin) + product + qty + availability banner
 ├── types/
-│   └── transfers.types.ts          # Transfer, TransferProduct, TransferClient, TransferPrefill
-└── index.ts                        # Barrel export
+│   └── transfers.types.ts         # TransferStatus enum, Transfer, CreateTransferInput, TransferPrefill, …
+├── mock/
+│   └── transfersData.ts           # Empty — mock data removed, real API in use
+└── index.ts                       # Barrel export
 
-src/app/(dashboard)/transfers/page.tsx   # Page — state, filter, mock CRUD, toast on save
+src/app/(dashboard)/transfers/page.tsx   # Page — permission gate, hooks, shop/status filter, create + status update
 src/i18n/en/transfers.json               # English translations
 src/i18n/ar/transfers.json               # Arabic translations
 ```
 
 ---
 
-## 🧩 Type Reference
+## Type Reference
+
+### `TransferStatus` (enum)
+```ts
+enum TransferStatus {
+  PENDING    = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  SHIPPED    = 'SHIPPED',
+  RECEIVED   = 'RECEIVED',
+  COMPLETED  = 'COMPLETED',
+}
+```
 
 ### `Transfer`
 ```ts
 interface Transfer {
   id: number;
-  date_ar: string;          // "٢٠٢٦/٠٥/٣٠"  (Eastern Arabic numerals)
-  date_en: string;          // "30 May 2026"
-  client_id: number;
-  client_name_ar: string;
-  client_name_en: string;
+  from_shop_id: number;
+  to_shop_id: number;
+  to_shop_name?: string;
+  status: TransferStatus;
+  total_items: number;
+  created_at: string;   // ISO-8601
+  updated_at: string;
+  items?: TransferItem[];
+}
+```
+
+### `TransferItem`
+```ts
+interface TransferItem {
   product_id: number;
-  product_name_ar: string;
-  product_name_en: string;
-  qty: number;
-  notes_ar: string;
-  notes_en: string;
-  recorded_by_ar: string;   // Always "سالم المنصوري"
-  recorded_by_en: string;   // Always "Salem Al Mansoori"
+  product_name: string;
+  quantity: number;
+  price: string;
 }
 ```
 
-### `TransferProduct`
+### `CreateTransferInput`
 ```ts
-interface TransferProduct {
-  id: number;
-  name_ar: string;
-  name_en: string;
-  available_qty: number;
-  is_active: boolean;
-}
-```
-
-### `TransferClient`
-```ts
-interface TransferClient {
-  id: number;
-  name_ar: string;
-  name_en: string;
-  status: 'active' | 'inactive';
+interface CreateTransferInput {
+  productId: number;
+  quantity: number;
+  shopId?: number;    // Required when isAdmin = true
 }
 ```
 
 ### `TransferPrefill`
 ```ts
 interface TransferPrefill {
-  client_id?: number;
-  product_id?: number;
-  qty?: number;
+  productId?: number;
+  quantity?: number;
 }
 ```
 
----
-
-## 🔧 State & Data Flow
-
+### `NEXT_STATUS`
+Maps each actionable status to its successor:
+```ts
+const NEXT_STATUS: Partial<Record<TransferStatus, TransferStatus>> = {
+  PENDING:    PROCESSING,
+  PROCESSING: SHIPPED,
+  RECEIVED:   COMPLETED,
+};
 ```
-transfers/page.tsx
-  │
-  ├── transfers: Transfer[]          ← useState(MOCK_TRANSFERS)  — 8 items
-  ├── clientFilter / productFilter   ← useState('')              — toolbar selects
-  ├── page                           ← useState(1)               — resets on filter change
-  ├── isLoading                      ← 650ms simulated delay
-  ├── modalOpen                      ← boolean
-  │
-  ├── filtered = useMemo(...)        ← client_id + product_id match
-  └── paginated = filtered.slice(…)  ← PAGE_SIZE = 10
-
-TransfersTableCard (receives paginated slice)
-  └── toolbar: client select + product select + export button
-  └── CSS grid 6 columns: date | client | product | qty | notes | recorded_by
-  └── mobile: stacked card (md:hidden / hidden md:grid)
-
-TransferModal (opens on "+ New transfer")
-  └── react-hook-form — 5 fields: clientId, productId, qty, date, notes
-  └── Confirm button disabled in real-time: !clientId || !productId || !qty || qty≤0 || qtyExceeds
-  └── onSave → prepends new Transfer to top of list + toast.success(…)
-```
+SHIPPED → RECEIVED is advanced by the shop side (not the warehouse admin button).
 
 ---
 
-## 🧩 Component Reference
+## API Layer (`transfers.api.ts`)
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| `list(params)` | `GET /orders` | Paginated transfer list with optional `page`, `limit`, `status` |
+| `getById(id)` | `GET /orders/:id` | Single transfer detail |
+| `create(data)` | `POST /orders` | Create transfer — body: `{ items: [{ productId, quantity }], shopId? }` |
+| `updateStatus(id, data)` | `PATCH /orders/:id/status` | Advance status |
+| `getShops()` | `GET /shops?type=SHOP&limit=100` | Destination shop list |
+| `getProducts()` | `GET /products?source=WAREHOUSE&limit=100` | Warehouse products for modal |
+
+---
+
+## Hooks (`useTransfers.ts`)
+
+### `useTransfers(params?)`
+```ts
+const {
+  transfers,        // Transfer[]
+  total,            // number — total server count (drives pagination)
+  totalPages,       // number
+  isLoading,        // boolean
+  createTransfer,   // (data: CreateTransferInput) => Promise<void>
+  isCreating,       // boolean
+  updateStatus,     // ({ id, data }) => Promise<void>
+  isUpdatingStatus, // boolean
+} = useTransfers({ page, limit, status });
+```
+
+On `createTransfer` or `updateStatus` success: invalidates `['transfers']` query.
+
+### `useTransferShops()`
+React Query for `GET /shops`. `staleTime: 5 min`. Returns `ApiResponse<PaginatedResponse<Shop>>`.
+
+### `useTransferProducts()`
+React Query for `GET /products?source=WAREHOUSE`. `staleTime: 5 min`. Returns `ApiResponse<PaginatedResponse<Product>>`.
+
+---
+
+## Component Reference
 
 ### `TransfersTableCard`
 
 | Prop | Type | Purpose |
 |------|------|---------|
-| `transfers` | `Transfer[]` | Paginated slice to render |
-| `filteredCount` | `number` | Total matching count (drives pagination) |
-| `isLoading` | `boolean` | Shows 6 skeleton rows when true |
-| `clientFilter` | `string` | Client ID string or `''` for all |
-| `productFilter` | `string` | Product ID string or `''` for all |
-| `clients` | `TransferClient[]` | All clients for toolbar dropdown |
-| `products` | `TransferProduct[]` | All products for toolbar dropdown |
-| `onAddTransfer` | `() => void` | Opens modal from empty state button |
+| `transfers` | `Transfer[]` | Current page's records |
+| `total` | `number` | Server total count (for pagination) |
+| `shops` | `Shop[]` | Destination shop list for toolbar filter |
+| `isLoading` | `boolean` | Shows 6 skeleton rows |
+| `page` | `number` | Current page number |
+| `pageSize` | `number` | Records per page (10) |
+| `shopFilter` | `string` | Selected shop ID string or `''` |
+| `statusFilter` | `string` | Selected `TransferStatus` or `''` |
+| `isAdmin` | `boolean` | Shows admin action buttons |
+| `isUpdatingStatus` | `boolean` | Disables action buttons while mutating |
+| `onShopChange` | `(v: string) => void` | — |
+| `onStatusChange` | `(v: string) => void` | — |
+| `onPageChange` | `(p: number) => void` | — |
+| `onAddTransfer` | `() => void` | Opens modal from empty-state button |
+| `onUpdateStatus` | `(id, status) => void` | Admin advances status |
 
-**Grid columns**: `1.1fr 1.6fr 1.8fr 1fr 1.4fr 1.2fr`  
-**Empty state icon**: `Truck` from lucide-react
+**Grid columns**: `1.1fr 1.6fr 1.8fr 0.8fr 1.3fr 1.2fr`  
+**Columns**: date | shop | product | qty | status | actions
+
+**Status badges** (5 coloured pills):
+| Status | Colours |
+|--------|---------|
+| PENDING | amber-50 / amber-700 |
+| PROCESSING | blue-50 / blue-700 |
+| SHIPPED | purple-50 / purple-700 |
+| RECEIVED | teal-50 / teal-700 |
+| COMPLETED | green-50 / green-700 |
+
+**Admin action buttons** (dark `ink-900` pill, `h-7`):
+- PENDING → "Process"
+- PROCESSING → "Ship"
+- RECEIVED → "Complete"
+- SHIPPED → shows "Awaiting receipt" italic text (shop-side action)
+
+**Pagination**: smart ellipsis, `ChevronLeft/Right` arrows; only shown when `pageCount > 1`.
 
 ---
 
@@ -151,145 +199,156 @@ TransferModal (opens on "+ New transfer")
 |------|------|---------|
 | `open` | `boolean` | Controls visibility |
 | `onClose` | `() => void` | Closes modal |
-| `onSave` | `(t: Omit<Transfer, 'id'>) => void` | Called on valid submit |
-| `prefill?` | `TransferPrefill` | Pre-selects client, product, qty |
+| `onSave` | `(productId, quantity, shopId?) => Promise<void>` | Submit handler |
+| `prefill?` | `TransferPrefill` | Pre-selects product + qty on open |
+| `isSaving?` | `boolean` | Disables confirm + shows `…` |
+| `isAdmin?` | `boolean` | Shows shop selector field |
+| `shops?` | `Shop[]` | Destination shop options (admin only) |
 
 **Modal width**: `sm:max-w-130` (520px)
 
 **Form fields:**
-1. **Client select** (required) — active clients only
-2. **Product select** (required) — `is_active && available_qty > 0`; option text: `"Name — qty"`
-3. **Qty + Date** (2-col grid)
-   - Qty: type=number, hint below shows `"Available in warehouse: N"` when product selected
-   - Date: type=date, defaults to today
-4. **Availability banner** — shown when product selected + qty > 0
-   - Green (`#DDEEE3`): qty ≤ available — "Available in warehouse: N units"
-   - Red (`#F6DDDB`): qty > available — "Quantity exceeds available stock"
-5. **Notes** — textarea, rows=2, optional
+1. **Shop select** (admin only, required) — list from `useTransferShops` via page prop
+2. **Product select** (required) — list from `useTransferProducts`; shows `prod.name`
+3. **Qty** — number input; validates: required, > 0, ≤ `availableQty`
 
-**Date helpers** (module-private):
-- `formatDateEN("2026-06-14")` → `"14 Jun 2026"`
-- `formatDateAR("2026-06-14")` → `"٢٠٢٦/٠٦/١٤"` (Eastern Arabic numerals)
+**Availability hint & banner**: uses `useProduct(productId)` to fetch `current_quantity` in real time.
+- Qty hint below field: "Available in warehouse: N"
+- Green banner (`#DDEEE3`): qty ≤ available
+- Red banner (`#F6DDDB`): qty > available; confirm button disabled
 
----
-
-## 📊 Mock Data
-
-### `MOCK_TRANSFERS` — 8 Records
-
-| ID | Date | Client | Product | Qty | Notes |
-|----|------|--------|---------|-----|-------|
-| 1 | 30 May 2026 | Al Nakheel Supermarket | UHT Milk 1L | 120 | Weekly order |
-| 2 | 30 May 2026 | Al Waha Grocery | Mineral Water 500ml | 300 | — |
-| 3 | 29 May 2026 | Al Baraka Restaurant | Canned Tuna | 60 | Urgent refill |
-| 4 | 29 May 2026 | Al Safa Cafeteria | Orange Juice 1L | 48 | — |
-| 5 | 28 May 2026 | Al Reef Grocery | Cheddar Cheese | 35 | New order |
-| 6 | 27 May 2026 | Al Nakheel Supermarket | Paper Tissues | 90 | — |
-| 7 | 26 May 2026 | Al Waha Grocery | Floor Cleaner | 24 | Cleaning |
-| 8 | 26 May 2026 | Al Baraka Restaurant | Mineral Water 500ml | 240 | — |
-
-### `MOCK_TRANSFER_PRODUCTS` — 12 Products
-
-| ID | EN Name | Available Qty |
-|----|---------|---------------|
-| 1 | Mineral Water 500ml | 850 |
-| 2 | Energy Drink | 340 |
-| 3 | Hand Soap | 120 |
-| 4 | UHT Milk 1L | 420 |
-| 5 | Cheddar Cheese | 210 |
-| 6 | Floor Cleaner | 160 |
-| 7 | Potato Chips | 280 |
-| 8 | Canned Tuna | 240 |
-| 9 | Toast Bread | 180 |
-| 10 | Orange Juice 1L | 310 |
-| 11 | Cooking Oil | 520 |
-| 12 | Paper Tissues | 440 |
+**Confirm disabled when**:
+```ts
+(isAdmin && !watchedShopId) || !watchedProductId || !watchedQty || qtyNum <= 0 || qtyExceeds || !!isSaving
+```
 
 ---
 
-## 🌐 i18n Keys
+## State & Data Flow
+
+```
+transfers/page.tsx
+  │
+  ├── usePermission()           → isWarehouseAdmin, canCreate
+  ├── useTransfers({ page, limit, status }) → transfers[], total, createTransfer, updateStatus
+  ├── useTransferShops()        → shops[]
+  │
+  ├── shopFilter (client-side)  → filters visibleTransfers locally on top of server status filter
+  ├── page                      → resets to 1 on filter change
+  │
+  ├── handleSave()              → createTransfer() → toast.success / toast.error
+  └── handleUpdateStatus()      → updateStatus() → toast.success / toast.error
+
+TransfersTableCard (receives visibleTransfers)
+  └── toolbar: shop select + status select + export button
+  └── CSS grid 6 columns: date | shop | product | qty | status | actions
+  └── mobile: stacked card (md:hidden / hidden md:grid)
+
+TransferModal
+  └── useTransferProducts() — product list
+  └── useProduct(productId) — real-time availability for banner
+  └── onSave → page.handleSave() → createTransfer API call
+```
+
+---
+
+## i18n Keys
 
 Both `src/i18n/en/transfers.json` and `src/i18n/ar/transfers.json` cover:
 
 ```
 transfers.page.{title, count, newTransfer}
-transfers.toolbar.{allClients, allProducts, export}
-transfers.table.{date, client, product, qty, notes, recordedBy}
+transfers.toolbar.{allShops, allStatuses, export}
+transfers.table.{date, shop, product, qty, status, actions}
+transfers.status.{PENDING, PROCESSING, SHIPPED, RECEIVED, COMPLETED}
+transfers.actions.{process, ship, complete, awaitingReceipt}
 transfers.emptyState.{title, sub}
+transfers.modal.{title, shopLabel, shopPlaceholder, productLabel, productPlaceholder,
+                 qtyLabel, qtyHint, availableBanner, exceedsBanner, confirm, cancel,
+                 errShop, errProduct, errQtyRequired, errQtyPositive, errQtyExceeds}
 transfers.pagination.{showing}
-transfers.modal.{title, clientLabel, clientPlaceholder, productLabel, productPlaceholder,
-                 qtyLabel, qtyHint, dateLabel, notesLabel, availableBanner, exceedsBanner,
-                 confirm, cancel, errClient, errProduct, errQtyRequired, errQtyPositive, errQtyExceeds}
-transfers.toast.{success}
+transfers.toast.{success, statusUpdated, error}
 ```
 
 ---
 
-## 📱 Responsive Behaviour
+## Responsive Behaviour
 
 | Breakpoint | Table header | Data rows | Modal |
 |------------|-------------|-----------|-------|
-| Mobile `<md` | Hidden | Stacked card (flex-col) | Slide up from bottom (rounded-t-2xl) |
+| Mobile `<md` | Hidden | Stacked card (shop + date + product + status + action) | Slide up from bottom (rounded-t-2xl) |
 | Tablet/Desktop `≥md` | CSS grid 6-col | CSS grid 6-col | Centred overlay (max-w-130) |
-| Tablet toolbar | Wraps to two rows | — | Form 2-col → 1-col |
 
 ---
 
-## 🔗 Integration Points
+## Permission Model
 
-### Used from Dashboard / Shortages (future)
+| Role | Can see page | Can create transfer | Can advance status |
+|------|-------------|---------------------|--------------------|
+| Warehouse Admin | ✅ | ✅ (with shop selector) | ✅ |
+| Other roles | ✅ | ❌ (button hidden) | ❌ (action column empty) |
+
+Powered by `usePermission()` → `{ isWarehouseAdmin, canCreate }`.
+
+---
+
+## Integration Points
+
+### Use from Shortages page (prefill)
 ```tsx
-// Prefill with client + product + suggested qty
 <TransferModal
-  open={modalOpen}
-  onClose={() => setModalOpen(false)}
-  onSave={handleSave}
-  prefill={{ client_id: 2, product_id: 4, qty: 120 }}
+  open={transferOpen}
+  onClose={() => setTransferOpen(false)}
+  onSave={handleTransferSave}
+  prefill={{ productId: shortage.product_id, quantity: shortage.suggested }}
 />
 ```
+The modal resets to prefill values every time `open` transitions `false → true`.
 
-The modal resets to prefill values every time `open` transitions from `false` → `true`.
+### Query Invalidation
+After any `createTransfer` or `updateStatus` call, `['transfers']` is invalidated so the list auto-refreshes with server data.
 
 ---
 
-## ⚠️ Known Gaps (pre-API integration)
+## Known Gaps
 
 | Gap | Impact | Fix When |
 |-----|--------|----------|
-| Mock data — transfers not persisted across page reload | Dev only | API integration |
-| Product quantities not actually deducted on save | Dev only | API integration |
-| `recorded_by` is hardcoded to "Salem Al Mansoori" | Dev only | Read from auth store |
-| Notes stored as same string in both `_ar` and `_en` fields | Minor | Separate AR/EN note inputs |
+| Shop-side RECEIVED action not in this UI | Shop staff must confirm receipt separately | Shop-facing view |
+| Bulk transfer (multiple products per order) not exposed in modal | API supports it via `items[]` array | Product-picker modal enhancement |
+| No date range filter on toolbar | Can't filter by date in UI | Backend adds `from`/`to` params |
+| `to_shop_name` may be absent if API doesn't embed it — falls back to shop list lookup | Minor flash if shops not yet loaded | Ensure API embeds `to_shop_name` |
 
 ---
 
-## ✅ Acceptance Criteria
+## Acceptance Criteria
 
-- [x] Page renders 8 mock transfers with correct 6-col grid
-- [x] Client filter narrows the list by client_id; resets to page 1
-- [x] Product filter narrows the list by product_id; resets to page 1
-- [x] Skeleton shimmer shows for 650ms on load
-- [x] Empty state (Truck icon) shown when no matching transfers
-- [x] "+ New transfer" button opens TransferModal
-- [x] Modal: active clients only in client dropdown
-- [x] Modal: only `is_active && available_qty > 0` products shown
-- [x] Modal: product option shows `"Name — availableQty"`
-- [x] Modal: qty hint appears below qty field when product selected
-- [x] Modal: green banner when qty ≤ available, red banner when qty > available
-- [x] Modal: Confirm disabled until client + product + valid qty filled; also disabled when qty exceeds stock
-- [x] On save: new transfer prepended to top of list
-- [x] On save: success toast shown
-- [x] On save: modal closes
-- [x] `prefill` prop pre-selects client, product, qty (for Dashboard / Shortages use)
+- [x] Page fetches transfers from `/orders` — real data, server pagination
+- [x] Shop filter (client-side on top of server status filter) narrows list; resets to page 1
+- [x] Status filter sends `status` param to server; resets to page 1
+- [x] Skeleton shimmer shows while `isLoading`
+- [x] Empty state (Truck icon + "New transfer" button) shown when no transfers and `canCreate`
+- [x] Warehouse admin sees "+ New transfer" button and admin action buttons
+- [x] Non-admin sees page in read-only mode
+- [x] TransferModal: shop selector shown for admin only
+- [x] TransferModal: product dropdown populated from warehouse products API
+- [x] TransferModal: real-time availability fetched per selected product
+- [x] TransferModal: green banner when qty ≤ available; red when qty > available
+- [x] TransferModal: Confirm disabled until all required fields valid
+- [x] On save: `POST /orders` called; list invalidated; toast success
+- [x] Admin action buttons advance status; `PATCH /orders/:id/status` called; toast success
+- [x] SHIPPED row shows "Awaiting receipt" (shop-side action)
+- [x] `prefill` prop pre-selects product + qty (Shortages integration)
+- [x] Smart pagination with ellipsis and prev/next arrows
 - [x] Mobile: stacked card layout below md breakpoint
 - [x] All text switches AR ↔ EN on locale toggle
 - [x] `npx tsc --noEmit` passes with zero errors
 
 ---
 
-## 🔗 Related
+## Related
 
-- Clients feature: `src/features/clients/` — `ClientAvatar` component reused in table rows
-- Products feature: `src/features/products/` — `ProductThumb` component reused in table rows
-- Dashboard: will call `<TransferModal prefill={...} />` from the "New transfer" button and low-stock widget
-- Shortages page: will call `<TransferModal prefill={...} />` from "Transfer stock" action
+- Shops feature: `src/features/shops/` — `Shop` type used in modal and table
+- Products feature: `src/features/products/` — `useProduct()` for real-time availability; `ProductThumb` in rows
+- Clients feature: `src/features/clients/` — `ClientAvatar` reused for shop avatar in rows
+- Shortages page: `src/app/(dashboard)/shortages/page.tsx` — opens `TransferModal` with `prefill`

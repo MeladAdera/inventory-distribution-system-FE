@@ -8,7 +8,6 @@ import { ShortagesTableCard } from '@/features/shortages/components/ShortagesTab
 import { MOCK_SHORTAGES, MOCK_SHORTAGE_CLIENTS } from '@/features/shortages/mock/shortagesData';
 import { TransferModal } from '@/features/transfers/components/TransferModal';
 import type { Shortage } from '@/features/shortages/types/shortages.types';
-import type { Transfer } from '@/features/transfers/types/transfers.types';
 import type { TransferPrefill } from '@/features/transfers/types/transfers.types';
 
 export default function ShortagesPage() {
@@ -45,14 +44,13 @@ export default function ShortagesPage() {
 
   const handleReplenish = (shortage: Shortage) => {
     setTransferPrefill({
-      client_id: shortage.client_id,
-      product_id: shortage.product_id,
-      qty: shortage.suggested,
+      productId: shortage.product_id,
+      quantity: shortage.suggested,
     });
     setTransferOpen(true);
   };
 
-  const handleTransferSave = (_data: Omit<Transfer, 'id'>) => {
+  const handleTransferSave = async (_productId: number, _quantity: number) => {
     setTransferOpen(false);
     toast.success(t.transfers.toast.success);
   };
