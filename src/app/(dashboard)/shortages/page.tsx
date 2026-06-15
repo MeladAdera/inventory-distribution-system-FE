@@ -4,9 +4,11 @@ import { useState, useMemo, useEffect } from 'react';
 import { XCircle, AlertTriangle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
+import { usePermission } from '@/common/hooks/usePermission';
 import { ShortagesTableCard } from '@/features/shortages/components/ShortagesTableCard';
-import { MOCK_SHORTAGES, MOCK_SHORTAGE_CLIENTS } from '@/features/shortages/mock/shortagesData';
+import { useShortages } from '@/features/shortages/hooks/useShortages';
 import { TransferModal } from '@/features/transfers/components/TransferModal';
+import { useTransfers } from '@/features/transfers/hooks/useTransfers';
 import type { Shortage } from '@/features/shortages/types/shortages.types';
 import type { TransferPrefill } from '@/features/transfers/types/transfers.types';
 
@@ -14,18 +16,15 @@ export default function ShortagesPage() {
   const { t } = useI18n();
   const p = t.shortages;
   const toast = useToast();
+  const { isWarehouseAdmin } = usePermission();
 
-  const [shortages] = useState<Shortage[]>(MOCK_SHORTAGES);
-  const [isLoading, setIsLoading] = useState(true);
+  const { shortages, clients, shops, isLoading } = useShortages();
+  const { createTransfer, isCreating } = useTransfers();
+
   const [clientFilter, setClientFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferPrefill, setTransferPrefill] = useState<TransferPrefill | undefined>();
-
-  useEffect(() => {
-    const id = setTimeout(() => setIsLoading(false), 650);
-    return () => clearTimeout(id);
-  }, []);
 
   useEffect(() => {
     if (!transferOpen) setTransferPrefill(undefined);
@@ -46,16 +45,22 @@ export default function ShortagesPage() {
     setTransferPrefill({
       productId: shortage.product_id,
       quantity: shortage.suggested,
+      shopId: shortage.client_id,
     });
     setTransferOpen(true);
   };
 
   const handleTransferSave = async (
-    _items: { productId: number; quantity: number }[],
-    _shopId?: number
+    items: { productId: number; quantity: number }[],
+    shopId?: number
   ) => {
-    setTransferOpen(false);
-    toast.success(t.transfers.toast.success);
+    try {
+      await createTransfer({ items, shopId });
+      setTransferOpen(false);
+      toast.success(t.transfers.toast.success);
+    } catch {
+      toast.error(t.transfers.toast.error);
+    }
   };
 
   return (
@@ -103,7 +108,7 @@ export default function ShortagesPage() {
         isLoading={isLoading}
         clientFilter={clientFilter}
         statusFilter={statusFilter}
-        clients={MOCK_SHORTAGE_CLIENTS}
+        clients={clients}
         onClientChange={setClientFilter}
         onStatusChange={setStatusFilter}
         onReplenish={handleReplenish}
@@ -115,6 +120,9 @@ export default function ShortagesPage() {
         onClose={() => setTransferOpen(false)}
         onSave={handleTransferSave}
         prefill={transferPrefill}
+        isSaving={isCreating}
+        isAdmin={isWarehouseAdmin}
+        shops={shops}
       />
     </div>
   );

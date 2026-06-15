@@ -2,8 +2,10 @@
 
 import { Truck, MinusCircle, PlusCircle, Edit3 } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
-import { useI18n } from '@/providers/I18nProvider';
-import { ACTIVITIES, type ActivityType } from '../mock/dashboardData';
+import { useAuditLogs } from '@/features/audit-logs/hooks/useAuditLogs';
+import type { AuditLog } from '@/features/audit-logs/types/audit-logs.types';
+
+type ActivityType = 'transfer' | 'consumption' | 'added' | 'adjust';
 
 const ICON_MAP: Record<ActivityType, { Icon: React.ElementType; color: string }> = {
   transfer: { Icon: Truck, color: 'text-info-700' },
@@ -12,18 +14,83 @@ const ICON_MAP: Record<ActivityType, { Icon: React.ElementType; color: string }>
   adjust: { Icon: Edit3, color: 'text-ink-500' },
 };
 
+function getActivityType(log: AuditLog): ActivityType {
+  const action = (log.action ?? '').toUpperCase();
+  const type = (log.type ?? '').toUpperCase();
+  if (action === 'STOCK_IN' || action === 'ADD') return 'added';
+  if (type.includes('ORDER') || action.includes('ORDER') || action.includes('SHIP'))
+    return 'transfer';
+  if (action.includes('ADJUST') || action.includes('DECREASE') || action.includes('REMOVE'))
+    return 'adjust';
+  return 'consumption';
+}
+
+function getActivityText(log: AuditLog): string {
+  if (log.notes) {
+    const qty = log.quantity != null ? ` (${log.quantity} units)` : '';
+    return `${log.notes}${qty}`;
+  }
+  const qty = log.quantity != null ? ` · ${log.quantity} units` : '';
+  const action = (log.action ?? 'activity').replace(/_/g, ' ').toLowerCase();
+  return `${action} — ${log.entity_type} #${log.entity_id}${qty}`;
+}
+
+function formatAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'Just now';
+  if (m < 60) return `${m} min ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return d === 1 ? 'Yesterday' : `${d} days ago`;
+}
+
+function SkeletonItem() {
+  return (
+    <li className="flex items-start gap-3 px-5 py-3">
+      <div className="w-7.5 h-7.5 rounded-lg skeleton-shimmer shrink-0 mt-0.5" />
+      <div className="flex-1 space-y-1.5 mt-1">
+        <div className="h-3 rounded skeleton-shimmer w-4/5" />
+        <div className="h-2.5 rounded skeleton-shimmer w-1/4" />
+      </div>
+    </li>
+  );
+}
+
 export function RecentActivityFeed() {
-  const { locale } = useI18n();
+  const { auditLogs, isLoading } = useAuditLogs({ limit: 6 });
+
+  const items: AuditLog[] = auditLogs?.data?.data ?? [];
+
+  if (isLoading) {
+    return (
+      <ul className="py-1.5" role="list">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <SkeletonItem key={i} />
+        ))}
+      </ul>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-10 text-sm text-ink-400">
+        No recent activity
+      </div>
+    );
+  }
 
   return (
     <ul className="py-1.5" role="list">
-      {ACTIVITIES.map((item) => {
-        const { Icon, color } = ICON_MAP[item.type];
-        const text = locale === 'ar' ? item.textAr : item.textEn;
-        const time = locale === 'ar' ? item.timeAr : item.timeEn;
+      {items.map((log) => {
+        const type = getActivityType(log);
+        const { Icon, color } = ICON_MAP[type];
+        const text = getActivityText(log);
+        const time = formatAgo(log.created_at);
 
         return (
-          <li key={item.id} className="flex items-start gap-3 px-5 py-3" role="listitem">
+          <li key={log.id} className="flex items-start gap-3 px-5 py-3" role="listitem">
             <div className="w-7.5 h-7.5 rounded-lg bg-sand-100 flex items-center justify-center shrink-0 mt-0.5">
               <Icon size={15} className={cn(color)} aria-hidden="true" />
             </div>

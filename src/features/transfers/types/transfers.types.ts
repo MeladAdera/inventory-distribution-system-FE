@@ -55,4 +55,5 @@ export const NEXT_STATUS: Partial<Record<TransferStatus, TransferStatus>> = {
 export interface TransferPrefill {
   productId?: number;
   quantity?: number;
+  shopId?: number;
 }

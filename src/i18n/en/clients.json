@@ -31,28 +31,48 @@
   "pagination": {
     "showing": "Showing {n} of {total}"
   },
+  "add": {
+    "title": "Add shop / owner",
+    "shopName": "Shop name",
+    "shopNamePlaceholder": "e.g. Al Waha Grocery",
+    "shopAddress": "Shop address",
+    "shopAddressPlaceholder": "City / District",
+    "ownerName": "Owner name",
+    "ownerNamePlaceholder": "e.g. Ahmed Al-Salem",
+    "email": "Email",
+    "emailPlaceholder": "owner@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Min. 8 characters",
+    "errShopName": "Shop name is required",
+    "errOwnerName": "Owner name is required",
+    "errEmail": "Valid email is required",
+    "errPassword": "Password must be at least 8 characters",
+    "save": "Create",
+    "cancel": "Cancel"
+  },
   "form": {
-    "addTitle": "Add client",
     "editTitle": "Edit client",
     "save": "Save",
     "cancel": "Cancel",
-    "nameAr": "Arabic name",
-    "nameArPlaceholder": "e.g. Al Waha Grocery",
-    "nameEn": "English name",
-    "nameEnPlaceholder": "e.g. Al Waha Grocery",
+    "name": "Shop name",
+    "namePlaceholder": "e.g. Al Waha Grocery",
     "phone": "Phone number",
     "phonePlaceholder": "05X XXX XXXX",
     "address": "Address",
     "addressPlaceholder": "City / District",
-    "notes": "Notes",
-    "credentialsBanner": "Login credentials are generated automatically.",
-    "errNameAr": "Arabic name is required",
+    "errName": "Shop name is required",
     "errPhone": "Phone number is required"
   },
   "delete": {
-    "title": "Confirm delete?",
-    "warning": "This action cannot be undone.",
-    "delete": "Delete",
+    "title": "Confirm deactivation?",
+    "warning": "The client will be deactivated and won't be able to log in.",
+    "delete": "Deactivate",
     "cancel": "Cancel"
+  },
+  "toast": {
+    "created": "Shop owner created successfully",
+    "updated": "Client updated",
+    "deactivated": "Client deactivated",
+    "activated": "Client activated"
   }
 }

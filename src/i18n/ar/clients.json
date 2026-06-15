@@ -31,28 +31,48 @@
   "pagination": {
     "showing": "عرض {n} من {total}"
   },
+  "add": {
+    "title": "إضافة فرع / مالك",
+    "shopName": "اسم الفرع",
+    "shopNamePlaceholder": "مثال: بقالة الواحة",
+    "shopAddress": "عنوان الفرع",
+    "shopAddressPlaceholder": "المدينة / المنطقة",
+    "ownerName": "اسم المالك",
+    "ownerNamePlaceholder": "مثال: أحمد السالم",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "owner@example.com",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "٨ أحرف على الأقل",
+    "errShopName": "اسم الفرع مطلوب",
+    "errOwnerName": "اسم المالك مطلوب",
+    "errEmail": "بريد إلكتروني صحيح مطلوب",
+    "errPassword": "كلمة المرور يجب أن تكون ٨ أحرف على الأقل",
+    "save": "إنشاء",
+    "cancel": "إلغاء"
+  },
   "form": {
-    "addTitle": "إضافة عميل",
     "editTitle": "تعديل العميل",
     "save": "حفظ",
     "cancel": "إلغاء",
-    "nameAr": "الاسم بالعربية",
-    "nameArPlaceholder": "مثال: بقالة الواحة",
-    "nameEn": "الاسم بالإنجليزية",
-    "nameEnPlaceholder": "e.g. Al Waha Grocery",
+    "name": "اسم الفرع",
+    "namePlaceholder": "مثال: بقالة الواحة",
     "phone": "رقم الهاتف",
     "phonePlaceholder": "05X XXX XXXX",
     "address": "العنوان",
     "addressPlaceholder": "المدينة / المنطقة",
-    "notes": "ملاحظات",
-    "credentialsBanner": "يقوم النظام بإنشاء بيانات الدخول تلقائياً.",
-    "errNameAr": "الاسم العربي مطلوب",
+    "errName": "اسم الفرع مطلوب",
     "errPhone": "رقم الهاتف مطلوب"
   },
   "delete": {
-    "title": "هل أنت متأكد من الحذف؟",
-    "warning": "لا يمكن التراجع عن هذا الإجراء.",
-    "delete": "حذف",
+    "title": "تأكيد إيقاف التفعيل؟",
+    "warning": "سيتم إيقاف تفعيل العميل ولن يتمكن من تسجيل الدخول.",
+    "delete": "إيقاف التفعيل",
     "cancel": "إلغاء"
+  },
+  "toast": {
+    "created": "تم إنشاء مالك الفرع بنجاح",
+    "updated": "تم تحديث العميل",
+    "deactivated": "تم إيقاف تفعيل العميل",
+    "activated": "تم تفعيل العميل"
   }
 }

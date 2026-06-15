@@ -3,12 +3,17 @@
 import { useState, useMemo, useEffect } from 'react';
 import { UserPlus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
-import { MOCK_CLIENTS } from '@/features/clients/mock/clientsData';
+import { useToast } from '@/providers/ToastProvider';
+import { useClients } from '@/features/clients/hooks/useClients';
 import { ClientsTableCard } from '@/features/clients/components/ClientsTableCard';
 import { ClientFormModal } from '@/features/clients/components/ClientFormModal';
 import { ClientDeleteConfirmModal } from '@/features/clients/components/ClientDeleteConfirmModal';
+import { AddShopOwnerModal } from '@/features/clients/components/AddShopOwnerModal';
 import type { AdminClient } from '@/features/clients/types/clients.types';
-import type { ClientFormData } from '@/features/clients/validations/clients.schema';
+import type {
+  ClientFormData,
+  AddShopOwnerFormData,
+} from '@/features/clients/validations/clients.schema';
 
 const PAGE_SIZE = 10;
 
@@ -20,82 +25,77 @@ type ModalState =
   | { type: 'delete'; client: AdminClient };
 
 export default function ClientsPage() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const p = t.clients;
+  const toast = useToast();
 
-  const [clients, setClients] = useState<AdminClient[]>(MOCK_CLIENTS);
-  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
 
   useEffect(() => {
-    const id = setTimeout(() => setIsLoading(false), 650);
+    const id = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(id);
-  }, []);
+  }, [search]);
 
   useEffect(() => {
     setPage(1);
-  }, [search, statusFilter]);
+  }, [debouncedSearch, statusFilter]);
 
-  const filtered = useMemo(() => {
-    return clients.filter((c) => {
-      const name = locale === 'ar' ? c.name_ar : c.name_en;
-      const matchSearch =
-        !search ||
-        name.toLowerCase().includes(search.toLowerCase()) ||
-        c.phone.replace(/\s/g, '').includes(search.replace(/\s/g, ''));
-      const matchStatus = !statusFilter || c.status === statusFilter;
-      return matchSearch && matchStatus;
-    });
-  }, [clients, search, statusFilter, locale]);
+  const {
+    clients,
+    total,
+    isLoading,
+    createShopOwner,
+    isCreating,
+    updateShop,
+    isUpdating,
+    toggleStatus,
+  } = useClients({ page, limit: PAGE_SIZE, search: debouncedSearch || undefined });
 
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const filteredClients = useMemo(() => {
+    if (!statusFilter) return clients;
+    return clients.filter((c) => c.status === statusFilter);
+  }, [clients, statusFilter]);
+
+  const displayTotal = statusFilter ? filteredClients.length : total;
 
   // ── CRUD handlers ──────────────────────────────────────────────────────
 
-  const handleAdd = (data: ClientFormData) => {
-    const nextId = clients.length > 0 ? Math.max(...clients.map((c) => c.id)) + 1 : 1;
-    const newClient: AdminClient = {
-      id: nextId,
-      name_ar: data.nameAr,
-      name_en: data.nameEn ?? '',
-      phone: data.phone,
-      city_ar: data.address ?? '',
-      city_en: data.address ?? '',
-      product_count: 0,
-      last_activity_ar: 'الآن',
-      last_activity_en: 'Just now',
-      status: 'active',
-      notes: data.notes,
-    };
-    setClients((prev) => [...prev, newClient]);
-    setModal({ type: 'none' });
+  const handleAdd = async (data: AddShopOwnerFormData) => {
+    try {
+      await createShopOwner(data);
+      toast.success(p.toast.created);
+      setModal({ type: 'none' });
+    } catch {
+      toast.error('Failed to create shop owner');
+    }
   };
 
-  const handleEdit = (client: AdminClient, data: ClientFormData) => {
-    setClients((prev) =>
-      prev.map((c) =>
-        c.id === client.id
-          ? {
-              ...c,
-              name_ar: data.nameAr,
-              name_en: data.nameEn ?? '',
-              phone: data.phone,
-              city_ar: data.address ?? c.city_ar,
-              city_en: data.address ?? c.city_en,
-              notes: data.notes,
-            }
-          : c
-      )
-    );
-    setModal({ type: 'none' });
+  const handleEdit = async (client: AdminClient, data: ClientFormData) => {
+    try {
+      await updateShop({
+        id: client.id,
+        data: { name: data.name, phone: data.phone, address: data.address },
+      });
+      toast.success(p.toast.updated);
+      setModal({ type: 'none' });
+    } catch {
+      toast.error('Failed to update client');
+    }
   };
 
-  const handleDelete = (client: AdminClient) => {
-    setClients((prev) => prev.filter((c) => c.id !== client.id));
-    setModal({ type: 'none' });
+  const handleToggleStatus = async (client: AdminClient) => {
+    const willActivate = client.status === 'inactive';
+    try {
+      await toggleStatus({ id: client.id, isActive: willActivate });
+      toast.success(willActivate ? p.toast.activated : p.toast.deactivated);
+      setModal({ type: 'none' });
+    } catch {
+      toast.error('Failed to update client status');
+    }
   };
 
   // ── Render ─────────────────────────────────────────────────────────────
@@ -106,9 +106,7 @@ export default function ClientsPage() {
       <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
           <h1 className="text-[26px] font-semibold leading-tight text-ink-900">{p.page.title}</h1>
-          <p className="mt-1 text-sm text-ink-500">
-            {p.page.count.replace('{n}', String(clients.length))}
-          </p>
+          <p className="mt-1 text-sm text-ink-500">{p.page.count.replace('{n}', String(total))}</p>
         </div>
         <button
           onClick={() => setModal({ type: 'add' })}
@@ -121,8 +119,8 @@ export default function ClientsPage() {
 
       {/* ── Layer 2: Table Card ── */}
       <ClientsTableCard
-        clients={paginated}
-        filteredCount={filtered.length}
+        clients={filteredClients}
+        filteredCount={displayTotal}
         isLoading={isLoading}
         page={page}
         pageSize={PAGE_SIZE}
@@ -139,19 +137,24 @@ export default function ClientsPage() {
       />
 
       {/* ── Modals ── */}
-      <ClientFormModal
-        open={modal.type === 'add' || modal.type === 'edit'}
-        mode={modal.type === 'edit' ? 'edit' : 'add'}
-        client={modal.type === 'edit' ? modal.client : null}
+      <AddShopOwnerModal
+        open={modal.type === 'add'}
+        isSubmitting={isCreating}
         onClose={() => setModal({ type: 'none' })}
-        onAdd={handleAdd}
+        onSubmit={handleAdd}
+      />
+      <ClientFormModal
+        open={modal.type === 'edit'}
+        client={modal.type === 'edit' ? modal.client : null}
+        isSubmitting={isUpdating}
+        onClose={() => setModal({ type: 'none' })}
         onEdit={handleEdit}
       />
       <ClientDeleteConfirmModal
         open={modal.type === 'delete'}
         client={modal.type === 'delete' ? modal.client : null}
         onClose={() => setModal({ type: 'none' })}
-        onConfirm={handleDelete}
+        onConfirm={handleToggleStatus}
       />
     </div>
   );

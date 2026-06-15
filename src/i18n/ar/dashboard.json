@@ -7,17 +7,17 @@
   },
   "kpi": {
     "totalProducts": "إجمالي المنتجات",
-    "totalProductsSub": "عبر ٦ فئات",
-    "totalClients": "إجمالي العملاء",
-    "totalClientsSub": "٥ نشطون",
-    "stockValue": "قيمة المخزون",
-    "stockValueSub": "سعر البيع",
+    "totalProductsSub": "عبر جميع الفئات",
+    "totalClients": "إجمالي الفروع",
+    "totalClientsSub": "فروع نشطة",
+    "stockValue": "طلبات معلقة",
+    "stockValueSub": "بانتظار المعالجة",
     "runningLow": "منتجات منخفضة",
     "runningLowSub": "بحاجة إلى تعبئة",
-    "todayUsage": "استهلاك اليوم",
-    "todayUsageSub": "وحدة عبر العملاء",
-    "monthlyUsage": "استهلاك الشهر",
-    "monthlyUsageSub": "مايو ٢٠٢٦"
+    "todayUsage": "إجمالي الطلبات",
+    "todayUsageSub": "منذ البداية",
+    "monthlyUsage": "طلبات مكتملة",
+    "monthlyUsageSub": "مغلقة بالكامل"
   },
   "charts": {
     "consumptionTrend": "اتجاه الاستهلاك",
@@ -31,7 +31,7 @@
     "title": "تنبيهات نقص المخزون",
     "viewAll": "← عرض الكل",
     "colProduct": "المنتج",
-    "colClient": "العميل",
+    "colClient": "الفرع",
     "colRemaining": "الكمية المتبقية",
     "colMin": "الحد الأدنى",
     "replenish": "نقل مخزون"

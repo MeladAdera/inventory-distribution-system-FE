@@ -204,7 +204,7 @@ export function TransferModal({
   useEffect(() => {
     if (open) {
       reset({
-        shopId: '',
+        shopId: prefill?.shopId ? String(prefill.shopId) : '',
         items: [
           {
             productId: prefill?.productId ? String(prefill.productId) : '',

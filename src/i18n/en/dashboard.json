@@ -7,17 +7,17 @@
   },
   "kpi": {
     "totalProducts": "Total products",
-    "totalProductsSub": "Across 6 categories",
-    "totalClients": "Total clients",
-    "totalClientsSub": "5 active",
-    "stockValue": "Stock value",
-    "stockValueSub": "At selling price",
+    "totalProductsSub": "Across all categories",
+    "totalClients": "Total shops",
+    "totalClientsSub": "Active branches",
+    "stockValue": "Pending orders",
+    "stockValueSub": "Awaiting processing",
     "runningLow": "Running low",
     "runningLowSub": "Need replenishment",
-    "todayUsage": "Today's usage",
-    "todayUsageSub": "units across clients",
-    "monthlyUsage": "Monthly usage",
-    "monthlyUsageSub": "May 2026"
+    "todayUsage": "Total orders",
+    "todayUsageSub": "All time",
+    "monthlyUsage": "Completed",
+    "monthlyUsageSub": "Fully closed orders"
   },
   "charts": {
     "consumptionTrend": "Consumption Trend",
@@ -31,7 +31,7 @@
     "title": "Low Stock Alerts",
     "viewAll": "View all →",
     "colProduct": "Product",
-    "colClient": "Client",
+    "colClient": "Shop",
     "colRemaining": "Remaining",
     "colMin": "Min",
     "replenish": "Replenish"
