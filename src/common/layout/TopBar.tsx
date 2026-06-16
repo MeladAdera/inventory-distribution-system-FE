@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import {
   Bell,
   Search,
@@ -13,10 +14,10 @@ import {
   Inbox,
   CheckCircle,
   User,
-  ArrowLeftRight,
   LogOut,
 } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
+import { getInitials } from '@/common/utils/string.utils';
 import { useI18n } from '@/providers/I18nProvider';
 import { useAuth } from '@/features/auth';
 import { MOCK_NOTIFICATIONS } from './mockNotifications';
@@ -42,7 +43,7 @@ const NOTIF_COLOR: Record<NotifType, string> = {
 
 export function TopBar({ onMenuClick }: TopBarProps) {
   const { t, locale, setLocale } = useI18n();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const pathname = usePathname();
 
   const [notifOpen, setNotifOpen] = useState(false);
@@ -57,12 +58,10 @@ export function TopBar({ onMenuClick }: TopBarProps) {
 
   const unreadCount = MOCK_NOTIFICATIONS.filter((n) => n.unread).length;
 
-  const displayName = t.topbar.user.defaultName;
-  const initials = (() => {
-    const parts = displayName.trim().split(/\s+/);
-    if (parts.length === 1) return (parts[0][0] ?? '').toUpperCase();
-    return (parts[0][0] ?? '') + (parts[parts.length - 1][0] ?? '');
-  })();
+  const roles = t.sidebar.user.roles as Record<string, string>;
+  const displayName = user?.name ?? '';
+  const roleLabel = user?.role ? (roles[user.role] ?? user.role) : '';
+  const initials = getInitials(displayName);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -204,19 +203,19 @@ export function TopBar({ onMenuClick }: TopBarProps) {
               {/* Header */}
               <div className="px-3 py-3 border-b border-border">
                 <p className="text-[14px] font-semibold text-ink-900 truncate">{displayName}</p>
-                <p className="text-[12px] text-ink-500 truncate">{t.topbar.user.role}</p>
+                <p className="text-[12px] text-ink-500 truncate">{roleLabel}</p>
               </div>
 
               {/* Items */}
               <div className="p-1.5">
-                <button className="flex items-center gap-2.5 w-full px-3 py-2.25 rounded-lg text-[14px] text-ink-700 hover:bg-sand-100 transition-colors">
+                <Link
+                  href="/settings"
+                  onClick={() => setAvatarOpen(false)}
+                  className="flex items-center gap-2.5 w-full px-3 py-2.25 rounded-lg text-[14px] text-ink-700 hover:bg-sand-100 transition-colors"
+                >
                   <User size={16} className="shrink-0" />
                   {t.topbar.avatar.profile}
-                </button>
-                <button className="flex items-center gap-2.5 w-full px-3 py-2.25 rounded-lg text-[14px] text-ink-700 hover:bg-sand-100 transition-colors">
-                  <ArrowLeftRight size={16} className="shrink-0" />
-                  {t.topbar.avatar.clientPortal}
-                </button>
+                </Link>
               </div>
 
               <div className="border-t border-border mx-1.5" />

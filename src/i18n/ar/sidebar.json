@@ -10,5 +10,11 @@
     "settings": "الإعدادات"
   },
   "collapse": "طي القائمة",
-  "user": { "defaultName": "سالم المنصوري", "role": "مالك المستودع" }
+  "user": {
+    "roles": {
+      "WAREHOUSE_ADMIN": "مدير المستودع",
+      "SHOP_OWNER": "صاحب المتجر",
+      "EMPLOYEE": "موظف"
+    }
+  }
 }

@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
-import { Truck, Settings, ArrowLeftRight, LogOut } from 'lucide-react';
+import { Truck, Settings, LogOut } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { NavDrawer } from './NavDrawer';
@@ -10,26 +10,22 @@ import { BottomNav } from './BottomNav';
 import { BottomSheet } from './BottomSheet';
 import { useI18n } from '@/providers/I18nProvider';
 import { useAuth } from '@/features/auth';
+import { getInitials } from '@/common/utils/string.utils';
 
 interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return (parts[0][0] ?? '').toUpperCase();
-  return (parts[0][0] ?? '') + (parts[parts.length - 1][0] ?? '');
-}
-
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { t } = useI18n();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
 
   const s = t.bottomnav.sheet as Record<string, string>;
-  const displayName = t.sidebar.user.defaultName;
-  const role = t.sidebar.user.role;
+  const roles = t.sidebar.user.roles as Record<string, string>;
+  const displayName = user?.name ?? '';
+  const roleLabel = user?.role ? (roles[user.role] ?? user.role) : '';
   const initials = getInitials(displayName);
 
   const sheetNavItems = [
@@ -73,11 +69,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               {label}
             </Link>
           ))}
-
-          <button className="flex items-center gap-3 w-full px-5 py-3.5 text-[15px] font-medium text-ink-800 hover:bg-sand-100 transition-colors">
-            <ArrowLeftRight size={19} className="text-ink-500 shrink-0" />
-            {s.clientPortal}
-          </button>
         </div>
 
         {/* Divider + user block */}
@@ -88,7 +79,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
             <div className="min-w-0">
               <p className="text-[14px] font-semibold text-ink-900 truncate">{displayName}</p>
-              <p className="text-[12px] text-ink-500 truncate">{role}</p>
+              <p className="text-[12px] text-ink-500 truncate">{roleLabel}</p>
             </div>
           </div>
 

@@ -11,6 +11,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
+import { useAuth } from '@/features/auth';
 import { KpiCard } from '@/features/dashboard/components/KpiCard';
 import { CardShell } from '@/features/dashboard/components/CardShell';
 import { ConsumptionTrendChart } from '@/features/dashboard/components/ConsumptionTrendChart';
@@ -21,8 +22,12 @@ import { useDashboardStats } from '@/features/dashboard/hooks/useDashboardStats'
 
 export default function DashboardPage() {
   const { t } = useI18n();
+  const { user } = useAuth();
   const router = useRouter();
   const d = t.dashboard;
+
+  const firstName = user?.name?.split(' ')[0] ?? '';
+  const greeting = d.header.greeting.replace('{name}', firstName);
 
   const {
     totalProducts,
@@ -110,7 +115,7 @@ export default function DashboardPage() {
             className="mt-3 text-[34px] font-medium leading-tight tracking-[-0.02em] text-ink-900"
             style={{ fontFamily: 'var(--font-serif)' }}
           >
-            {d.header.greeting}
+            {greeting}
           </h1>
           <p className="mt-2 text-sm text-ink-600">{d.header.subtitle}</p>
         </div>

@@ -1,7 +1,7 @@
 {
   "header": {
     "eyebrow": "Overview",
-    "greeting": "Good morning, Salem.",
+    "greeting": "Good morning, {name}.",
     "subtitle": "Latakia Warehouse · 5 products need replenishment today.",
     "newTransfer": "New transfer"
   },

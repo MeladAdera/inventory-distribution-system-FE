@@ -1,18 +1,14 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Warehouse, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
+import { getInitials } from '@/common/utils/string.utils';
 import { useI18n } from '@/providers/I18nProvider';
+import { useAuth } from '@/features/auth';
 import { useSidebarStore } from './sidebarStore';
-import { NAV_MAIN, NAV_MANAGE, type NavItem } from './navConfig';
-
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return (parts[0][0] ?? '').toUpperCase();
-  return (parts[0][0] ?? '') + (parts[parts.length - 1][0] ?? '');
-}
+import { NAV_MAIN, NAV_MANAGE } from './navConfig';
+import { NavSection } from './SidebarNavSection';
 
 interface SidebarProps {
   /** fluid = no collapse toggle; used inside NavDrawer */
@@ -21,11 +17,18 @@ interface SidebarProps {
 
 export function Sidebar({ fluid = false }: SidebarProps) {
   const { t, dir } = useI18n();
+  const { user } = useAuth();
   const { isCollapsed, toggle } = useSidebarStore();
   const pathname = usePathname();
 
   const collapsed = !fluid && isCollapsed;
   const isRtl = dir === 'rtl';
+
+  const nav = t.sidebar.nav as Record<string, string>;
+  const roles = t.sidebar.user.roles as Record<string, string>;
+  const displayName = user?.name ?? '';
+  const roleLabel = user?.role ? (roles[user.role] ?? user.role) : '';
+  const initials = getInitials(displayName);
 
   const CollapseIcon = collapsed
     ? isRtl
@@ -35,10 +38,6 @@ export function Sidebar({ fluid = false }: SidebarProps) {
       ? ChevronsLeft
       : ChevronsRight;
 
-  const nav = t.sidebar.nav as Record<string, string>;
-  const displayName = t.sidebar.user.defaultName;
-  const initials = getInitials(displayName);
-
   return (
     <aside
       className={cn(
@@ -47,7 +46,7 @@ export function Sidebar({ fluid = false }: SidebarProps) {
         collapsed ? 'w-18' : 'w-65'
       )}
     >
-      {/* ── Brand ─────────────────────────────────── */}
+      {/* ── Brand ── */}
       <div
         className={cn(
           'flex items-center border-b border-border shrink-0',
@@ -67,7 +66,7 @@ export function Sidebar({ fluid = false }: SidebarProps) {
         )}
       </div>
 
-      {/* ── Navigation ────────────────────────────── */}
+      {/* ── Navigation ── */}
       <nav className="flex-1 overflow-y-auto p-3 flex flex-col gap-0.75">
         <NavSection
           label={collapsed ? undefined : t.sidebar.sections.main}
@@ -76,9 +75,7 @@ export function Sidebar({ fluid = false }: SidebarProps) {
           collapsed={collapsed}
           nav={nav}
         />
-
         <div className="my-2" />
-
         <NavSection
           label={collapsed ? undefined : t.sidebar.sections.manage}
           items={NAV_MANAGE}
@@ -88,17 +85,16 @@ export function Sidebar({ fluid = false }: SidebarProps) {
         />
       </nav>
 
-      {/* ── Collapse toggle ───────────────────────── */}
+      {/* ── Collapse toggle ── */}
       {!fluid && (
         <div className="px-3 pb-2">
           <button
             onClick={toggle}
+            aria-label={t.sidebar.collapse}
             className={cn(
-              'flex items-center gap-2 w-full rounded-lg px-3 py-2 text-[14px] font-medium text-ink-600',
-              'hover:bg-sand-200 transition-colors',
+              'flex items-center gap-2 w-full rounded-lg px-3 py-2 text-[14px] font-medium text-ink-600 hover:bg-sand-200 transition-colors',
               collapsed && 'justify-center px-0'
             )}
-            aria-label={t.sidebar.collapse}
           >
             <CollapseIcon size={16} className="shrink-0" />
             {!collapsed && <span>{t.sidebar.collapse}</span>}
@@ -106,7 +102,7 @@ export function Sidebar({ fluid = false }: SidebarProps) {
         </div>
       )}
 
-      {/* ── User block ────────────────────────────── */}
+      {/* ── User block ── */}
       <div
         className={cn(
           'flex items-center border-t border-border shrink-0 p-3',
@@ -119,79 +115,10 @@ export function Sidebar({ fluid = false }: SidebarProps) {
         {!collapsed && (
           <div className="overflow-hidden min-w-0">
             <p className="text-[13px] font-medium text-ink-900 truncate">{displayName}</p>
-            <p className="text-[11px] text-ink-600 truncate">{t.sidebar.user.role}</p>
+            <p className="text-[11px] text-ink-600 truncate">{roleLabel}</p>
           </div>
         )}
       </div>
     </aside>
-  );
-}
-
-/* ─── NavSection ──────────────────────────────────────────── */
-
-interface NavSectionProps {
-  label?: string;
-  items: NavItem[];
-  pathname: string;
-  collapsed: boolean;
-  nav: Record<string, string>;
-}
-
-function NavSection({ label, items, pathname, collapsed, nav }: NavSectionProps) {
-  return (
-    <div className="flex flex-col gap-0.75">
-      {label && (
-        <p className="px-3 pt-1 pb-0.5 text-[11px] font-medium uppercase tracking-[0.08em] text-ink-400 select-none">
-          {label}
-        </p>
-      )}
-      {items.map((item) => {
-        const active = pathname === item.href || pathname.startsWith(item.href + '/');
-        const Icon = item.icon;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            title={collapsed ? (nav[item.id] ?? item.id) : undefined}
-            className={cn(
-              'relative flex items-center rounded-lg transition-colors',
-              collapsed ? 'justify-center h-10 w-10 mx-auto' : 'gap-3 px-3 py-2.25',
-              active
-                ? 'bg-sand-200 text-ink-900'
-                : 'text-ink-600 hover:bg-sand-200 hover:text-ink-900'
-            )}
-          >
-            {/* Active pill indicator */}
-            {active && (
-              <span
-                className="absolute top-1/2 -translate-y-1/2 w-0.75 h-5.5 rounded-full bg-amber-600"
-                style={{ insetInlineStart: '-12px' }}
-              />
-            )}
-
-            <Icon size={18} className="shrink-0" />
-
-            {!collapsed && (
-              <>
-                <span className="flex-1 text-[14px] font-medium">{nav[item.id] ?? item.id}</span>
-
-                {item.badge !== undefined && (
-                  <span
-                    className={cn(
-                      'font-mono text-[11px] px-1.75 py-px rounded-full',
-                      item.badgeVariant === 'danger'
-                        ? 'bg-danger-100 text-danger-700'
-                        : 'bg-paper border border-border text-ink-500'
-                    )}
-                  >
-                    {item.badge}
-                  </span>
-                )}
-              </>
-            )}
-          </Link>
-        );
-      })}
-    </div>
   );
 }

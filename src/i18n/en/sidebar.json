@@ -10,5 +10,11 @@
     "settings": "Settings"
   },
   "collapse": "Collapse",
-  "user": { "defaultName": "Salem Al Mansoori", "role": "Warehouse Owner" }
+  "user": {
+    "roles": {
+      "WAREHOUSE_ADMIN": "Warehouse Admin",
+      "SHOP_OWNER": "Shop Owner",
+      "EMPLOYEE": "Employee"
+    }
+  }
 }
