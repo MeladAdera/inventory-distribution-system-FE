@@ -9,36 +9,29 @@ import {
   Menu,
   ChevronDown,
   Languages,
-  XCircle,
   AlertTriangle,
   Inbox,
-  CheckCircle,
   User,
   LogOut,
 } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
-import { getInitials } from '@/common/utils/string.utils';
+import { getInitials, formatRelativeTime } from '@/common/utils/string.utils';
 import { useI18n } from '@/providers/I18nProvider';
 import { useAuth } from '@/features/auth';
-import { MOCK_NOTIFICATIONS } from './mockNotifications';
-import type { NotifType } from './mockNotifications';
+import { useNotifications, NotificationType } from '@/features/notifications';
 
 interface TopBarProps {
   onMenuClick?: () => void;
 }
 
-const NOTIF_ICON: Record<NotifType, typeof XCircle> = {
-  out: XCircle,
-  low: AlertTriangle,
-  request: Inbox,
-  done: CheckCircle,
+const NOTIF_ICON: Record<NotificationType, typeof AlertTriangle> = {
+  [NotificationType.LOW_STOCK]: AlertTriangle,
+  [NotificationType.ORDER_UPDATE]: Inbox,
 };
 
-const NOTIF_COLOR: Record<NotifType, string> = {
-  out: 'text-danger-700',
-  low: 'text-warning-700',
-  request: 'text-info-700',
-  done: 'text-success-700',
+const NOTIF_COLOR: Record<NotificationType, string> = {
+  [NotificationType.LOW_STOCK]: 'text-warning-700',
+  [NotificationType.ORDER_UPDATE]: 'text-info-700',
 };
 
 export function TopBar({ onMenuClick }: TopBarProps) {
@@ -51,12 +44,12 @@ export function TopBar({ onMenuClick }: TopBarProps) {
   const notifRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLDivElement>(null);
 
+  const { items: notifications, unreadCount, markRead, markAllRead } = useNotifications();
+
   const pageTitles = t.topbar.pageTitles as Record<string, string>;
   const segments = pathname.split('/').filter(Boolean);
   const matchKey = '/' + (segments[0] ?? '');
   const pageTitle = pageTitles[matchKey] ?? '';
-
-  const unreadCount = MOCK_NOTIFICATIONS.filter((n) => n.unread).length;
 
   const roles = t.sidebar.user.roles as Record<string, string>;
   const displayName = user?.name ?? '';
@@ -139,44 +132,64 @@ export function TopBar({ onMenuClick }: TopBarProps) {
                 <span className="text-[14px] font-semibold text-ink-900">
                   {t.topbar.notifications.title}
                 </span>
-                <button className="text-[13px] font-medium text-amber-700 hover:underline">
+                <button
+                  onClick={() => markAllRead()}
+                  className="text-[13px] font-medium text-amber-700 hover:underline disabled:opacity-40"
+                  disabled={unreadCount === 0}
+                >
                   {t.topbar.notifications.markAllRead}
                 </button>
               </div>
 
               {/* Items */}
               <ul className="max-h-72 overflow-y-auto">
-                {MOCK_NOTIFICATIONS.map((n) => {
-                  const Icon = NOTIF_ICON[n.type];
-                  const color = NOTIF_COLOR[n.type];
-                  return (
-                    <li
-                      key={n.id}
-                      className={cn(
-                        'flex items-start gap-3 px-4 py-3 border-b border-border last:border-0',
-                        n.unread && 'bg-amber-50'
-                      )}
-                    >
-                      <Icon size={18} className={cn('mt-0.5 shrink-0', color)} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[13px] text-ink-800 leading-normal">{n.text[locale]}</p>
-                        <p className="font-mono text-[11px] text-ink-400 mt-0.5">
-                          {n.time[locale]}
-                        </p>
-                      </div>
-                      {n.unread && (
-                        <span className="mt-1.5 w-1.75 h-1.75 rounded-full bg-amber-600 shrink-0" />
-                      )}
-                    </li>
-                  );
-                })}
+                {notifications.length === 0 ? (
+                  <li className="px-4 py-6 text-center text-[13px] text-ink-400">
+                    {(t.topbar.notifications as Record<string, string>).emptyState}
+                  </li>
+                ) : (
+                  notifications.map((n) => {
+                    const Icon = NOTIF_ICON[n.type] ?? Inbox;
+                    const color = NOTIF_COLOR[n.type] ?? 'text-ink-400';
+                    return (
+                      <li
+                        key={n.id}
+                        onClick={() => !n.is_read && markRead(n.id)}
+                        className={cn(
+                          'flex items-start gap-3 px-4 py-3 border-b border-border last:border-0',
+                          !n.is_read && 'bg-amber-50 cursor-pointer hover:bg-amber-100'
+                        )}
+                      >
+                        <Icon size={18} className={cn('mt-0.5 shrink-0', color)} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] font-medium text-ink-800 leading-normal truncate">
+                            {n.title}
+                          </p>
+                          <p className="text-[12px] text-ink-600 leading-normal mt-0.5">
+                            {n.message}
+                          </p>
+                          <p className="font-mono text-[11px] text-ink-400 mt-0.5">
+                            {formatRelativeTime(n.created_at, locale)}
+                          </p>
+                        </div>
+                        {!n.is_read && (
+                          <span className="mt-1.5 w-1.75 h-1.75 rounded-full bg-amber-600 shrink-0" />
+                        )}
+                      </li>
+                    );
+                  })
+                )}
               </ul>
 
               {/* Footer */}
               <div className="px-4 py-2.5 border-t border-border text-center">
-                <button className="text-[13px] text-amber-700 hover:underline">
+                <Link
+                  href="/notifications"
+                  onClick={() => setNotifOpen(false)}
+                  className="text-[13px] text-amber-700 hover:underline"
+                >
                   {t.topbar.notifications.viewAll}
-                </button>
+                </Link>
               </div>
             </div>
           )}

@@ -1,8 +1,8 @@
 # Project Status: Inventory Distribution System (Frontend)
 
 **Last Updated**: June 16, 2026  
-**Version**: 0.9.5  
-**Status**: API INTEGRATION IN PROGRESS 🔌
+**Version**: 0.9.8  
+**Status**: API INTEGRATION COMPLETE ✅
 
 ---
 
@@ -14,27 +14,26 @@ Frontend application for the Inventory Distribution System built with Next.js, R
 
 ## 🔌 Current Phase: API INTEGRATION
 
-**Status**: 🔄 **IN PROGRESS**
-
-Backend API is complete. Replacing mock data with real API calls page by page.
+**Status**: ✅ **COMPLETE** — all pages wired to real backend data
 
 ### API Integration Progress
 
 | Page | Description | Status |
 |------|-------------|--------|
-| Products | `useProducts` + `useProduct(id)` hooks wired; all 4 modals hit real endpoints; category filter in toolbar; bugfixes applied | ✅ Complete (2 gaps remaining) |
-| Transfers | `useTransfers` + `useTransferShops` + `useTransferProducts`; create via `POST /orders`; status advance via `PATCH /orders/:id/status`; permission-gated admin actions; server-side pagination; **multi-product modal** (useFieldArray, per-row availability) | ✅ Complete |
-| Settings | `useProfileSettings` → `PATCH /users/:id` (updates auth store on save); `useShopSettings` → `GET+PATCH /shops/:id`; ProfileCard + ShopCard with inline edit, skeleton loading, toasts | ✅ Complete |
-| Clients | Still on mock data | ⬜ Next |
-| Dashboard | Still on mock data | ⬜ Pending |
+| Products | `useProducts` + `useProduct(id)` hooks; all 4 modals hit real endpoints; category filter | ✅ Complete |
+| Transfers | `useTransfers`; create `POST /orders`; status advance `PATCH /orders/:id/status`; multi-product modal | ✅ Complete |
+| Settings | `useProfileSettings` + `useShopSettings`; ProfileCard + ShopCard with inline edit | ✅ Complete |
+| Shortages | `useShortages` — parallel fetch inventory + shops; replenish pre-fills TransferModal with shopId | ✅ Complete |
+| Dashboard | `useDashboardStats` — 6 parallel KPI queries; LowStockAlertsTable + RecentActivityFeed self-contained | ✅ Complete |
+| Clients | `useClients` — server-side search + pagination; `AddShopOwnerModal`; edit/deactivate via PATCH | ✅ Complete |
+| Analytics Charts | `useTopProducts` + `useConsumptionTrend` — TopConsumedChart + ConsumptionTrendChart on real API | ✅ Complete |
 
-### Products API — Known Gaps
-| Gap | Status |
-|-----|--------|
-| Search field (backend has no name search param for products) | ⬜ Open |
-| Edit form drops barcode + category_id changes | ⬜ Open |
-| No error toast on failed mutations | ⬜ Open |
-| Category filter by name | ✅ Done — toolbar dropdown, resets page on change |
+### Known Open Items
+| Item | Status |
+|------|--------|
+| Products: backend has no name search param | ⬜ Open — awaiting backend |
+| Analytics trend: backend `status=COMPLETED` filter misses SHIPPED orders | ⬜ Open — backend fix needed |
+| Dashboard KPI trends (up/down arrows) | ⬜ No API for period-over-period comparison yet |
 
 ---
 
@@ -108,11 +107,13 @@ Next.js setup, ESLint, Prettier, Husky, Tailwind, Axios, TanStack Query, Zustand
 ```
 src/features/
 ├── auth/          ✅ Complete
+├── analytics/     ✅ Complete (types + api + hooks — TopProduct, TrendPoint, ConsumptionTrend)
 ├── users/         ✅ Complete (types + API + hooks + components + page)
-├── products/      ✅ Complete (types + API + hooks + components + page + modals + mock)
-├── clients/       ✅ Complete (types + validations + components + page + modals + mock)
+├── products/      ✅ Complete (types + API + hooks + components + page + modals)
+├── clients/       ✅ Complete (types + validations + hooks + components + page + 3 modals)
 ├── transfers/     ✅ Complete (types + API + hooks + components + page + modal — real API)
-├── shortages/     ✅ Complete (types + components + page + mock)
+├── shortages/     ✅ Complete (types + hooks + components + page — real API)
+├── dashboard/     ✅ Complete (hooks + components — 6 KPI queries + 2 chart components)
 ├── orders/        🔧 Scaffold fixed (no page yet)
 ├── inventory/     🔧 Scaffold fixed (no page yet)
 ├── categories/    ✅ Scaffold + hook working (non-paginated; WAREHOUSE_ADMIN filtered by shopId)
@@ -127,7 +128,7 @@ src/common/components/
 
 src/common/
 ├── utils/
-│   └── string.utils.ts   ✅  getInitials (single source; imported by layout + settings)
+│   └── string.utils.ts   ✅  getInitials + formatRelativeTime (locale-aware — AR/EN)
 └── layout/
     ├── navConfig.ts          ✅  nav items, icons, badges (single source of truth)
     ├── sidebarStore.ts       ✅  Zustand collapse state
@@ -136,8 +137,8 @@ src/common/
 
 src/i18n/                  ✅  React 18 context-based i18n (no library)
 ├── index.ts               ✅  assembled typed translations
-├── en/{sidebar,topbar,bottomnav,dashboard,products,clients,transfers,settings}.json
-└── ar/{sidebar,topbar,bottomnav,dashboard,products,clients,transfers,settings}.json
+├── en/{sidebar,topbar,bottomnav,dashboard,products,clients,transfers,settings,shortages,analytics}.json
+└── ar/{sidebar,topbar,bottomnav,dashboard,products,clients,transfers,settings,shortages,analytics}.json
 
 src/providers/
 └── I18nProvider.tsx       ✅  locale context + useI18n hook
@@ -172,5 +173,5 @@ Backend runs on port 3000. Frontend dev server on port 3001.
 
 ---
 
-**Last Commit**: feat(layout): wire real user data into sidebar, topbar and dashboard  
-**Next Up**: Clients API integration
+**Last Commit**: feat(analytics): integrate TopConsumedChart and ConsumptionTrendChart with real API  
+**Next Up**: Polish and QA — no open API integration gaps remaining

@@ -8,7 +8,8 @@
   "notifications": {
     "title": "Notifications",
     "markAllRead": "Mark all read",
-    "viewAll": "View all notifications"
+    "viewAll": "View all notifications",
+    "emptyState": "You're all caught up!"
   },
   "avatar": {
     "profile": "Profile",

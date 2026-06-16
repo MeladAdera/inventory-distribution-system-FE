@@ -84,12 +84,13 @@ Check `docs/api/` folder:
 |---------|----------|--------|
 | Authentication | [auth.md](features/auth.md) | ✅ PHASE 1 Complete |
 | Admin Layout Shell | [admin-layout-shell.md](features/admin-layout-shell.md) | ✅ FIGMA-001 Complete |
-| Dashboard | [dashboard.md](features/dashboard.md) | ✅ FIGMA-002 Complete |
-| Products | [products.md](features/products.md) | ✅ FIGMA-003 Complete |
-| Clients | [clients.md](features/clients.md) | ✅ FIGMA-004 Complete |
+| Dashboard | [dashboard.md](features/dashboard.md) | ✅ FIGMA-002 Complete — API Integrated |
+| Products | [products.md](features/products.md) | ✅ FIGMA-003 Complete — API Integrated |
+| Clients | [clients.md](features/clients.md) | ✅ FIGMA-004 Complete — API Integrated |
 | Transfers | [transfers.md](features/transfers.md) | ✅ FIGMA-005 Complete — API Integrated, multi-product modal |
-| Shortages | [shortages.md](features/shortages.md) | ✅ FIGMA-006 Complete |
-| Settings | [settings.md](features/settings.md) | ✅ FIGMA-007 Complete |
+| Shortages | [shortages.md](features/shortages.md) | ✅ FIGMA-006 Complete — API Integrated |
+| Settings | [settings.md](features/settings.md) | ✅ FIGMA-007 Complete — API Integrated |
+| Analytics | [analytics.md](features/analytics.md) | ✅ Complete — TopConsumed + ConsumptionTrend on real API |
 
 ### API Documentation
 | Topic | Document | Status |
@@ -326,7 +327,7 @@ Instead use:
 
 **Last Updated**: June 16, 2026  
 **Maintainer**: Melad Adera  
-**Status**: Settings (FIGMA-007) complete, layout wired with real user data — Clients API integration next
+**Status**: All pages API integrated ✅ — no open integration gaps
 
 For project overview, see **[PROJECT_STATUS.md](../PROJECT_STATUS.md)**  
 For recent updates, see **[UPDATES.md](../UPDATES.md)**  

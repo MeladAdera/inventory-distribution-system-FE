@@ -4,6 +4,122 @@ Real-time development progress and detailed work logs.
 
 ---
 
+## June 16, 2026 — API Integration Complete (Shortages, Dashboard, Clients, Analytics)
+
+### Session C — Shortages + Dashboard API Integration
+**Focus**: Replace all mock data in Shortages and Dashboard with real API calls  
+**Version**: 0.9.6
+
+#### Tasks Completed
+
+1. ✅ **`useShortages.ts`** — parallel fetch: `GET /inventory?lowStock=true&limit=100` + `GET /shops?type=SHOP&limit=100`; builds `Map<shopId, shopName>`; maps `InventoryItem → Shortage`; handles both flat-array and paginated API response shapes defensively
+
+2. ✅ **`shortages/page.tsx`** — removed `MOCK_SHORTAGES`; live summary strip; table driven by `useShortages()`; replenish flow unchanged
+
+3. ✅ **`useDashboardStats.ts`** — 6 parallel TanStack Query calls (products total, shops total, pending orders, low-stock count, total orders, completed orders); 1-minute staleTime; each query hits `limit=1` to avoid loading full lists
+
+4. ✅ **`dashboard/page.tsx`** — KPI values from `useDashboardStats`; shows `—` while any query is loading
+
+5. ✅ **`LowStockAlertsTable.tsx`** — self-contained; calls `useShortages()` internally; shows first 5 rows
+
+6. ✅ **`RecentActivityFeed.tsx`** — self-contained; calls `useAuditLogs({ limit: 6 })`; locale-aware timestamps via `formatRelativeTime(log.created_at, locale)`
+
+#### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
+### Session D — Clients API Integration
+**Focus**: Wire Clients page to real backend; split add and edit flows  
+**Version**: 0.9.7
+
+#### Tasks Completed
+
+1. ✅ **`useClients.ts`** — `useQuery` with `page`, `limit`, `search` params → `GET /shops?type=SHOP`; `Shop[] | PaginatedShops` defensive unwrap; 3 mutations: `createShopOwner` (`POST /users/shop-owners`), `updateShop` (`PATCH /shops/:id`), `toggleStatus` (`PATCH /shops/:id/status`); all mutations call `queryClient.invalidateQueries` on success
+
+2. ✅ **`addShopOwnerSchema`** — separate Zod schema for create (5 fields: shopName, shopAddress, ownerName, email, password min 8)
+
+3. ✅ **`AddShopOwnerModal.tsx`** — create modal with amber styling; uses `addShopOwnerSchema`; `isSubmitting` prop
+
+4. ✅ **`ClientFormModal.tsx`** rewritten — edit-only; 3 fields (name, phone, address); removed `mode`/`onAdd` props
+
+5. ✅ **`clients/page.tsx`** — 300ms debounced search; server-side pagination; `handleAdd → createShopOwner`; `handleEdit → updateShop`; `handleToggleStatus` bidirectional (active→deactivate / inactive→activate via same `PATCH /shops/:id/status`)
+
+6. ✅ **i18n** — added `add.*` section for `AddShopOwnerModal`; `form.nameAr → form.name`; delete text → "Deactivate"; added `toast.*` keys for all mutation outcomes
+
+#### Key Design Decisions
+- "Clients" in UI = "Shops" in API — naming discrepancy handled at the hook layer
+- Add and Edit have completely different fields → separate modals with separate schemas
+- Delete is actually Deactivate → `PATCH /shops/:id/status { isActive: false }`; same endpoint reactivates with `isActive: true`
+- Status filter is client-side on the current page (API has no `status` filter param)
+
+#### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
+### Session E — Analytics Charts + RecentActivityFeed Locale Fix
+**Focus**: Wire TopConsumedChart and ConsumptionTrendChart to real analytics API; fix locale bug in activity feed  
+**Version**: 0.9.8
+
+#### Tasks Completed
+
+1. ✅ **`analytics/types/analytics.types.ts`** — `TopProduct`, `TrendPeriod`, `TrendPoint`
+
+2. ✅ **`analytics/api/analytics.api.ts`** — `GET /analytics/top-products` + `GET /analytics/consumption-trend`
+
+3. ✅ **`useTopProducts.ts`** — 5-minute stale; returns `TopProduct[]` from `response.data.data`
+
+4. ✅ **`useConsumptionTrend.ts`** — 5-minute stale; `keepPreviousData` — chart dims during period switch instead of blanking; returns `{ trend, isLoading, isFetching }`
+
+5. ✅ **`TopConsumedChart.tsx`** — removed mock data; calls `useTopProducts(5)` internally; 5-bar skeleton while loading; empty state
+
+6. ✅ **`ConsumptionTrendChart.tsx`** — removed mock data; calls `useConsumptionTrend(mode)`; `opacity-50` while `isFetching && !isLoading`; spinner on initial load only
+
+7. ✅ **`RecentActivityFeed.tsx` locale fix** — private `formatAgo()` always returned English strings regardless of active locale. Replaced with shared `formatRelativeTime(log.created_at, locale)` from `common/utils/string.utils`; `locale` pulled from `useI18n()`
+
+8. ✅ **`docs/features/analytics.md`** — new full module doc
+
+9. ✅ **`docs/features/dashboard.md`**, **`clients.md`**, **`shortages.md`** — all updated to "API Integrated" status
+
+10. ✅ **`PROJECT_STATUS.md`** — version 0.9.8; integration table updated; file tree updated
+
+#### Date Bug Investigation
+Backend was returning a sparse trend series (only days with COMPLETED orders). Frontend diagnosed the issue; backend fix: change `WHERE status = 'COMPLETED'` → `WHERE status IN ('SHIPPED', 'RECEIVED', 'COMPLETED')` so today's active orders appear in the chart.
+
+#### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+#### Files Created
+| File | Description |
+|------|-------------|
+| `src/features/analytics/types/analytics.types.ts` | Analytics type definitions |
+| `src/features/analytics/api/analytics.api.ts` | Analytics API calls |
+| `src/features/analytics/hooks/useTopProducts.ts` | Top products query hook |
+| `src/features/analytics/hooks/useConsumptionTrend.ts` | Consumption trend query hook |
+| `docs/features/analytics.md` | Analytics module documentation |
+
+#### Files Modified
+| File | Change |
+|------|--------|
+| `src/features/dashboard/components/TopConsumedChart.tsx` | Wired to useTopProducts |
+| `src/features/dashboard/components/ConsumptionTrendChart.tsx` | Wired to useConsumptionTrend |
+| `src/features/dashboard/components/RecentActivityFeed.tsx` | Locale-aware timestamps |
+| `docs/features/dashboard.md` | Updated to API Integrated |
+| `docs/features/clients.md` | Updated to API Integrated |
+| `docs/features/shortages.md` | Updated to API Integrated |
+| `PROJECT_STATUS.md` | v0.9.8, all pages complete |
+| `UPDATES.md` | Added v0.9.6, v0.9.7, v0.9.8 entries |
+| `docs/README.md` | All features marked API Integrated |
+
+---
+
 ## June 16, 2026 — Settings Page + Layout Real Data
 
 ### Session A — Settings Page (FIGMA-007)

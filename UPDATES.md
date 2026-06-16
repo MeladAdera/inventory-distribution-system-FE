@@ -4,6 +4,81 @@ All changes documented chronologically with details.
 
 ---
 
+## [0.9.8] - 2026-06-16 - Analytics Charts + RecentActivityFeed Locale Fix
+
+### Analytics — Charts on real API ✅
+
+#### Added
+- **`src/features/analytics/types/analytics.types.ts`** — `TopProduct`, `TrendPeriod`, `TrendPoint` interfaces
+- **`src/features/analytics/api/analytics.api.ts`** — `GET /analytics/top-products` + `GET /analytics/consumption-trend`
+- **`src/features/analytics/hooks/useTopProducts.ts`** — 5-minute stale, returns `TopProduct[]`
+- **`src/features/analytics/hooks/useConsumptionTrend.ts`** — 5-minute stale, `keepPreviousData` so chart dims instead of blanking on period switch
+- **`docs/features/analytics.md`** — full analytics module documentation
+
+#### Changed
+- **`TopConsumedChart.tsx`** — removed mock `CHART_DATA`; calls `useTopProducts(5)` internally; 5-bar skeleton; empty state
+- **`ConsumptionTrendChart.tsx`** — removed mock data; calls `useConsumptionTrend(mode)`; `opacity-50` while refetching; spinner on first load only
+
+#### Fixed
+- **`RecentActivityFeed.tsx`** — timestamps were always English regardless of locale. Private `formatAgo` removed; replaced with `formatRelativeTime(log.created_at, locale)` from `common/utils/string.utils`; `locale` pulled from `useI18n()`
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
+## [0.9.7] - 2026-06-16 - Clients API Integration
+
+### Clients Page — Real API Wired ✅
+
+#### Added
+- **`src/features/clients/hooks/useClients.ts`** — TanStack Query list + `createShopOwner` / `updateShop` / `toggleStatus` mutations; `Shop[]` mapped to `AdminClient[]`
+- **`src/features/clients/components/AddShopOwnerModal.tsx`** — 5-field create modal using `addShopOwnerSchema`; calls `POST /users/shop-owners`
+- **`src/features/clients/validations/clients.schema.ts`** — simplified `clientFormSchema` (edit-only: name, phone, address); new `addShopOwnerSchema` (shopName, shopAddress, ownerName, email, password)
+
+#### Changed
+- **`ClientFormModal.tsx`** — edit-only; removed `mode`/`onAdd` props; 3 fields (name, phone, address)
+- **`clients/page.tsx`** — 300ms debounced search; server-side pagination; `handleAdd` → `createShopOwner`; `handleEdit` → `updateShop`; `handleToggleStatus` bidirectional (active→deactivate / inactive→activate)
+- **`clients/index.ts`** — exports `AddShopOwnerModal`, `useClients`, `AddShopOwnerFormData`; removed `MOCK_CLIENTS`
+- **`en/clients.json`** + **`ar/clients.json`** — added `add.*` section; `form.nameAr → form.name`; `delete.delete → "Deactivate"`; added `toast.{created, updated, deactivated, activated}`
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
+## [0.9.6] - 2026-06-16 - Shortages & Dashboard API Integration
+
+### Shortages Page — Real API Wired ✅
+
+#### Added
+- **`src/features/shortages/hooks/useShortages.ts`** — parallel fetch: `GET /inventory?lowStock=true` + `GET /shops?type=SHOP`; builds `shopId → shopName` map; returns `Shortage[]`
+
+#### Changed
+- **`shortages/page.tsx`** — live summary strip (out/low counts); table driven by `useShortages()`; replenish flow intact
+- Removed `MOCK_SHORTAGES` and `MOCK_SHORTAGE_CLIENTS`
+
+### Dashboard Page — Real API Wired ✅
+
+#### Added
+- **`src/features/dashboard/hooks/useDashboardStats.ts`** — 6 parallel TanStack Query calls (products total, shops total, pending orders, low-stock count, total orders, completed orders); 1-minute staleTime
+
+#### Changed
+- **`dashboard/page.tsx`** — all 6 KPI cards read from `useDashboardStats`; shows `—` while loading
+- **`LowStockAlertsTable.tsx`** — self-contained; calls `useShortages()` internally
+- **`RecentActivityFeed.tsx`** — self-contained; calls `useAuditLogs({ limit: 6 })` internally
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
 ## [0.9.5] - 2026-06-16 - Layout Real User Data + Sidebar Cleanup
 
 ### Layout — Real user data wired throughout ✅
@@ -305,9 +380,15 @@ All changes documented chronologically with details.
 
 | Version | Date | Status | Highlights |
 |---------|------|--------|-----------|
+| 0.9.8 | 2026-06-16 | ✅ Release | Analytics charts + RecentActivityFeed locale fix |
+| 0.9.7 | 2026-06-16 | ✅ Release | Clients API integration — create/edit/deactivate |
+| 0.9.6 | 2026-06-16 | ✅ Release | Shortages + Dashboard API integration |
 | 0.9.5 | 2026-06-16 | ✅ Release | Real user data in layout, sidebar cleanup |
 | 0.9.4 | 2026-06-16 | ✅ Release | FIGMA-007 Settings page (Profile + Shop) |
 | 0.9.3 | 2026-06-15 | ✅ Release | Multi-product transfer modal |
+| 0.9.2 | 2026-06-15 | ✅ Release | Transfers API integration |
+| 0.8.1 | 2026-06-14 | ✅ Release | Category dropdown + product create bugfixes |
+| 0.8.0 | 2026-06-14 | ✅ Release | Products API integration |
 | 0.7.0 | 2026-06-11 | ✅ Release | FIGMA-004 Clients admin page |
 | 0.6.0 | 2026-06-11 | ✅ Release | FIGMA-003 Products admin page |
 | 0.5.0 | 2026-06-11 | ✅ Release | FIGMA-002 Dashboard page |

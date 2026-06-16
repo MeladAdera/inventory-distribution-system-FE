@@ -2,6 +2,8 @@
 
 import { Truck, MinusCircle, PlusCircle, Edit3 } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
+import { formatRelativeTime } from '@/common/utils/string.utils';
+import { useI18n } from '@/providers/I18nProvider';
 import { useAuditLogs } from '@/features/audit-logs/hooks/useAuditLogs';
 import type { AuditLog } from '@/features/audit-logs/types/audit-logs.types';
 
@@ -35,17 +37,6 @@ function getActivityText(log: AuditLog): string {
   return `${action} — ${log.entity_type} #${log.entity_id}${qty}`;
 }
 
-function formatAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const m = Math.floor(diff / 60000);
-  if (m < 1) return 'Just now';
-  if (m < 60) return `${m} min ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  const d = Math.floor(h / 24);
-  return d === 1 ? 'Yesterday' : `${d} days ago`;
-}
-
 function SkeletonItem() {
   return (
     <li className="flex items-start gap-3 px-5 py-3">
@@ -59,6 +50,7 @@ function SkeletonItem() {
 }
 
 export function RecentActivityFeed() {
+  const { locale } = useI18n();
   const { auditLogs, isLoading } = useAuditLogs({ limit: 6 });
 
   const items: AuditLog[] = auditLogs?.data?.data ?? [];
@@ -87,7 +79,7 @@ export function RecentActivityFeed() {
         const type = getActivityType(log);
         const { Icon, color } = ICON_MAP[type];
         const text = getActivityText(log);
-        const time = formatAgo(log.created_at);
+        const time = formatRelativeTime(log.created_at, locale);
 
         return (
           <li key={log.id} className="flex items-start gap-3 px-5 py-3" role="listitem">

@@ -8,7 +8,8 @@
   "notifications": {
     "title": "الإشعارات",
     "markAllRead": "تحديد الكل كمقروء",
-    "viewAll": "عرض جميع الإشعارات"
+    "viewAll": "عرض جميع الإشعارات",
+    "emptyState": "لا توجد إشعارات جديدة"
   },
   "avatar": {
     "profile": "الملف الشخصي",
