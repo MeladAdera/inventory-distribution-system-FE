@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Settings"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Your personal account information",
+    "name": "Full name",
+    "email": "Email address",
+    "role": "Role",
+    "edit": "Edit",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "roles": {
+      "WAREHOUSE_ADMIN": "Warehouse Admin",
+      "SHOP_OWNER": "Shop Owner",
+      "EMPLOYEE": "Employee"
+    },
+    "toast": {
+      "success": "Profile updated successfully",
+      "error": "Failed to update profile"
+    }
+  },
+  "shop": {
+    "title": "My Shop",
+    "subtitle": "Details for your retail branch",
+    "name": "Shop name",
+    "address": "Address",
+    "phone": "Phone number",
+    "edit": "Edit",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "toast": {
+      "success": "Shop updated successfully",
+      "error": "Failed to update shop"
+    }
+  }
+}
