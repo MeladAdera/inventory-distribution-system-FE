@@ -4,6 +4,108 @@ Real-time development progress and detailed work logs.
 
 ---
 
+## June 16, 2026 — Settings Page + Layout Real Data
+
+### Session A — Settings Page (FIGMA-007)
+**Focus**: Build Settings page with Profile and Shop management connected to real API  
+**Version**: 0.9.4
+
+#### Tasks Completed
+
+1. ✅ **`settings.types.ts`** — `ProfileCardProps`, `ProfileFormValues`, `ShopCardProps`, `ShopFormValues`
+
+2. ✅ **`profile.utils.ts`** — `ROLE_BADGE_CLS` map (3 roles → Tailwind badge classes); re-exports `getInitials` from `common/utils/string.utils`
+
+3. ✅ **`useSettings.ts`** — `useProfileSettings(userId)`: `useMutation` → `PATCH /users/:id`, on success calls `setAuth({ ...currentUser, ...response.data })` so name/initials update across sidebar/topbar without reload. `useShopSettings(shopId)`: `useQuery` → `GET /shops/:id` + `useMutation` → `PATCH /shops/:id`
+
+4. ✅ **`shared.tsx`** (components) — `inputCls`, `CardHeader`, `CardFooter`, `InfoRow`, `FieldRow`, `SkeletonRow`, `SkeletonBanner` — shared primitives used by both cards
+
+5. ✅ **`ProfileCard.tsx`** — `RoleBadge` (coloured pill), `ProfileBanner` (ink-900 avatar + amber initials + name + email + role badge), `ProfileCard` (view + inline edit). Edit saves via `useProfileSettings`; updates auth store on success
+
+6. ✅ **`ShopCard.tsx`** — `ShopBanner` (Store icon + shop name + type badge), `ShopCard` (skeleton loading → view + inline edit). Visible to `SHOP_OWNER` only
+
+7. ✅ **`settings/page.tsx`** — orchestrates both cards; `useAuth()` provides `userId`, `name`, `email`, `role`, `shopId`; `usePermission()` gates `ShopCard`
+
+8. ✅ **i18n** — `en/settings.json` + `ar/settings.json`; wired into `i18n/index.ts`
+
+9. ✅ **Bug fixed** — `getInitials` crashed on undefined `user.name` during initial render. Fixed with `(name ?? '').trim()` null guard.
+
+#### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+#### Files Created
+| File | Description |
+|------|-------------|
+| `src/features/settings/types/settings.types.ts` | 4 interfaces |
+| `src/features/settings/utils/profile.utils.ts` | ROLE_BADGE_CLS + re-exported getInitials |
+| `src/features/settings/hooks/useSettings.ts` | useProfileSettings, useShopSettings |
+| `src/features/settings/components/shared.tsx` | 7 shared UI primitives |
+| `src/features/settings/components/ProfileCard.tsx` | Profile card with inline edit |
+| `src/features/settings/components/ShopCard.tsx` | Shop card with skeleton + inline edit |
+| `src/app/(dashboard)/settings/page.tsx` | Page route |
+| `src/i18n/en/settings.json` | English translations |
+| `src/i18n/ar/settings.json` | Arabic translations |
+| `src/common/utils/string.utils.ts` | getInitials (single source of truth) |
+
+#### Files Modified
+| File | Change |
+|------|--------|
+| `src/i18n/index.ts` | Added settingsEn + settingsAr |
+
+---
+
+### Session B — Layout Real User Data + Sidebar Cleanup
+**Focus**: Replace all hardcoded user data in layout with `useAuth()`; extract NavSection; remove client portal  
+**Version**: 0.9.5
+
+#### Tasks Completed
+
+1. ✅ **`SidebarNavSection.tsx`** — `NavSection` component and `NavSectionProps` interface extracted from `Sidebar.tsx`. Sidebar is now solely the `Sidebar` component itself (single responsibility)
+
+2. ✅ **`Sidebar.tsx`** — `useAuth()` provides real `user.name` + `user.role`. `roleLabel` from `roles[user.role]` i18n map. `getInitials` imported from `string.utils`. `NavSection` imported from `SidebarNavSection`
+
+3. ✅ **`TopBar.tsx`** — same real data pattern. Avatar initials use imported `getInitials`. Client portal button removed. Profile menu item changed from `<button>` to `<Link href="/settings">` (closes dropdown + navigates)
+
+4. ✅ **`DashboardLayout.tsx`** — same real data. Client portal button removed from mobile BottomSheet. `getInitials` imported
+
+5. ✅ **`dashboard/page.tsx`** — greeting uses `{name}` placeholder filled with `user.name.split(' ')[0]` (first name)
+
+6. ✅ **i18n changes** — `sidebar.json` (en + ar): `user.role` single string → `user.roles` map. `topbar.json` (en + ar): `user.clientPortal` removed. `dashboard.json` (en + ar): greeting → `"Good morning, {name}."`
+
+#### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+#### Files Created
+| File | Description |
+|------|-------------|
+| `src/common/layout/SidebarNavSection.tsx` | NavSection + NavSectionProps extracted from Sidebar |
+
+#### Files Modified
+| File | Change |
+|------|--------|
+| `src/common/layout/Sidebar.tsx` | useAuth(), roles map, imports NavSection from SidebarNavSection |
+| `src/common/layout/TopBar.tsx` | useAuth(), getInitials import, Profile → Link, removed client portal |
+| `src/common/layout/DashboardLayout.tsx` | useAuth(), getInitials import, removed client portal from BottomSheet |
+| `src/app/(dashboard)/dashboard/page.tsx` | Dynamic greeting with first name |
+| `src/i18n/en/sidebar.json` | user.role → user.roles map |
+| `src/i18n/ar/sidebar.json` | same in Arabic |
+| `src/i18n/en/topbar.json` | removed clientPortal, defaultName, role |
+| `src/i18n/ar/topbar.json` | same in Arabic |
+| `src/i18n/en/dashboard.json` | greeting → {name} placeholder |
+| `src/i18n/ar/dashboard.json` | same in Arabic |
+| `docs/features/admin-layout-shell.md` | Updated file structure, data flow, change history |
+| `docs/features/settings.md` | Created |
+| `docs/README.md` | Settings marked complete |
+| `PROJECT_STATUS.md` | Settings complete; file tree updated |
+| `UPDATES.md` | v0.9.4 + v0.9.5 entries |
+| `PROGRESS.md` | Added this session |
+
+---
+
 ## June 15, 2026 — Multi-product Transfer Modal
 
 ### Session

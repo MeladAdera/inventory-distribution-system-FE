@@ -1,7 +1,7 @@
 # Project Status: Inventory Distribution System (Frontend)
 
-**Last Updated**: June 15, 2026  
-**Version**: 0.9.3  
+**Last Updated**: June 16, 2026  
+**Version**: 0.9.5  
 **Status**: API INTEGRATION IN PROGRESS 🔌
 
 ---
@@ -24,6 +24,7 @@ Backend API is complete. Replacing mock data with real API calls page by page.
 |------|-------------|--------|
 | Products | `useProducts` + `useProduct(id)` hooks wired; all 4 modals hit real endpoints; category filter in toolbar; bugfixes applied | ✅ Complete (2 gaps remaining) |
 | Transfers | `useTransfers` + `useTransferShops` + `useTransferProducts`; create via `POST /orders`; status advance via `PATCH /orders/:id/status`; permission-gated admin actions; server-side pagination; **multi-product modal** (useFieldArray, per-row availability) | ✅ Complete |
+| Settings | `useProfileSettings` → `PATCH /users/:id` (updates auth store on save); `useShopSettings` → `GET+PATCH /shops/:id`; ProfileCard + ShopCard with inline edit, skeleton loading, toasts | ✅ Complete |
 | Clients | Still on mock data | ⬜ Next |
 | Dashboard | Still on mock data | ⬜ Pending |
 
@@ -49,7 +50,7 @@ Backend API is complete. Replacing mock data with real API calls page by page.
 | Clients page | 8-col grid table, 3 modals (add/edit/delete), ClientAvatar, StatusBadge, search/filter | ✅ Complete |
 | Transfers page | 6-col table, client/product filters, TransferModal with availability banner, mobile cards | ✅ Complete |
 | Shortages page | Summary strip (out/low counts), 7-col table, status/client filters, replenish → TransferModal prefill | ✅ Complete |
-| Settings page | Profile, preferences | ⬜ Not started |
+| Settings page | ProfileCard (name/email/role), ShopCard (name/address/phone), real API hooks, AR/EN i18n | ✅ Complete |
 
 ---
 
@@ -124,15 +125,19 @@ src/common/components/
 ├── Badge, DataTable, Modal, ConfirmDialog, Pagination, Toast  ✅
 └── Layout: DashboardLayout, Sidebar, TopBar, NavDrawer, BottomNav, BottomSheet  ✅ Figma
 
-src/common/layout/
-├── navConfig.ts          ✅  nav items, icons, badges (single source of truth)
-├── sidebarStore.ts       ✅  Zustand collapse state
-└── mockNotifications.ts  ✅  typed AR/EN mock notifications
+src/common/
+├── utils/
+│   └── string.utils.ts   ✅  getInitials (single source; imported by layout + settings)
+└── layout/
+    ├── navConfig.ts          ✅  nav items, icons, badges (single source of truth)
+    ├── sidebarStore.ts       ✅  Zustand collapse state
+    ├── SidebarNavSection.tsx ✅  NavSection + NavSectionProps (extracted from Sidebar)
+    └── mockNotifications.ts  ✅  typed AR/EN mock notifications
 
 src/i18n/                  ✅  React 18 context-based i18n (no library)
 ├── index.ts               ✅  assembled typed translations
-├── en/{sidebar,topbar,bottomnav,dashboard,products,clients,transfers}.json
-└── ar/{sidebar,topbar,bottomnav,dashboard,products,clients,transfers}.json
+├── en/{sidebar,topbar,bottomnav,dashboard,products,clients,transfers,settings}.json
+└── ar/{sidebar,topbar,bottomnav,dashboard,products,clients,transfers,settings}.json
 
 src/providers/
 └── I18nProvider.tsx       ✅  locale context + useI18n hook
@@ -167,5 +172,5 @@ Backend runs on port 3000. Frontend dev server on port 3001.
 
 ---
 
-**Last Commit**: feat(transfers): add multi-product selection to New Transfer modal  
-**Next Up**: Clients API integration or Settings page (FIGMA-007)
+**Last Commit**: feat(layout): wire real user data into sidebar, topbar and dashboard  
+**Next Up**: Clients API integration

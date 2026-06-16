@@ -4,6 +4,52 @@ All changes documented chronologically with details.
 
 ---
 
+## [0.9.5] - 2026-06-16 - Layout Real User Data + Sidebar Cleanup
+
+### Layout — Real user data wired throughout ✅
+
+#### Changed
+- **`Sidebar.tsx`** — replaced hardcoded `t.sidebar.user.defaultName` with `user?.name` from `useAuth()`. Role label now uses `roles[user.role]` lookup instead of a static string. Extracted `NavSection` + `NavSectionProps` to `SidebarNavSection.tsx`.
+- **`TopBar.tsx`** — same: `user?.name` and `roles[user.role]` from auth store. Avatar dropdown Profile item converted from `<button>` to `<Link href="/settings">` that also closes the dropdown. Removed client portal button and `ArrowLeftRight` import.
+- **`DashboardLayout.tsx`** — same real user data pattern. Removed client portal button from mobile bottom sheet.
+- **`dashboard/page.tsx`** — greeting now uses `{name}` placeholder replaced with `user.name.split(' ')[0]` (first name only).
+- **`sidebar.json` (en + ar)** — removed `defaultName` and single `role` string; replaced with `roles` map keyed by `UserRole` enum (`WAREHOUSE_ADMIN`, `SHOP_OWNER`, `EMPLOYEE`).
+- **`topbar.json` (en + ar)** — removed `defaultName` and `role`; removed `clientPortal` from avatar section.
+- **`dashboard.json` (en + ar)** — greeting string changed to `"Good morning, {name}."` / `"صباح الخير، {name}."`.
+
+#### Added
+- **`src/common/utils/string.utils.ts`** — `getInitials(name)` extracted here as the single source of truth. All layout files and `profile.utils.ts` now import from this location. Removes four local duplicate implementations.
+- **`src/common/layout/SidebarNavSection.tsx`** — `NavSection` component and `NavSectionProps` interface extracted from `Sidebar.tsx`. Sidebar now only contains the `Sidebar` component itself.
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
+## [0.9.4] - 2026-06-16 - Settings Page
+
+### Settings — Profile & Shop management ✅
+
+#### Added
+- **`src/app/(dashboard)/settings/page.tsx`** — Settings route. Shows `ProfileCard` for all roles; `ShopCard` visible to `SHOP_OWNER` only.
+- **`src/features/settings/types/settings.types.ts`** — `ProfileCardProps`, `ProfileFormValues`, `ShopCardProps`, `ShopFormValues`.
+- **`src/features/settings/utils/profile.utils.ts`** — `ROLE_BADGE_CLS` map; re-exports `getInitials` from `common/utils/string.utils`.
+- **`src/features/settings/hooks/useSettings.ts`** — `useProfileSettings(userId)` wraps `PATCH /users/:id` + updates auth store on success. `useShopSettings(shopId)` wraps `GET /shops/:id` + `PATCH /shops/:id`.
+- **`src/features/settings/components/shared.tsx`** — `CardHeader`, `CardFooter`, `InfoRow`, `FieldRow`, `inputCls`, `SkeletonRow`, `SkeletonBanner` shared across both cards.
+- **`src/features/settings/components/ProfileCard.tsx`** — Avatar banner (ink-900 circle, amber initials), inline edit for name/email, role badge (read-only). On save, auth store is updated immediately.
+- **`src/features/settings/components/ShopCard.tsx`** — Store icon banner, inline edit for name/address/phone, skeleton loading state.
+- **`src/i18n/en/settings.json`** + **`src/i18n/ar/settings.json`** — all settings strings (profile, shop, roles, toasts).
+- **`src/i18n/index.ts`** — wired `settingsEn` / `settingsAr` into both locales.
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
 ## [0.9.3] - 2026-06-15 - Multi-product Transfer Modal
 
 ### Transfers — Multi-product selection ✅
@@ -259,6 +305,9 @@ All changes documented chronologically with details.
 
 | Version | Date | Status | Highlights |
 |---------|------|--------|-----------|
+| 0.9.5 | 2026-06-16 | ✅ Release | Real user data in layout, sidebar cleanup |
+| 0.9.4 | 2026-06-16 | ✅ Release | FIGMA-007 Settings page (Profile + Shop) |
+| 0.9.3 | 2026-06-15 | ✅ Release | Multi-product transfer modal |
 | 0.7.0 | 2026-06-11 | ✅ Release | FIGMA-004 Clients admin page |
 | 0.6.0 | 2026-06-11 | ✅ Release | FIGMA-003 Products admin page |
 | 0.5.0 | 2026-06-11 | ✅ Release | FIGMA-002 Dashboard page |

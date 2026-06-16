@@ -2,7 +2,7 @@
 
 **Status**: Complete  
 **Created Date**: 2026-06-10  
-**Last Updated**: 2026-06-10  
+**Last Updated**: 2026-06-16  
 **Assignee**: Melad Adera
 
 ---
@@ -50,28 +50,32 @@ src/
 ├── i18n/
 │   ├── index.ts                  # Assembles all locale JSON → typed translations object
 │   ├── en/
-│   │   ├── sidebar.json
-│   │   ├── topbar.json
+│   │   ├── sidebar.json          # brand, sections, nav labels, collapse, user.roles map
+│   │   ├── topbar.json           # search placeholder, lang label, user, notifications, pageTitles
 │   │   └── bottomnav.json
 │   └── ar/
 │       ├── sidebar.json
 │       ├── topbar.json
 │       └── bottomnav.json
 │
-├── providers/
-│   └── I18nProvider.tsx          # React context: locale, setLocale, t, dir
+├── common/
+│   ├── utils/
+│   │   └── string.utils.ts       # getInitials(name) — single source of truth across layout + settings
+│   └── layout/
+│       ├── navConfig.ts              # Single source of truth for nav items + icons + badges
+│       ├── sidebarStore.ts           # Zustand store: isCollapsed, toggle, setCollapsed
+│       ├── mockNotifications.ts      # Typed mock notification data (AR + EN text)
+│       ├── Sidebar.tsx               # Warm-theme desktop sidebar (260 px / 72 px collapsed)
+│       ├── SidebarNavSection.tsx     # NavSection component + NavSectionProps (extracted from Sidebar)
+│       ├── TopBar.tsx                # Sticky header: title, search, lang toggle, bell, avatar
+│       ├── NavDrawer.tsx             # Tablet overlay drawer — reuses <Sidebar fluid>
+│       ├── BottomNav.tsx             # Mobile fixed bottom nav (4 items + More)
+│       ├── BottomSheet.tsx           # Generic bottom sheet (sm | full)
+│       ├── DashboardLayout.tsx       # Shell composer — renders all of the above
+│       └── index.ts                  # Barrel exports
 │
-└── common/layout/
-    ├── navConfig.ts              # Single source of truth for nav items + icons + badges
-    ├── sidebarStore.ts           # Zustand store: isCollapsed, toggle, setCollapsed
-    ├── mockNotifications.ts      # Typed mock notification data (AR + EN text)
-    ├── Sidebar.tsx               # Warm-theme desktop sidebar (260 px / 72 px collapsed)
-    ├── TopBar.tsx                # Sticky header: title, search, lang toggle, bell, avatar
-    ├── NavDrawer.tsx             # Tablet overlay drawer — reuses <Sidebar fluid>
-    ├── BottomNav.tsx             # Mobile fixed bottom nav (4 items + More)
-    ├── BottomSheet.tsx           # Generic bottom sheet (sm | full)
-    ├── DashboardLayout.tsx       # Shell composer — renders all of the above
-    └── index.ts                  # Barrel exports
+└── providers/
+    └── I18nProvider.tsx          # React context: locale, setLocale, t, dir
 ```
 
 ### Component Hierarchy
@@ -208,10 +212,24 @@ const { isCollapsed, toggle, setCollapsed } = useSidebarStore();
 ```
 I18nProvider (context)
   └── provides: locale, t, dir, setLocale
-       ├── Sidebar        reads t.sidebar.*
-       ├── TopBar         reads t.topbar.*, calls setLocale on toggle
-       ├── NavDrawer      reads dir (for RTL translate direction)
-       └── BottomNav      reads t.bottomnav.*
+       ├── Sidebar           reads t.sidebar.* (brand, nav labels, user.roles map)
+       ├── TopBar            reads t.topbar.*, calls setLocale on toggle
+       ├── NavDrawer         reads dir (for RTL translate direction)
+       └── BottomNav         reads t.bottomnav.*
+
+useAuthStore / useAuth() (Zustand)
+  └── provides: user.name, user.role, user.shopId, isAuthenticated
+       ├── Sidebar           → displayName, roleLabel = roles[user.role], initials
+       ├── TopBar            → same; Profile button → <Link href="/settings">
+       ├── DashboardLayout   → same for mobile BottomSheet user block
+       └── dashboard/page    → firstName = user.name.split(' ')[0] for greeting
+
+string.utils.ts  (src/common/utils/)
+  └── getInitials(name)  ← single source of truth
+       ├── Sidebar.tsx
+       ├── TopBar.tsx
+       ├── DashboardLayout.tsx
+       └── features/settings/utils/profile.utils.ts (re-exported)
 
 useSidebarStore (Zustand)
   └── isCollapsed state
@@ -228,7 +246,8 @@ useSidebarStore (Zustand)
 - [x] Mobile: Sidebar and drawer hidden; fixed bottom nav with amber active color
 - [x] Language toggle switches AR ↔ EN; `dir` attribute updates on `<html>` without reload
 - [x] Notification bell shows unread count; dropdown lists items with correct icons per type
-- [x] Avatar dropdown shows name/role, has logout that calls `useAuth().logout()`
+- [x] Avatar dropdown shows **real** name/role from `useAuth()`, has logout that calls `useAuth().logout()`
+- [x] Avatar dropdown Profile item navigates to `/settings`
 - [x] Page title in TopBar reflects the current route using translation keys
 - [x] No `react-i18next` imports anywhere in layout files
 - [x] TypeScript: `npx tsc --noEmit` passes with zero errors
@@ -239,6 +258,18 @@ useSidebarStore (Zustand)
 
 - **IBM Plex Serif font** — brand name uses `font-serif` (system fallback). Load IBM Plex Serif via `next/font/google` when font budget is confirmed.
 - **Mock notifications** — The bell dropdown uses `mockNotifications.ts`. Replace with `useNotifications()` hook from `features/notifications` once TICKET-049 lands.
-- **More sheet** — `BottomSheet` for mobile "More" is wired but body content is a placeholder. Populate with Transfers, Settings, Client Portal, and logout (TICKET-049 follow-up).
+- **More sheet** — `BottomSheet` for mobile "More" is wired; currently shows Transfers + Settings nav items. Client Portal removed (2026-06-16).
 - **Sidebar theme toggle** — Ink (dark) theme is spec'd but not exposed as a prop. Add a `theme` prop to `Sidebar` when dark mode support is required.
 - **Role-based nav** — TICKET-052 will filter `NAV_ITEMS` by `user.role`. The current implementation shows all items to all roles.
+
+## 📝 Change History
+
+| Date | Change |
+|------|--------|
+| 2026-06-16 | `getInitials` centralised to `src/common/utils/string.utils.ts`; all layout files import from there |
+| 2026-06-16 | `NavSection` + `NavSectionProps` extracted from `Sidebar.tsx` → `SidebarNavSection.tsx` |
+| 2026-06-16 | All layout components wired to `useAuth()` for real `user.name` + `user.role`; hardcoded defaults removed |
+| 2026-06-16 | `sidebar.json` `user.role` (single string) → `user.roles` (map keyed by `UserRole` enum) in both locales |
+| 2026-06-16 | `topbar.json` `user.clientPortal` removed in both locales; client portal button removed from TopBar dropdown and mobile BottomSheet |
+| 2026-06-16 | TopBar Profile button → `<Link href="/settings">` (replaces `<button>`) |
+| 2026-06-16 | `dashboard.json` greeting → `"Good morning, {name}."` interpolated with first name at runtime |
