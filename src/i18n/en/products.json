@@ -2,7 +2,7 @@
   "page": {
     "title": "Products",
     "count": "{n} products",
-    "addProduct": "+ Add product"
+    "addProduct": " Add product"
   },
   "toolbar": {
     "searchPlaceholder": "Search name or barcode",

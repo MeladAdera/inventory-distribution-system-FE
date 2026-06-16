@@ -2,7 +2,7 @@
   "page": {
     "title": "نقل المخزون",
     "count": "{n} عملية نقل",
-    "newTransfer": "+ نقل جديد"
+    "newTransfer": "نقل جديد"
   },
   "toolbar": {
     "allShops": "كل المتاجر",

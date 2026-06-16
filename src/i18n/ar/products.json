@@ -2,7 +2,7 @@
   "page": {
     "title": "المنتجات",
     "count": "{n} منتج",
-    "addProduct": "+ إضافة منتج"
+    "addProduct": " إضافة منتج"
   },
   "toolbar": {
     "searchPlaceholder": "بحث بالاسم أو الباركود",

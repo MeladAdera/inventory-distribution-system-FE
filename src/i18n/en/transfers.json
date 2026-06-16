@@ -2,7 +2,7 @@
   "page": {
     "title": "Inventory transfers",
     "count": "{n} transfers",
-    "newTransfer": "+ New transfer"
+    "newTransfer": " New transfer"
   },
   "toolbar": {
     "allShops": "All shops",
