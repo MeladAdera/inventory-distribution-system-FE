@@ -29,6 +29,8 @@ export const ROUTES = {
   USERS: '/users',
   AUDIT_LOGS: '/audit-logs',
   NOTIFICATIONS: '/notifications',
+  CLIENT_ROOT: '/client',
+  CLIENT_DASHBOARD: '/client/dashboard',
 };
 
 // App Metadata

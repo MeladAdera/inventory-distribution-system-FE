@@ -1,10 +1,11 @@
 import { NextRequest } from 'next/server';
 import { ROUTES } from '@/common/constants/app.constants';
+import { UserRole } from '@/features/auth/types/enums';
 
 // Must match the cookie name set by tokenUtils.setTokens
 const AUTH_COOKIE_NAME = 'auth_token';
 
-const PROTECTED_ROUTES = [
+const ADMIN_ROUTES = [
   ROUTES.DASHBOARD,
   ROUTES.INVENTORY,
   ROUTES.ORDERS,
@@ -17,14 +18,43 @@ const PROTECTED_ROUTES = [
 
 const PUBLIC_ONLY_ROUTES = [ROUTES.LOGIN];
 
+function matchesRoute(pathname: string, routes: string[]): boolean {
+  return routes.some((r) => pathname === r || pathname.startsWith(`${r}/`));
+}
+
 export function isProtectedRoute(pathname: string): boolean {
-  return PROTECTED_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
+  return (
+    matchesRoute(pathname, ADMIN_ROUTES) ||
+    pathname === ROUTES.CLIENT_ROOT ||
+    pathname.startsWith(`${ROUTES.CLIENT_ROOT}/`)
+  );
+}
+
+export function isAdminRoute(pathname: string): boolean {
+  return matchesRoute(pathname, ADMIN_ROUTES);
+}
+
+export function isClientRoute(pathname: string): boolean {
+  return pathname === ROUTES.CLIENT_ROOT || pathname.startsWith(`${ROUTES.CLIENT_ROOT}/`);
 }
 
 export function isPublicOnlyRoute(pathname: string): boolean {
-  return PUBLIC_ONLY_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
+  return PUBLIC_ONLY_ROUTES.some((r) => pathname === r || pathname.startsWith(`${r}/`));
 }
 
 export function getTokenFromRequest(request: NextRequest): string | undefined {
   return request.cookies.get(AUTH_COOKIE_NAME)?.value;
+}
+
+export function getRoleFromToken(request: NextRequest): UserRole | undefined {
+  const token = getTokenFromRequest(request);
+  if (!token) return undefined;
+  try {
+    // JWT payload is base64url-encoded — normalise before decoding
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64)) as { role?: string };
+    return payload.role as UserRole | undefined;
+  } catch {
+    return undefined;
+  }
 }

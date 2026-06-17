@@ -9,6 +9,8 @@ import { authApi } from '../api/auth.api';
 import { useAuthStore } from '../store/authStore';
 import { tokenUtils } from '../utils/token.utils';
 import { isAxiosError } from '@/common/utils/error.utils';
+import { UserRole } from '../types/enums';
+import { ROUTES } from '@/common/constants/app.constants';
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
@@ -37,7 +39,8 @@ export function useLogin() {
       const { user, accessToken, refreshToken } = response.data;
       tokenUtils.setTokens(accessToken, refreshToken);
       setAuth(user);
-      router.replace('/dashboard');
+      const dest = user.role === UserRole.SHOP_OWNER ? ROUTES.CLIENT_DASHBOARD : ROUTES.DASHBOARD;
+      router.replace(dest);
     } catch (error) {
       if (isAxiosError(error)) {
         if (error.response?.status === 401) {
