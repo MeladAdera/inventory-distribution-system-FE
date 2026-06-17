@@ -181,7 +181,7 @@ function ProductCard({
   return (
     <div
       className={cn(
-        'rounded-xl p-4.5 flex flex-col gap-3.5 min-h-[184px] transition-all duration-150',
+        'rounded-xl p-4.5 flex flex-col gap-3.5 min-h-46 transition-all duration-150',
         inCart ? 'border-2 border-amber-600 bg-amber-50' : 'border border-border bg-paper'
       )}
     >

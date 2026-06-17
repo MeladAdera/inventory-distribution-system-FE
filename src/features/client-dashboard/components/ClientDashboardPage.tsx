@@ -85,7 +85,7 @@ function LowStockItem({ item, locale, labels, onOrderMore }: LowStockItemProps) 
         />
         <button
           onClick={() => onOrderMore(item.id)}
-          className="flex items-center gap-1.5 px-3 py-[7px] rounded-lg border border-amber-600 bg-amber-50 text-amber-700 text-[13px] font-semibold hover:bg-amber-100 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.75rounded-lg border border-amber-600 bg-amber-50 text-amber-700 text-[13px] font-semibold hover:bg-amber-100 transition-colors"
         >
           <ShoppingCart size={13} />
           {labels.orderMore}
@@ -112,7 +112,7 @@ export function ClientDashboardPage() {
   }
 
   return (
-    <div className="max-w-[1320px] mx-auto px-0 space-y-0">
+    <div className="max-w-330 mx-auto px-0 space-y-0">
       {/* ── Layer 1 — Page header ── */}
       <div className="flex flex-wrap items-end justify-between gap-3 mb-7">
         <div>
@@ -162,7 +162,7 @@ export function ClientDashboardPage() {
         <button
           onClick={() => router.push('/client/inventory')}
           className={cn(
-            'flex items-center gap-3.5 px-5 py-[18px] rounded-xl min-h-16',
+            'flex items-center gap-3.5 px-5 py-4.5unded-xl min-h-16',
             'bg-paper border border-border text-ink-900',
             'text-[16px] font-semibold text-start',
             'transition-all duration-180 hover:-translate-y-px hover:shadow-(--shadow-sm)'
@@ -178,7 +178,7 @@ export function ClientDashboardPage() {
         <button
           onClick={() => router.push('/client/order')}
           className={cn(
-            'flex items-center gap-3.5 px-5 py-[18px] rounded-xl min-h-16',
+            'flex items-center gap-3.5 px-5 py-4.5 rounded-xl min-h-16',
             'bg-amber-600 text-white',
             'text-[16px] font-semibold text-start',
             'transition-all duration-180 hover:-translate-y-px hover:bg-amber-700'
