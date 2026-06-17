@@ -51,6 +51,42 @@
       "noCatProducts": "لا توجد منتجات في هذه الفئة."
     }
   },
+  "orders": {
+    "title": "طلباتي",
+    "count": "طلب",
+    "newOrderBtn": "+ طلب منتجات",
+    "filter": {
+      "all": "كل الحالات",
+      "processing": "قيد التنفيذ",
+      "shipped": "تم الإرسال",
+      "received": "تم الاستلام"
+    },
+    "table": {
+      "orderNo": "رقم الطلب",
+      "date": "تاريخ الطلب",
+      "items": "عدد الأصناف",
+      "status": "الحالة",
+      "details": "تفاصيل",
+      "viewBtn": "عرض",
+      "itemsUnit": "أصناف"
+    },
+    "status": {
+      "processing": "قيد التنفيذ",
+      "shipped": "تم الإرسال",
+      "received": "تم الاستلام"
+    },
+    "empty": {
+      "title": "لم تقم بأي طلبات بعد",
+      "action": "اطلب منتجات الآن"
+    },
+    "modal": {
+      "title": "تفاصيل الطلب",
+      "productsLabel": "المنتجات المطلوبة",
+      "requestedQty": "الكمية المطلوبة",
+      "notesLabel": "ملاحظات",
+      "closeBtn": "إغلاق"
+    }
+  },
   "order": {
     "title": "طلب منتجات جديد",
     "datePrefix": "تاريخ الطلب:",

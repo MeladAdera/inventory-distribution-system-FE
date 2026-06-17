@@ -51,6 +51,42 @@
       "noCatProducts": "No products in this category."
     }
   },
+  "orders": {
+    "title": "My orders",
+    "count": "orders",
+    "newOrderBtn": "+ Order products",
+    "filter": {
+      "all": "All statuses",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "received": "Received"
+    },
+    "table": {
+      "orderNo": "Order #",
+      "date": "Order date",
+      "items": "Items",
+      "status": "Status",
+      "details": "Details",
+      "viewBtn": "View",
+      "itemsUnit": "items"
+    },
+    "status": {
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "received": "Received"
+    },
+    "empty": {
+      "title": "You haven't placed any orders yet",
+      "action": "Order products now"
+    },
+    "modal": {
+      "title": "Order details",
+      "productsLabel": "Requested products",
+      "requestedQty": "Requested qty",
+      "notesLabel": "Notes",
+      "closeBtn": "Close"
+    }
+  },
   "order": {
     "title": "New product order",
     "datePrefix": "Order date:",
