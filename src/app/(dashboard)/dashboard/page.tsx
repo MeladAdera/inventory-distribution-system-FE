@@ -19,6 +19,7 @@ import { TopConsumedChart } from '@/features/dashboard/components/TopConsumedCha
 import { LowStockAlertsTable } from '@/features/dashboard/components/LowStockAlertsTable';
 import { RecentActivityFeed } from '@/features/dashboard/components/RecentActivityFeed';
 import { useDashboardStats } from '@/features/dashboard/hooks/useDashboardStats';
+import { WelcomeTyper } from '@/features/dashboard/components/WelcomeTyper';
 
 export default function DashboardPage() {
   const { t } = useI18n();
@@ -38,6 +39,15 @@ export default function DashboardPage() {
     completedOrders,
     isLoading,
   } = useDashboardStats();
+
+  const phrases = isLoading
+    ? []
+    : d.typer.phrases.map((p) =>
+        p
+          .replace('{pending}', String(pendingOrders))
+          .replace('{low}', String(lowStockItems))
+          .replace('{shops}', String(totalShops))
+      );
 
   const val = (n: number) => (isLoading ? '—' : n);
 
@@ -111,13 +121,7 @@ export default function DashboardPage() {
               {d.header.eyebrow}
             </span>
           </div>
-          <h1
-            className="mt-3 text-[34px] font-medium leading-tight tracking-[-0.02em] text-ink-900"
-            style={{ fontFamily: 'var(--font-serif)' }}
-          >
-            {greeting}
-          </h1>
-          <p className="mt-2 text-sm text-ink-600">{d.header.subtitle}</p>
+          <WelcomeTyper greeting={greeting} phrases={phrases} />
         </div>
 
         <button

@@ -1,9 +1,16 @@
 {
   "header": {
     "eyebrow": "Overview",
-    "greeting": "Good morning, {name}.",
-    "subtitle": "Latakia Warehouse · 5 products need replenishment today.",
+    "greeting": "Welcome back, {name}.",
     "newTransfer": "New transfer"
+  },
+  "typer": {
+    "phrases": [
+      "You have {pending} pending transfers awaiting your approval.",
+      "{low} products are running low — head over to Shortages.",
+      "{shops} active shops are connected to your warehouse.",
+      "Use the button above to create a new transfer anytime."
+    ]
   },
   "kpi": {
     "totalProducts": "Total products",

@@ -341,12 +341,15 @@ function ClientRow({ client, rowNum, locale, p, onView, onEdit, onDelete }: Clie
         </div>
 
         {/* Phone */}
-        <span className="font-mono text-xs text-ink-600 whitespace-nowrap" dir="ltr">
+        <span
+          className="font-mono text-xs text-ink-600 whitespace-nowrap ltr:text-left rtl:text-right"
+          dir="ltr"
+        >
           {client.phone}
         </span>
 
         {/* Address */}
-        <span className="text-ink-600">{city}</span>
+        <span className="text-ink-600 ltr:text-left rtl:text-right">{city}</span>
 
         {/* Products */}
         <span className="font-mono text-ink-700">{client.product_count}</span>
