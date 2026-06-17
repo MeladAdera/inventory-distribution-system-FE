@@ -19,5 +19,32 @@
     "langSwitchLabel": "ع",
     "logout": "Log out",
     "accountLabel": "Account"
+  },
+  "dashboard": {
+    "greeting": "Welcome, Al Waha Grocery",
+    "subtitle": "Here's a quick look at your stock today.",
+    "kpi": {
+      "totalProducts": "Total products",
+      "totalProductsSub": "assigned to your account",
+      "toRefill": "Products to refill",
+      "toRefillSub": "below minimum",
+      "lastOrder": "Last order",
+      "lastOrderValue": "28 May",
+      "lastOrderSub": "Order #1042"
+    },
+    "actions": {
+      "updateInventory": "Update inventory",
+      "orderProducts": "Order products"
+    },
+    "lowStock": {
+      "title": "Products that need refilling",
+      "current": "Current",
+      "min": "Min",
+      "orderMore": "Order more",
+      "allGoodTitle": "All products are well stocked",
+      "allGoodSub": "Nothing is below its minimum level right now.",
+      "statusLow": "Low stock",
+      "statusOut": "Out of stock"
+    }
   }
 }

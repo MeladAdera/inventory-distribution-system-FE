@@ -19,5 +19,32 @@
     "langSwitchLabel": "EN",
     "logout": "تسجيل الخروج",
     "accountLabel": "الحساب"
+  },
+  "dashboard": {
+    "greeting": "أهلاً، بقالة الواحة",
+    "subtitle": "إليك نظرة سريعة على مخزونك اليوم.",
+    "kpi": {
+      "totalProducts": "إجمالي المنتجات",
+      "totalProductsSub": "منتج معين لحسابك",
+      "toRefill": "منتجات تحتاج تعبئة",
+      "toRefillSub": "تحت الحد الأدنى",
+      "lastOrder": "آخر طلب",
+      "lastOrderValue": "٢٨ مايو",
+      "lastOrderSub": "طلب #١٠٤٢"
+    },
+    "actions": {
+      "updateInventory": "تحديث المخزون",
+      "orderProducts": "طلب منتجات"
+    },
+    "lowStock": {
+      "title": "منتجات تحتاج تعبئة",
+      "current": "الكمية الحالية",
+      "min": "الحد الأدنى",
+      "orderMore": "اطلب المزيد",
+      "allGoodTitle": "جميع المنتجات بكميات كافية",
+      "allGoodSub": "لا توجد منتجات تحت الحد الأدنى حالياً.",
+      "statusLow": "مخزون منخفض",
+      "statusOut": "نفد المخزون"
+    }
   }
 }
