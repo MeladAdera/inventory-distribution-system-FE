@@ -20,15 +20,17 @@ products/
 
 ## Key Types
 
-- `Product` - Product information
+- `Product` - Product information (includes `shop_name`, `source`, `category_name`)
+- `ProductListParams` - Query params for list API (includes `shop_name` for admin filtering)
 - `CreateProductInput` - Create operation
 - `UpdateProductInput` - Update operation
 
 ## Product Sources
 
-- `WAREHOUSE` - From internal warehouse
-- `SUPPLIER` - Direct from supplier
-- `IMPORTED` - Imported products
+`source` is set automatically by the backend — it cannot be set manually.
+
+- `WAREHOUSE` - Product created by the warehouse admin; visible to all shops
+- `LOCAL` - Product created by a specific shop; visible only to that shop
 
 ## Usage
 

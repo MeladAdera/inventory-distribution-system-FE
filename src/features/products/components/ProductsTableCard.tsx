@@ -18,6 +18,7 @@ import { ProductThumb } from './ProductThumb';
 import { StatusBadge } from './StatusBadge';
 import type { Product, ProductSource } from '../types/products.types';
 import type { Category } from '@/features/categories/types/categories.types';
+import type { Shop } from '@/features/shops/types/shops.types';
 
 const GRID = '40px 2fr 1.2fr 1.2fr 1fr 1fr 1fr 156px';
 const HEADER_KEYS = [
@@ -95,11 +96,13 @@ interface ProductsTableCardProps {
   pageSize: number;
   startIndex: number;
   search: string;
-  sourceFilter: string;
+  shopNameFilter: string;
   categoryFilter: string;
   categories: Category[];
+  shops: Shop[];
+  isAdmin: boolean;
   onSearchChange: (v: string) => void;
-  onSourceChange: (v: string) => void;
+  onShopNameChange: (v: string) => void;
   onCategoryChange: (v: string) => void;
   onPageChange: (p: number) => void;
   onAddProduct: () => void;
@@ -119,11 +122,13 @@ export function ProductsTableCard({
   pageSize,
   startIndex,
   search,
-  sourceFilter,
+  shopNameFilter,
   categoryFilter,
   categories,
+  shops,
+  isAdmin,
   onSearchChange,
-  onSourceChange,
+  onShopNameChange,
   onCategoryChange,
   onPageChange,
   onAddProduct,
@@ -172,19 +177,21 @@ export function ProductsTableCard({
           ))}
         </select>
 
-        {/* Source filter */}
-        <select
-          value={sourceFilter}
-          onChange={(e) => onSourceChange(e.target.value)}
-          className={selectCls}
-        >
-          <option value="">{p.toolbar.allSources}</option>
-          {(['WAREHOUSE', 'LOCAL'] as ProductSource[]).map((src) => (
-            <option key={src} value={src}>
-              {p.toolbar.sources[src]}
-            </option>
-          ))}
-        </select>
+        {/* Shop filter (admin only) */}
+        {isAdmin && (
+          <select
+            value={shopNameFilter}
+            onChange={(e) => onShopNameChange(e.target.value)}
+            className={selectCls}
+          >
+            <option value="">{p.toolbar.allShops}</option>
+            {shops.map((shop) => (
+              <option key={shop.id} value={shop.name}>
+                {shop.name}
+              </option>
+            ))}
+          </select>
+        )}
 
         {/* Spacer */}
         <div className="flex-1" />

@@ -5,8 +5,10 @@ import { Plus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useProducts } from '@/features/products/hooks/useProducts';
 import { useCategories } from '@/features/categories/hooks/useCategories';
+import { useShops } from '@/features/shops/hooks/useShops';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { UserRole } from '@/features/auth/types/enums';
+import { ShopType } from '@/features/shops/types/shops.types';
 import { tokenUtils } from '@/features/auth/utils/token.utils';
 import { inventoryApi } from '@/features/inventory/api/inventory.api';
 import { ProductsTableCard } from '@/features/products/components/ProductsTableCard';
@@ -35,7 +37,7 @@ export default function ProductsPage() {
   const p = t.products;
 
   const [search, setSearch] = useState('');
-  const [sourceFilter, setSourceFilter] = useState('');
+  const [shopNameFilter, setShopNameFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
@@ -43,19 +45,23 @@ export default function ProductsPage() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setPage(1);
-  }, [search, sourceFilter, categoryFilter]);
+  }, [search, shopNameFilter, categoryFilter]);
+
+  const { user } = useAuthStore();
+  const isAdmin = user?.role === UserRole.WAREHOUSE_ADMIN;
 
   const { products, total, isLoading, createProduct, updateProduct, deleteProduct } = useProducts({
     page,
     limit: PAGE_SIZE,
     search: search || undefined,
-    source: (sourceFilter as Product['source']) || undefined,
+    shop_name: shopNameFilter || undefined,
     category_name: categoryFilter || undefined,
   });
 
-  const { user } = useAuthStore();
-  const categoryShopId = user?.role === UserRole.WAREHOUSE_ADMIN ? user.shopId : undefined;
+  const categoryShopId = isAdmin ? user?.shopId : undefined;
   const { categories } = useCategories(categoryShopId ? { shopId: categoryShopId } : undefined);
+
+  const { shops: shopsData } = useShops(isAdmin ? { type: ShopType.SHOP, limit: 999 } : undefined);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -104,11 +110,13 @@ export default function ProductsPage() {
         pageSize={PAGE_SIZE}
         startIndex={(page - 1) * PAGE_SIZE}
         search={search}
-        sourceFilter={sourceFilter}
+        shopNameFilter={shopNameFilter}
         categoryFilter={categoryFilter}
         categories={categories}
+        shops={shopsData?.data ?? []}
+        isAdmin={isAdmin}
         onSearchChange={setSearch}
-        onSourceChange={setSourceFilter}
+        onShopNameChange={setShopNameFilter}
         onCategoryChange={setCategoryFilter}
         onPageChange={setPage}
         onAddProduct={() => setModal({ type: 'add' })}

@@ -12,6 +12,7 @@ export enum StockStatus {
 export interface Product {
   id: number;
   shop_id: number;
+  shop_name: string;
   category_id: number;
   category_name: string;
   name: string;
@@ -35,6 +36,7 @@ export interface ProductListParams {
   source?: ProductSource;
   category_name?: string;
   shop_id?: number;
+  shop_name?: string;
   is_active?: boolean;
   stock_status?: StockStatus;
   search?: string;

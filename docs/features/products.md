@@ -2,7 +2,7 @@
 
 **Status**: API Integrated — Known gaps documented below  
 **Created Date**: 2026-06-11  
-**Last Updated**: 2026-06-14  
+**Last Updated**: 2026-06-17  
 **Assignee**: Melad Adera  
 **Tickets**: FIGMA-003, TICKET-029, TICKET-030, TICKET-031, TICKET-032
 
@@ -16,8 +16,9 @@ The Products admin page (`/products`) is the primary interface for warehouse man
 ### Business Value
 - Single-screen product management: create, view detail, edit, restock, delete
 - Live `current_quantity` fetched per-product when the detail modal opens
-- Source filter (WAREHOUSE / LOCAL) via `GET /products?source=`
+- Shop name filter (admin only) via `GET /products?shop_name=` — dropdown populated from live shops
 - Category filter via `GET /products?category_name=` — dropdown populated from live categories
+- Source column (WAREHOUSE / LOCAL) displayed in the table row — set automatically by the backend
 - Bilingual (AR/EN) with full RTL/LTR layout support
 
 ---
@@ -77,13 +78,25 @@ src/i18n/ar/products.json               # Arabic translations
 |-------|------|-------|
 | `page` | number | Default 1 |
 | `limit` | number | Default 10, max 100 |
-| `source` | `WAREHOUSE \| LOCAL` | Exposed in toolbar dropdown |
+| `source` | `WAREHOUSE \| LOCAL` | Not in toolbar UI — set automatically by backend on create |
 | `category_name` | string | Case-insensitive substring — exposed in toolbar category dropdown |
-| `shop_id` | number | Admin only |
+| `shop_name` | string | Admin only — exposed in toolbar shop dropdown (`WAREHOUSE_ADMIN` role) |
+| `shop_id` | number | Admin only — silently ignored for `SHOP_OWNER` / `EMPLOYEE` |
 | `is_active` | boolean | `false` includes soft-deleted — not yet in toolbar UI |
 | `stock_status` | `OUT_OF_STOCK \| LOW_STOCK \| HIGH_STOCK` | Not yet in toolbar UI |
 
+> **Note:** `shop_name`, `shop_id`, and `is_active` are silently ignored by the backend for non-admin roles. The shop filter dropdown is only rendered for `WAREHOUSE_ADMIN`.
+
 > **Note:** The backend does NOT support a `search` (name/barcode) param for `GET /products`. The current search input in the toolbar sends a param the backend ignores — this is a known gap (see below).
+
+**Filter examples (admin):**
+```
+GET /products?shop_name=melad                          → all products belonging to Melad Market
+GET /products?shop_name=melad&source=LOCAL             → only products Melad Market created itself
+GET /products?shop_name=melad&source=WAREHOUSE         → only warehouse products visible to Melad Market
+GET /products?source=LOCAL                             → all shop-created products across all shops
+GET /products?stock_status=LOW_STOCK&shop_name=melad   → low-stock items in Melad Market
+```
 
 ---
 
@@ -94,19 +107,22 @@ src/i18n/ar/products.json               # Arabic translations
 interface Product {
   id: number;
   shop_id: number;
+  shop_name: string;       // Name of the shop that owns this product
   category_id: number;
   category_name: string;
   name: string;
   description: string | null;
   barcode: string | null;
   price: string;           // Backend returns string — use Number(price) to format
-  source: ProductSource;   // 'WAREHOUSE' | 'LOCAL'
+  source: ProductSource;   // 'WAREHOUSE' | 'LOCAL' — set by backend, cannot be set manually
   is_global: boolean;
   is_active: boolean;
   created_at: string;
   updated_at: string;
 }
 ```
+
+> **`source` values:** `WAREHOUSE` — product created by the warehouse admin, visible to all shops. `LOCAL` — product created by a specific shop, visible only to that shop. The `source` is set automatically by the backend based on who creates the product.
 
 ### `ProductDetail` (single GET /products/:id response)
 ```ts
@@ -123,6 +139,7 @@ interface ProductListParams {
   source?: ProductSource;
   category_name?: string;
   shop_id?: number;
+  shop_name?: string;        // Admin only — toolbar shop dropdown
   is_active?: boolean;
   stock_status?: StockStatus;
   search?: string;           // Ignored by backend — here for future use
@@ -136,10 +153,12 @@ interface ProductListParams {
 ```
 page.tsx
   │
-  ├── useProducts({ page, limit, search, source, category_name })  ← list + mutations
+  ├── useProducts({ page, limit, search, shop_name, category_name })  ← list + mutations
   ├── useCategories({ shopId? })     ← toolbar category filter + ProductFormModal dropdown
   │     WAREHOUSE_ADMIN: shopId from authStore → GET /categories?shopId=X
-  ├── search / sourceFilter / categoryFilter / page  ← useState; all three reset page to 1
+  ├── useShops({ type: 'SHOP', limit: 999 })  ← admin-only; populates shop name dropdown
+  │     only called when isAdmin === true (WAREHOUSE_ADMIN role)
+  ├── search / shopNameFilter / categoryFilter / page  ← useState; all three reset page to 1
   └── modal: ModalState             ← 'none' | 'add' | 'edit' | 'view' | 'restock' | 'delete'
 
 ProductDetailModal
@@ -221,7 +240,7 @@ Both `src/i18n/en/products.json` and `src/i18n/ar/products.json` cover:
 
 ```
 products.page.{title, count, addProduct}
-products.toolbar.{searchPlaceholder, allCategories, allSources, allStatuses, export, sources.*, statuses.*}
+products.toolbar.{searchPlaceholder, allCategories, allSources, allShops, allStatuses, export, sources.*, statuses.*}
 products.table.{num, product, barcode, category, price, source, status, actions}
 products.emptyState.{title, sub, addProduct}
 products.pagination.{showing}
@@ -238,7 +257,8 @@ products.delete.{title, warning, delete, cancel}
 ## ✅ Acceptance Criteria
 
 - [x] Table renders live products from `GET /products` with correct columns
-- [x] Source filter (WAREHOUSE / LOCAL) passes `source` param to API
+- [x] Shop name filter (admin only) passes `shop_name` param to API; dropdown populated from `GET /shops?type=SHOP`; hidden for non-admin roles
+- [x] Source column in table shows WAREHOUSE / LOCAL label from `product.source`
 - [x] Category filter dropdown passes `category_name` param to API; resets page to 1 on change
 - [x] Pagination: page/limit sent to API; total from response drives page count
 - [x] Skeleton shimmer shows while `isLoading`
