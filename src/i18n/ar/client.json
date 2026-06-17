@@ -1,0 +1,23 @@
+{
+  "brand": {
+    "name": "اليامن",
+    "sub": "بوابة العميل"
+  },
+  "nav": {
+    "dashboard": "الرئيسية",
+    "inventory": "مخزوني",
+    "order": "طلب منتجات",
+    "orders": "طلباتي"
+  },
+  "user": {
+    "name": "بقالة الواحة",
+    "role": "عميل"
+  },
+  "portalSwitch": "بوابة المالك",
+  "topbar": {
+    "menuLabel": "القائمة",
+    "langSwitchLabel": "EN",
+    "logout": "تسجيل الخروج",
+    "accountLabel": "الحساب"
+  }
+}

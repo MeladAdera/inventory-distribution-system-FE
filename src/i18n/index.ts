@@ -7,6 +7,7 @@ import clientsEn from './en/clients.json';
 import transfersEn from './en/transfers.json';
 import shortagesEn from './en/shortages.json';
 import settingsEn from './en/settings.json';
+import clientEn from './en/client.json';
 import sidebarAr from './ar/sidebar.json';
 import topbarAr from './ar/topbar.json';
 import bottomnavAr from './ar/bottomnav.json';
@@ -16,6 +17,7 @@ import clientsAr from './ar/clients.json';
 import transfersAr from './ar/transfers.json';
 import shortagesAr from './ar/shortages.json';
 import settingsAr from './ar/settings.json';
+import clientAr from './ar/client.json';
 
 export type Locale = 'ar' | 'en';
 
@@ -30,6 +32,7 @@ export const translations = {
     transfers: transfersEn,
     shortages: shortagesEn,
     settings: settingsEn,
+    client: clientEn,
   },
   ar: {
     sidebar: sidebarAr,
@@ -41,6 +44,7 @@ export const translations = {
     transfers: transfersAr,
     shortages: shortagesAr,
     settings: settingsAr,
+    client: clientAr,
   },
 } as const;
 

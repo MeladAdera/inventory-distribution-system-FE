@@ -1,0 +1,23 @@
+{
+  "brand": {
+    "name": "Alyamn",
+    "sub": "Client portal"
+  },
+  "nav": {
+    "dashboard": "Home",
+    "inventory": "My inventory",
+    "order": "Order products",
+    "orders": "My orders"
+  },
+  "user": {
+    "name": "Al Waha Grocery",
+    "role": "Client"
+  },
+  "portalSwitch": "Owner portal",
+  "topbar": {
+    "menuLabel": "Menu",
+    "langSwitchLabel": "ع",
+    "logout": "Log out",
+    "accountLabel": "Account"
+  }
+}
