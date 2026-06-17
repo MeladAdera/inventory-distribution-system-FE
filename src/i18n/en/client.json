@@ -37,6 +37,9 @@
     "statusEnough": "Enough",
     "statusLow": "Low stock",
     "statusOut": "Out of stock",
+    "newQty": "New quantity",
+    "loading": "Loading inventory…",
+    "errorMsg": "Failed to load inventory. Please try again.",
     "filters": { "all": "All", "low": "Low", "out": "Out" },
     "modal": {
       "title": "Confirm inventory update",
@@ -45,7 +48,7 @@
       "confirm": "Confirm save",
       "cancel": "Cancel"
     },
-    "toast": { "success": "Inventory updated successfully" },
+    "toast": { "success": "Inventory updated successfully", "error": "Failed to update inventory." },
     "empty": {
       "noProducts": "No products assigned to your account yet.",
       "noCatProducts": "No products in this category."
