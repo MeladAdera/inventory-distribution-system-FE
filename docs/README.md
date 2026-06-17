@@ -19,30 +19,26 @@ Central hub for all project documentation. Use this to navigate different docume
 ```
 docs/
 ├── README.md              # This file
-├── features/              # Feature documentation
+├── features/
 │   ├── FEATURE_TEMPLATE.md
-│   ├── auth.md
-│   ├── inventory.md
-│   ├── orders.md
-│   └── products.md
-├── setup/                 # Setup and installation
-│   ├── installation.md
-│   ├── environment.md
-│   └── development.md
-├── api/                   # API integration
-│   ├── overview.md
-│   ├── endpoints.md
-│   ├── authentication.md
-│   └── error-handling.md
-├── deployment/            # Deployment guides
-│   ├── staging.md
-│   ├── production.md
-│   └── ci-cd.md
-└── architecture/          # System architecture
-    ├── overview.md
-    ├── folder-structure.md
-    ├── data-flow.md
-    └── decisions.md
+│   ├── auth.md            # Shared — login, middleware, token layer
+│   ├── admin/             # Admin portal (WAREHOUSE_ADMIN / EMPLOYEE)
+│   │   ├── admin-layout-shell.md
+│   │   ├── dashboard.md
+│   │   ├── products.md
+│   │   ├── clients.md
+│   │   ├── transfers.md
+│   │   ├── shortages.md
+│   │   ├── settings.md
+│   │   ├── users.md
+│   │   └── analytics.md
+│   └── client/            # Client portal (SHOP_OWNER)
+│       ├── client-portal-layout.md
+│       ├── client-dashboard.md
+│       ├── client-inventory.md
+│       └── ...
+└── api/
+    └── authentication.md
 ```
 
 ---
@@ -79,21 +75,27 @@ Check `docs/api/` folder:
 | [environment.md](setup/environment.md) | Environment variables setup |
 | [development.md](setup/development.md) | Development workflow |
 
-### Features
+### Admin Portal Features
 | Feature | Document | Status |
 |---------|----------|--------|
 | Authentication | [auth.md](features/auth.md) | ✅ PHASE 1 Complete |
-| Admin Layout Shell | [admin-layout-shell.md](features/admin-layout-shell.md) | ✅ FIGMA-001 Complete |
-| Dashboard | [dashboard.md](features/dashboard.md) | ✅ FIGMA-002 Complete — API Integrated |
-| Products | [products.md](features/products.md) | ✅ FIGMA-003 Complete — API Integrated |
-| Clients | [clients.md](features/clients.md) | ✅ FIGMA-004 Complete — API Integrated |
-| Transfers | [transfers.md](features/transfers.md) | ✅ FIGMA-005 Complete — API Integrated, multi-product modal |
-| Shortages | [shortages.md](features/shortages.md) | ✅ FIGMA-006 Complete — API Integrated |
-| Settings | [settings.md](features/settings.md) | ✅ FIGMA-007 Complete — API Integrated |
-| Analytics | [analytics.md](features/analytics.md) | ✅ Complete — TopConsumed + ConsumptionTrend on real API |
-| Client Portal Layout | [client-portal-layout.md](features/client-portal-layout.md) | ✅ CLIENT-001 Complete |
-| Client Dashboard | [client-dashboard.md](features/client-dashboard.md) | ✅ CLIENT-002 Complete (mock data) |
-| Client Inventory | [client-inventory.md](features/client-inventory.md) | ✅ CLIENT-003 Complete (mock data) |
+| Admin Layout Shell | [admin-layout-shell.md](features/admin/admin-layout-shell.md) | ✅ FIGMA-001 Complete |
+| Dashboard | [dashboard.md](features/admin/dashboard.md) | ✅ FIGMA-002 Complete — API Integrated |
+| Products | [products.md](features/admin/products.md) | ✅ FIGMA-003 Complete — API Integrated |
+| Clients | [clients.md](features/admin/clients.md) | ✅ FIGMA-004 Complete — API Integrated |
+| Transfers | [transfers.md](features/admin/transfers.md) | ✅ FIGMA-005 Complete — API Integrated, multi-product modal |
+| Shortages | [shortages.md](features/admin/shortages.md) | ✅ FIGMA-006 Complete — API Integrated |
+| Settings | [settings.md](features/admin/settings.md) | ✅ FIGMA-007 Complete — API Integrated |
+| Analytics | [analytics.md](features/admin/analytics.md) | ✅ Complete — TopConsumed + ConsumptionTrend on real API |
+
+### Client Portal Features
+| Feature | Document | Status |
+|---------|----------|--------|
+| Client Portal Layout | [client-portal-layout.md](features/client/client-portal-layout.md) | ✅ CLIENT-001 Complete |
+| Client Dashboard | [client-dashboard.md](features/client/client-dashboard.md) | ✅ CLIENT-002 Complete (mock data) |
+| Client Inventory | [client-inventory.md](features/client/client-inventory.md) | ✅ CLIENT-003 Complete (mock data) |
+| Order Products | — | ⬜ CLIENT-004 Not started |
+| My Orders | — | ⬜ CLIENT-005 Not started |
 
 ### API Documentation
 | Topic | Document | Status |
