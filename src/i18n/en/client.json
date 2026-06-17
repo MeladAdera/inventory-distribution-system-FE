@@ -51,6 +51,54 @@
       "noCatProducts": "No products in this category."
     }
   },
+  "order": {
+    "title": "New product order",
+    "datePrefix": "Order date:",
+    "stepLabel": "1 — Choose category",
+    "search": "Search category or product…",
+    "cartBadge": "items added to order",
+    "addedBadge": "added",
+    "products": "products",
+    "backToCategories": "Categories",
+    "productCard": {
+      "currentQty": "Current quantity",
+      "requestedQty": "Requested quantity",
+      "addedToOrder": "Added to order",
+      "statusEnough": "Enough",
+      "statusLow": "Low stock",
+      "statusOut": "Out of stock"
+    },
+    "bottomBar": {
+      "itemsAdded": "items added",
+      "reviewBtn": "Review order"
+    },
+    "review": {
+      "backBtn": "Edit",
+      "title": "Review order",
+      "productsTitle": "Requested products",
+      "summaryTitle": "Order summary",
+      "totalItems": "Total items",
+      "totalUnits": "Total units",
+      "itemsUnit": "items",
+      "unitsUnit": "units",
+      "notesLabel": "Notes for supplier (optional)",
+      "notesPlaceholder": "Any special instructions for the supplier…",
+      "submitBtn": "Submit order",
+      "addLineBtn": "Add another product"
+    },
+    "modal": {
+      "title": "Confirm order submission",
+      "intro": "The following order will be submitted:",
+      "notesLabel": "Notes:",
+      "confirmBtn": "Confirm",
+      "cancelBtn": "Cancel"
+    },
+    "toast": { "success": "Your order was submitted successfully" },
+    "empty": {
+      "noCategories": "No categories available.",
+      "noProducts": "No products in this category."
+    }
+  },
   "dashboard": {
     "greeting": "Welcome, Al Waha Grocery",
     "subtitle": "Here's a quick look at your stock today.",

@@ -1,3 +1,5 @@
-export default function ClientOrderPage() {
-  return <div className="p-2 text-ink-500 text-[14px]">Order products — coming soon</div>;
+import { ClientOrderPage } from '@/features/client-dashboard/components/ClientOrderPage';
+
+export default function Page() {
+  return <ClientOrderPage />;
 }

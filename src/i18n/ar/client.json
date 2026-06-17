@@ -51,6 +51,54 @@
       "noCatProducts": "لا توجد منتجات في هذه الفئة."
     }
   },
+  "order": {
+    "title": "طلب منتجات جديد",
+    "datePrefix": "تاريخ الطلب:",
+    "stepLabel": "١ — اختر الفئة",
+    "search": "ابحث عن فئة أو منتج…",
+    "cartBadge": "أصناف مضافة للطلب",
+    "addedBadge": "مضاف",
+    "products": "أصناف",
+    "backToCategories": "الفئات",
+    "productCard": {
+      "currentQty": "الكمية الحالية",
+      "requestedQty": "الكمية المطلوبة",
+      "addedToOrder": "مضاف للطلب",
+      "statusEnough": "كافية",
+      "statusLow": "مخزون منخفض",
+      "statusOut": "نفد المخزون"
+    },
+    "bottomBar": {
+      "itemsAdded": "أصناف مضافة",
+      "reviewBtn": "مراجعة الطلب"
+    },
+    "review": {
+      "backBtn": "تعديل",
+      "title": "مراجعة الطلب",
+      "productsTitle": "المنتجات المطلوبة",
+      "summaryTitle": "ملخص الطلب",
+      "totalItems": "إجمالي الأصناف",
+      "totalUnits": "إجمالي الوحدات",
+      "itemsUnit": "صنف",
+      "unitsUnit": "وحدة",
+      "notesLabel": "ملاحظات للمورد (اختياري)",
+      "notesPlaceholder": "أي تعليمات خاصة للمورد…",
+      "submitBtn": "إرسال الطلب",
+      "addLineBtn": "إضافة منتج آخر"
+    },
+    "modal": {
+      "title": "تأكيد إرسال الطلب",
+      "intro": "سيتم إرسال الطلب التالي:",
+      "notesLabel": "الملاحظات:",
+      "confirmBtn": "تأكيد الإرسال",
+      "cancelBtn": "إلغاء"
+    },
+    "toast": { "success": "تم إرسال طلبك بنجاح" },
+    "empty": {
+      "noCategories": "لا توجد فئات متاحة.",
+      "noProducts": "لا توجد منتجات في هذه الفئة."
+    }
+  },
   "dashboard": {
     "greeting": "أهلاً، بقالة الواحة",
     "subtitle": "إليك نظرة سريعة على مخزونك اليوم.",
