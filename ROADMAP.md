@@ -920,3 +920,143 @@ Apply to: Products, Inventory, Orders, Users, Shops, Categories, Notifications, 
 | 14 | 054–056 | Polish (skeletons, empty states, error pages) |
 
 **Total: 63 tickets** (56 original + 7 Figma) — 26 done, 37 remaining.
+
+---
+
+## Phase 15 — Client Portal (SHOP_OWNER)
+
+> All routes under `/client/*`. Isolated from the admin portal via middleware JWT role check.
+> Layout shell: `src/common/layout/Client*.tsx`. Pages: `src/features/client-dashboard/`.
+
+| ID | Title | Status |
+|----|-------|--------|
+| CLIENT-001 | Client Portal Layout Shell (sidebar, topbar, nav drawer, bottom nav) | `[x]` |
+| CLIENT-001b | Role-based portal isolation (middleware JWT decode + redirect) | `[x]` |
+| CLIENT-002 | Client Dashboard page (`/client/dashboard`) — KPI cards, quick actions, low-stock list | `[x]` |
+| CLIENT-003 | My Inventory page (`/client/inventory`) — two-level drill-down, stepper, save modal | `[x]` |
+| CLIENT-004 | Order Products page (`/client/order`) | `[ ]` |
+| CLIENT-005 | My Orders page (`/client/orders`) | `[ ]` |
+
+---
+
+### CLIENT-001 — Client Portal Layout Shell `[x]`
+
+**Files:**
+```
+src/common/layout/ClientLayout.tsx
+src/common/layout/ClientSidebar.tsx
+src/common/layout/ClientTopBar.tsx
+src/common/layout/ClientNavDrawer.tsx
+src/common/layout/ClientBottomNav.tsx
+src/common/layout/clientNavConfig.ts
+src/app/client/layout.tsx
+src/i18n/en/client.json  (brand, nav, user, portalSwitch, topbar namespaces)
+src/i18n/ar/client.json
+```
+
+**AC:**
+- [x] Dark ink-900 sidebar with amber active indicator (RTL-aware)
+- [x] No search bar, no notification bell in TopBar
+- [x] Hamburger visible md–lg only; NavDrawer slides in
+- [x] Bottom nav fixed at bottom, `md:hidden`, 4 items, no "More"
+- [x] Portal switch link → `/dashboard` at sidebar bottom
+- [x] AR/EN i18n throughout
+
+---
+
+### CLIENT-001b — Role-Based Portal Isolation `[x]`
+
+**Files:**
+```
+src/middleware.ts
+src/features/auth/utils/middleware.utils.ts
+src/features/auth/hooks/useLogin.ts
+src/common/constants/app.constants.ts  (CLIENT_ROOT, CLIENT_DASHBOARD)
+```
+
+**Logic:**
+```
+1. No token + protected route → /login
+2. Authenticated + /login → role === SHOP_OWNER ? /client/dashboard : /dashboard
+3. Admin route + SHOP_OWNER → /client/dashboard
+4. Client route + non-SHOP_OWNER → /dashboard
+```
+
+**JWT decode (Edge Runtime):**
+```ts
+const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+const payload = JSON.parse(atob(base64)) as { role?: string };
+```
+
+**AC:**
+- [x] SHOP_OWNER cannot access `/dashboard` or any admin route
+- [x] WAREHOUSE_ADMIN / EMPLOYEE cannot access `/client/*`
+- [x] Post-login redirect respects role
+
+---
+
+### CLIENT-002 — Client Dashboard Page `[x]`
+
+**Files:**
+```
+src/features/client-dashboard/components/ClientDashboardPage.tsx
+src/features/client-dashboard/mock/clientInventory.ts
+src/app/client/dashboard/page.tsx
+src/i18n/en/client.json  (dashboard namespace)
+src/i18n/ar/client.json
+```
+
+**AC:**
+- [x] 3 KPI cards (total products, to refill, last order)
+- [x] 3rd KPI card spans full width on mobile, normal on md+
+- [x] 2 quick action buttons (Update Inventory → /client/inventory, Order Products → /client/order)
+- [x] Low-stock list with ProductThumb, name, qty/min, status badge, "Order more" link
+- [x] Empty state with CheckCircle when no low-stock items
+- [x] AR/EN i18n
+
+---
+
+### CLIENT-003 — My Inventory Page `[x]`
+
+**Files:**
+```
+src/features/client-dashboard/components/ClientInventoryPage.tsx
+src/app/client/inventory/page.tsx
+src/i18n/en/client.json  (inventory namespace)
+src/i18n/ar/client.json
+```
+
+**AC:**
+- [x] Category grid (View A) with variant count, total qty, "Edited" badge
+- [x] Product cards (View B) with drill-down from category
+- [x] Stepper: delta from 0 to backStock; disabled at limits
+- [x] Filter tabs: All / Low / Out (ink-900 active, amber-500 text)
+- [x] Desktop save button in header; mobile sticky bar above bottom nav (`bottom-14`)
+- [x] Save modal shows item name + qty → new qty per changed product
+- [x] `calcStatus()` recalculates status after save
+- [x] Back chevron RTL-aware (ChevronRight in AR, ChevronLeft in EN)
+- [x] Empty states for no products and no category products
+
+---
+
+### CLIENT-004 — Order Products Page `[ ]`
+
+**Files to create:**
+```
+src/features/client-dashboard/components/ClientOrderPage.tsx
+src/app/client/order/page.tsx
+src/i18n/en/client.json  (order namespace)
+src/i18n/ar/client.json
+```
+
+---
+
+### CLIENT-005 — My Orders Page `[ ]`
+
+**Files to create:**
+```
+src/features/client-dashboard/components/ClientOrdersPage.tsx
+src/app/client/orders/page.tsx
+src/i18n/en/client.json  (orders namespace)
+src/i18n/ar/client.json
+```

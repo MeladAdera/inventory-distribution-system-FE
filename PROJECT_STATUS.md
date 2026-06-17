@@ -1,8 +1,8 @@
 # Project Status: Inventory Distribution System (Frontend)
 
-**Last Updated**: June 16, 2026  
-**Version**: 0.9.8  
-**Status**: API INTEGRATION COMPLETE ✅
+**Last Updated**: June 17, 2026  
+**Version**: 1.0.4  
+**Status**: CLIENT PORTAL IN PROGRESS 🔧
 
 ---
 
@@ -12,9 +12,52 @@ Frontend application for the Inventory Distribution System built with Next.js, R
 
 ---
 
-## 🔌 Current Phase: API INTEGRATION
+## 🛍️ Current Phase: CLIENT PORTAL
 
-**Status**: ✅ **COMPLETE** — all pages wired to real backend data
+**Status**: 🔧 **IN PROGRESS** — SHOP_OWNER-facing portal, 3 of 4 pages complete
+
+### Client Portal Progress
+
+| Page | Description | Status |
+|------|-------------|--------|
+| Layout Shell | ClientSidebar, ClientTopBar, ClientNavDrawer, ClientBottomNav — dark ink theme, amber accents, AR/EN | ✅ Complete |
+| Role Isolation | Middleware JWT role decoding — SHOP_OWNER ↔ /client/*, others ↔ /dashboard | ✅ Complete |
+| Dashboard `/client/dashboard` | KPI cards (total products, to refill, last order), quick actions, low-stock list | ✅ Complete (mock) |
+| My Inventory `/client/inventory` | Two-level drill-down: category grid → product cards; stepper; delta save modal | ✅ Complete (mock) |
+| Order Products `/client/order` | Order products form | ⬜ Not started |
+| My Orders `/client/orders` | Order history list | ⬜ Not started |
+
+### Folder Structure
+
+```
+src/app/client/               ← flattened from (client)/client/ (v1.0.4)
+  layout.tsx                  ← ClientLayout shell
+  dashboard/page.tsx
+  inventory/page.tsx
+  order/page.tsx              ← placeholder
+  orders/page.tsx             ← placeholder
+
+src/features/client-dashboard/
+  components/
+    ClientDashboardPage.tsx
+    ClientInventoryPage.tsx
+  mock/
+    clientInventory.ts        ← shared mock: CATEGORIES, CLIENT_INVENTORY, LOW_STOCK_ITEMS
+
+src/common/layout/
+  ClientLayout.tsx
+  ClientSidebar.tsx
+  ClientTopBar.tsx
+  ClientNavDrawer.tsx
+  ClientBottomNav.tsx
+  clientNavConfig.ts
+```
+
+---
+
+## 🔌 Previous Phase: API INTEGRATION
+
+**Status**: ✅ **COMPLETE** — all admin pages wired to real backend data
 
 ### API Integration Progress
 
@@ -173,5 +216,5 @@ Backend runs on port 3000. Frontend dev server on port 3001.
 
 ---
 
-**Last Commit**: feat(analytics): integrate TopConsumedChart and ConsumptionTrendChart with real API  
-**Next Up**: Polish and QA — no open API integration gaps remaining
+**Last Commit**: refactor(app): flatten (client) route group into app/client/  
+**Next Up**: Order Products page (`/client/order`) — client portal

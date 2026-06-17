@@ -4,6 +4,98 @@ All changes documented chronologically with details.
 
 ---
 
+## [1.0.4] - 2026-06-17 - App Folder Structure Refactor
+
+### Refactor — Flatten (client) route group
+
+#### Changed
+- **`app/(client)/client/*`** → **`app/client/*`** — removed redundant `(client)` route group wrapper; the group wrapped a single `/client/` URL prefix and added no multi-route layout benefit. All 5 files moved via `git mv` with zero import changes.
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
+## [1.0.3] - 2026-06-17 - My Inventory Page
+
+### Client Portal — My Inventory ✅
+
+#### Added
+- **`ClientInventoryPage.tsx`** — two-level drill-down inventory management. View A: category grid with variant count + total qty + "Edited" badge. View B: product cards with steppers (delta 0→backStock), filter tabs (All/Low/Out), search.
+- **`SaveModal`** (inline) — shows `name: qty → qty + delta` per changed product; confirms batch save
+- **Mobile sticky save bar** — `fixed bottom-14 sm:hidden` sits above bottom nav
+- **`calcStatus(qty, min)`** helper — recalculates `StockStatus` after delta is applied
+- **`inventory` namespace** — added to `en/client.json` + `ar/client.json`
+- **`clientInventory.ts`** rewritten — added `categoryId` to `ClientInventoryItem`; added `CATEGORIES[]` with Lucide icons
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
+## [1.0.2] - 2026-06-17 - Client Dashboard Page
+
+### Client Portal — Dashboard ✅
+
+#### Added
+- **`ClientDashboardPage.tsx`** — KPI grid (3 cards: total products, to refill, last order); 2 quick action buttons; low-stock list with `ProductThumb`, `StockBadge`, "Order more"; all-good empty state
+- **`clientInventory.ts`** — `ClientInventoryItem`, `ClientCategory`, `CLIENT_INVENTORY` (8), `CATEGORIES` (4), `LOW_STOCK_ITEMS` mock data
+- **`dashboard` namespace** — added to `en/client.json` + `ar/client.json`
+- **`src/app/client/dashboard/page.tsx`** — thin wrapper
+
+#### Reuses
+- `KpiCard`, `CardShell` from admin `features/dashboard/`
+- `ProductThumb`, `StockStatus` from `features/products/`
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
+## [1.0.1] - 2026-06-17 - Role-Based Portal Isolation
+
+### Auth — SHOP_OWNER ↔ /client/*, Admin ↔ /dashboard ✅
+
+#### Changed
+- **`middleware.utils.ts`** — renamed `PROTECTED_ROUTES` → `ADMIN_ROUTES`; added `matchesRoute()`, `isAdminRoute()`, `isClientRoute()`, `getRoleFromToken()` (base64url JWT decode via `atob()` in Edge Runtime)
+- **`middleware.ts`** — 3-step logic: (1) unauthenticated → /login; (2) authenticated + /login → role-aware portal redirect; (3) cross-portal block by role
+- **`useLogin.ts`** — post-login redirect: `SHOP_OWNER → /client/dashboard`, others → `/dashboard`
+- **`app.constants.ts`** — added `CLIENT_ROOT`, `CLIENT_DASHBOARD` to `ROUTES`
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
+## [1.0.0] - 2026-06-17 - Client Portal Layout Shell
+
+### Client Portal — Layout Shell ✅
+
+#### Added
+- **`src/common/layout/clientNavConfig.ts`** — `ClientNavItem` interface + `CLIENT_NAV_ITEMS` (4 nav entries)
+- **`src/common/layout/ClientSidebar.tsx`** — dark ink-900 theme; amber active indicator (RTL-aware via `insetInlineStart`); `fluid` prop; portal switch link → `/dashboard`
+- **`src/common/layout/ClientTopBar.tsx`** — page title from pathname; no search/bell; hamburger `hidden md:block lg:hidden`; language toggle + logout
+- **`src/common/layout/ClientNavDrawer.tsx`** — tablet slide-in using `<ClientSidebar fluid />`
+- **`src/common/layout/ClientBottomNav.tsx`** — `md:hidden fixed bottom-0 h-14`; 4 items; amber active state
+- **`src/common/layout/ClientLayout.tsx`** — orchestrator with `drawerOpen` state
+- **`src/app/client/layout.tsx`** — `'use client'` wrapper → `<ClientLayout>`
+- **`src/i18n/en/client.json`** + **`src/i18n/ar/client.json`** — brand, nav, user, portalSwitch, topbar namespaces; wired into `src/i18n/index.ts`
+
+#### Build
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
 ## [0.9.8] - 2026-06-16 - Analytics Charts + RecentActivityFeed Locale Fix
 
 ### Analytics — Charts on real API ✅
@@ -380,6 +472,11 @@ All changes documented chronologically with details.
 
 | Version | Date | Status | Highlights |
 |---------|------|--------|-----------|
+| 1.0.4 | 2026-06-17 | ✅ Release | App folder refactor — flatten (client) route group |
+| 1.0.3 | 2026-06-17 | ✅ Release | Client My Inventory page — two-level drill-down + stepper |
+| 1.0.2 | 2026-06-17 | ✅ Release | Client Dashboard page — KPI cards + low-stock list |
+| 1.0.1 | 2026-06-17 | ✅ Release | Role-based portal isolation — middleware JWT decode |
+| 1.0.0 | 2026-06-17 | ✅ Release | Client Portal layout shell — sidebar, topbar, nav, bottom nav |
 | 0.9.8 | 2026-06-16 | ✅ Release | Analytics charts + RecentActivityFeed locale fix |
 | 0.9.7 | 2026-06-16 | ✅ Release | Clients API integration — create/edit/deactivate |
 | 0.9.6 | 2026-06-16 | ✅ Release | Shortages + Dashboard API integration |

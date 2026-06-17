@@ -91,6 +91,9 @@ Check `docs/api/` folder:
 | Shortages | [shortages.md](features/shortages.md) | ✅ FIGMA-006 Complete — API Integrated |
 | Settings | [settings.md](features/settings.md) | ✅ FIGMA-007 Complete — API Integrated |
 | Analytics | [analytics.md](features/analytics.md) | ✅ Complete — TopConsumed + ConsumptionTrend on real API |
+| Client Portal Layout | [client-portal-layout.md](features/client-portal-layout.md) | ✅ CLIENT-001 Complete |
+| Client Dashboard | [client-dashboard.md](features/client-dashboard.md) | ✅ CLIENT-002 Complete (mock data) |
+| Client Inventory | [client-inventory.md](features/client-inventory.md) | ✅ CLIENT-003 Complete (mock data) |
 
 ### API Documentation
 | Topic | Document | Status |
@@ -325,9 +328,9 @@ Instead use:
 
 ---
 
-**Last Updated**: June 16, 2026  
+**Last Updated**: June 17, 2026  
 **Maintainer**: Melad Adera  
-**Status**: All pages API integrated ✅ — no open integration gaps
+**Status**: Admin portal API integrated ✅ — Client portal in progress (3 of 4 pages complete)
 
 For project overview, see **[PROJECT_STATUS.md](../PROJECT_STATUS.md)**  
 For recent updates, see **[UPDATES.md](../UPDATES.md)**  

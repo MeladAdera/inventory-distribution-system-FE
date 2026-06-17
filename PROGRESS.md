@@ -4,6 +4,139 @@ Real-time development progress and detailed work logs.
 
 ---
 
+## June 17, 2026 — Client Portal (Layout Shell, Auth Isolation, Dashboard, Inventory, Folder Refactor)
+
+### Session A — Client Portal Layout Shell
+**Focus**: Build the client-facing layout frame for SHOP_OWNER users  
+**Ticket**: CLIENT-001  
+**Version**: 1.0.0
+
+#### Tasks Completed
+
+1. ✅ **`clientNavConfig.ts`** — `ClientNavItem` interface + `CLIENT_NAV_ITEMS` (4 items: Dashboard, Inventory, Order, Orders)
+
+2. ✅ **`ClientSidebar.tsx`** — dark ink-900 theme; amber active bar via `insetInlineStart: '-12px'` (RTL-aware); `fluid` prop for NavDrawer use; user initials from `getInitials`; portal switch link at bottom
+
+3. ✅ **`ClientTopBar.tsx`** — page title from pathname segment; no search / no bell; hamburger `hidden md:block lg:hidden`; language toggle + avatar dropdown with logout
+
+4. ✅ **`ClientNavDrawer.tsx`** — tablet slide-in using `<ClientSidebar fluid />`
+
+5. ✅ **`ClientBottomNav.tsx`** — `md:hidden fixed bottom-0 h-14`; 4 items; amber active state
+
+6. ✅ **`ClientLayout.tsx`** — orchestrates all 4 pieces; owns `drawerOpen` state
+
+7. ✅ **`src/app/client/layout.tsx`** — thin `'use client'` wrapper
+
+8. ✅ **i18n** — `src/i18n/en/client.json` + `src/i18n/ar/client.json` (brand, nav, user, portalSwitch, topbar namespaces); wired into `src/i18n/index.ts`
+
+#### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
+### Session B — Role-Based Portal Isolation
+**Focus**: Prevent cross-portal access via JWT role decoding in Edge Runtime middleware  
+**Ticket**: CLIENT-001b  
+**Version**: 1.0.1
+
+#### Tasks Completed
+
+1. ✅ **`middleware.utils.ts`** — renamed `PROTECTED_ROUTES` → `ADMIN_ROUTES`; added `matchesRoute()`, `isAdminRoute()`, `isClientRoute()`, `getRoleFromToken()` (base64url JWT decode via `atob()`)
+
+2. ✅ **`middleware.ts`** — 3-step isolation logic: (1) no token → /login; (2) authenticated + /login → role-aware redirect; (3) role-based cross-portal block
+
+3. ✅ **`useLogin.ts`** — post-login redirect now role-aware: `SHOP_OWNER → /client/dashboard`, others → `/dashboard`
+
+4. ✅ **`app.constants.ts`** — added `CLIENT_ROOT`, `CLIENT_DASHBOARD` to `ROUTES`
+
+#### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
+### Session C — Client Dashboard Page
+**Focus**: Build the /client/dashboard landing page for SHOP_OWNER  
+**Ticket**: CLIENT-002  
+**Version**: 1.0.2
+
+#### Tasks Completed
+
+1. ✅ **`clientInventory.ts`** — mock data: `ClientInventoryItem`, `ClientCategory`, `CATEGORIES` (4), `CLIENT_INVENTORY` (8 products), `LOW_STOCK_ITEMS` (pre-filtered)
+
+2. ✅ **`ClientDashboardPage.tsx`** — KPI grid (3 cards reusing admin `KpiCard`); quick actions; low-stock list with `ProductThumb` + `StockBadge` + "Order more"; all-good empty state with CheckCircle
+
+3. ✅ **i18n** — `dashboard` namespace added to `en/client.json` + `ar/client.json`
+
+#### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
+### Session D — My Inventory Page
+**Focus**: Two-level drill-down inventory page with delta-based stepper and save modal  
+**Ticket**: CLIENT-003  
+**Version**: 1.0.3
+
+#### Tasks Completed
+
+1. ✅ **`clientInventory.ts`** — rewritten: added `categoryId` to `ClientInventoryItem`; added `CATEGORIES` array with Lucide icons
+
+2. ✅ **`ClientInventoryPage.tsx`** — full two-level drill-down:
+   - View A: `CategoryCard` grid with variant count, total qty, "Edited" badge
+   - View B: product cards with `Stepper` (delta 0→backStock), `InvStatusBadge`, filter tabs (All/Low/Out)
+   - `SaveModal`: shows changed items with `qty → qty + delta`
+   - `calcStatus()`: recalculates StockStatus after save
+   - Desktop save in header; mobile sticky bar `bottom-14` above bottom nav
+   - RTL-aware back chevron
+
+3. ✅ **i18n** — `inventory` namespace added to `en/client.json` + `ar/client.json`
+
+#### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+#### Key Design Decisions
+- Delta pattern (not absolute): stepper controls qty-to-add, not final qty → safer, avoids race conditions
+- `bottom-14` sticky bar: sits above the `h-14 fixed bottom-0` ClientBottomNav
+- `calcStatus()` local helper: recalculates status from new qty vs min threshold — keeps mock layer clean
+- Stepper max capped by `backStock`: user cannot add more than available back-stock
+
+---
+
+### Session E — Folder Structure Refactor
+**Focus**: Flatten redundant route group nesting in app directory  
+**Version**: 1.0.4
+
+#### Tasks Completed
+
+1. ✅ **Flatten `app/(client)/client/` → `app/client/`** — the `(client)` route group was wrapping a single `/client/` URL prefix with no multi-route benefit; removed it via `git mv`
+
+#### Before / After
+
+```
+Before:  app/(client)/layout.tsx
+         app/(client)/client/dashboard/page.tsx
+         app/(client)/client/inventory/page.tsx
+
+After:   app/client/layout.tsx
+         app/client/dashboard/page.tsx
+         app/client/inventory/page.tsx
+```
+
+#### Build Status
+```
+✅ npx tsc --noEmit — 0 errors
+```
+
+---
+
 ## June 16, 2026 — API Integration Complete (Shortages, Dashboard, Clients, Analytics)
 
 ### Session C — Shortages + Dashboard API Integration
