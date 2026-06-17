@@ -1,3 +1,4 @@
+import { CupSoda, Milk, SprayCan, Soup, type LucideIcon } from 'lucide-react';
 import { StockStatus } from '@/features/products/types/products.types';
 
 export interface ClientInventoryItem {
@@ -8,7 +9,22 @@ export interface ClientInventoryItem {
   min: number;
   backStock: number;
   status: StockStatus;
+  categoryId: string;
 }
+
+export interface ClientCategory {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  icon: LucideIcon;
+}
+
+export const CATEGORIES: ClientCategory[] = [
+  { id: 'bev', nameAr: 'مشروبات', nameEn: 'Beverages', icon: CupSoda },
+  { id: 'dry', nameAr: 'ألبان', nameEn: 'Dairy', icon: Milk },
+  { id: 'cln', nameAr: 'منظفات', nameEn: 'Cleaning', icon: SprayCan },
+  { id: 'can', nameAr: 'معلبات', nameEn: 'Canned', icon: Soup },
+];
 
 export const CLIENT_INVENTORY: ClientInventoryItem[] = [
   {
@@ -19,6 +35,7 @@ export const CLIENT_INVENTORY: ClientInventoryItem[] = [
     min: 40,
     backStock: 200,
     status: StockStatus.HIGH_STOCK,
+    categoryId: 'bev',
   },
   {
     id: 2,
@@ -28,6 +45,7 @@ export const CLIENT_INVENTORY: ClientInventoryItem[] = [
     min: 20,
     backStock: 0,
     status: StockStatus.LOW_STOCK,
+    categoryId: 'bev',
   },
   {
     id: 4,
@@ -37,6 +55,7 @@ export const CLIENT_INVENTORY: ClientInventoryItem[] = [
     min: 50,
     backStock: 60,
     status: StockStatus.HIGH_STOCK,
+    categoryId: 'dry',
   },
   {
     id: 5,
@@ -46,6 +65,7 @@ export const CLIENT_INVENTORY: ClientInventoryItem[] = [
     min: 15,
     backStock: 40,
     status: StockStatus.HIGH_STOCK,
+    categoryId: 'dry',
   },
   {
     id: 7,
@@ -55,6 +75,7 @@ export const CLIENT_INVENTORY: ClientInventoryItem[] = [
     min: 30,
     backStock: 0,
     status: StockStatus.LOW_STOCK,
+    categoryId: 'cln',
   },
   {
     id: 8,
@@ -64,6 +85,7 @@ export const CLIENT_INVENTORY: ClientInventoryItem[] = [
     min: 25,
     backStock: 0,
     status: StockStatus.OUT_OF_STOCK,
+    categoryId: 'can',
   },
   {
     id: 10,
@@ -73,6 +95,7 @@ export const CLIENT_INVENTORY: ClientInventoryItem[] = [
     min: 24,
     backStock: 30,
     status: StockStatus.HIGH_STOCK,
+    categoryId: 'bev',
   },
   {
     id: 12,
@@ -82,6 +105,7 @@ export const CLIENT_INVENTORY: ClientInventoryItem[] = [
     min: 35,
     backStock: 12,
     status: StockStatus.LOW_STOCK,
+    categoryId: 'cln',
   },
 ];
 

@@ -20,6 +20,37 @@
     "logout": "Log out",
     "accountLabel": "Account"
   },
+  "inventory": {
+    "title": "My inventory",
+    "subtitle": "Increase the displayed quantity from your own back-stock. When it runs out, order more from the supplier.",
+    "search": "Search category or product…",
+    "saveChanges": "Save changes",
+    "edited": "Edited",
+    "variants": "variants",
+    "totalQty": "Total quantity",
+    "availableProducts": "available products",
+    "currentQty": "Current quantity",
+    "updateQty": "Update quantity",
+    "fromBackStock": "from back-stock",
+    "noBackStock": "No back-stock left",
+    "orderMore": "Order more",
+    "statusEnough": "Enough",
+    "statusLow": "Low stock",
+    "statusOut": "Out of stock",
+    "filters": { "all": "All", "low": "Low", "out": "Out" },
+    "modal": {
+      "title": "Confirm inventory update",
+      "intro": "The following quantities will be updated:",
+      "noChanges": "No changes made yet.",
+      "confirm": "Confirm save",
+      "cancel": "Cancel"
+    },
+    "toast": { "success": "Inventory updated successfully" },
+    "empty": {
+      "noProducts": "No products assigned to your account yet.",
+      "noCatProducts": "No products in this category."
+    }
+  },
   "dashboard": {
     "greeting": "Welcome, Al Waha Grocery",
     "subtitle": "Here's a quick look at your stock today.",

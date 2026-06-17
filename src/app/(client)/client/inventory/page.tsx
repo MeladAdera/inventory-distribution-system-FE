@@ -1,3 +1,5 @@
-export default function ClientInventoryPage() {
-  return <div className="p-2 text-ink-500 text-[14px]">Client inventory — coming soon</div>;
+import { ClientInventoryPage } from '@/features/client-dashboard/components/ClientInventoryPage';
+
+export default function Page() {
+  return <ClientInventoryPage />;
 }
