@@ -1,7 +1,7 @@
 # Client Inventory Page
 
-**Status**: ✅ Complete (mock data)  
-**Version**: 1.0.3  
+**Status**: ✅ Complete (real API integrated)  
+**Version**: 2.0.0  
 **Ticket**: CLIENT-003  
 **Route**: `/client/inventory`  
 **File**: `src/features/client-dashboard/components/ClientInventoryPage.tsx`  
@@ -25,26 +25,42 @@ Changes are batched and confirmed via a save modal. The page never calls an API 
 ```
 src/features/client-dashboard/
 ├── components/
-│   └── ClientInventoryPage.tsx    ← full page (all sub-components defined locally)
-└── mock/
-    └── clientInventory.ts         ← ClientInventoryItem, ClientCategory, CLIENT_INVENTORY,
-                                      CATEGORIES, LOW_STOCK_ITEMS
+│   ├── ClientInventoryPage.tsx        ← thin orchestrator: hook + state + wires atoms
+│   └── inventory/
+│       ├── CategoryCard.tsx           ← category grid card (click-to-drill-down)
+│       ├── InventorySaveModal.tsx     ← confirm bulk quantity updates
+│       ├── InvStatusBadge.tsx         ← stock status badge (HIGH / LOW / OUT)
+│       └── ProductCard.tsx            ← per-product quantity stepper
+├── hooks/
+│   └── useClientInventory.ts          ← inventory + products queries → enriched + grouped
+└── types/
+    └── clientInventory.types.ts       ← EnrichedInventoryItem, InventoryCategory, StockFilter
 
 src/app/client/inventory/
-└── page.tsx                       ← thin wrapper: <ClientInventoryPage />
+└── page.tsx                           ← thin wrapper: <ClientInventoryPage />
 ```
 
 ---
 
+## Data Flow
+
+```
+GET /inventory?limit=100  +  GET /products?limit=100
+    ↓  inventoryApi.list()    productsApi.list()
+    ↓  useClientInventory() — joins on product_id, computes StockStatus, groups by category
+    ↓  ClientInventoryPage  — holds selectedCatId, changes, query, filter, modalOpen
+       ↓           ↓              ↓
+  CategoryCard  ProductCard  InventorySaveModal
+```
+
 ## State Model
 
 ```ts
-const [inventory, setInventory]     // ClientInventoryItem[] — local working copy
-const [changes, setChanges]         // Record<productId, deltaQty> — pending adds
-const [selectedCat, setSelectedCat] // string | null — null = View A, catId = View B
-const [query, setQuery]             // string — search text (View A: categories; View B: products)
-const [filter, setFilter]           // 'all' | 'low' | 'out' — View B filter tabs
-const [modalOpen, setModalOpen]     // boolean — save confirmation modal
+const [selectedCatId, setSelectedCatId] // string | null — null = View A, catId = View B
+const [changes, setChanges]             // Record<inventoryId, delta> — pending qty adds
+const [query, setQuery]                 // string — search text
+const [filter, setFilter]               // StockFilter: 'all' | 'low' | 'out'
+const [modalOpen, setModalOpen]         // boolean — save confirmation modal
 ```
 
 ---
@@ -217,13 +233,15 @@ Positioned above the bottom nav to avoid overlap:
 
 ---
 
-## API Integration (pending)
+## API Integration
 
-| Action | Endpoint |
-|---|---|
-| Load inventory | `GET /inventory?shopId=X` |
-| Load categories | `GET /categories?shopId=X` |
-| Save delta changes | `POST /inventory/stock-in` (one call per changed product) or bulk endpoint |
+| Action | Endpoint | Notes |
+|--------|----------|-------|
+| Load inventory | `GET /inventory?limit=100` | Returns paginated; hook reads `data.data.data` |
+| Load products | `GET /products?limit=100` | Joined in `useMemo` for category + barcode |
+| Save changes | `PATCH /inventory/:id` | One call per changed item; uses `adjustment` field |
+
+Response envelope: `{ success, data: { data: [], total, page, limit, totalPages } }`
 
 ---
 

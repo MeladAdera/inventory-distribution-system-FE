@@ -60,9 +60,11 @@
     "newOrderBtn": "+ طلب منتجات",
     "filter": {
       "all": "كل الحالات",
+      "pending": "في الانتظار",
       "processing": "قيد التنفيذ",
       "shipped": "تم الإرسال",
-      "received": "تم الاستلام"
+      "received": "تم الاستلام",
+      "completed": "مكتمل"
     },
     "table": {
       "orderNo": "رقم الطلب",
@@ -74,10 +76,14 @@
       "itemsUnit": "أصناف"
     },
     "status": {
+      "pending": "في الانتظار",
       "processing": "قيد التنفيذ",
       "shipped": "تم الإرسال",
-      "received": "تم الاستلام"
+      "received": "تم الاستلام",
+      "completed": "مكتمل"
     },
+    "loading": "جارٍ تحميل الطلبات…",
+    "errorMsg": "فشل تحميل الطلبات. يرجى المحاولة مجدداً.",
     "empty": {
       "title": "لم تقم بأي طلبات بعد",
       "action": "اطلب منتجات الآن"
@@ -86,6 +92,7 @@
       "title": "تفاصيل الطلب",
       "productsLabel": "المنتجات المطلوبة",
       "requestedQty": "الكمية المطلوبة",
+      "price": "سعر الوحدة",
       "notesLabel": "ملاحظات",
       "closeBtn": "إغلاق"
     }

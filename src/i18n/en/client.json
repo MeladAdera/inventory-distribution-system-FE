@@ -60,9 +60,11 @@
     "newOrderBtn": "+ Order products",
     "filter": {
       "all": "All statuses",
+      "pending": "Pending",
       "processing": "Processing",
       "shipped": "Shipped",
-      "received": "Received"
+      "received": "Received",
+      "completed": "Completed"
     },
     "table": {
       "orderNo": "Order #",
@@ -74,10 +76,14 @@
       "itemsUnit": "items"
     },
     "status": {
+      "pending": "Pending",
       "processing": "Processing",
       "shipped": "Shipped",
-      "received": "Received"
+      "received": "Received",
+      "completed": "Completed"
     },
+    "loading": "Loading orders…",
+    "errorMsg": "Failed to load orders. Please try again.",
     "empty": {
       "title": "You haven't placed any orders yet",
       "action": "Order products now"
@@ -86,6 +92,7 @@
       "title": "Order details",
       "productsLabel": "Requested products",
       "requestedQty": "Requested qty",
+      "price": "Unit price",
       "notesLabel": "Notes",
       "closeBtn": "Close"
     }
