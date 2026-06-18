@@ -11,6 +11,7 @@ const STATUS_STYLES: Record<OrderStatus, { bg: string; text: string; dot: string
   [OrderStatus.SHIPPED]: { bg: 'bg-info-100', text: 'text-info-700', dot: 'bg-info-700' },
   [OrderStatus.RECEIVED]: { bg: 'bg-success-100', text: 'text-success-700', dot: 'bg-success-700' },
   [OrderStatus.COMPLETED]: { bg: 'bg-sand-200', text: 'text-ink-500', dot: 'bg-ink-400' },
+  [OrderStatus.CANCELLED]: { bg: 'bg-danger-100', text: 'text-danger-700', dot: 'bg-danger-700' },
 };
 
 interface OrderStatusBadgeProps {

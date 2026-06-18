@@ -1,3 +1,4 @@
+import { Loader2 } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
 import { ProductThumb } from '@/features/products/components/ProductThumb';
 import { OrderStatus } from '@/features/orders/types/orders.types';
@@ -25,17 +26,34 @@ interface OrderDetailModalProps {
   open: boolean;
   onClose: () => void;
   locale: 'ar' | 'en';
+  onConfirmReceived: (orderId: number) => void;
+  onCancelOrder: (orderId: number) => void;
+  isConfirming: boolean;
+  isCancelling: boolean;
   labels: {
     title: string;
     productsLabel: string;
     requestedQty: string;
     price: string;
     closeBtn: string;
+    shippedHint: string;
+    confirmReceivedBtn: string;
+    cancelOrderBtn: string;
     statusLabels: Record<OrderStatus, string>;
   };
 }
 
-export function OrderDetailModal({ order, open, onClose, locale, labels }: OrderDetailModalProps) {
+export function OrderDetailModal({
+  order,
+  open,
+  onClose,
+  locale,
+  onConfirmReceived,
+  onCancelOrder,
+  isConfirming,
+  isCancelling,
+  labels,
+}: OrderDetailModalProps) {
   if (!order) return null;
 
   return (
@@ -82,8 +100,37 @@ export function OrderDetailModal({ order, open, onClose, locale, labels }: Order
         ))}
       </div>
 
+      {/* Shipped hint */}
+      {order.status === OrderStatus.SHIPPED && (
+        <p className="text-[13px] text-info-700 bg-info-100 rounded-lg px-3 py-2 mb-4">
+          {labels.shippedHint}
+        </p>
+      )}
+
       {/* Footer */}
-      <div className="flex justify-end pt-4 border-t border-border">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+        {order.status === OrderStatus.SHIPPED && (
+          <button
+            onClick={() => onConfirmReceived(order.id)}
+            disabled={isConfirming}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-success-700 text-white text-[14px] font-semibold hover:bg-success-700/90 disabled:opacity-60 transition-colors"
+          >
+            {isConfirming && <Loader2 size={14} className="animate-spin" />}
+            {labels.confirmReceivedBtn}
+          </button>
+        )}
+
+        {order.status === OrderStatus.PENDING && (
+          <button
+            onClick={() => onCancelOrder(order.id)}
+            disabled={isCancelling}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-danger-700 text-white text-[14px] font-semibold hover:bg-danger-700/90 disabled:opacity-60 transition-colors"
+          >
+            {isCancelling && <Loader2 size={14} className="animate-spin" />}
+            {labels.cancelOrderBtn}
+          </button>
+        )}
+
         <button
           onClick={onClose}
           className="px-4 py-2 rounded-lg border border-border text-[14px] font-medium text-ink-700 hover:bg-sand-100 transition-colors"

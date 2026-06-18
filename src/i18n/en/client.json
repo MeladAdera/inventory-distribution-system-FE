@@ -64,7 +64,8 @@
       "processing": "Processing",
       "shipped": "Shipped",
       "received": "Received",
-      "completed": "Completed"
+      "completed": "Completed",
+      "cancelled": "Cancelled"
     },
     "table": {
       "orderNo": "Order #",
@@ -80,7 +81,8 @@
       "processing": "Processing",
       "shipped": "Shipped",
       "received": "Received",
-      "completed": "Completed"
+      "completed": "Completed",
+      "cancelled": "Cancelled"
     },
     "loading": "Loading orders…",
     "errorMsg": "Failed to load orders. Please try again.",
@@ -94,7 +96,16 @@
       "requestedQty": "Requested qty",
       "price": "Unit price",
       "notesLabel": "Notes",
-      "closeBtn": "Close"
+      "closeBtn": "Close",
+      "shippedHint": "Your order has been shipped. Confirm receipt to update your inventory.",
+      "confirmReceivedBtn": "Confirm received",
+      "cancelOrderBtn": "Cancel order"
+    },
+    "toast": {
+      "confirmReceivedSuccess": "Order marked as received. Your inventory has been updated.",
+      "confirmReceivedError": "Failed to confirm receipt. Please try again.",
+      "cancelSuccess": "Order cancelled successfully.",
+      "cancelError": "Failed to cancel order. Please try again."
     }
   },
   "order": {

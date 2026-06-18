@@ -34,6 +34,7 @@ interface OrdersTableCardProps {
       shipped: string;
       received: string;
       completed: string;
+      cancelled: string;
     };
     table: {
       orderNo: string;
@@ -79,6 +80,7 @@ export function OrdersTableCard({
           <option value={OrderStatus.SHIPPED}>{labels.filter.shipped}</option>
           <option value={OrderStatus.RECEIVED}>{labels.filter.received}</option>
           <option value={OrderStatus.COMPLETED}>{labels.filter.completed}</option>
+          <option value={OrderStatus.CANCELLED}>{labels.filter.cancelled}</option>
         </select>
       </div>
 
@@ -109,7 +111,7 @@ export function OrdersTableCard({
             {filtered.map((order) => (
               <div
                 key={order.id}
-                className="grid grid-cols-[1fr_1.5fr_1fr_1.2fr_1fr] items-center px-5 py-2 min-h-[60px] border-t border-border hover:bg-sand-50 transition-colors"
+                className="grid grid-cols-[1fr_1.5fr_1fr_1.2fr_1fr] items-center px-5 py-2 min-h-15 border-t border-border hover:bg-sand-50 transition-colors"
               >
                 <span className="font-mono text-[13px] font-semibold text-ink-900">
                   #{order.id}

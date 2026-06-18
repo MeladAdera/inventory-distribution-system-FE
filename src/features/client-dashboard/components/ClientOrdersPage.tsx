@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Loader2, AlertTriangle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
+import { useToast } from '@/providers';
 import { OrderStatus } from '@/features/orders/types/orders.types';
 import { useClientOrders } from '../hooks/useClientOrders';
 import { OrdersTableCard } from './orders/OrdersTableCard';
@@ -13,13 +14,23 @@ import type { ClientOrder, ClientStatusFilter } from '../types/clientOrders.type
 export function ClientOrdersPage() {
   const { t, locale } = useI18n();
   const router = useRouter();
+  const toast = useToast();
   const ords = t.client.orders;
 
   const [statusFilter, setStatusFilter] = useState<ClientStatusFilter>('ALL');
   const [selectedOrder, setSelectedOrder] = useState<ClientOrder | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { orders, total, isLoading, error } = useClientOrders();
+  const {
+    orders,
+    total,
+    isLoading,
+    error,
+    confirmReceived,
+    cancelOrder,
+    isConfirming,
+    isCancelling,
+  } = useClientOrders();
 
   const statusLabels: Record<OrderStatus, string> = {
     [OrderStatus.PENDING]: ords.status.pending,
@@ -27,7 +38,28 @@ export function ClientOrdersPage() {
     [OrderStatus.SHIPPED]: ords.status.shipped,
     [OrderStatus.RECEIVED]: ords.status.received,
     [OrderStatus.COMPLETED]: ords.status.completed,
+    [OrderStatus.CANCELLED]: ords.status.cancelled,
   };
+
+  async function handleConfirmReceived(orderId: number) {
+    try {
+      await confirmReceived(orderId);
+      toast.success(ords.toast.confirmReceivedSuccess);
+      setModalOpen(false);
+    } catch {
+      toast.error(ords.toast.confirmReceivedError);
+    }
+  }
+
+  async function handleCancelOrder(orderId: number) {
+    try {
+      await cancelOrder(orderId);
+      toast.success(ords.toast.cancelSuccess);
+      setModalOpen(false);
+    } catch {
+      toast.error(ords.toast.cancelError);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -89,12 +121,19 @@ export function ClientOrdersPage() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         locale={locale}
+        onConfirmReceived={handleConfirmReceived}
+        onCancelOrder={handleCancelOrder}
+        isConfirming={isConfirming}
+        isCancelling={isCancelling}
         labels={{
           title: ords.modal.title,
           productsLabel: ords.modal.productsLabel,
           requestedQty: ords.modal.requestedQty,
           price: ords.modal.price,
           closeBtn: ords.modal.closeBtn,
+          shippedHint: ords.modal.shippedHint,
+          confirmReceivedBtn: ords.modal.confirmReceivedBtn,
+          cancelOrderBtn: ords.modal.cancelOrderBtn,
           statusLabels,
         }}
       />

@@ -64,7 +64,8 @@
       "processing": "قيد التنفيذ",
       "shipped": "تم الإرسال",
       "received": "تم الاستلام",
-      "completed": "مكتمل"
+      "completed": "مكتمل",
+      "cancelled": "ملغي"
     },
     "table": {
       "orderNo": "رقم الطلب",
@@ -80,7 +81,8 @@
       "processing": "قيد التنفيذ",
       "shipped": "تم الإرسال",
       "received": "تم الاستلام",
-      "completed": "مكتمل"
+      "completed": "مكتمل",
+      "cancelled": "ملغي"
     },
     "loading": "جارٍ تحميل الطلبات…",
     "errorMsg": "فشل تحميل الطلبات. يرجى المحاولة مجدداً.",
@@ -94,7 +96,16 @@
       "requestedQty": "الكمية المطلوبة",
       "price": "سعر الوحدة",
       "notesLabel": "ملاحظات",
-      "closeBtn": "إغلاق"
+      "closeBtn": "إغلاق",
+      "shippedHint": "تم شحن طلبك. أكّد الاستلام لتحديث مخزونك.",
+      "confirmReceivedBtn": "تأكيد الاستلام",
+      "cancelOrderBtn": "إلغاء الطلب"
+    },
+    "toast": {
+      "confirmReceivedSuccess": "تم تأكيد استلام الطلب وتحديث مخزونك.",
+      "confirmReceivedError": "فشل تأكيد الاستلام. يرجى المحاولة مجدداً.",
+      "cancelSuccess": "تم إلغاء الطلب بنجاح.",
+      "cancelError": "فشل إلغاء الطلب. يرجى المحاولة مجدداً."
     }
   },
   "order": {
