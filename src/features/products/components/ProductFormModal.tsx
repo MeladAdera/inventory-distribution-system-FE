@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { X, Check } from 'lucide-react';
+import { X, Check, Camera, Loader2, Trash2 } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { cn } from '@/common/utils/cn';
 import { productFormSchema, type ProductFormData } from '../validations/products.schema';
@@ -17,8 +17,10 @@ interface ProductFormModalProps {
   product: Product | null;
   categories: Category[];
   onClose: () => void;
-  onAdd: (data: CreateProductInput) => Promise<void>;
+  onAdd: (data: CreateProductInput) => Promise<{ id: number }>;
   onEdit: (id: number, data: UpdateProductInput) => Promise<void>;
+  onUploadImage: (id: number, file: File) => Promise<void>;
+  onDeleteImage: (id: number) => Promise<void>;
 }
 
 export function ProductFormModal({
@@ -29,9 +31,18 @@ export function ProductFormModal({
   onClose,
   onAdd,
   onEdit,
+  onUploadImage,
+  onDeleteImage,
 }: ProductFormModalProps) {
   const { t } = useI18n();
   const p = t.products;
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imageRemoved, setImageRemoved] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isDeletingImage, setIsDeletingImage] = useState(false);
 
   const {
     register,
@@ -56,10 +67,21 @@ export function ProductFormModal({
         price: Number(product.price),
         category_id: product.category_id,
       });
+      setPreviewUrl(product.image_url ?? null);
     } else {
       reset({ name: '', description: '', barcode: '', price: 0, category_id: 0 });
+      setPreviewUrl(null);
     }
+    setPendingFile(null);
+    setImageRemoved(false);
   }, [open, mode, product, reset]);
+
+  // Clean up object URL to avoid memory leak
+  useEffect(() => {
+    return () => {
+      if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   useEffect(() => {
     if (!open) return;
@@ -71,6 +93,47 @@ export function ProductFormModal({
 
   if (!open) return null;
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const objectUrl = URL.createObjectURL(file);
+
+    if (mode === 'edit' && product) {
+      if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(objectUrl);
+      setIsUploadingImage(true);
+      try {
+        await onUploadImage(product.id, file);
+      } finally {
+        setIsUploadingImage(false);
+      }
+    } else {
+      if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(objectUrl);
+      setPendingFile(file);
+    }
+
+    e.target.value = '';
+  };
+
+  const handleRemoveImage = async () => {
+    // Clear visually first so the user sees the change immediately
+    if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+    setPendingFile(null);
+    setImageRemoved(true);
+
+    if (mode === 'edit' && product) {
+      setIsDeletingImage(true);
+      try {
+        await onDeleteImage(product.id);
+      } finally {
+        setIsDeletingImage(false);
+      }
+    }
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     if (mode === 'edit' && product) {
       await onEdit(product.id, {
@@ -79,18 +142,26 @@ export function ProductFormModal({
         price: data.price,
       });
     } else {
-      await onAdd({
+      const created = await onAdd({
         name: data.name,
         description: data.description,
         barcode: data.barcode,
         price: data.price,
         category_id: data.category_id,
       });
+      if (pendingFile) {
+        await onUploadImage(created.id, pendingFile);
+      }
     }
     onClose();
   });
 
   const title = mode === 'add' ? p.form.addTitle : p.form.editTitle;
+  const currentImageUrl = imageRemoved
+    ? null
+    : (previewUrl ?? (mode === 'edit' ? product?.image_url : null));
+  const hasImage = !!currentImageUrl;
+  const isBusy = isUploadingImage || isDeletingImage;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
@@ -122,10 +193,68 @@ export function ProductFormModal({
           noValidate
           className="flex-1 overflow-y-auto px-6 py-6 space-y-5"
         >
-          {/* Thumb preview */}
-          <div className="flex items-center gap-3.5 p-3.5 border border-dashed border-border rounded-lg bg-sand-100">
-            <ProductThumb id={Number(watchedId) || (product?.id ?? 0)} size={44} />
-            <p className="text-[13px] text-ink-500">{product?.name ?? p.form.namePlaceholder}</p>
+          {/* Image upload zone */}
+          <div className="flex items-center gap-4 p-3.5 border border-dashed border-border rounded-lg bg-sand-100">
+            <div className="relative shrink-0 group">
+              <ProductThumb
+                id={Number(watchedId) || (product?.id ?? 0)}
+                size={56}
+                imageUrl={currentImageUrl}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isBusy}
+                className={cn(
+                  'absolute inset-0 rounded-lg flex items-center justify-center',
+                  'bg-ink-900/40 opacity-0 group-hover:opacity-100 transition-opacity',
+                  isBusy && 'opacity-100 cursor-not-allowed'
+                )}
+              >
+                {isUploadingImage ? (
+                  <Loader2 size={16} className="text-white animate-spin" />
+                ) : (
+                  <Camera size={16} className="text-white" />
+                )}
+              </button>
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isBusy}
+                className="text-[13px] font-medium text-amber-700 hover:text-amber-800 transition-colors disabled:opacity-60"
+              >
+                {hasImage ? p.image.change : p.image.upload}
+              </button>
+              <p className="text-[12px] text-ink-400 mt-0.5">{p.image.hint}</p>
+            </div>
+
+            {/* Remove button — only when there's an image */}
+            {hasImage && (
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                disabled={isBusy}
+                title={p.image.remove}
+                className="w-7.5 h-7.5 rounded-lg flex items-center justify-center text-danger-700 hover:bg-danger-50 transition-colors disabled:opacity-40 shrink-0"
+              >
+                {isDeletingImage ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Trash2 size={14} />
+                )}
+              </button>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={handleFileChange}
+            />
           </div>
 
           {/* Name */}
@@ -202,7 +331,7 @@ export function ProductFormModal({
           <button
             type="submit"
             form="product-form"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isBusy}
             className="inline-flex items-center gap-2 h-10 px-5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-60"
           >
             <Check size={15} />

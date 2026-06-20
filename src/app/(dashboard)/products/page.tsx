@@ -50,7 +50,16 @@ export default function ProductsPage() {
   const { user } = useAuthStore();
   const isAdmin = user?.role === UserRole.WAREHOUSE_ADMIN;
 
-  const { products, total, isLoading, createProduct, updateProduct, deleteProduct } = useProducts({
+  const {
+    products,
+    total,
+    isLoading,
+    createProduct,
+    updateProduct,
+    deleteProduct,
+    uploadProductImage,
+    deleteProductImage,
+  } = useProducts({
     page,
     limit: PAGE_SIZE,
     search: search || undefined,
@@ -65,13 +74,22 @@ export default function ProductsPage() {
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
-  const handleAdd = async (input: CreateProductInput) => {
+  const handleAdd = async (input: CreateProductInput): Promise<{ id: number }> => {
     const shop_id = user?.shopId ?? tokenUtils.getShopId();
-    await createProduct({ data: input, shop_id });
+    const result = await createProduct({ data: input, shop_id });
+    return result.data;
   };
 
   const handleEdit = async (id: number, input: UpdateProductInput) => {
     await updateProduct({ id, data: input });
+  };
+
+  const handleUploadImage = async (id: number, file: File) => {
+    await uploadProductImage({ id, file });
+  };
+
+  const handleDeleteImage = async (id: number) => {
+    await deleteProductImage(id);
   };
 
   const handleDelete = async (product: Product) => {
@@ -135,6 +153,8 @@ export default function ProductsPage() {
         onClose={() => setModal({ type: 'none' })}
         onAdd={handleAdd}
         onEdit={handleEdit}
+        onUploadImage={handleUploadImage}
+        onDeleteImage={handleDeleteImage}
       />
       <ProductDetailModal
         open={modal.type === 'view'}

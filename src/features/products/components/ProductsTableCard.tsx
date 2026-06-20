@@ -371,7 +371,7 @@ function ProductRow({ product, rowNum, p, onView, onEdit, onRestock, onDelete }:
         <span className="font-mono text-xs text-ink-400">{rowNum}</span>
 
         <div className="flex items-center gap-3 min-w-0">
-          <ProductThumb id={product.id} size={38} />
+          <ProductThumb id={product.id} size={38} imageUrl={product.image_url} />
           <span className="font-medium text-ink-900 truncate">{product.name}</span>
         </div>
 
@@ -396,7 +396,7 @@ function ProductRow({ product, rowNum, p, onView, onEdit, onRestock, onDelete }:
       <div className="md:hidden p-4 flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <ProductThumb id={product.id} size={42} />
+            <ProductThumb id={product.id} size={42} imageUrl={product.image_url} />
             <div className="min-w-0">
               <p className="font-medium text-ink-900 text-sm truncate">{product.name}</p>
               <p className="font-mono text-xs text-ink-500 mt-0.5">{product.barcode ?? '—'}</p>

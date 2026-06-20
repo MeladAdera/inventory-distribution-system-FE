@@ -2,7 +2,7 @@
 
 **Status**: API Integrated — Known gaps documented below  
 **Created Date**: 2026-06-11  
-**Last Updated**: 2026-06-17  
+**Last Updated**: 2026-06-20  
 **Assignee**: Melad Adera  
 **Tickets**: FIGMA-003, TICKET-029, TICKET-030, TICKET-031, TICKET-032
 
@@ -30,17 +30,19 @@ The Products admin page (`/products`) is the primary interface for warehouse man
 ```
 src/features/products/
 ├── api/
-│   └── products.api.ts              # Typed API methods — list, getById, create, update, delete
+│   └── products.api.ts              # Typed API methods — list, getById, create, update, delete,
+│                                    # uploadImage, deleteImage
 ├── components/
-│   ├── ProductThumb.tsx             # Coloured square + package icon
+│   ├── ProductThumb.tsx             # Shows product image if imageUrl prop set; falls back to colour+icon
 │   ├── StatusBadge.tsx              # Active / Inactive dot + label pill
 │   ├── ProductsTableCard.tsx        # Table card: toolbar + CSS grid + skeleton + pagination
-│   ├── ProductFormModal.tsx         # Add / Edit modal (react-hook-form + zod)
+│   ├── ProductFormModal.tsx         # Add / Edit modal (react-hook-form + zod + image upload zone)
 │   ├── ProductDetailModal.tsx       # View-only modal; fetches GET /products/:id for current_quantity
 │   ├── RestockModal.tsx             # Qty stepper → POST /inventory/stock-in
 │   └── DeleteConfirmModal.tsx       # Danger confirm → DELETE /products/:id
 ├── hooks/
-│   ├── useProducts(params?)         # List query + create / update / delete mutations
+│   ├── useProducts(params?)         # List query + create / update / delete /
+│   │                                # uploadProductImage / deleteProductImage mutations
 │   └── useProduct(id)              # Single product query (GET /products/:id) — enables/disables by id
 ├── mock/
 │   └── productsData.ts              # Legacy mock — no longer used by the page
@@ -51,7 +53,7 @@ src/features/products/
 │   └── products.schema.ts           # createProductSchema, updateProductSchema, productFormSchema
 └── index.ts                         # Barrel export
 
-src/app/(dashboard)/products/page.tsx   # Page — params state, modal routing, CRUD handlers
+src/app/(dashboard)/products/page.tsx   # Page — params state, modal routing, CRUD + image handlers
 src/i18n/en/products.json               # English translations
 src/i18n/ar/products.json               # Arabic translations
 ```
@@ -69,6 +71,8 @@ src/i18n/ar/products.json               # Arabic translations
 | Create product | POST | `/products` | `useProducts().createProduct` |
 | Update product | PATCH | `/products/:id` | `useProducts().updateProduct` |
 | Soft-delete product | DELETE | `/products/:id` | `useProducts().deleteProduct` |
+| Upload product image | PATCH | `/products/:id/image` | `useProducts().uploadProductImage` |
+| Delete product image | DELETE | `/products/:id/image` | `useProducts().deleteProductImage` |
 | Add stock | POST | `/inventory/stock-in` | `inventoryApi.stockIn` (direct) |
 | Category dropdown | GET | `/categories` (+ `?shopId=X` for WAREHOUSE_ADMIN) | `useCategories({ shopId? })` |
 
@@ -117,6 +121,7 @@ interface Product {
   source: ProductSource;   // 'WAREHOUSE' | 'LOCAL' — set by backend, cannot be set manually
   is_global: boolean;
   is_active: boolean;
+  image_url: string | null; // e.g. "/uploads/products/uuid.jpg" — prepend NEXT_PUBLIC_API_URL for full URL
   created_at: string;
   updated_at: string;
 }
@@ -173,12 +178,16 @@ ProductDetailModal
   total: number;              // listQuery.data?.data?.total ?? 0
   isLoading: boolean;
   error: unknown;
-  createProduct(args): Promise<void>;
+  createProduct(args): Promise<ApiResponse<Product>>;  // returns created product (id used for image upload)
   isCreating: boolean;
   updateProduct(args): Promise<void>;
   isUpdating: boolean;
   deleteProduct(id): Promise<void>;
   isDeleting: boolean;
+  uploadProductImage({ id, file }): Promise<void>;     // PATCH /products/:id/image
+  isUploadingImage: boolean;
+  deleteProductImage(id): Promise<void>;               // DELETE /products/:id/image
+  isDeletingImage: boolean;
 }
 ```
 
@@ -204,6 +213,12 @@ useProduct(open && product ? product.id : null)
 - Edit pre-fills: `name`, `description`, `barcode`, `price` (converted `Number(price)`), `category_id`
 - `price` uses `{ valueAsNumber: true }` on the input — form value is `number`, stored as `string` in backend
 - Category dropdown populated from `useCategories()`
+- Image upload zone at the top of the form — see **Image Upload** section below
+
+### `ProductThumb`
+- Accepts optional `imageUrl?: string | null` prop
+- When set: renders `<img>` fitted to the container; relative paths (starting with `/uploads/`) are prefixed with `NEXT_PUBLIC_API_URL`; blob object URLs are used as-is for previews
+- When not set: renders the colour-coded square + Package icon fallback (colour derived from `id % palette.length`)
 
 ### `RestockModal`
 - Stepper (+/-) with manual input (min 1)
@@ -211,6 +226,43 @@ useProduct(open && product ? product.id : null)
 
 ### `DeleteConfirmModal`
 - Backdrop click intentionally disabled — user must choose Delete or Cancel
+
+---
+
+## 🖼️ Image Upload
+
+### Overview
+Each product can have one image stored server-side under `uploads/products/`. The image is optional — products without an image fall back to the colour-coded `ProductThumb` placeholder.
+
+### Backend endpoints
+| Method | Path | Payload | Returns |
+|--------|------|---------|---------|
+| `PATCH` | `/products/:id/image` | `multipart/form-data`, field name `image` | `{ image_url: "/uploads/products/uuid.jpg" }` |
+| `DELETE` | `/products/:id/image` | — | updated product (or `204`) |
+
+### Frontend flow — Edit mode
+1. User opens the Edit modal → the existing `product.image_url` is shown in the upload zone via `ProductThumb`
+2. **Upload:** user clicks the zone (or the camera overlay on hover) → file picker opens → on file select, `PATCH /products/:id/image` fires immediately (no need to hit Save) → the blob preview replaces the old image instantly
+3. **Remove:** user clicks the red trash icon → image disappears immediately (local state cleared before the API call) → `DELETE /products/:id/image` fires in the background → spinner shown on the trash icon while the request is in flight
+
+### Frontend flow — Add mode
+1. User opens the Add modal → no image shown
+2. **Select file:** clicking the zone stores the file as `pendingFile` in component state and shows a blob preview — no API call yet (the product doesn't exist yet)
+3. **Save:** form submits → `POST /products` creates the product → the returned `id` is used to call `PATCH /products/:id/image` with the pending file → modal closes
+4. **Remove before save:** clicking trash clears `pendingFile` and the preview — nothing was uploaded, so no API call needed
+
+### Key implementation details
+- `imageRemoved` flag: set to `true` the instant the trash button is clicked, which short-circuits `currentImageUrl = imageRemoved ? null : (previewUrl ?? product?.image_url)`. This prevents the stale `product.image_url` prop from being shown while the DELETE request is still in flight.
+- Object URLs from `URL.createObjectURL(file)` are revoked via cleanup to prevent memory leaks
+- The Save button is disabled while `isUploadingImage || isDeletingImage` to prevent concurrent state conflicts
+- Both `uploadProductImage` and `deleteProductImage` call `queryClient.invalidateQueries(['products'])` on success so the table refreshes automatically
+
+### `ProductFormModal` props related to images
+```ts
+onAdd: (data: CreateProductInput) => Promise<{ id: number }>;  // returns id for post-create upload
+onUploadImage: (id: number, file: File) => Promise<void>;
+onDeleteImage: (id: number) => Promise<void>;
+```
 
 ---
 
@@ -250,6 +302,7 @@ products.form.{addTitle, editTitle, save, cancel, name, namePlaceholder, barcode
 products.detail.{title, currentQty, price, source, barcode, category, description, createdAt}
 products.restock.{title, qtyLabel, addStock, cancel}
 products.delete.{title, warning, delete, cancel}
+products.image.{upload, change, remove, hint, uploadError}
 ```
 
 ---
@@ -272,6 +325,9 @@ products.delete.{title, warning, delete, cancel}
 - [x] Category dropdown populated from `GET /categories`; WAREHOUSE_ADMIN passes `?shopId=X` from auth store
 - [x] All text switches AR ↔ EN on locale toggle
 - [x] `npx tsc --noEmit` passes with zero errors
+- [x] Upload image: PATCH `/products/:id/image` called immediately on file select in edit mode; called after create in add mode
+- [x] Delete image: DELETE `/products/:id/image` called immediately on trash click; image disappears from UI before API responds
+- [x] `ProductThumb` shows actual image when `image_url` is present in the product; falls back to colour placeholder when null
 - [ ] Search field works against backend (backend gap)
 - [ ] Edit saves barcode + category changes
 - [ ] Error feedback on failed mutations

@@ -78,5 +78,12 @@
     "warning": "This action cannot be undone.",
     "delete": "Delete",
     "cancel": "Cancel"
+  },
+  "image": {
+    "upload": "Upload image",
+    "change": "Change image",
+    "remove": "Remove image",
+    "hint": "JPG or PNG, max 5 MB",
+    "uploadError": "Image upload failed"
   }
 }

@@ -2,6 +2,7 @@ export interface Category {
   id: number;
   shop_id: number;
   name: string;
+  image_url: string | null;
   created_at: string;
   updated_at: string;
 }

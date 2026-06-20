@@ -32,4 +32,18 @@ export const categoriesApi = {
     const response = await apiClient.delete(`/categories/${id}`);
     return response.data;
   },
+
+  uploadImage: async (id: number, file: File) => {
+    const form = new FormData();
+    form.append('image', file);
+    const response = await apiClient.patch(`/categories/${id}/image`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  deleteImage: async (id: number) => {
+    const response = await apiClient.delete(`/categories/${id}/image`);
+    return response.data;
+  },
 };

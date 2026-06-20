@@ -81,7 +81,7 @@ export function ProductDetailModal({ open, product, onClose }: ProductDetailModa
         <div className="px-6 py-6">
           {/* Top: thumb + name + status */}
           <div className="flex items-center gap-4 mb-5">
-            <ProductThumb id={product.id} size={64} />
+            <ProductThumb id={product.id} size={64} imageUrl={product.image_url} />
             <div>
               <p className="font-semibold text-ink-900">{product.name}</p>
               <p className="font-mono text-[13px] text-ink-500 mt-0.5">{product.barcode ?? '—'}</p>

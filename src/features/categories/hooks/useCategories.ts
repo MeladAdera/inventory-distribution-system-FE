@@ -35,6 +35,16 @@ export function useCategories(params?: CategoryListParams) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['categories'] }),
   });
 
+  const uploadImageMutation = useMutation({
+    mutationFn: ({ id, file }: { id: number; file: File }) => categoriesApi.uploadImage(id, file),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['categories'] }),
+  });
+
+  const deleteImageMutation = useMutation({
+    mutationFn: (id: number) => categoriesApi.deleteImage(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['categories'] }),
+  });
+
   return {
     categories: listQuery.data?.data ?? [],
     isLoading: listQuery.isLoading,
@@ -42,5 +52,9 @@ export function useCategories(params?: CategoryListParams) {
     createCategory: createMutation.mutateAsync,
     updateCategory: updateMutation.mutateAsync,
     deleteCategory: deleteMutation.mutateAsync,
+    uploadCategoryImage: uploadImageMutation.mutateAsync,
+    isUploadingCategoryImage: uploadImageMutation.isPending,
+    deleteCategoryImage: deleteImageMutation.mutateAsync,
+    isDeletingCategoryImage: deleteImageMutation.isPending,
   };
 }

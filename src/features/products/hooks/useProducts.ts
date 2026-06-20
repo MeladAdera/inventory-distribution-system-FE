@@ -44,6 +44,16 @@ export function useProducts(params?: ProductListParams) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['products'] }),
   });
 
+  const uploadImageMutation = useMutation({
+    mutationFn: ({ id, file }: { id: number; file: File }) => productsApi.uploadImage(id, file),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['products'] }),
+  });
+
+  const deleteImageMutation = useMutation({
+    mutationFn: (id: number) => productsApi.deleteImage(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['products'] }),
+  });
+
   return {
     // Unwrap ApiResponse → PaginatedResponse
     products: listQuery.data?.data?.data ?? [],
@@ -56,5 +66,9 @@ export function useProducts(params?: ProductListParams) {
     isUpdating: updateMutation.isPending,
     deleteProduct: deleteMutation.mutateAsync,
     isDeleting: deleteMutation.isPending,
+    uploadProductImage: uploadImageMutation.mutateAsync,
+    isUploadingImage: uploadImageMutation.isPending,
+    deleteProductImage: deleteImageMutation.mutateAsync,
+    isDeletingImage: deleteImageMutation.isPending,
   };
 }

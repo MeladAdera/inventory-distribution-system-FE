@@ -34,4 +34,18 @@ export const productsApi = {
     const response = await apiClient.delete(`/products/${id}`);
     return response.data;
   },
+
+  uploadImage: async (id: number, file: File) => {
+    const form = new FormData();
+    form.append('image', file);
+    const response = await apiClient.patch(`/products/${id}/image`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  deleteImage: async (id: number) => {
+    const response = await apiClient.delete(`/products/${id}/image`);
+    return response.data;
+  },
 };
