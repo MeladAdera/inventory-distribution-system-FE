@@ -25,14 +25,16 @@
     "qty": "Qty",
     "price": "Unit price",
     "totalPrice": "Total price",
-    "closeBtn": "Close"
+    "closeBtn": "Close",
+    "cancelBtn": "Cancel order"
   },
   "status": {
     "PENDING": "Pending",
     "PROCESSING": "Processing",
     "SHIPPED": "Shipped",
     "RECEIVED": "Received",
-    "COMPLETED": "Completed"
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
   },
   "actions": {
     "process": "Process",
@@ -70,6 +72,8 @@
   "toast": {
     "success": "Transfer created successfully",
     "statusUpdated": "Status updated successfully",
-    "error": "Something went wrong"
+    "error": "Something went wrong",
+    "cancelSuccess": "Order cancelled successfully",
+    "cancelError": "Failed to cancel order. Please try again."
   }
 }

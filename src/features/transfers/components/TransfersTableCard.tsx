@@ -22,6 +22,7 @@ const STATUS_STYLES: Record<TransferStatus, string> = {
   SHIPPED: 'bg-purple-50 text-purple-700 border-purple-200',
   RECEIVED: 'bg-teal-50 text-teal-700 border-teal-200',
   COMPLETED: 'bg-green-50 text-green-700 border-green-200',
+  CANCELLED: 'bg-red-50 text-red-700 border-red-200',
 };
 
 function StatusBadge({ status, label }: { status: TransferStatus; label: string }) {

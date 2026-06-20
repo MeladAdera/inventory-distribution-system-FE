@@ -25,14 +25,16 @@
     "qty": "الكمية",
     "price": "سعر الوحدة",
     "totalPrice": "السعر الإجمالي",
-    "closeBtn": "إغلاق"
+    "closeBtn": "إغلاق",
+    "cancelBtn": "إلغاء الطلب"
   },
   "status": {
     "PENDING": "قيد الانتظار",
     "PROCESSING": "قيد المعالجة",
     "SHIPPED": "تم الشحن",
     "RECEIVED": "تم الاستلام",
-    "COMPLETED": "مكتمل"
+    "COMPLETED": "مكتمل",
+    "CANCELLED": "ملغي"
   },
   "actions": {
     "process": "معالجة",
@@ -70,6 +72,8 @@
   "toast": {
     "success": "تم إنشاء النقل بنجاح",
     "statusUpdated": "تم تحديث الحالة بنجاح",
-    "error": "حدث خطأ ما"
+    "error": "حدث خطأ ما",
+    "cancelSuccess": "تم إلغاء الطلب بنجاح",
+    "cancelError": "فشل إلغاء الطلب. يرجى المحاولة مرة أخرى."
   }
 }

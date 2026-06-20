@@ -88,6 +88,16 @@ export default function TransfersPage() {
     }
   };
 
+  const handleCancelTransfer = async (id: number) => {
+    try {
+      await updateStatus({ id, data: { status: TransferStatus.CANCELLED } });
+      toast.success(p.toast.cancelSuccess);
+      setDetailOpen(false);
+    } catch {
+      toast.error(p.toast.cancelError);
+    }
+  };
+
   return (
     <div className="max-w-330 mx-auto pb-16 lg:pb-6">
       {/* ── Page Header ── */}
@@ -150,10 +160,12 @@ export default function TransfersPage() {
         isAdmin={isWarehouseAdmin}
         isLoadingDetail={isLoadingDetail}
         isUpdatingStatus={isUpdatingStatus}
+        isCancelling={isUpdatingStatus}
         onUpdateStatus={async (id, status) => {
           await handleUpdateStatus(id, status);
           setDetailOpen(false);
         }}
+        onCancel={handleCancelTransfer}
         labels={{
           title: p.detail.title,
           shop: p.detail.shop,
@@ -162,12 +174,14 @@ export default function TransfersPage() {
           price: p.detail.price,
           totalPrice: p.detail.totalPrice,
           closeBtn: p.detail.closeBtn,
+          cancelBtn: p.detail.cancelBtn,
           statusLabels: {
             [TransferStatus.PENDING]: p.status.PENDING,
             [TransferStatus.PROCESSING]: p.status.PROCESSING,
             [TransferStatus.SHIPPED]: p.status.SHIPPED,
             [TransferStatus.RECEIVED]: p.status.RECEIVED,
             [TransferStatus.COMPLETED]: p.status.COMPLETED,
+            [TransferStatus.CANCELLED]: p.status.CANCELLED,
           },
           actionLabels: {
             process: p.actions.process,
