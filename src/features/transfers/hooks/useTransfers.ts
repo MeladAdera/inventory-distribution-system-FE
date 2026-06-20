@@ -28,7 +28,10 @@ export function useTransfers(params?: TransferListParams) {
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateTransferStatusInput }) =>
       transfersApi.updateStatus(id, data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['transfers'] }),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['transfers'] });
+      queryClient.invalidateQueries({ queryKey: ['transfer-detail', id] });
+    },
   });
 
   return {

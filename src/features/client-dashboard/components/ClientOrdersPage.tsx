@@ -1,11 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Loader2, AlertTriangle } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers';
+import { ordersApi } from '@/features/orders/api/orders.api';
 import { OrderStatus } from '@/features/orders/types/orders.types';
+import type { Order } from '@/features/orders/types/orders.types';
 import { useClientOrders } from '../hooks/useClientOrders';
 import { OrdersTableCard } from './orders/OrdersTableCard';
 import { OrderDetailModal } from './orders/OrderDetailModal';
@@ -18,8 +21,27 @@ export function ClientOrdersPage() {
   const ords = t.client.orders;
 
   const [statusFilter, setStatusFilter] = useState<ClientStatusFilter>('ALL');
-  const [selectedOrder, setSelectedOrder] = useState<ClientOrder | null>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const { data: orderDetailData, isLoading: isLoadingDetail } = useQuery({
+    queryKey: ['order-detail', selectedOrderId],
+    queryFn: () => ordersApi.getById(selectedOrderId!),
+    enabled: !!selectedOrderId,
+  });
+
+  const selectedOrder = useMemo((): ClientOrder | null => {
+    const o: Order | undefined = orderDetailData?.data;
+    if (!o) return null;
+    return {
+      id: o.id,
+      status: o.status,
+      total_items: o.total_items,
+      total_price: o.total_price,
+      created_at: o.created_at,
+      items: o.items ?? [],
+    };
+  }, [orderDetailData]);
 
   const {
     orders,
@@ -104,7 +126,7 @@ export function ClientOrdersPage() {
         onFilterChange={setStatusFilter}
         statusLabels={statusLabels}
         onView={(order) => {
-          setSelectedOrder(order);
+          setSelectedOrderId(order.id);
           setModalOpen(true);
         }}
         onNewOrder={() => router.push('/client/order')}
@@ -121,6 +143,7 @@ export function ClientOrdersPage() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         locale={locale}
+        isLoadingDetail={isLoadingDetail}
         onConfirmReceived={handleConfirmReceived}
         onCancelOrder={handleCancelOrder}
         isConfirming={isConfirming}
@@ -131,6 +154,7 @@ export function ClientOrdersPage() {
           requestedQty: ords.modal.requestedQty,
           price: ords.modal.price,
           closeBtn: ords.modal.closeBtn,
+          totalPrice: ords.modal.totalPrice,
           shippedHint: ords.modal.shippedHint,
           confirmReceivedBtn: ords.modal.confirmReceivedBtn,
           cancelOrderBtn: ords.modal.cancelOrderBtn,

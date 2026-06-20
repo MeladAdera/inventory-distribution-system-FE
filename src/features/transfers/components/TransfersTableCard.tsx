@@ -1,6 +1,6 @@
 'use client';
 
-import { Download, Truck, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Download, Truck, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { cn } from '@/common/utils/cn';
 import { ClientAvatar } from '@/features/clients/components/ClientAvatar';
@@ -144,6 +144,7 @@ interface TransfersTableCardProps {
   onPageChange: (p: number) => void;
   onAddTransfer: () => void;
   onUpdateStatus: (id: number, status: TransferStatus) => void;
+  onView: (transfer: Transfer) => void;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -164,6 +165,7 @@ export function TransfersTableCard({
   onPageChange,
   onAddTransfer,
   onUpdateStatus,
+  onView,
 }: TransfersTableCardProps) {
   const { t } = useI18n();
   const p = t.transfers;
@@ -245,6 +247,7 @@ export function TransfersTableCard({
             isAdmin={isAdmin}
             isUpdatingStatus={isUpdatingStatus}
             onUpdateStatus={onUpdateStatus}
+            onView={onView}
             p={p}
           />
         ))
@@ -291,6 +294,7 @@ interface TransferRowProps {
   isAdmin: boolean;
   isUpdatingStatus: boolean;
   onUpdateStatus: (id: number, status: TransferStatus) => void;
+  onView: (transfer: Transfer) => void;
   p: TransfersT;
 }
 
@@ -300,6 +304,7 @@ function TransferRow({
   isAdmin,
   isUpdatingStatus,
   onUpdateStatus,
+  onView,
   p,
 }: TransferRowProps) {
   const shopName =
@@ -357,7 +362,14 @@ function TransferRow({
         <StatusBadge status={transfer.status} label={p.status[transfer.status]} />
 
         {/* Actions */}
-        <div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onView(transfer)}
+            className="flex items-center gap-1.5 h-7 px-3 rounded-lg border border-border text-[12px] font-medium text-ink-700 hover:bg-sand-100 transition-colors"
+          >
+            <Eye size={13} />
+            {p.table.viewBtn}
+          </button>
           {isAdmin && nextStatus ? (
             <button
               onClick={() => onUpdateStatus(transfer.id, nextStatus)}
@@ -394,15 +406,24 @@ function TransferRow({
 
         <div className="flex items-center justify-between">
           <StatusBadge status={transfer.status} label={p.status[transfer.status]} />
-          {isAdmin && nextStatus && (
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => onUpdateStatus(transfer.id, nextStatus)}
-              disabled={isUpdatingStatus}
-              className="h-7 px-3 bg-ink-900 hover:bg-ink-800 text-white text-[12px] font-medium rounded-lg transition-colors disabled:opacity-50 disabled:pointer-events-none"
+              onClick={() => onView(transfer)}
+              className="flex items-center gap-1.5 h-7 px-3 rounded-lg border border-border text-[12px] font-medium text-ink-700 hover:bg-sand-100 transition-colors"
             >
-              {actionLabel}
+              <Eye size={13} />
+              {p.table.viewBtn}
             </button>
-          )}
+            {isAdmin && nextStatus && (
+              <button
+                onClick={() => onUpdateStatus(transfer.id, nextStatus)}
+                disabled={isUpdatingStatus}
+                className="h-7 px-3 bg-ink-900 hover:bg-ink-800 text-white text-[12px] font-medium rounded-lg transition-colors disabled:opacity-50 disabled:pointer-events-none"
+              >
+                {actionLabel}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

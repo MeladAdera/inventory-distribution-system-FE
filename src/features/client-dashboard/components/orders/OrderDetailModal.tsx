@@ -26,6 +26,7 @@ interface OrderDetailModalProps {
   open: boolean;
   onClose: () => void;
   locale: 'ar' | 'en';
+  isLoadingDetail: boolean;
   onConfirmReceived: (orderId: number) => void;
   onCancelOrder: (orderId: number) => void;
   isConfirming: boolean;
@@ -36,6 +37,7 @@ interface OrderDetailModalProps {
     requestedQty: string;
     price: string;
     closeBtn: string;
+    totalPrice: string;
     shippedHint: string;
     confirmReceivedBtn: string;
     cancelOrderBtn: string;
@@ -48,13 +50,22 @@ export function OrderDetailModal({
   open,
   onClose,
   locale,
+  isLoadingDetail,
   onConfirmReceived,
   onCancelOrder,
   isConfirming,
   isCancelling,
   labels,
 }: OrderDetailModalProps) {
-  if (!order) return null;
+  if (isLoadingDetail || !order) {
+    return (
+      <Modal open={open} onClose={onClose} title={labels.title} size="lg">
+        <div className="flex items-center justify-center h-40">
+          <Loader2 size={22} className="animate-spin text-ink-400" />
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <Modal open={open} onClose={onClose} title={labels.title} size="lg">
@@ -98,6 +109,15 @@ export function OrderDetailModal({
             </div>
           </div>
         ))}
+        {/* Total price row */}
+        {order.total_price != null && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-sand-50">
+            <span className="text-[13px] font-semibold text-ink-700">{labels.totalPrice}</span>
+            <span className="font-mono text-[15px] font-bold text-ink-900">
+              {order.total_price.toFixed(2)}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Shipped hint */}

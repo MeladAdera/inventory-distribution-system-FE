@@ -97,6 +97,7 @@
       "price": "Unit price",
       "notesLabel": "Notes",
       "closeBtn": "Close",
+      "totalPrice": "Total price",
       "shippedHint": "Your order has been shipped. Confirm receipt to update your inventory.",
       "confirmReceivedBtn": "Confirm received",
       "cancelOrderBtn": "Cancel order"

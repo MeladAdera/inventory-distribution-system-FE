@@ -15,7 +15,17 @@
     "product": "المنتج",
     "qty": "الكمية",
     "status": "الحالة",
-    "actions": "إجراءات"
+    "actions": "إجراءات",
+    "viewBtn": "عرض"
+  },
+  "detail": {
+    "title": "تفاصيل النقل",
+    "shop": "المتجر",
+    "productsLabel": "المنتجات المطلوبة",
+    "qty": "الكمية",
+    "price": "سعر الوحدة",
+    "totalPrice": "السعر الإجمالي",
+    "closeBtn": "إغلاق"
   },
   "status": {
     "PENDING": "قيد الانتظار",

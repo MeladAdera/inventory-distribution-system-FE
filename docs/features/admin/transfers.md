@@ -2,7 +2,7 @@
 
 **Status**: API-Integrated — Live  
 **Created Date**: 2026-06-14  
-**Last Updated**: 2026-06-15 (multi-product modal)  
+**Last Updated**: 2026-06-20 (detail modal, total price, cache fix)  
 **Assignee**: Melad Adera  
 **Ticket**: FIGMA-005
 
@@ -10,7 +10,7 @@
 
 ## Overview
 
-The Transfers admin page (`/transfers`) manages stock movements from the warehouse to shops via the `/orders` backend API. Warehouse admins can create transfers and advance them through a 5-stage status lifecycle. Non-admin users see the list in read-only mode.
+The Transfers admin page (`/transfers`) manages stock movements from the warehouse to shops via the `/orders` backend API. Warehouse admins can create transfers, advance them through a 5-stage status lifecycle, and open a **detail modal** to inspect all line items and the total price. Non-admin users see the list in read-only mode with the same detail modal.
 
 The shared `TransferModal` is reusable from any page (Dashboard, Shortages) via a `prefill` prop.
 
@@ -27,15 +27,16 @@ src/features/transfers/
 ├── hooks/
 │   └── useTransfers.ts            # useTransfers (list+mutations), useTransferShops, useTransferProducts
 ├── components/
-│   ├── TransfersTableCard.tsx     # Toolbar + 6-col CSS grid + status badges + admin actions + pagination
-│   └── TransferModal.tsx          # New-transfer form: shop (admin) + product + qty + availability banner
+│   ├── TransfersTableCard.tsx     # Toolbar + 6-col CSS grid + status badges + admin actions + view button
+│   ├── TransferModal.tsx          # New-transfer form: shop (admin) + product + qty + availability banner
+│   └── TransferDetailModal.tsx    # Detail modal: items, total price, admin action button, loading state
 ├── types/
-│   └── transfers.types.ts         # TransferStatus enum, Transfer, CreateTransferInput, TransferPrefill, …
+│   └── transfers.types.ts         # TransferStatus enum, Transfer, TransferItem, CreateTransferInput, …
 ├── mock/
 │   └── transfersData.ts           # Empty — mock data removed, real API in use
 └── index.ts                       # Barrel export
 
-src/app/(dashboard)/transfers/page.tsx   # Page — permission gate, hooks, shop/status filter, create + status update
+src/app/(dashboard)/transfers/page.tsx   # Page — permission gate, hooks, shop/status filter, create + detail
 src/i18n/en/transfers.json               # English translations
 src/i18n/ar/transfers.json               # Arabic translations
 ```
@@ -64,7 +65,8 @@ interface Transfer {
   to_shop_name?: string;
   status: TransferStatus;
   total_items: number;
-  created_at: string;   // ISO-8601
+  total_price?: number;      // present when fetched via GET /orders/:id
+  created_at: string;        // ISO-8601
   updated_at: string;
   items?: TransferItem[];
 }
@@ -76,7 +78,7 @@ interface TransferItem {
   product_id: number;
   product_name: string;
   quantity: number;
-  price: string;
+  price: number;             // unit price as number (not string)
 }
 ```
 
@@ -113,7 +115,7 @@ const NEXT_STATUS: Partial<Record<TransferStatus, TransferStatus>> = {
   RECEIVED:   COMPLETED,
 };
 ```
-SHIPPED → RECEIVED is advanced by the shop side (not the warehouse admin button).
+`SHIPPED → RECEIVED` is advanced by the shop side (client "Confirm Received" action).
 
 ---
 
@@ -122,11 +124,13 @@ SHIPPED → RECEIVED is advanced by the shop side (not the warehouse admin butto
 | Method | Endpoint | Purpose |
 |--------|----------|---------|
 | `list(params)` | `GET /orders` | Paginated transfer list with optional `page`, `limit`, `status` |
-| `getById(id)` | `GET /orders/:id` | Single transfer detail |
+| `getById(id)` | `GET /orders/:id` | Single transfer with full `items[]` and `total_price` |
 | `create(data)` | `POST /orders` | Create transfer — body: `{ items: [{ productId, quantity }], shopId? }` |
 | `updateStatus(id, data)` | `PATCH /orders/:id/status` | Advance status |
 | `getShops()` | `GET /shops?type=SHOP&limit=100` | Destination shop list |
 | `getProducts()` | `GET /products?source=WAREHOUSE&limit=100` | Warehouse products for modal |
+
+`getById` is called on-demand when the detail modal opens — **not** on page load.
 
 ---
 
@@ -146,13 +150,43 @@ const {
 } = useTransfers({ page, limit, status });
 ```
 
-On `createTransfer` or `updateStatus` success: invalidates `['transfers']` query.
+On `createTransfer` success: invalidates `['transfers']`.  
+On `updateStatus` success: invalidates **both** `['transfers']` and `['transfer-detail', id]` so the open detail modal reflects the new status instantly.
 
 ### `useTransferShops()`
 React Query for `GET /shops`. `staleTime: 5 min`. Returns `ApiResponse<PaginatedResponse<Shop>>`.
 
 ### `useTransferProducts()`
 React Query for `GET /products?source=WAREHOUSE`. `staleTime: 5 min`. Returns `ApiResponse<PaginatedResponse<Product>>`.
+
+---
+
+## Data Flow
+
+```
+transfers/page.tsx
+  │
+  ├── useTransfers({ page, limit, status })   → transfers[], total, updateStatus
+  ├── useTransferShops()                       → shops[]
+  │
+  ├── selectedTransferId (number | null)
+  ├── useQuery(['transfer-detail', id])         → GET /orders/:id  (enabled: !!id)
+  │     └── selectedTransfer = response.data
+  │
+  ├── onView(transfer) → setSelectedTransferId(transfer.id) + setDetailOpen(true)
+  │
+  ├── handleUpdateStatus(id, status)
+  │     └── updateStatus() → toast.success / .error
+  │           └── onSuccess: invalidates ['transfers'] + ['transfer-detail', id]
+  │
+  └── handleSave(items, shopId)
+        └── createTransfer() → toast.success / .error
+
+TransfersTableCard  ─── onView ──────────────►  TransferDetailModal
+  └── "View" Eye button per row                    └── isLoadingDetail spinner
+                                                    └── items grid + total price
+                                                    └── admin action button
+```
 
 ---
 
@@ -176,7 +210,8 @@ React Query for `GET /products?source=WAREHOUSE`. `staleTime: 5 min`. Returns `A
 | `onStatusChange` | `(v: string) => void` | — |
 | `onPageChange` | `(p: number) => void` | — |
 | `onAddTransfer` | `() => void` | Opens modal from empty-state button |
-| `onUpdateStatus` | `(id, status) => void` | Admin advances status |
+| `onUpdateStatus` | `(id, status) => void` | Admin advances status from list row |
+| `onView` | `(transfer: Transfer) => void` | Opens detail modal for a transfer |
 
 **Grid columns**: `1.1fr 1.6fr 1.8fr 0.8fr 1.3fr 1.2fr`  
 **Columns**: date | shop | product | qty | status | actions
@@ -196,7 +231,46 @@ React Query for `GET /products?source=WAREHOUSE`. `staleTime: 5 min`. Returns `A
 - RECEIVED → "Complete"
 - SHIPPED → shows "Awaiting receipt" italic text (shop-side action)
 
+**"View" button** (`Eye` icon + label) appears in the actions column for every row for all users (admin and read-only). Clicking fires `onView(transfer)`.
+
 **Pagination**: smart ellipsis, `ChevronLeft/Right` arrows; only shown when `pageCount > 1`.
+
+---
+
+### `TransferDetailModal`
+
+Opens via the "View" button. Uses `Modal size="lg"`. Data is fetched via `useQuery(['transfer-detail', id])` in the page — the modal receives the already-resolved `transfer` object.
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `transfer` | `Transfer \| null` | Fully-fetched transfer (from `GET /orders/:id`) |
+| `open` | `boolean` | Controls visibility |
+| `onClose` | `() => void` | Closes modal |
+| `isAdmin` | `boolean` | Shows advance-status button |
+| `isLoadingDetail` | `boolean` | Shows spinner while detail is fetching |
+| `isUpdatingStatus` | `boolean` | Disables action button while mutating |
+| `onUpdateStatus` | `(id, status) => void` | Admin advances status from modal |
+| `labels` | object | All i18n strings (title, shop, qty, price, totalPrice, closeBtn, statusLabels, actionLabels) |
+
+**Loading state**: while `isLoadingDetail` is true or `transfer` is null, modal body shows a centred `Loader2` spinner (h-40).
+
+**Content layout**:
+```
+[StatusBadge]  [ClientAvatar] Shop name
+               15 / June / 2026
+
+PRODUCTS
+┌────────────────────────────────────────┐
+│  [Thumb] Product name    Price    Qty  │
+│  ...                                   │
+├────────────────────────────────────────┤
+│  Total price              1,234.56     │  ← bg-sand-50, shown when total_price present
+└────────────────────────────────────────┘
+
+[Admin action btn]                [Close]
+```
+
+**Admin action button**: appears when `isAdmin && NEXT_STATUS[transfer.status]` exists. Label comes from `actionLabels`. After clicking, detail modal closes automatically.
 
 ---
 
@@ -228,40 +302,6 @@ React Query for `GET /products?source=WAREHOUSE`. `staleTime: 5 min`. Returns `A
 - Green (`#DDEEE3`): qty ≤ available
 - Red (`#F6DDDB`): qty > available; that row's qty field is highlighted in danger red
 
-**Confirm disabled when**:
-```ts
-(isAdmin && !watchedShopId) || !!isSaving
-```
-Per-row validation (required product, required qty > 0, ≤ stock) is enforced on submit via react-hook-form's `validate` function and shows inline errors.
-
----
-
-## State & Data Flow
-
-```
-transfers/page.tsx
-  │
-  ├── usePermission()           → isWarehouseAdmin, canCreate
-  ├── useTransfers({ page, limit, status }) → transfers[], total, createTransfer, updateStatus
-  ├── useTransferShops()        → shops[]
-  │
-  ├── shopFilter (client-side)  → filters visibleTransfers locally on top of server status filter
-  ├── page                      → resets to 1 on filter change
-  │
-  ├── handleSave()              → createTransfer() → toast.success / toast.error
-  └── handleUpdateStatus()      → updateStatus() → toast.success / toast.error
-
-TransfersTableCard (receives visibleTransfers)
-  └── toolbar: shop select + status select + export button
-  └── CSS grid 6 columns: date | shop | product | qty | status | actions
-  └── mobile: stacked card (md:hidden / hidden md:grid)
-
-TransferModal
-  └── useTransferProducts() — product list
-  └── useProduct(productId) — real-time availability for banner
-  └── onSave → page.handleSave() → createTransfer API call
-```
-
 ---
 
 ## i18n Keys
@@ -271,7 +311,7 @@ Both `src/i18n/en/transfers.json` and `src/i18n/ar/transfers.json` cover:
 ```
 transfers.page.{title, count, newTransfer}
 transfers.toolbar.{allShops, allStatuses, export}
-transfers.table.{date, shop, product, qty, status, actions}
+transfers.table.{date, shop, product, qty, status, actions, viewBtn}
 transfers.status.{PENDING, PROCESSING, SHIPPED, RECEIVED, COMPLETED}
 transfers.actions.{process, ship, complete, awaitingReceipt}
 transfers.emptyState.{title, sub}
@@ -279,6 +319,7 @@ transfers.modal.{title, shopLabel, shopPlaceholder, productLabel, productPlaceho
                  productsLabel, addProduct,
                  qtyLabel, qtyHint, availableBanner, exceedsBanner, confirm, cancel,
                  errShop, errProduct, errQtyRequired, errQtyPositive, errQtyExceeds}
+transfers.detail.{title, shop, productsLabel, qty, price, totalPrice, closeBtn}
 transfers.pagination.{showing}
 transfers.toast.{success, statusUpdated, error}
 ```
@@ -289,17 +330,17 @@ transfers.toast.{success, statusUpdated, error}
 
 | Breakpoint | Table header | Data rows | Modal |
 |------------|-------------|-----------|-------|
-| Mobile `<md` | Hidden | Stacked card (shop + date + product + status + action) | Slide up from bottom (rounded-t-2xl) |
+| Mobile `<md` | Hidden | Stacked card (shop + date + product + status + action + view button) | Slide up from bottom (rounded-t-2xl) |
 | Tablet/Desktop `≥md` | CSS grid 6-col | CSS grid 6-col | Centred overlay (max-w-130) |
 
 ---
 
 ## Permission Model
 
-| Role | Can see page | Can create transfer | Can advance status |
-|------|-------------|---------------------|--------------------|
-| Warehouse Admin | ✅ | ✅ (with shop selector) | ✅ |
-| Other roles | ✅ | ❌ (button hidden) | ❌ (action column empty) |
+| Role | Can see page | Can create transfer | Can advance status | Can view detail |
+|------|-------------|---------------------|--------------------|-----------------|
+| Warehouse Admin | ✅ | ✅ (with shop selector) | ✅ | ✅ |
+| Other roles | ✅ | ❌ (button hidden) | ❌ (action column empty) | ✅ (read-only) |
 
 Powered by `usePermission()` → `{ isWarehouseAdmin, canCreate }`.
 
@@ -319,7 +360,10 @@ Powered by `usePermission()` → `{ isWarehouseAdmin, canCreate }`.
 The modal resets to prefill values every time `open` transitions `false → true`.
 
 ### Query Invalidation
-After any `createTransfer` or `updateStatus` call, `['transfers']` is invalidated so the list auto-refreshes with server data.
+- `createTransfer` success → invalidates `['transfers']`
+- `updateStatus` success → invalidates `['transfers']` **and** `['transfer-detail', id]`
+
+The double invalidation ensures that if the detail modal is open when a status mutation completes, it re-fetches and shows the new status without requiring a manual close/reopen.
 
 ---
 
@@ -327,9 +371,8 @@ After any `createTransfer` or `updateStatus` call, `['transfers']` is invalidate
 
 | Gap | Impact | Fix When |
 |-----|--------|----------|
-| Shop-side RECEIVED action not in this UI | Shop staff must confirm receipt separately | Shop-facing view |
 | No date range filter on toolbar | Can't filter by date in UI | Backend adds `from`/`to` params |
-| `to_shop_name` may be absent if API doesn't embed it — falls back to shop list lookup | Minor flash if shops not yet loaded | Ensure API embeds `to_shop_name` |
+| `to_shop_name` may be absent if API doesn't embed it — falls back to `Shop #id` | Minor flash if shops not yet loaded | Ensure API embeds `to_shop_name` |
 
 ---
 
@@ -342,6 +385,12 @@ After any `createTransfer` or `updateStatus` call, `['transfers']` is invalidate
 - [x] Empty state (Truck icon + "New transfer" button) shown when no transfers and `canCreate`
 - [x] Warehouse admin sees "+ New transfer" button and admin action buttons
 - [x] Non-admin sees page in read-only mode
+- [x] "View" button visible for every row — opens `TransferDetailModal`
+- [x] Detail modal shows spinner while `GET /orders/:id` is loading
+- [x] Detail modal shows all line items with product name, unit price, and quantity
+- [x] Detail modal shows total price row (from `GET /orders/:id` response)
+- [x] Detail modal admin action button advances status; modal closes on success
+- [x] After status update, both list and cached detail are invalidated (no stale data on re-open)
 - [x] TransferModal: shop selector shown for admin only
 - [x] TransferModal: product dropdown populated from warehouse products API
 - [x] TransferModal: real-time availability fetched per selected product
@@ -351,7 +400,7 @@ After any `createTransfer` or `updateStatus` call, `['transfers']` is invalidate
 - [x] TransferModal: remove button on rows beyond the first; unavailable when only 1 row
 - [x] TransferModal: Confirm disabled while saving or when admin hasn't selected a shop
 - [x] On save: `POST /orders` called with `items[]` array; list invalidated; toast success
-- [x] Admin action buttons advance status; `PATCH /orders/:id/status` called; toast success
+- [x] Admin action buttons in list row also advance status; toast success
 - [x] SHIPPED row shows "Awaiting receipt" (shop-side action)
 - [x] `prefill` prop pre-selects product + qty (Shortages integration)
 - [x] Smart pagination with ellipsis and prev/next arrows
@@ -364,6 +413,7 @@ After any `createTransfer` or `updateStatus` call, `['transfers']` is invalidate
 ## Related
 
 - Shops feature: `src/features/shops/` — `Shop` type used in modal and table
-- Products feature: `src/features/products/` — `useProduct()` for real-time availability; `ProductThumb` in rows
-- Clients feature: `src/features/clients/` — `ClientAvatar` reused for shop avatar in rows
+- Products feature: `src/features/products/` — `useProduct()` for real-time availability; `ProductThumb` in detail modal rows
+- Clients feature: `src/features/clients/` — `ClientAvatar` reused for shop avatar in detail modal
 - Shortages page: `src/app/(dashboard)/shortages/page.tsx` — opens `TransferModal` with `prefill`
+- Client orders: `docs/features/client/client-orders.md` — shop-side "Confirm Received" that completes the `SHIPPED → RECEIVED` step

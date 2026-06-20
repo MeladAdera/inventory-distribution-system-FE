@@ -29,16 +29,18 @@ export function useClientOrders() {
   const confirmReceivedMutation = useMutation({
     mutationFn: (orderId: number) =>
       ordersApi.updateStatus(orderId, { status: OrderStatus.RECEIVED }),
-    onSuccess: () => {
+    onSuccess: (_, orderId) => {
       queryClient.invalidateQueries({ queryKey: ['client-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['order-detail', orderId] });
     },
   });
 
   const cancelOrderMutation = useMutation({
     mutationFn: (orderId: number) =>
       ordersApi.updateStatus(orderId, { status: OrderStatus.CANCELLED }),
-    onSuccess: () => {
+    onSuccess: (_, orderId) => {
       queryClient.invalidateQueries({ queryKey: ['client-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['order-detail', orderId] });
     },
   });
 

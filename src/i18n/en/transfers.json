@@ -15,7 +15,17 @@
     "product": "Product",
     "qty": "Qty",
     "status": "Status",
-    "actions": "Actions"
+    "actions": "Actions",
+    "viewBtn": "View"
+  },
+  "detail": {
+    "title": "Transfer details",
+    "shop": "Shop",
+    "productsLabel": "Requested products",
+    "qty": "Qty",
+    "price": "Unit price",
+    "totalPrice": "Total price",
+    "closeBtn": "Close"
   },
   "status": {
     "PENDING": "Pending",

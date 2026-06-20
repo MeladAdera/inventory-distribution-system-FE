@@ -2,13 +2,16 @@
 
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
 import { usePermission } from '@/common/hooks/usePermission';
 import { TransfersTableCard } from '@/features/transfers/components/TransfersTableCard';
 import { TransferModal } from '@/features/transfers/components/TransferModal';
+import { TransferDetailModal } from '@/features/transfers/components/TransferDetailModal';
 import { useTransfers, useTransferShops } from '@/features/transfers/hooks/useTransfers';
-import type { TransferStatus } from '@/features/transfers/types/transfers.types';
+import { TransferStatus } from '@/features/transfers/types/transfers.types';
+import { transfersApi } from '@/features/transfers/api/transfers.api';
 import type { Shop } from '@/features/shops/types/shops.types';
 
 const PAGE_SIZE = 10;
@@ -23,6 +26,16 @@ export default function TransfersPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedTransferId, setSelectedTransferId] = useState<number | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const { data: transferDetailData, isLoading: isLoadingDetail } = useQuery({
+    queryKey: ['transfer-detail', selectedTransferId],
+    queryFn: () => transfersApi.getById(selectedTransferId!),
+    enabled: !!selectedTransferId,
+  });
+
+  const selectedTransfer = transferDetailData?.data ?? null;
 
   const {
     transfers,
@@ -111,9 +124,13 @@ export default function TransfersPage() {
         onPageChange={setPage}
         onAddTransfer={() => setModalOpen(true)}
         onUpdateStatus={handleUpdateStatus}
+        onView={(transfer) => {
+          setSelectedTransferId(transfer.id);
+          setDetailOpen(true);
+        }}
       />
 
-      {/* ── Modal ── */}
+      {/* ── Create Modal ── */}
       {canCreate && (
         <TransferModal
           open={modalOpen}
@@ -124,6 +141,42 @@ export default function TransfersPage() {
           shops={shops}
         />
       )}
+
+      {/* ── Detail Modal ── */}
+      <TransferDetailModal
+        transfer={selectedTransfer}
+        open={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        isAdmin={isWarehouseAdmin}
+        isLoadingDetail={isLoadingDetail}
+        isUpdatingStatus={isUpdatingStatus}
+        onUpdateStatus={async (id, status) => {
+          await handleUpdateStatus(id, status);
+          setDetailOpen(false);
+        }}
+        labels={{
+          title: p.detail.title,
+          shop: p.detail.shop,
+          productsLabel: p.detail.productsLabel,
+          qty: p.detail.qty,
+          price: p.detail.price,
+          totalPrice: p.detail.totalPrice,
+          closeBtn: p.detail.closeBtn,
+          statusLabels: {
+            [TransferStatus.PENDING]: p.status.PENDING,
+            [TransferStatus.PROCESSING]: p.status.PROCESSING,
+            [TransferStatus.SHIPPED]: p.status.SHIPPED,
+            [TransferStatus.RECEIVED]: p.status.RECEIVED,
+            [TransferStatus.COMPLETED]: p.status.COMPLETED,
+          },
+          actionLabels: {
+            process: p.actions.process,
+            ship: p.actions.ship,
+            complete: p.actions.complete,
+            awaitingReceipt: p.actions.awaitingReceipt,
+          },
+        }}
+      />
     </div>
   );
 }

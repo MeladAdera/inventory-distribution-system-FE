@@ -11,7 +11,7 @@ export interface OrderItem {
   product_id: number;
   product_name: string;
   quantity: number;
-  price: string;
+  price: number;
 }
 
 export interface Order {
@@ -21,6 +21,7 @@ export interface Order {
   to_shop_name?: string;
   status: OrderStatus;
   total_items: number;
+  total_price?: number;
   created_at: string;
   updated_at: string;
   items: OrderItem[];

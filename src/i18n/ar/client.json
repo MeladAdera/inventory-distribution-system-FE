@@ -97,6 +97,7 @@
       "price": "سعر الوحدة",
       "notesLabel": "ملاحظات",
       "closeBtn": "إغلاق",
+      "totalPrice": "السعر الإجمالي",
       "shippedHint": "تم شحن طلبك. أكّد الاستلام لتحديث مخزونك.",
       "confirmReceivedBtn": "تأكيد الاستلام",
       "cancelOrderBtn": "إلغاء الطلب"

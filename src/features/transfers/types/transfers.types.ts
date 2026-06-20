@@ -10,7 +10,7 @@ export interface TransferItem {
   product_id: number;
   product_name: string;
   quantity: number;
-  price: string;
+  price: number;
 }
 
 export interface Transfer {
@@ -20,6 +20,7 @@ export interface Transfer {
   to_shop_name?: string;
   status: TransferStatus;
   total_items: number;
+  total_price?: number;
   created_at: string;
   updated_at: string;
   items?: TransferItem[];
