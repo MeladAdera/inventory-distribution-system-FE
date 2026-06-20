@@ -3,6 +3,7 @@ import { UserRole } from '@/features/auth/types/enums';
 export interface User {
   id: number;
   shop_id: number | null;
+  shop_name: string | null;
   name: string;
   email: string;
   role: UserRole;

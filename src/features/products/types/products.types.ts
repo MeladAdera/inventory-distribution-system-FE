@@ -40,7 +40,7 @@ export interface ProductListParams {
   shop_name?: string;
   is_active?: boolean;
   stock_status?: StockStatus;
-  search?: string;
+  search?: string; // case-insensitive, matches name or barcode
 }
 
 export interface CreateProductInput {

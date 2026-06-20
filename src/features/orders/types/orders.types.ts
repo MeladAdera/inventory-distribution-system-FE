@@ -31,6 +31,7 @@ export interface OrderListParams {
   page?: number;
   limit?: number;
   status?: OrderStatus;
+  shop_id?: number; // admin only — filter by destination shop (to_shop_id)
 }
 
 export interface CreateOrderItem {

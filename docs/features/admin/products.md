@@ -91,7 +91,7 @@ src/i18n/ar/products.json               # Arabic translations
 
 > **Note:** `shop_name`, `shop_id`, and `is_active` are silently ignored by the backend for non-admin roles. The shop filter dropdown is only rendered for `WAREHOUSE_ADMIN`.
 
-> **Note:** The backend does NOT support a `search` (name/barcode) param for `GET /products`. The current search input in the toolbar sends a param the backend ignores — this is a known gap (see below).
+> **Note:** The `search` param performs a case-insensitive substring match on product name **and** barcode. The toolbar search input is wired to this param.
 
 **Filter examples (admin):**
 ```
@@ -147,7 +147,7 @@ interface ProductListParams {
   shop_name?: string;        // Admin only — toolbar shop dropdown
   is_active?: boolean;
   stock_status?: StockStatus;
-  search?: string;           // Ignored by backend — here for future use
+  search?: string;           // Case-insensitive substring match on name + barcode
 }
 ```
 
@@ -270,8 +270,7 @@ onDeleteImage: (id: number) => Promise<void>;
 
 | Gap | Location | Impact | Fix Ticket |
 |-----|----------|--------|------------|
-| Search field ignored by backend | Toolbar → `ProductListParams.search` | Typing in search has no effect | Need backend `search` param |
-| Edit form only sends `{name, description, price}` | `ProductFormModal.tsx:74` | Barcode and category changes on edit are not saved | Fix `onSubmit` to include `barcode` and `category_id` |
+| Edit form only sends `{name, description, price}` | `ProductFormModal.tsx` | Barcode and category changes on edit are not saved | Fix `onSubmit` to include `barcode` and `category_id` |
 | No error feedback on failed mutations | `page.tsx` handlers | Silent failure on API errors | Add toast on mutation `.catch()` |
 | `is_active`, `stock_status` filters not in UI | `ProductListParams` has them, toolbar doesn't | Advanced filtering not accessible | Add filter controls to toolbar |
 
@@ -328,7 +327,7 @@ products.image.{upload, change, remove, hint, uploadError}
 - [x] Upload image: PATCH `/products/:id/image` called immediately on file select in edit mode; called after create in add mode
 - [x] Delete image: DELETE `/products/:id/image` called immediately on trash click; image disappears from UI before API responds
 - [x] `ProductThumb` shows actual image when `image_url` is present in the product; falls back to colour placeholder when null
-- [ ] Search field works against backend (backend gap)
+- [x] Search field passes `?search=` to `GET /products`; backend matches on name + barcode
 - [ ] Edit saves barcode + category changes
 - [ ] Error feedback on failed mutations
 
