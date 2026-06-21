@@ -56,6 +56,7 @@
     "qtyHint": "Available in warehouse: {n}",
     "availableBanner": "Available in warehouse: {n} units",
     "exceedsBanner": "Quantity exceeds available stock",
+    "zeroStockBanner": "Available quantity is 0",
     "confirm": "Confirm transfer",
     "cancel": "Cancel",
     "errShop": "Please select a destination shop",

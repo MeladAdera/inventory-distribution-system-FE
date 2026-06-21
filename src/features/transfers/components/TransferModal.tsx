@@ -38,6 +38,7 @@ interface ModalTranslations {
   qtyHint: string;
   availableBanner: string;
   exceedsBanner: string;
+  zeroStockBanner: string;
   errProduct: string;
   errQtyRequired: string;
   errQtyPositive: string;
@@ -72,8 +73,10 @@ function ProductRow({
   const availableQty = productDetail?.data?.current_quantity ?? 0;
 
   const qtyNum = Number(qty);
+  const isOutOfStock = !!productId && availableQty === 0;
   const qtyExceeds = !!productId && qtyNum > 0 && availableQty > 0 && qtyNum > availableQty;
-  const showBanner = !!productId && qtyNum > 0 && availableQty > 0;
+  const showWarning = isOutOfStock || qtyExceeds;
+  const showSuccess = !!productId && qtyNum > 0 && availableQty > 0 && !qtyExceeds;
 
   type RowErrors = { productId?: { message?: string }; qty?: { message?: string } };
   const rowErrors = errors.items?.[index] as RowErrors | undefined;
@@ -109,7 +112,8 @@ function ProductRow({
               validate: (val) => {
                 const n = Number(val);
                 if (!val || isNaN(n) || n <= 0) return m.errQtyPositive;
-                if (availableQty > 0 && n > availableQty) return m.errQtyExceeds;
+                if (availableQty === 0) return m.errQtyExceeds;
+                if (n > availableQty) return m.errQtyExceeds;
                 return true;
               },
             })}
@@ -142,14 +146,14 @@ function ProductRow({
       )}
 
       {/* Availability banner */}
-      {showBanner && (
+      {(showWarning || showSuccess) && (
         <div
           className={cn(
             'flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg',
-            qtyExceeds ? 'bg-[#F6DDDB]' : 'bg-[#DDEEE3]'
+            showWarning ? 'bg-[#F6DDDB]' : 'bg-[#DDEEE3]'
           )}
         >
-          {qtyExceeds ? (
+          {showWarning ? (
             <AlertCircle size={16} className="text-danger-700 shrink-0" />
           ) : (
             <CheckCircle size={16} className="text-success-700 shrink-0" />
@@ -157,10 +161,14 @@ function ProductRow({
           <p
             className={cn(
               'text-[13px] font-medium',
-              qtyExceeds ? 'text-danger-700' : 'text-success-700'
+              showWarning ? 'text-danger-700' : 'text-success-700'
             )}
           >
-            {qtyExceeds ? m.exceedsBanner : m.availableBanner.replace('{n}', String(availableQty))}
+            {isOutOfStock
+              ? m.zeroStockBanner
+              : qtyExceeds
+                ? m.exceedsBanner
+                : m.availableBanner.replace('{n}', String(availableQty))}
           </p>
         </div>
       )}
