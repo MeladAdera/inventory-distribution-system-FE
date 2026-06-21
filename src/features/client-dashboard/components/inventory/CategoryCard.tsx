@@ -1,4 +1,5 @@
-import { Package } from 'lucide-react';
+import { Card, CardContent } from '@/common/components/ui/card';
+import { CategoryBanner } from '@/features/categories/components/CategoryBanner';
 import type { InventoryCategory } from '../../types/clientInventory.types';
 
 interface CategoryCardProps {
@@ -14,31 +15,29 @@ interface CategoryCardProps {
 
 export function CategoryCard({ cat, hasEdits, labels, onClick }: CategoryCardProps) {
   const totalQty = cat.items.reduce((sum, p) => sum + p.current_quantity, 0);
+  const catId = parseInt(cat.id, 10) || 0;
 
   return (
-    <div
+    <Card
       onClick={onClick}
-      className="bg-paper border border-border rounded-xl p-5 min-h-37.5 flex flex-col gap-4 cursor-pointer transition-all duration-180 hover:-translate-y-px hover:shadow-(--shadow-sm) hover:bg-sand-50"
+      className="overflow-hidden cursor-pointer transition-all duration-180 hover:-translate-y-px hover:shadow-(--shadow-sm)"
     >
-      <div className="flex items-start justify-between">
-        <div className="w-10.5 h-10.5 rounded-[10px] bg-sand-100 flex items-center justify-center shrink-0">
-          <Package size={20} className="text-ink-700" />
+      <CategoryBanner id={catId} imageUrl={cat.image_url} height="h-36" />
+
+      <CardContent className="p-4 flex items-start justify-between gap-2">
+        <div>
+          <p className="text-[16px] font-semibold text-ink-900">{cat.name}</p>
+          <p className="text-[13px] text-ink-500 mt-0.5">
+            {cat.items.length} {labels.variants}
+          </p>
+          <p className="text-[12px] text-ink-400 mt-0.5">
+            {labels.totalQty}: {totalQty}
+          </p>
         </div>
         {hasEdits && (
-          <span className="text-[13px] font-medium text-amber-700">{labels.edited}</span>
+          <span className="shrink-0 text-[13px] font-medium text-amber-700">{labels.edited}</span>
         )}
-      </div>
-
-      <div className="flex-1">
-        <p className="text-[16px] font-semibold text-ink-900">{cat.name}</p>
-        <p className="text-[13px] text-ink-500 mt-0.5">
-          {cat.items.length} {labels.variants}
-        </p>
-      </div>
-
-      <p className="text-[12px] text-ink-400">
-        {labels.totalQty}: {totalQty}
-      </p>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

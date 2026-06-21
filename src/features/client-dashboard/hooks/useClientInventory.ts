@@ -4,12 +4,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { inventoryApi } from '@/features/inventory/api/inventory.api';
 import { productsApi } from '@/features/products/api/products.api';
+import { categoriesApi } from '@/features/categories/api/categories.api';
+import { useAuthStore } from '@/features/auth/store/authStore';
 import { StockStatus } from '@/features/products/types/products.types';
 import type {
   InventoryItem,
   AdjustInventoryInput,
 } from '@/features/inventory/types/inventory.types';
 import type { Product } from '@/features/products/types/products.types';
+import type { Category } from '@/features/categories/types/categories.types';
 import type { EnrichedInventoryItem, InventoryCategory } from '../types/clientInventory.types';
 
 function computeStatus(qty: number, isLowStock: boolean, threshold: number): StockStatus {
@@ -20,6 +23,7 @@ function computeStatus(qty: number, isLowStock: boolean, threshold: number): Sto
 
 export function useClientInventory() {
   const queryClient = useQueryClient();
+  const shopId = useAuthStore((s) => s.user?.shopId);
 
   const inventoryQuery = useQuery({
     queryKey: ['client-inventory'],
@@ -31,11 +35,19 @@ export function useClientInventory() {
     queryFn: () => productsApi.list({ limit: 100 }),
   });
 
+  const categoriesQuery = useQuery({
+    queryKey: ['client-inventory-categories', shopId],
+    queryFn: () => categoriesApi.list(shopId ? { shopId } : undefined),
+    enabled: shopId !== undefined,
+  });
+
   const { categories, allItems } = useMemo(() => {
     const invItems: InventoryItem[] = inventoryQuery.data?.data?.data ?? [];
     const products: Product[] = productsQuery.data?.data?.data ?? [];
+    const rawCategories: Category[] = categoriesQuery.data?.data ?? [];
 
     const productMap = new Map<number, Product>(products.map((p) => [p.id, p]));
+    const catMap = new Map<number, Category>(rawCategories.map((c) => [c.id, c]));
     const grouped = new Map<number, InventoryCategory>();
 
     invItems.forEach((item) => {
@@ -46,7 +58,12 @@ export function useClientInventory() {
       const threshold: number = item.low_stock_threshold ?? 0;
 
       if (!grouped.has(categoryId)) {
-        grouped.set(categoryId, { id: String(categoryId), name: categoryName, items: [] });
+        grouped.set(categoryId, {
+          id: String(categoryId),
+          name: categoryName,
+          image_url: catMap.get(categoryId)?.image_url ?? null,
+          items: [],
+        });
       }
 
       const enriched: EnrichedInventoryItem = {
@@ -61,14 +78,15 @@ export function useClientInventory() {
         category_id: categoryId,
         category_name: categoryName,
         updated_at: item.updated_at,
+        image_url: product?.image_url ?? null,
       };
 
       grouped.get(categoryId)!.items.push(enriched);
     });
 
-    const cats = Array.from(grouped.values());
-    return { categories: cats, allItems: cats.flatMap((c) => c.items) };
-  }, [inventoryQuery.data, productsQuery.data]);
+    const groupedCategories = Array.from(grouped.values());
+    return { categories: groupedCategories, allItems: groupedCategories.flatMap((c) => c.items) };
+  }, [inventoryQuery.data, productsQuery.data, categoriesQuery.data]);
 
   const adjustMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: AdjustInventoryInput }) =>

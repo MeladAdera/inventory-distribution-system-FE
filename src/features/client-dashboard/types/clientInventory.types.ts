@@ -12,11 +12,13 @@ export interface EnrichedInventoryItem {
   category_id: number;
   category_name: string;
   updated_at: string;
+  image_url: string | null;
 }
 
 export interface InventoryCategory {
   id: string;
   name: string;
+  image_url: string | null;
   items: EnrichedInventoryItem[];
 }
 
