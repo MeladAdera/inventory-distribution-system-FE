@@ -5,9 +5,12 @@ import { useMemo } from 'react';
 import { productsApi } from '@/features/products/api/products.api';
 import { inventoryApi } from '@/features/inventory/api/inventory.api';
 import { ordersApi } from '@/features/orders/api/orders.api';
+import { categoriesApi } from '@/features/categories/api/categories.api';
+import { useAuthStore } from '@/features/auth/store/authStore';
 import { ProductSource, StockStatus } from '@/features/products/types/products.types';
 import type { Product } from '@/features/products/types/products.types';
 import type { InventoryItem } from '@/features/inventory/types/inventory.types';
+import type { Category } from '@/features/categories/types/categories.types';
 import type { CreateOrderInput } from '@/features/orders/types/orders.types';
 import type { OrderableProduct, OrderableCategory } from '../types/clientOrderProducts.types';
 
@@ -19,6 +22,7 @@ function computeStatus(qty: number, isLowStock: boolean, threshold: number): Sto
 
 export function useClientOrderProducts() {
   const queryClient = useQueryClient();
+  const shopId = useAuthStore((s) => s.user?.shopId);
 
   const productsQuery = useQuery({
     queryKey: ['order-products'],
@@ -30,11 +34,19 @@ export function useClientOrderProducts() {
     queryFn: () => inventoryApi.list({ limit: 100 }),
   });
 
+  const categoriesQuery = useQuery({
+    queryKey: ['order-categories', shopId],
+    queryFn: () => categoriesApi.list(shopId ? { shopId } : undefined),
+    enabled: shopId !== undefined,
+  });
+
   const categories: OrderableCategory[] = useMemo(() => {
     const products: Product[] = productsQuery.data?.data?.data ?? [];
     const invItems: InventoryItem[] = inventoryQuery.data?.data?.data ?? [];
+    const cats: Category[] = categoriesQuery.data?.data ?? [];
 
     const invMap = new Map<number, InventoryItem>(invItems.map((i) => [i.product_id, i]));
+    const catMap = new Map<number, Category>(cats.map((c) => [c.id, c]));
     const grouped = new Map<number, OrderableCategory>();
 
     products.forEach((product) => {
@@ -51,12 +63,14 @@ export function useClientOrderProducts() {
         price: product.price,
         current_quantity: qty,
         status: computeStatus(qty, isLowStock, threshold),
+        image_url: product.image_url,
       };
 
       if (!grouped.has(product.category_id)) {
         grouped.set(product.category_id, {
           id: product.category_id,
           name: product.category_name,
+          image_url: catMap.get(product.category_id)?.image_url ?? null,
           products: [],
         });
       }
@@ -65,7 +79,7 @@ export function useClientOrderProducts() {
     });
 
     return Array.from(grouped.values());
-  }, [productsQuery.data, inventoryQuery.data]);
+  }, [productsQuery.data, inventoryQuery.data, categoriesQuery.data]);
 
   const createMutation = useMutation({
     mutationFn: (data: CreateOrderInput) => ordersApi.create(data),
@@ -74,8 +88,8 @@ export function useClientOrderProducts() {
 
   return {
     categories,
-    isLoading: productsQuery.isLoading || inventoryQuery.isLoading,
-    error: productsQuery.error ?? inventoryQuery.error,
+    isLoading: productsQuery.isLoading || inventoryQuery.isLoading || categoriesQuery.isLoading,
+    error: productsQuery.error ?? inventoryQuery.error ?? categoriesQuery.error,
     createOrder: createMutation.mutateAsync,
     isSubmitting: createMutation.isPending,
   };

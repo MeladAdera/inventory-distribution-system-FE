@@ -1,5 +1,30 @@
-import { Package } from 'lucide-react';
+import { Tag } from 'lucide-react';
+import { Card, CardContent } from '@/common/components/ui/card';
 import type { OrderableCategory } from '../../types/clientOrderProducts.types';
+
+const PALETTE = ['#FAEACB', '#F8EBD3', '#DDE6F3', '#DCEBE9', '#F6DDDB', '#F5EFE4'];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
+
+function resolveImageUrl(url: string) {
+  if (url.startsWith('blob:') || url.startsWith('http')) return url;
+  return `${API_BASE}${url}`;
+}
+
+function CategoryBanner({ id, imageUrl }: { id: number; imageUrl: string | null }) {
+  const color = PALETTE[id % PALETTE.length];
+  return (
+    <div
+      style={{ backgroundColor: color }}
+      className="w-full h-36 rounded-t-xl overflow-hidden flex items-center justify-center"
+    >
+      {imageUrl ? (
+        <img src={resolveImageUrl(imageUrl)} alt="" className="w-full h-full object-contain" />
+      ) : (
+        <Tag size={36} className="text-ink-700 opacity-40" />
+      )}
+    </div>
+  );
+}
 
 interface OrderCategoryCardProps {
   category: OrderableCategory;
@@ -18,27 +43,25 @@ export function OrderCategoryCard({
   labels,
 }: OrderCategoryCardProps) {
   return (
-    <div
+    <Card
       onClick={onClick}
-      className="bg-paper border border-border rounded-xl p-5 min-h-37.5 flex flex-col gap-4 cursor-pointer transition-all duration-180 hover:-translate-y-px hover:shadow-(--shadow-sm) hover:bg-sand-50"
+      className="overflow-hidden cursor-pointer transition-all duration-180 hover:-translate-y-px hover:shadow-(--shadow-sm)"
     >
-      <div className="flex items-start justify-between">
-        <div className="w-10.5 h-10.5 rounded-[10px] bg-sand-100 flex items-center justify-center shrink-0">
-          <Package size={20} className="text-ink-700" />
+      <CategoryBanner id={category.id} imageUrl={category.image_url} />
+
+      <CardContent className="p-4 flex items-start justify-between gap-2">
+        <div>
+          <p className="text-[16px] font-semibold text-ink-900">{category.name}</p>
+          <p className="text-[13px] text-ink-500 mt-0.5">
+            {category.products.length} {labels.products}
+          </p>
         </div>
         {cartCount > 0 && (
-          <span className="bg-amber-100 text-amber-700 text-[12px] font-semibold px-2 py-0.75 rounded-full">
+          <span className="shrink-0 bg-amber-100 text-amber-700 text-[12px] font-semibold px-2 py-0.75 rounded-full">
             {cartCount} {labels.addedBadge}
           </span>
         )}
-      </div>
-
-      <div className="flex-1">
-        <p className="text-[16px] font-semibold text-ink-900">{category.name}</p>
-        <p className="text-[13px] text-ink-500 mt-0.5">
-          {category.products.length} {labels.products}
-        </p>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

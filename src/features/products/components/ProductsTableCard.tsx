@@ -15,6 +15,7 @@ import {
 import { useI18n } from '@/providers/I18nProvider';
 import { cn } from '@/common/utils/cn';
 import { ProductThumb } from './ProductThumb';
+import { ProductBanner } from './ProductBanner';
 import { StatusBadge } from './StatusBadge';
 import type { Product, ProductSource } from '../types/products.types';
 import type { Category } from '@/features/categories/types/categories.types';
@@ -393,30 +394,27 @@ function ProductRow({ product, rowNum, p, onView, onEdit, onRestock, onDelete }:
       </div>
 
       {/* Mobile card */}
-      <div className="md:hidden p-4 flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <ProductThumb id={product.id} size={42} imageUrl={product.image_url} />
-            <div className="min-w-0">
-              <p className="font-medium text-ink-900 text-sm truncate">{product.name}</p>
-              <p className="font-mono text-xs text-ink-500 mt-0.5">{product.barcode ?? '—'}</p>
-            </div>
+      <div className="md:hidden flex flex-col">
+        <ProductBanner id={product.id} imageUrl={product.image_url} height="h-40" />
+        <div className="p-4 flex flex-col gap-2.5">
+          <div className="flex items-start justify-between gap-2">
+            <p className="font-semibold text-ink-900 text-[15px] leading-snug">{product.name}</p>
+            <StatusBadge isActive={product.is_active} label={statusLabel} />
           </div>
-          <StatusBadge isActive={product.is_active} label={statusLabel} />
+          <div className="flex flex-wrap gap-x-5 gap-y-1 text-[13px]">
+            <span className="text-ink-500">
+              {p.table.category}: <span className="text-ink-700">{categoryName}</span>
+            </span>
+            <span className="text-ink-500">
+              {p.table.price}:{' '}
+              <span className="font-mono text-ink-700">د.إ {Number(product.price).toFixed(2)}</span>
+            </span>
+            <span className="text-ink-500">
+              {p.table.source}: <span className="text-ink-700">{sourceLabel}</span>
+            </span>
+          </div>
+          <div className="flex items-center gap-0.5 pt-1 border-t border-border">{actions}</div>
         </div>
-        <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
-          <span className="text-ink-500">
-            {p.table.category}: <span className="text-ink-700">{categoryName}</span>
-          </span>
-          <span className="text-ink-500">
-            {p.table.price}:{' '}
-            <span className="font-mono text-ink-700">د.إ {Number(product.price).toFixed(2)}</span>
-          </span>
-          <span className="text-ink-500">
-            {p.table.source}: <span className="text-ink-700">{sourceLabel}</span>
-          </span>
-        </div>
-        <div className="flex items-center gap-0.5">{actions}</div>
       </div>
     </div>
   );

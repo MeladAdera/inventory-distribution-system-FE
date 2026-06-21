@@ -8,10 +8,12 @@ export interface OrderableProduct {
   price: string;
   current_quantity: number;
   status: StockStatus;
+  image_url: string | null;
 }
 
 export interface OrderableCategory {
   id: number;
   name: string;
+  image_url: string | null;
   products: OrderableProduct[];
 }

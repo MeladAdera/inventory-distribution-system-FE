@@ -1,24 +1,39 @@
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, Package } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
-import { ProductThumb } from '@/features/products/components/ProductThumb';
+import { Card, CardContent } from '@/common/components/ui/card';
 import { InvStatusBadge } from '../inventory/InvStatusBadge';
-import { StockStatus } from '@/features/products/types/products.types';
 import type { OrderableProduct } from '../../types/clientOrderProducts.types';
 
-function Stepper({
-  value,
-  onChange,
-  disabled,
-}: {
-  value: number;
-  onChange: (v: number) => void;
-  disabled?: boolean;
-}) {
+const PALETTE = ['#FAEACB', '#F8EBD3', '#DDE6F3', '#DCEBE9', '#F6DDDB', '#F5EFE4'];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
+
+function resolveImageUrl(url: string) {
+  if (url.startsWith('blob:') || url.startsWith('http')) return url;
+  return `${API_BASE}${url}`;
+}
+
+function ProductBanner({ id, imageUrl }: { id: number; imageUrl: string | null }) {
+  const color = PALETTE[id % PALETTE.length];
+  return (
+    <div
+      style={{ backgroundColor: color }}
+      className="w-full h-40 rounded-t-xl overflow-hidden flex items-center justify-center"
+    >
+      {imageUrl ? (
+        <img src={resolveImageUrl(imageUrl)} alt="" className="w-full h-full object-contain" />
+      ) : (
+        <Package size={40} className="text-ink-700 opacity-40" />
+      )}
+    </div>
+  );
+}
+
+function Stepper({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   return (
     <div className="flex items-center gap-2">
       <button
         onClick={() => onChange(Math.max(0, value - 1))}
-        disabled={disabled || value === 0}
+        disabled={value === 0}
         className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-ink-700 hover:bg-sand-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
       >
         <Minus size={14} />
@@ -28,8 +43,7 @@ function Stepper({
       </span>
       <button
         onClick={() => onChange(value + 1)}
-        disabled={disabled}
-        className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-ink-700 hover:bg-sand-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+        className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-ink-700 hover:bg-sand-100 transition-colors"
       >
         <Plus size={14} />
       </button>
@@ -52,45 +66,34 @@ interface OrderProductCardProps {
 }
 
 export function OrderProductCard({ product, qty, onQty, labels }: OrderProductCardProps) {
-  const isOutOfStock = product.status === StockStatus.OUT_OF_STOCK;
   const inCart = qty > 0;
 
   return (
-    <div
+    <Card
       className={cn(
-        'rounded-xl p-4.5 flex flex-col gap-3.5 min-h-46 transition-all duration-150',
-        isOutOfStock
-          ? 'border border-border bg-paper opacity-60'
-          : inCart
-            ? 'border-2 border-amber-600 bg-amber-50'
-            : 'border border-border bg-paper'
+        'overflow-hidden transition-all duration-150',
+        inCart ? 'border-2 border-amber-600' : ''
       )}
     >
-      {/* Row 1 — product identity + cart badge */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-3 min-w-0">
-          <ProductThumb id={product.id} size={38} />
-          <div className="min-w-0">
-            <p className="text-[14px] font-semibold text-ink-900 truncate">{product.name}</p>
-            <p className="font-mono text-[12px] text-ink-500">
-              #{String(product.id).padStart(3, '0')}
-            </p>
-          </div>
-        </div>
-        {inCart && (
-          <span className="shrink-0 bg-amber-100 text-amber-700 text-[12px] font-semibold px-2 py-0.75 rounded-full whitespace-nowrap">
-            {labels.addedToOrder}
-          </span>
-        )}
-      </div>
+      <ProductBanner id={product.id} imageUrl={product.image_url} />
 
-      {/* Row 2 — current stock */}
-      <div>
-        <p className="text-[12px] text-ink-500 mb-1">{labels.currentQty}</p>
-        <div className="flex items-center gap-2 flex-wrap">
-          <p className="font-mono text-[16px] font-semibold text-ink-900 tabular-nums">
+      <CardContent className="p-4 flex flex-col gap-3">
+        {/* Name + cart badge */}
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-[15px] font-semibold text-ink-900 leading-snug">{product.name}</p>
+          {inCart && (
+            <span className="shrink-0 bg-amber-100 text-amber-700 text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">
+              {labels.addedToOrder}
+            </span>
+          )}
+        </div>
+
+        {/* Current stock */}
+        <div className="flex items-center gap-2">
+          <span className="text-[12px] text-ink-500">{labels.currentQty}:</span>
+          <span className="font-mono text-[13px] font-semibold text-ink-900 tabular-nums">
             {product.current_quantity}
-          </p>
+          </span>
           <InvStatusBadge
             status={product.status}
             enough={labels.statusEnough}
@@ -98,13 +101,13 @@ export function OrderProductCard({ product, qty, onQty, labels }: OrderProductCa
             out={labels.statusOut}
           />
         </div>
-      </div>
 
-      {/* Row 3 — quantity stepper */}
-      <div>
-        <p className="text-[12px] text-ink-500 mb-2">{labels.requestedQty}</p>
-        <Stepper value={qty} onChange={onQty} disabled={isOutOfStock} />
-      </div>
-    </div>
+        {/* Stepper */}
+        <div className="flex items-center justify-between pt-1 border-t border-border">
+          <span className="text-[12px] text-ink-500">{labels.requestedQty}</span>
+          <Stepper value={qty} onChange={onQty} />
+        </div>
+      </CardContent>
+    </Card>
   );
 }
