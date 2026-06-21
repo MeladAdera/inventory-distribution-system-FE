@@ -2,14 +2,23 @@ import { Plus, Minus } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { ProductThumb } from '@/features/products/components/ProductThumb';
 import { InvStatusBadge } from '../inventory/InvStatusBadge';
+import { StockStatus } from '@/features/products/types/products.types';
 import type { OrderableProduct } from '../../types/clientOrderProducts.types';
 
-function Stepper({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+function Stepper({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  disabled?: boolean;
+}) {
   return (
     <div className="flex items-center gap-2">
       <button
         onClick={() => onChange(Math.max(0, value - 1))}
-        disabled={value === 0}
+        disabled={disabled || value === 0}
         className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-ink-700 hover:bg-sand-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
       >
         <Minus size={14} />
@@ -19,7 +28,8 @@ function Stepper({ value, onChange }: { value: number; onChange: (v: number) => 
       </span>
       <button
         onClick={() => onChange(value + 1)}
-        className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-ink-700 hover:bg-sand-100 transition-colors"
+        disabled={disabled}
+        className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-ink-700 hover:bg-sand-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
       >
         <Plus size={14} />
       </button>
@@ -42,13 +52,18 @@ interface OrderProductCardProps {
 }
 
 export function OrderProductCard({ product, qty, onQty, labels }: OrderProductCardProps) {
+  const isOutOfStock = product.status === StockStatus.OUT_OF_STOCK;
   const inCart = qty > 0;
 
   return (
     <div
       className={cn(
         'rounded-xl p-4.5 flex flex-col gap-3.5 min-h-46 transition-all duration-150',
-        inCart ? 'border-2 border-amber-600 bg-amber-50' : 'border border-border bg-paper'
+        isOutOfStock
+          ? 'border border-border bg-paper opacity-60'
+          : inCart
+            ? 'border-2 border-amber-600 bg-amber-50'
+            : 'border border-border bg-paper'
       )}
     >
       {/* Row 1 — product identity + cart badge */}
@@ -88,7 +103,7 @@ export function OrderProductCard({ product, qty, onQty, labels }: OrderProductCa
       {/* Row 3 — quantity stepper */}
       <div>
         <p className="text-[12px] text-ink-500 mb-2">{labels.requestedQty}</p>
-        <Stepper value={qty} onChange={onQty} />
+        <Stepper value={qty} onChange={onQty} disabled={isOutOfStock} />
       </div>
     </div>
   );

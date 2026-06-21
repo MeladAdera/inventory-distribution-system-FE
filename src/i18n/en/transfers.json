@@ -72,7 +72,7 @@
   "toast": {
     "success": "Transfer created successfully",
     "statusUpdated": "Status updated successfully",
-    "error": "Something went wrong",
+    "error": "Failed to create transfer. One or more products may be out of stock.",
     "cancelSuccess": "Order cancelled successfully",
     "cancelError": "Failed to cancel order. Please try again."
   }

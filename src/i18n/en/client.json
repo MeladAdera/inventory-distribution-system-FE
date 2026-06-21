@@ -153,7 +153,7 @@
       "confirmBtn": "Confirm",
       "cancelBtn": "Cancel"
     },
-    "toast": { "success": "Your order was submitted successfully", "error": "Failed to submit order. Please try again." },
+    "toast": { "success": "Your order was submitted successfully", "error": "Failed to submit order. Please try again.", "outOfStock": "is out of stock and cannot be ordered" },
     "empty": {
       "noCategories": "No categories available.",
       "noProducts": "No products in this category."
