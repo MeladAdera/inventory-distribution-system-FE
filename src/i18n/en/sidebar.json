@@ -4,6 +4,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "products": "Products",
+    "categories": "Categories",
     "clients": "Clients",
     "transfers": "Transfers",
     "shortages": "Shortages",

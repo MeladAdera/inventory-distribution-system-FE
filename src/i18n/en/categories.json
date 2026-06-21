@@ -1,0 +1,43 @@
+{
+  "page": {
+    "title": "Categories",
+    "count": "{n} categories",
+    "addCategory": "Add category"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Search categories...",
+    "export": "Export"
+  },
+  "table": {
+    "num": "#",
+    "category": "Category",
+    "created": "Created",
+    "actions": "Actions"
+  },
+  "emptyState": {
+    "title": "No categories yet",
+    "sub": "Create your first category to start organizing your products.",
+    "addCategory": "+ Add category"
+  },
+  "form": {
+    "addTitle": "Add category",
+    "editTitle": "Edit category",
+    "save": "Save",
+    "cancel": "Cancel",
+    "name": "Category name",
+    "namePlaceholder": "e.g. Electronics",
+    "errName": "Name must be at least 3 characters"
+  },
+  "delete": {
+    "title": "Delete category?",
+    "warning": "This cannot be undone. Deletion will fail if products are still linked to this category.",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  },
+  "image": {
+    "upload": "Upload image",
+    "change": "Change image",
+    "remove": "Remove image",
+    "hint": "JPG, PNG, WebP or GIF, max 5 MB"
+  }
+}

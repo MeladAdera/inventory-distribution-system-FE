@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Package,
+  Tag,
   Users,
   Truck,
   TrendingDown,
@@ -20,6 +21,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', href: '/dashboard', icon: LayoutDashboard, section: 'main' },
   { id: 'products', href: '/products', icon: Package, section: 'main' },
+  { id: 'categories', href: '/categories', icon: Tag, section: 'main' },
   { id: 'clients', href: '/clients', icon: Users, section: 'main' },
   {
     id: 'transfers',
