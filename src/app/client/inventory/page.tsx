@@ -1,4 +1,4 @@
-import { ClientInventoryPage } from '@/features/client-dashboard/components/ClientInventoryPage';
+import { ClientInventoryPage } from '@/features/shop/components/ClientInventoryPage';
 
 export default function Page() {
   return <ClientInventoryPage />;

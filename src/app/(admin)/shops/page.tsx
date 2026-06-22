@@ -4,12 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Pagination } from '@/common/components';
 import { usePermission } from '@/common/hooks/usePermission';
-import { useShops } from '@/features/shops';
-import { ShopsTable } from '@/features/shops/components/ShopsTable';
-import { EditShopModal } from '@/features/shops/components/EditShopModal';
-import { ToggleShopStatusDialog } from '@/features/shops/components/ToggleShopStatusDialog';
-import { ShopType } from '@/features/shops';
-import type { Shop } from '@/features/shops';
+import { useShops } from '@/features/admin/shops';
+import { ShopsTable } from '@/features/admin/shops/components/ShopsTable';
+import { EditShopModal } from '@/features/admin/shops/components/EditShopModal';
+import { ToggleShopStatusDialog } from '@/features/admin/shops/components/ToggleShopStatusDialog';
+import { ShopType } from '@/features/admin/shops';
+import type { Shop } from '@/features/admin/shops';
 
 const LIMIT = 10;
 

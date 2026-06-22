@@ -1,4 +1,4 @@
-import { ClientShopProductsPage } from '@/features/client-dashboard/components/ClientShopProductsPage';
+import { ClientShopProductsPage } from '@/features/shop/components/ClientShopProductsPage';
 
 export default function Page() {
   return <ClientShopProductsPage />;

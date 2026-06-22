@@ -4,14 +4,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Pagination } from '@/common/components';
 import { usePermission } from '@/common/hooks/usePermission';
-import { useUsers } from '@/features/users';
-import { UsersTable } from '@/features/users/components/UsersTable';
-import { CreateShopOwnerModal } from '@/features/users/components/CreateShopOwnerModal';
-import { CreateEmployeeModal } from '@/features/users/components/CreateEmployeeModal';
-import { EditUserModal } from '@/features/users/components/EditUserModal';
-import { DeactivateUserDialog } from '@/features/users/components/DeactivateUserDialog';
+import { useUsers } from '@/features/admin/users';
+import { UsersTable } from '@/features/admin/users/components/UsersTable';
+import { CreateShopOwnerModal } from '@/features/admin/users/components/CreateShopOwnerModal';
+import { CreateEmployeeModal } from '@/features/admin/users/components/CreateEmployeeModal';
+import { EditUserModal } from '@/features/admin/users/components/EditUserModal';
+import { DeactivateUserDialog } from '@/features/admin/users/components/DeactivateUserDialog';
 import { UserRole } from '@/features/auth/types/enums';
-import type { User } from '@/features/users';
+import type { User } from '@/features/admin/users';
 
 const LIMIT = 10;
 

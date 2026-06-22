@@ -3,24 +3,24 @@
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
-import { useProducts } from '@/features/products/hooks/useProducts';
-import { useCategories } from '@/features/categories/hooks/useCategories';
-import { useShops } from '@/features/shops/hooks/useShops';
+import { useProducts } from '@/features/shared/products/hooks/useProducts';
+import { useCategories } from '@/features/shared/categories/hooks/useCategories';
+import { useShops } from '@/features/admin/shops/hooks/useShops';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { UserRole } from '@/features/auth/types/enums';
-import { ShopType } from '@/features/shops/types/shops.types';
+import { ShopType } from '@/features/admin/shops/types/shops.types';
 import { tokenUtils } from '@/features/auth/utils/token.utils';
-import { inventoryApi } from '@/features/inventory/api/inventory.api';
-import { ProductsTableCard } from '@/features/products/components/ProductsTableCard';
-import { ProductFormModal } from '@/features/products/components/ProductFormModal';
-import { ProductDetailModal } from '@/features/products/components/ProductDetailModal';
-import { RestockModal } from '@/features/products/components/RestockModal';
-import { DeleteConfirmModal } from '@/features/products/components/DeleteConfirmModal';
+import { inventoryApi } from '@/features/shared/inventory/api/inventory.api';
+import { ProductsTableCard } from '@/features/shared/products/components/ProductsTableCard';
+import { ProductFormModal } from '@/features/shared/products/components/ProductFormModal';
+import { ProductDetailModal } from '@/features/shared/products/components/ProductDetailModal';
+import { RestockModal } from '@/features/shared/products/components/RestockModal';
+import { DeleteConfirmModal } from '@/features/shared/products/components/DeleteConfirmModal';
 import type {
   Product,
   CreateProductInput,
   UpdateProductInput,
-} from '@/features/products/types/products.types';
+} from '@/features/shared/products/types/products.types';
 
 const PAGE_SIZE = 10;
 

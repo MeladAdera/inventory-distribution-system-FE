@@ -6,13 +6,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
 import { usePermission } from '@/common/hooks/usePermission';
-import { TransfersTableCard } from '@/features/transfers/components/TransfersTableCard';
-import { TransferModal } from '@/features/transfers/components/TransferModal';
-import { TransferDetailModal } from '@/features/transfers/components/TransferDetailModal';
-import { useTransfers, useTransferShops } from '@/features/transfers/hooks/useTransfers';
-import { TransferStatus } from '@/features/transfers/types/transfers.types';
-import { transfersApi } from '@/features/transfers/api/transfers.api';
-import type { Shop } from '@/features/shops/types/shops.types';
+import { TransfersTableCard } from '@/features/shared/transfers/components/TransfersTableCard';
+import { TransferModal } from '@/features/shared/transfers/components/TransferModal';
+import { TransferDetailModal } from '@/features/shared/transfers/components/TransferDetailModal';
+import { useTransfers, useTransferShops } from '@/features/shared/transfers/hooks/useTransfers';
+import { TransferStatus } from '@/features/shared/transfers/types/transfers.types';
+import { transfersApi } from '@/features/shared/transfers/api/transfers.api';
+import type { Shop } from '@/features/admin/shops/types/shops.types';
 
 const PAGE_SIZE = 10;
 

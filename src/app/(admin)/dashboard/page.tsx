@@ -12,14 +12,14 @@ import {
 } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useAuth } from '@/features/auth';
-import { KpiCard } from '@/features/dashboard/components/KpiCard';
-import { CardShell } from '@/features/dashboard/components/CardShell';
-import { ConsumptionTrendChart } from '@/features/dashboard/components/ConsumptionTrendChart';
-import { TopConsumedChart } from '@/features/dashboard/components/TopConsumedChart';
-import { LowStockAlertsTable } from '@/features/dashboard/components/LowStockAlertsTable';
-import { RecentActivityFeed } from '@/features/dashboard/components/RecentActivityFeed';
-import { useDashboardStats } from '@/features/dashboard/hooks/useDashboardStats';
-import { WelcomeTyper } from '@/features/dashboard/components/WelcomeTyper';
+import { KpiCard } from '@/features/admin/dashboard/components/KpiCard';
+import { CardShell } from '@/features/admin/dashboard/components/CardShell';
+import { ConsumptionTrendChart } from '@/features/admin/dashboard/components/ConsumptionTrendChart';
+import { TopConsumedChart } from '@/features/admin/dashboard/components/TopConsumedChart';
+import { LowStockAlertsTable } from '@/features/admin/dashboard/components/LowStockAlertsTable';
+import { RecentActivityFeed } from '@/features/admin/dashboard/components/RecentActivityFeed';
+import { useDashboardStats } from '@/features/admin/dashboard/hooks/useDashboardStats';
+import { WelcomeTyper } from '@/features/admin/dashboard/components/WelcomeTyper';
 
 export default function DashboardPage() {
   const { t } = useI18n();

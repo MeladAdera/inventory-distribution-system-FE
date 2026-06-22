@@ -4,16 +4,16 @@ import { useState, useMemo, useEffect } from 'react';
 import { UserPlus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
-import { useClients } from '@/features/clients/hooks/useClients';
-import { ClientsTableCard } from '@/features/clients/components/ClientsTableCard';
-import { ClientFormModal } from '@/features/clients/components/ClientFormModal';
-import { ClientDeleteConfirmModal } from '@/features/clients/components/ClientDeleteConfirmModal';
-import { AddShopOwnerModal } from '@/features/clients/components/AddShopOwnerModal';
-import type { AdminClient } from '@/features/clients/types/clients.types';
+import { useClients } from '@/features/admin/clients/hooks/useClients';
+import { ClientsTableCard } from '@/features/admin/clients/components/ClientsTableCard';
+import { ClientFormModal } from '@/features/admin/clients/components/ClientFormModal';
+import { ClientDeleteConfirmModal } from '@/features/admin/clients/components/ClientDeleteConfirmModal';
+import { AddShopOwnerModal } from '@/features/admin/clients/components/AddShopOwnerModal';
+import type { AdminClient } from '@/features/admin/clients/types/clients.types';
 import type {
   ClientFormData,
   AddShopOwnerFormData,
-} from '@/features/clients/validations/clients.schema';
+} from '@/features/admin/clients/validations/clients.schema';
 
 const PAGE_SIZE = 10;
 

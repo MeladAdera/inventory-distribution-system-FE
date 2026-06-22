@@ -1,11 +1,11 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { usersApi } from '@/features/users/api/users.api';
-import { shopsApi } from '@/features/shops/api/shops.api';
+import { usersApi } from '@/features/admin/users/api/users.api';
+import { shopsApi } from '@/features/admin/shops/api/shops.api';
 import { useAuthStore } from '@/features/auth/store/authStore';
-import type { UpdateUserInput } from '@/features/users/types/users.types';
-import type { UpdateShopInput } from '@/features/shops/types/shops.types';
+import type { UpdateUserInput } from '@/features/admin/users/types/users.types';
+import type { UpdateShopInput } from '@/features/admin/shops/types/shops.types';
 
 export function useProfileSettings(userId: number) {
   const queryClient = useQueryClient();

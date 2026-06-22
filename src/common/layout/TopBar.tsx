@@ -18,7 +18,7 @@ import { cn } from '@/common/utils/cn';
 import { getInitials, formatRelativeTime } from '@/common/utils/string.utils';
 import { useI18n } from '@/providers/I18nProvider';
 import { useAuth } from '@/features/auth';
-import { useNotifications, NotificationType } from '@/features/notifications';
+import { useNotifications, NotificationType } from '@/features/shared/notifications';
 
 interface TopBarProps {
   onMenuClick?: () => void;

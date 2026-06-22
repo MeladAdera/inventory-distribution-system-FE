@@ -5,12 +5,12 @@ import { XCircle, AlertTriangle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
 import { usePermission } from '@/common/hooks/usePermission';
-import { ShortagesTableCard } from '@/features/shortages/components/ShortagesTableCard';
-import { useShortages } from '@/features/shortages/hooks/useShortages';
-import { TransferModal } from '@/features/transfers/components/TransferModal';
-import { useTransfers } from '@/features/transfers/hooks/useTransfers';
-import type { Shortage } from '@/features/shortages/types/shortages.types';
-import type { TransferPrefill } from '@/features/transfers/types/transfers.types';
+import { ShortagesTableCard } from '@/features/shared/shortages/components/ShortagesTableCard';
+import { useShortages } from '@/features/shared/shortages/hooks/useShortages';
+import { TransferModal } from '@/features/shared/transfers/components/TransferModal';
+import { useTransfers } from '@/features/shared/transfers/hooks/useTransfers';
+import type { Shortage } from '@/features/shared/shortages/types/shortages.types';
+import type { TransferPrefill } from '@/features/shared/transfers/types/transfers.types';
 
 export default function ShortagesPage() {
   const { t } = useI18n();
