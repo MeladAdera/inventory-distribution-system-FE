@@ -187,28 +187,26 @@ export function ClientOrderPage() {
       {/* ══ STEP 2 — Product list ══ */}
       {step === 2 && selectedCategory && (
         <div className="pb-24">
-          <div className="flex items-start gap-4 mb-5">
+          <div className="mb-5">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleBackToCategories}
-              className="mt-0.5 gap-1"
+              className="gap-1 mb-2 -ms-1"
             >
-              <BackChevron size={16} className="shrink-0" />
+              <BackChevron size={15} className="shrink-0" />
               {ord.backToCategories}
             </Button>
-            <div>
-              <h2 className="text-[18px] font-semibold text-ink-900">{selectedCategory.name}</h2>
-              <p className="text-[13px] text-ink-500 mt-0.5">
-                {selectedCategory.products.length} {ord.products}
-                {totalCartItems > 0 && (
-                  <>
-                    {' '}
-                    · {totalCartItems} {ord.bottomBar.itemsAdded}
-                  </>
-                )}
-              </p>
-            </div>
+            <h2 className="text-[20px] font-semibold text-ink-900">{selectedCategory.name}</h2>
+            <p className="text-[13px] text-ink-400 mt-0.5">
+              {selectedCategory.products.length} {ord.products}
+              {totalCartItems > 0 && (
+                <span className="text-amber-600 font-medium">
+                  {' '}
+                  · {totalCartItems} {ord.bottomBar.itemsAdded}
+                </span>
+              )}
+            </p>
           </div>
 
           <div className="relative mb-5">

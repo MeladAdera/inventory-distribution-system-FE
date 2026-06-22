@@ -1,6 +1,7 @@
 import { Plus, Minus, Package } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { Card, CardContent } from '@/common/components/ui/card';
+import { Button } from '@/common/components/ui/button';
 import { InvStatusBadge } from '../inventory/InvStatusBadge';
 import type { OrderableProduct } from '../../types/clientOrderProducts.types';
 
@@ -17,12 +18,12 @@ function ProductBanner({ id, imageUrl }: { id: number; imageUrl: string | null }
   return (
     <div
       style={{ backgroundColor: color }}
-      className="w-full h-40 rounded-t-xl overflow-hidden flex items-center justify-center"
+      className="w-full h-36 overflow-hidden flex items-center justify-center"
     >
       {imageUrl ? (
         <img src={resolveImageUrl(imageUrl)} alt="" className="w-full h-full object-contain" />
       ) : (
-        <Package size={40} className="text-ink-700 opacity-40" />
+        <Package size={40} className="text-ink-700 opacity-30" />
       )}
     </div>
   );
@@ -30,23 +31,22 @@ function ProductBanner({ id, imageUrl }: { id: number; imageUrl: string | null }
 
 function Stepper({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   return (
-    <div className="flex items-center gap-2">
-      <button
+    <div className="flex items-center gap-1.5">
+      <Button
+        variant="secondary"
+        size="icon"
         onClick={() => onChange(Math.max(0, value - 1))}
         disabled={value === 0}
-        className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-ink-700 hover:bg-sand-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+        className="h-8 w-8 rounded-lg"
       >
-        <Minus size={14} />
-      </button>
-      <span className="font-mono text-[18px] font-semibold text-ink-900 w-10 text-center tabular-nums">
+        <Minus size={13} />
+      </Button>
+      <span className="font-mono text-[18px] font-bold text-ink-900 w-10 text-center tabular-nums select-none">
         {value}
       </span>
-      <button
-        onClick={() => onChange(value + 1)}
-        className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-ink-700 hover:bg-sand-100 transition-colors"
-      >
-        <Plus size={14} />
-      </button>
+      <Button size="icon" onClick={() => onChange(value + 1)} className="h-8 w-8 rounded-lg">
+        <Plus size={13} />
+      </Button>
     </div>
   );
 }
@@ -71,27 +71,27 @@ export function OrderProductCard({ product, qty, onQty, labels }: OrderProductCa
   return (
     <Card
       className={cn(
-        'overflow-hidden transition-all duration-150',
-        inCart ? 'border-2 border-amber-600' : ''
+        'overflow-hidden transition-all duration-200',
+        inCart
+          ? 'border-amber-400 shadow-sm shadow-amber-100'
+          : 'hover:-translate-y-px hover:shadow-sm'
       )}
     >
-      <ProductBanner id={product.id} imageUrl={product.image_url} />
+      <div className="relative">
+        <ProductBanner id={product.id} imageUrl={product.image_url} />
+        {inCart && (
+          <span className="absolute top-3 inset-e-3 bg-amber-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm">
+            {labels.addedToOrder}
+          </span>
+        )}
+      </div>
 
       <CardContent className="p-4 flex flex-col gap-3">
-        {/* Name + cart badge */}
-        <div className="flex items-start justify-between gap-2">
-          <p className="text-[15px] font-semibold text-ink-900 leading-snug">{product.name}</p>
-          {inCart && (
-            <span className="shrink-0 bg-amber-100 text-amber-700 text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">
-              {labels.addedToOrder}
-            </span>
-          )}
-        </div>
+        <p className="text-[15px] font-semibold text-ink-900 leading-snug">{product.name}</p>
 
-        {/* Current stock */}
         <div className="flex items-center gap-2">
-          <span className="text-[12px] text-ink-500">{labels.currentQty}:</span>
-          <span className="font-mono text-[13px] font-semibold text-ink-900 tabular-nums">
+          <span className="text-[12px] text-ink-400">{labels.currentQty}:</span>
+          <span className="font-mono text-[13px] font-semibold text-ink-800 tabular-nums">
             {product.current_quantity}
           </span>
           <InvStatusBadge
@@ -102,9 +102,13 @@ export function OrderProductCard({ product, qty, onQty, labels }: OrderProductCa
           />
         </div>
 
-        {/* Stepper */}
-        <div className="flex items-center justify-between pt-1 border-t border-border">
-          <span className="text-[12px] text-ink-500">{labels.requestedQty}</span>
+        <div
+          className={cn(
+            'flex items-center justify-between pt-2.5 border-t border-border',
+            inCart && 'border-amber-200'
+          )}
+        >
+          <span className="text-[12px] text-ink-500 font-medium">{labels.requestedQty}</span>
           <Stepper value={qty} onChange={onQty} />
         </div>
       </CardContent>

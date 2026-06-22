@@ -1,4 +1,5 @@
 import { Tag } from 'lucide-react';
+import { cn } from '@/common/utils/cn';
 import { Card, CardContent } from '@/common/components/ui/card';
 import type { OrderableCategory } from '../../types/clientOrderProducts.types';
 
@@ -15,12 +16,12 @@ function CategoryBanner({ id, imageUrl }: { id: number; imageUrl: string | null 
   return (
     <div
       style={{ backgroundColor: color }}
-      className="w-full h-36 rounded-t-xl overflow-hidden flex items-center justify-center"
+      className="w-full h-36 overflow-hidden flex items-center justify-center"
     >
       {imageUrl ? (
         <img src={resolveImageUrl(imageUrl)} alt="" className="w-full h-full object-contain" />
       ) : (
-        <Tag size={36} className="text-ink-700 opacity-40" />
+        <Tag size={36} className="text-ink-700 opacity-30" />
       )}
     </div>
   );
@@ -45,22 +46,27 @@ export function OrderCategoryCard({
   return (
     <Card
       onClick={onClick}
-      className="overflow-hidden cursor-pointer transition-all duration-180 hover:-translate-y-px hover:shadow-(--shadow-sm)"
+      className={cn(
+        'overflow-hidden cursor-pointer group transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md',
+        cartCount > 0 && 'border-amber-400 shadow-sm shadow-amber-100'
+      )}
     >
-      <CategoryBanner id={category.id} imageUrl={category.image_url} />
-
-      <CardContent className="p-4 flex items-start justify-between gap-2">
-        <div>
-          <p className="text-[16px] font-semibold text-ink-900">{category.name}</p>
-          <p className="text-[13px] text-ink-500 mt-0.5">
-            {category.products.length} {labels.products}
-          </p>
-        </div>
+      <div className="relative">
+        <CategoryBanner id={category.id} imageUrl={category.image_url} />
         {cartCount > 0 && (
-          <span className="shrink-0 bg-amber-100 text-amber-700 text-[12px] font-semibold px-2 py-0.75 rounded-full">
+          <span className="absolute top-3 inset-e-3 bg-amber-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm">
             {cartCount} {labels.addedBadge}
           </span>
         )}
+      </div>
+
+      <CardContent className="px-4 py-3.5">
+        <p className="text-[15px] font-semibold text-ink-900 group-hover:text-amber-700 transition-colors leading-tight">
+          {category.name}
+        </p>
+        <p className="text-[12px] text-ink-400 mt-0.5">
+          {category.products.length} {labels.products}
+        </p>
       </CardContent>
     </Card>
   );
