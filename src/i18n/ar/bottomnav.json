@@ -8,6 +8,8 @@
     "more": "المزيد"
   },
   "sheet": {
+    "categories": "الفئات",
+    "shortages": "النقص",
     "transfers": "نقل المخزون",
     "settings": "الإعدادات",
     "clientPortal": "بوابة العميل",

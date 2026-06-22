@@ -8,6 +8,8 @@
     "more": "More"
   },
   "sheet": {
+    "categories": "Categories",
+    "shortages": "Shortages",
     "transfers": "Stock Transfer",
     "settings": "Settings",
     "clientPortal": "Client Portal",

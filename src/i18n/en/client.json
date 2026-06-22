@@ -7,7 +7,38 @@
     "dashboard": "Home",
     "inventory": "My inventory",
     "order": "Order products",
-    "orders": "My orders"
+    "orders": "My orders",
+    "categories": "My categories",
+    "products": "My products",
+    "more": "More"
+  },
+  "moreSheet": {
+    "title": "More",
+    "categories": "My categories",
+    "products": "My products"
+  },
+  "shopProducts": {
+    "title": "My products",
+    "subtitle": "Create and manage your own local products. These are exclusive to your shop.",
+    "addBtn": "Add product",
+    "count": "{n} products",
+    "empty": {
+      "title": "No local products yet",
+      "sub": "Create your first product to start building your own catalogue.",
+      "addBtn": "Add product"
+    }
+  },
+  "shopCategories": {
+    "title": "My categories",
+    "subtitle": "Create and manage your own product categories. Warehouse categories are shared and cannot be edited.",
+    "addBtn": "Add category",
+    "warehouseBadge": "Warehouse",
+    "count": "{n} categories",
+    "empty": {
+      "title": "No categories yet",
+      "sub": "Create your first category to start organizing your local products.",
+      "addBtn": "Add category"
+    }
   },
   "user": {
     "name": "Al Waha Grocery",

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, Users, TrendingDown, Menu } from 'lucide-react';
+import { LayoutDashboard, Package, Users, Menu } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { useI18n } from '@/providers/I18nProvider';
 
@@ -10,7 +10,6 @@ const NAV_ITEMS = [
   { id: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
   { id: 'products', href: '/products', icon: Package },
   { id: 'clients', href: '/clients', icon: Users },
-  { id: 'shortages', href: '/shortages', icon: TrendingDown },
 ] as const;
 
 interface BottomNavProps {
