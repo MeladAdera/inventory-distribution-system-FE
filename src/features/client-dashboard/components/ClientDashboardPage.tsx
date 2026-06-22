@@ -8,6 +8,7 @@ import {
   PackageCheck,
   ShoppingCart,
   CheckCircle,
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { useI18n } from '@/providers/I18nProvider';
@@ -15,8 +16,9 @@ import { KpiCard } from '@/features/dashboard/components/KpiCard';
 import { CardShell } from '@/features/dashboard/components/CardShell';
 import { ProductThumb } from '@/features/products/components/ProductThumb';
 import { StockStatus } from '@/features/products/types/products.types';
-import { CLIENT_INVENTORY, LOW_STOCK_ITEMS } from '../mock/clientInventory';
-import type { ClientInventoryItem } from '../mock/clientInventory';
+import { useClientInventory } from '../hooks/useClientInventory';
+import { useClientOrders } from '../hooks/useClientOrders';
+import type { EnrichedInventoryItem } from '../types/clientInventory.types';
 
 // ── Stock status badge ─────────────────────────────────────────────────────
 
@@ -49,8 +51,7 @@ function StockBadge({
 // ── Low stock item row ─────────────────────────────────────────────────────
 
 interface LowStockItemProps {
-  item: ClientInventoryItem;
-  locale: 'ar' | 'en';
+  item: EnrichedInventoryItem;
   labels: {
     current: string;
     min: string;
@@ -58,34 +59,30 @@ interface LowStockItemProps {
     statusLow: string;
     statusOut: string;
   };
-  onOrderMore: (id: number) => void;
+  onOrderMore: (productId: number) => void;
 }
 
-function LowStockItem({ item, locale, labels, onOrderMore }: LowStockItemProps) {
-  const name = locale === 'ar' ? item.nameAr : item.nameEn;
-
+function LowStockItem({ item, labels, onOrderMore }: LowStockItemProps) {
   return (
     <div className="bg-paper border border-border rounded-xl px-5 py-4 flex items-center gap-3.5">
-      {/* Thumb */}
-      <ProductThumb id={item.id} size={38} />
+      <ProductThumb id={item.product_id} size={38} imageUrl={item.image_url} />
 
-      {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-[14px] font-semibold text-ink-900 truncate">{name}</p>
+        <p className="text-[14px] font-semibold text-ink-900 truncate">{item.product_name}</p>
         <p className="text-[13px] text-ink-500 mt-0.5">
-          {labels.current}: {item.qty}&nbsp;&nbsp;|&nbsp;&nbsp;{labels.min}: {item.min}
+          {labels.current}: {item.current_quantity}&nbsp;&nbsp;|&nbsp;&nbsp;{labels.min}:{' '}
+          {item.low_stock_threshold}
         </p>
       </div>
 
-      {/* Right: badge + button */}
       <div className="flex items-center gap-2.5 shrink-0">
         <StockBadge
           status={item.status}
           labels={{ low: labels.statusLow, out: labels.statusOut }}
         />
         <button
-          onClick={() => onOrderMore(item.id)}
-          className="flex items-center gap-1.5 px-3 py-1.75rounded-lg border border-amber-600 bg-amber-50 text-amber-700 text-[13px] font-semibold hover:bg-amber-100 transition-colors"
+          onClick={() => onOrderMore(item.product_id)}
+          className="flex items-center gap-1.5 px-3 py-1.75 rounded-lg border border-amber-600 bg-amber-50 text-amber-700 text-[13px] font-semibold hover:bg-amber-100 transition-colors"
         >
           <ShoppingCart size={13} />
           {labels.orderMore}
@@ -104,11 +101,41 @@ export function ClientDashboardPage() {
   const kpi = d.kpi;
   const ls = d.lowStock;
 
-  const toRefillCount = LOW_STOCK_ITEMS.length;
-  const totalCount = CLIENT_INVENTORY.length;
+  const { allItems, isLoading: isLoadingInv, error: invError } = useClientInventory();
+  const { orders, isLoading: isLoadingOrders } = useClientOrders();
+
+  const lowStockItems = allItems.filter(
+    (i) => i.status === StockStatus.LOW_STOCK || i.status === StockStatus.OUT_OF_STOCK
+  );
+
+  const lastOrder = orders[0] ?? null;
+  const lastOrderValue = lastOrder
+    ? new Date(lastOrder.created_at).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-GB', {
+        day: 'numeric',
+        month: 'short',
+      })
+    : '—';
+  const lastOrderSub = lastOrder ? `#${lastOrder.id}` : kpi.lastOrderSub;
 
   function handleOrderMore(productId: number) {
     router.push(`/client/order?product=${productId}`);
+  }
+
+  if (isLoadingInv || isLoadingOrders) {
+    return (
+      <div className="max-w-330 mx-auto flex items-center justify-center py-24">
+        <Loader2 size={28} className="text-ink-400 animate-spin" />
+      </div>
+    );
+  }
+
+  if (invError) {
+    return (
+      <div className="max-w-330 mx-auto flex flex-col items-center justify-center py-24 gap-3 text-center">
+        <AlertTriangle size={28} className="text-danger-500" />
+        <p className="text-[14px] text-ink-600">Failed to load dashboard data.</p>
+      </div>
+    );
   }
 
   return (
@@ -133,7 +160,7 @@ export function ClientDashboardPage() {
           iconBg="bg-ink-900"
           iconColor="text-amber-500"
           label={kpi.totalProducts}
-          value={totalCount}
+          value={allItems.length}
           sub={kpi.totalProductsSub}
         />
         <KpiCard
@@ -141,7 +168,7 @@ export function ClientDashboardPage() {
           iconBg="bg-warning-100"
           iconColor="text-warning-700"
           label={kpi.toRefill}
-          value={toRefillCount}
+          value={lowStockItems.length}
           sub={kpi.toRefillSub}
         />
         <div className="col-span-2 md:col-span-1">
@@ -150,15 +177,14 @@ export function ClientDashboardPage() {
             iconBg="bg-info-100"
             iconColor="text-info-700"
             label={kpi.lastOrder}
-            value={kpi.lastOrderValue}
-            sub={kpi.lastOrderSub}
+            value={lastOrderValue}
+            sub={lastOrderSub}
           />
         </div>
       </div>
 
       {/* ── Layer 3 — Quick actions ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-        {/* Secondary — Update inventory */}
         <button
           onClick={() => router.push('/client/inventory')}
           className={cn(
@@ -174,7 +200,6 @@ export function ClientDashboardPage() {
           {d.actions.updateInventory}
         </button>
 
-        {/* Primary — Order products */}
         <button
           onClick={() => router.push('/client/order')}
           className={cn(
@@ -193,13 +218,11 @@ export function ClientDashboardPage() {
 
       {/* ── Layer 4 — Low stock section ── */}
       <div className="mt-8">
-        {/* Section header */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[16px] font-semibold text-ink-900">{ls.title}</h2>
         </div>
 
-        {LOW_STOCK_ITEMS.length === 0 ? (
-          /* All good state */
+        {lowStockItems.length === 0 ? (
           <CardShell title="">
             <div className="flex flex-col items-center py-8 gap-3 text-center">
               <div className="w-12 h-12 rounded-full bg-success-100 flex items-center justify-center">
@@ -212,13 +235,11 @@ export function ClientDashboardPage() {
             </div>
           </CardShell>
         ) : (
-          /* Low stock list */
           <div className="flex flex-col gap-3">
-            {LOW_STOCK_ITEMS.map((item) => (
+            {lowStockItems.map((item) => (
               <LowStockItem
                 key={item.id}
                 item={item}
-                locale={locale}
                 labels={{
                   current: ls.current,
                   min: ls.min,
