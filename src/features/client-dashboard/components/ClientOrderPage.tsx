@@ -11,9 +11,11 @@ import {
   Loader2,
   AlertTriangle,
 } from 'lucide-react';
-import { cn } from '@/common/utils/cn';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
+import { Button } from '@/common/components/ui/button';
+import { Input } from '@/common/components/ui/input';
+import { TypewriterText } from '@/common/components/TypewriterText';
 import { useClientOrderProducts } from '../hooks/useClientOrderProducts';
 import { OrderCategoryCard } from './order/OrderCategoryCard';
 import { OrderProductCard } from './order/OrderProductCard';
@@ -21,31 +23,14 @@ import { OrderReviewPanel } from './order/OrderReviewPanel';
 import { OrderSummaryPanel } from './order/OrderSummaryPanel';
 import { OrderSubmitModal } from './order/OrderSubmitModal';
 
-type Step = 1 | 2 | 3;
-
-function formatOrderDate(locale: 'ar' | 'en'): string {
-  const date = new Date();
-  if (locale === 'ar') {
-    const day = date.getDate();
-    const year = date.getFullYear();
-    const month = new Intl.DateTimeFormat('ar', { month: 'long' }).format(date);
-    return `${day} / ${month} / ${year}`;
-  }
-  return new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
-}
-
 export function ClientOrderPage() {
-  const { t, locale, dir } = useI18n();
+  const { t, dir } = useI18n();
   const router = useRouter();
   const { success: toastSuccess, error: toastError } = useToast();
   const isRtl = dir === 'rtl';
   const ord = t.client.order;
 
-  const [step, setStep] = useState<Step>(1);
+  const [step, setStep] = useState(1);
   const [selectedCatId, setSelectedCatId] = useState<number | null>(null);
   const [cart, setCart] = useState<Record<number, number>>({});
   const [query, setQuery] = useState('');
@@ -138,41 +123,44 @@ export function ClientOrderPage() {
     <div className="max-w-330 mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-[22px] font-semibold text-ink-900">{ord.title}</h1>
-        <p className="text-[14px] text-ink-500 mt-1">
-          {ord.datePrefix} {formatOrderDate(locale)}
-        </p>
+        <h1 className="text-[22px] font-semibold text-ink-900">
+          <TypewriterText phrases={ord.taglines} />
+        </h1>
       </div>
 
       {/* ══ STEP 1 — Category grid ══ */}
       {step === 1 && (
         <div>
-          <p className="text-[12px] font-medium uppercase tracking-wide text-ink-500 mb-4">
-            {ord.stepLabel}
-          </p>
-
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 flex items-center h-10 bg-paper border border-border rounded-lg px-3 gap-2">
-              <Search size={15} className="text-ink-400 shrink-0" />
-              <input
+            <div className="relative flex-1">
+              <Search
+                size={15}
+                className="absolute inset-s-3 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none"
+              />
+              <Input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={ord.search}
-                className="flex-1 text-[13px] text-ink-900 placeholder:text-ink-400 bg-transparent outline-none"
+                className="ps-8"
               />
             </div>
-            <button
-              onClick={() => totalCartItems > 0 && setStep(3)}
-              disabled={totalCartItems === 0}
-              className={cn(
-                'flex items-center gap-2 h-10 px-4 rounded-full border border-border bg-paper text-[14px] font-semibold text-ink-800 shrink-0 transition-opacity',
-                totalCartItems === 0 ? 'opacity-55 cursor-not-allowed' : 'hover:bg-sand-50'
+            <div className="relative shrink-0">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => totalCartItems > 0 && setStep(3)}
+                disabled={totalCartItems === 0}
+                className="h-10 w-10 rounded-xl"
+              >
+                <ShoppingCart size={18} />
+              </Button>
+              {totalCartItems > 0 && (
+                <span className="absolute -top-1.5 -inset-e-1.5 min-w-4.5 h-4.5 rounded-full bg-amber-600 text-white text-[10px] font-bold flex items-center justify-center px-1 tabular-nums pointer-events-none">
+                  {totalCartItems}
+                </span>
               )}
-            >
-              <ShoppingCart size={16} className="text-ink-700" />
-              {totalCartItems} {ord.cartBadge}
-            </button>
+            </div>
           </div>
 
           {filteredCategories.length === 0 ? (
@@ -200,13 +188,15 @@ export function ClientOrderPage() {
       {step === 2 && selectedCategory && (
         <div className="pb-24">
           <div className="flex items-start gap-4 mb-5">
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleBackToCategories}
-              className="flex items-center gap-1 text-[13px] font-medium text-ink-500 hover:text-amber-700 transition-colors mt-0.5"
+              className="mt-0.5 gap-1"
             >
               <BackChevron size={16} className="shrink-0" />
               {ord.backToCategories}
-            </button>
+            </Button>
             <div>
               <h2 className="text-[18px] font-semibold text-ink-900">{selectedCategory.name}</h2>
               <p className="text-[13px] text-ink-500 mt-0.5">
@@ -221,14 +211,17 @@ export function ClientOrderPage() {
             </div>
           </div>
 
-          <div className="flex items-center h-10 bg-paper border border-border rounded-lg px-3 gap-2 mb-5">
-            <Search size={15} className="text-ink-400 shrink-0" />
-            <input
+          <div className="relative mb-5">
+            <Search
+              size={15}
+              className="absolute inset-s-3 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none"
+            />
+            <Input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={ord.search}
-              className="flex-1 text-[13px] text-ink-900 placeholder:text-ink-400 bg-transparent outline-none"
+              className="ps-8"
             />
           </div>
 
@@ -257,13 +250,15 @@ export function ClientOrderPage() {
       {step === 3 && (
         <div>
           <div className="flex items-center gap-3 mb-6">
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => (selectedCatId !== null ? setStep(2) : handleBackToCategories())}
-              className="flex items-center gap-1 text-[13px] font-medium text-ink-500 hover:text-amber-700 transition-colors"
+              className="gap-1"
             >
               <BackChevron size={16} className="shrink-0" />
               {ord.review.backBtn}
-            </button>
+            </Button>
             <h2 className="text-[18px] font-semibold text-ink-900">{ord.review.title}</h2>
           </div>
 
@@ -306,12 +301,9 @@ export function ClientOrderPage() {
           <span className="text-[14px] font-medium text-ink-700">
             {totalCartItems} {ord.bottomBar.itemsAdded}
           </span>
-          <button
-            onClick={() => setStep(3)}
-            className="flex items-center gap-2 px-5 h-10 rounded-lg bg-amber-600 text-white text-[14px] font-semibold hover:bg-amber-700 transition-colors"
-          >
+          <Button onClick={() => setStep(3)} className="px-5">
             {ord.bottomBar.reviewBtn}
-          </button>
+          </Button>
         </div>
       )}
 

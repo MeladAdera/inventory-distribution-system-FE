@@ -15,6 +15,7 @@ import { cn } from '@/common/utils/cn';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
 import { StockStatus } from '@/features/products/types/products.types';
+import { TypewriterText } from '@/common/components/TypewriterText';
 import { useClientInventory } from '../hooks/useClientInventory';
 import { CategoryCard } from './inventory/CategoryCard';
 import { ProductCard } from './inventory/ProductCard';
@@ -123,8 +124,10 @@ export function ClientInventoryPage() {
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-[22px] font-semibold text-ink-900">{inv.title}</h1>
-          <p className="text-[13px] text-ink-500 mt-1 max-w-xl">{inv.subtitle}</p>
+          <h1 className="text-[22px] font-semibold text-ink-900">
+            <TypewriterText phrases={inv.taglines} />
+          </h1>
+          <p className="text-[13px] text-ink-400 mt-1 max-w-xl">{inv.subtitle}</p>
         </div>
         {hasChanges && (
           <button

@@ -40,7 +40,11 @@
     "newQty": "New quantity",
     "loading": "Loading inventory…",
     "errorMsg": "Failed to load inventory. Please try again.",
-    "filters": { "all": "All", "low": "Low", "out": "Out" },
+    "filters": {
+      "all": "All",
+      "low": "Low",
+      "out": "Out"
+    },
     "modal": {
       "title": "Confirm inventory update",
       "intro": "The following quantities will be updated:",
@@ -48,11 +52,20 @@
       "confirm": "Confirm save",
       "cancel": "Cancel"
     },
-    "toast": { "success": "Inventory updated successfully", "error": "Failed to update inventory." },
+    "toast": {
+      "success": "Inventory updated successfully",
+      "error": "Failed to update inventory."
+    },
     "empty": {
       "noProducts": "No products assigned to your account yet.",
       "noCatProducts": "No products in this category."
-    }
+    },
+    "taglines": [
+      "Track every item on your shelves",
+      "Manage your stock with ease",
+      "Stay on top of what you have",
+      "Know your inventory, grow your business"
+    ]
   },
   "orders": {
     "title": "My orders",
@@ -107,12 +120,17 @@
       "confirmReceivedError": "Failed to confirm receipt. Please try again.",
       "cancelSuccess": "Order cancelled successfully.",
       "cancelError": "Failed to cancel order. Please try again."
-    }
+    },
+    "taglines": [
+      "All your orders in one place",
+      "Every order, every detail, right here",
+      "Review and follow up on your requests",
+      "Your full order history at a glance"
+    ]
   },
   "order": {
     "title": "New product order",
     "datePrefix": "Order date:",
-    "stepLabel": "1 — Choose category",
     "loading": "Loading products…",
     "errorMsg": "Failed to load products. Please try again.",
     "search": "Search category or product…",
@@ -153,11 +171,21 @@
       "confirmBtn": "Confirm",
       "cancelBtn": "Cancel"
     },
-    "toast": { "success": "Your order was submitted successfully", "error": "Failed to submit order. Please try again.", "outOfStock": "is out of stock and cannot be ordered" },
+    "toast": {
+      "success": "Your order was submitted successfully",
+      "error": "Failed to submit order. Please try again.",
+      "outOfStock": "is out of stock and cannot be ordered"
+    },
     "empty": {
       "noCategories": "No categories available.",
       "noProducts": "No products in this category."
-    }
+    },
+    "taglines": [
+      "Order whatever your shelves are missing",
+      "Browse categories and build your order",
+      "Restock anything, anytime you need",
+      "Your supplier is just a few taps away"
+    ]
   },
   "dashboard": {
     "greeting": "Welcome, Al Waha Grocery",

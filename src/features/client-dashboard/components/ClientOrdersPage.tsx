@@ -9,6 +9,7 @@ import { useToast } from '@/providers';
 import { ordersApi } from '@/features/orders/api/orders.api';
 import { OrderStatus } from '@/features/orders/types/orders.types';
 import type { Order } from '@/features/orders/types/orders.types';
+import { TypewriterText } from '@/common/components/TypewriterText';
 import { useClientOrders } from '../hooks/useClientOrders';
 import { OrdersTableCard } from './orders/OrdersTableCard';
 import { OrderDetailModal } from './orders/OrderDetailModal';
@@ -106,7 +107,9 @@ export function ClientOrdersPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-5.5">
         <div>
-          <h1 className="text-[26px] font-semibold text-ink-900">{ords.title}</h1>
+          <h1 className="text-[26px] font-semibold text-ink-900">
+            <TypewriterText phrases={ords.taglines} />
+          </h1>
           <p className="text-[14px] text-ink-500 mt-1">
             {total} {ords.count}
           </p>
