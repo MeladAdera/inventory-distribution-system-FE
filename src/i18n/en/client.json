@@ -87,6 +87,24 @@
       "success": "Inventory updated successfully",
       "error": "Failed to update inventory."
     },
+    "categories": {
+      "addBtn": "Add category",
+      "warehouseBadge": "Warehouse",
+      "noProducts": "No inventory items yet"
+    },
+    "products": {
+      "addBtn": "Add product",
+      "initialQty": "Initial quantity",
+      "toast": {
+        "createSuccess": "Product added to your inventory",
+        "createError": "Failed to add product. Please try again.",
+        "editSuccess": "Product updated successfully",
+        "editError": "Failed to update product. Please try again.",
+        "deleteSuccess": "Product deleted",
+        "deleteError": "Failed to delete product. Please try again.",
+        "formError": "Something went wrong. Please try again."
+      }
+    },
     "empty": {
       "noProducts": "No products assigned to your account yet.",
       "noCatProducts": "No products in this category."

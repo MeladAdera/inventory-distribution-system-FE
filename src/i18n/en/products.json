@@ -52,6 +52,8 @@
     "description": "Description",
     "price": "Price (AED)",
     "pricePlaceholder": "0.00",
+    "initialQty": "Initial quantity",
+    "submitError": "Something went wrong. Please try again.",
     "errName": "Name must be at least 3 characters",
     "errPrice": "Price must be greater than 0",
     "errCategory": "Category is required"

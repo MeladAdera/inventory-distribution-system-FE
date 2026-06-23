@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { X, Check, Camera, Loader2, Trash2 } from 'lucide-react';
+import { X, Check, Camera, Loader2, Trash2, AlertCircle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { cn } from '@/common/utils/cn';
 import { productFormSchema, type ProductFormData } from '../validations/products.schema';
@@ -16,11 +16,16 @@ interface ProductFormModalProps {
   mode: 'add' | 'edit';
   product: Product | null;
   categories: Category[];
+  defaultCategoryId?: number;
   onClose: () => void;
   onAdd: (data: CreateProductInput) => Promise<{ id: number }>;
   onEdit: (id: number, data: UpdateProductInput) => Promise<void>;
   onUploadImage: (id: number, file: File) => Promise<void>;
   onDeleteImage: (id: number) => Promise<void>;
+  /** When provided, shows an initial quantity field and calls this after product creation */
+  onStockIn?: (id: number, quantity: number) => Promise<void>;
+  /** Called after a successful add or edit, before the modal closes */
+  onSuccess?: () => void;
 }
 
 export function ProductFormModal({
@@ -28,11 +33,14 @@ export function ProductFormModal({
   mode,
   product,
   categories,
+  defaultCategoryId,
   onClose,
   onAdd,
   onEdit,
   onUploadImage,
   onDeleteImage,
+  onStockIn,
+  onSuccess,
 }: ProductFormModalProps) {
   const { t } = useI18n();
   const p = t.products;
@@ -43,6 +51,7 @@ export function ProductFormModal({
   const [imageRemoved, setImageRemoved] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isDeletingImage, setIsDeletingImage] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const {
     register,
@@ -52,7 +61,14 @@ export function ProductFormModal({
     formState: { errors, isSubmitting },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
-    defaultValues: { name: '', description: '', barcode: '', price: 0, category_id: 0 },
+    defaultValues: {
+      name: '',
+      description: '',
+      barcode: '',
+      price: 0,
+      category_id: 0,
+      initialQuantity: 0,
+    },
   });
 
   const watchedId = watch('category_id');
@@ -69,12 +85,19 @@ export function ProductFormModal({
       });
       setPreviewUrl(product.image_url ?? null);
     } else {
-      reset({ name: '', description: '', barcode: '', price: 0, category_id: 0 });
+      reset({
+        name: '',
+        description: '',
+        barcode: '',
+        price: 0,
+        category_id: defaultCategoryId ?? 0,
+      });
       setPreviewUrl(null);
     }
     setPendingFile(null);
     setImageRemoved(false);
-  }, [open, mode, product, reset]);
+    setFormError(null);
+  }, [open, mode, product, defaultCategoryId, reset]);
 
   // Clean up object URL to avoid memory leak
   useEffect(() => {
@@ -135,25 +158,34 @@ export function ProductFormModal({
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    if (mode === 'edit' && product) {
-      await onEdit(product.id, {
-        name: data.name,
-        description: data.description,
-        price: data.price,
-      });
-    } else {
-      const created = await onAdd({
-        name: data.name,
-        description: data.description,
-        barcode: data.barcode,
-        price: data.price,
-        category_id: data.category_id,
-      });
-      if (pendingFile) {
-        await onUploadImage(created.id, pendingFile);
+    setFormError(null);
+    try {
+      if (mode === 'edit' && product) {
+        await onEdit(product.id, {
+          name: data.name,
+          description: data.description,
+          price: data.price,
+        });
+      } else {
+        const created = await onAdd({
+          name: data.name,
+          description: data.description || undefined,
+          barcode: data.barcode || undefined,
+          price: data.price,
+          category_id: data.category_id,
+        });
+        if (pendingFile) {
+          await onUploadImage(created.id, pendingFile);
+        }
+        if (onStockIn) {
+          await onStockIn(created.id, data.initialQuantity ?? 0);
+        }
       }
+      onSuccess?.();
+      onClose();
+    } catch {
+      setFormError(p.form.submitError ?? 'Something went wrong. Please try again.');
     }
-    onClose();
   });
 
   const title = mode === 'add' ? p.form.addTitle : p.form.editTitle;
@@ -308,23 +340,52 @@ export function ProductFormModal({
             />
           </Field>
 
-          {/* Price */}
-          <Field
-            label={p.form.price}
-            required
-            error={errors.price?.message ? p.form.errPrice : undefined}
+          {/* Price + Initial quantity row */}
+          <div
+            className={cn(
+              'grid gap-4',
+              mode === 'add' && onStockIn ? 'grid-cols-2' : 'grid-cols-1'
+            )}
           >
-            <input
-              {...register('price', { valueAsNumber: true })}
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder={p.form.pricePlaceholder}
-              className={cn(ipt(!!errors.price), 'font-mono')}
-              dir="ltr"
-            />
-          </Field>
+            <Field
+              label={p.form.price}
+              required
+              error={errors.price?.message ? p.form.errPrice : undefined}
+            >
+              <input
+                {...register('price', { valueAsNumber: true })}
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder={p.form.pricePlaceholder}
+                className={cn(ipt(!!errors.price), 'font-mono')}
+                dir="ltr"
+              />
+            </Field>
+
+            {mode === 'add' && onStockIn && (
+              <Field label={p.form.initialQty ?? 'Initial quantity'}>
+                <input
+                  {...register('initialQuantity', { valueAsNumber: true })}
+                  type="number"
+                  min="0"
+                  step="1"
+                  placeholder="0"
+                  className={cn(ipt(false), 'font-mono')}
+                  dir="ltr"
+                />
+              </Field>
+            )}
+          </div>
         </form>
+
+        {/* Inline error banner */}
+        {formError && (
+          <div className="mx-6 mb-1 flex items-center gap-2 rounded-lg bg-danger-50 border border-danger-200 px-3.5 py-2.5 text-[13px] text-danger-700">
+            <AlertCircle size={15} className="shrink-0" />
+            {formError}
+          </div>
+        )}
 
         {/* Footer */}
         <div className="flex items-center gap-2.5 px-6 py-4 border-t border-border shrink-0">

@@ -21,6 +21,7 @@ export const productFormSchema = z.object({
   barcode: z.string().optional(),
   price: z.number().positive('Price must be greater than 0'),
   category_id: z.number().positive('Category is required'),
+  initialQuantity: z.number().min(0).optional(),
 });
 
 export type ProductFormData = z.infer<typeof productFormSchema>;
