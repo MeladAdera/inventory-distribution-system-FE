@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { MapPin, Phone, Store } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { useShopSettings } from '../hooks/useSettings';
 import {
   CardHeader,
@@ -71,8 +72,8 @@ export function ShopCard({ shopId }: ShopCardProps) {
       await updateShop(data);
       setEditing(false);
       toast.success(p.toast.success);
-    } catch {
-      toast.error(p.toast.error);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   });
 

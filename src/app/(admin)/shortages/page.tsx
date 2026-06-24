@@ -5,6 +5,7 @@ import { XCircle, AlertTriangle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
 import { usePermission } from '@/common/hooks/usePermission';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { ShortagesTableCard } from '@/features/shared/shortages/components/ShortagesTableCard';
 import { useShortages } from '@/features/shared/shortages/hooks/useShortages';
 import { TransferModal } from '@/features/shared/transfers/components/TransferModal';
@@ -58,8 +59,8 @@ export default function ShortagesPage() {
       await createTransfer({ items, shopId });
       setTransferOpen(false);
       toast.success(t.transfers.toast.success);
-    } catch {
-      toast.error(t.transfers.toast.error);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   };
 

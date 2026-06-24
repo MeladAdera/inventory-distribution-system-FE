@@ -87,5 +87,10 @@
     "remove": "Remove image",
     "hint": "JPG, PNG, WebP or GIF, max 5 MB",
     "uploadError": "Image upload failed"
+  },
+  "toast": {
+    "createSuccess": "Product created successfully",
+    "editSuccess": "Product updated successfully",
+    "deleteSuccess": "Product deleted"
   }
 }

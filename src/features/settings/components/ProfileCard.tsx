@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { cn } from '@/common/utils/cn';
 import { useProfileSettings } from '../hooks/useSettings';
 import { CardHeader, CardFooter, InfoRow, FieldRow, inputCls } from './shared';
@@ -86,8 +87,8 @@ export function ProfileCard({ userId, name, email, role }: ProfileCardProps) {
       await updateProfile(data);
       setEditing(false);
       toast.success(p.toast.success);
-    } catch {
-      toast.error(p.toast.error);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   });
 

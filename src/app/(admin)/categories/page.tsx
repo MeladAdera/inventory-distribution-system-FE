@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
+import { useToast } from '@/providers/ToastProvider';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { useCategories } from '@/features/shared/categories/hooks/useCategories';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { CategoriesTableCard } from '@/features/shared/categories/components/CategoriesTableCard';
@@ -23,6 +25,7 @@ type ModalState =
 export default function CategoriesPage() {
   const { t } = useI18n();
   const c = t.categories;
+  const toast = useToast();
 
   const [search, setSearch] = useState('');
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
@@ -47,15 +50,22 @@ export default function CategoriesPage() {
 
   const handleAdd = async (data: CreateCategoryInput): Promise<{ id: number }> => {
     const result = await createCategory({ data, shopId });
+    toast.success(c.toast.createSuccess);
     return result.data;
   };
 
   const handleEdit = async (id: number, data: UpdateCategoryInput) => {
     await updateCategory({ id, data });
+    toast.success(c.toast.editSuccess);
   };
 
   const handleDelete = async (category: Category) => {
-    await deleteCategory(category.id);
+    try {
+      await deleteCategory(category.id);
+      toast.success(c.toast.deleteSuccess);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
   };
 
   const handleUploadImage = async (id: number, file: File) => {

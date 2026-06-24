@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { X, Check, Camera, Loader2, Trash2 } from 'lucide-react';
+import { X, Check, Camera, Loader2, Trash2, AlertCircle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { cn } from '@/common/utils/cn';
 import { categorySchema } from '../validations/categories.schema';
 import { CategoryThumb } from './CategoryThumb';
@@ -43,6 +44,7 @@ export function CategoryFormModal({
   const [imageRemoved, setImageRemoved] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isDeletingImage, setIsDeletingImage] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const {
     register,
@@ -65,6 +67,7 @@ export function CategoryFormModal({
     }
     setPendingFile(null);
     setImageRemoved(false);
+    setFormError(null);
   }, [open, mode, category, reset]);
 
   useEffect(() => {
@@ -124,15 +127,20 @@ export function CategoryFormModal({
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    if (mode === 'edit' && category) {
-      await onEdit(category.id, { name: data.name });
-    } else {
-      const created = await onAdd({ name: data.name });
-      if (pendingFile) {
-        await onUploadImage(created.id, pendingFile);
+    setFormError(null);
+    try {
+      if (mode === 'edit' && category) {
+        await onEdit(category.id, { name: data.name });
+      } else {
+        const created = await onAdd({ name: data.name });
+        if (pendingFile) {
+          await onUploadImage(created.id, pendingFile);
+        }
       }
+      onClose();
+    } catch (err) {
+      setFormError(getErrorMessage(err));
     }
-    onClose();
   });
 
   const title = mode === 'add' ? c.form.addTitle : c.form.editTitle;
@@ -249,6 +257,14 @@ export function CategoryFormModal({
             {errors.name && <p className="text-xs text-danger-700">{c.form.errName}</p>}
           </div>
         </form>
+
+        {/* Inline error banner */}
+        {formError && (
+          <div className="mx-6 mb-1 flex items-center gap-2 rounded-lg bg-danger-50 border border-danger-200 px-3.5 py-2.5 text-[13px] text-danger-700">
+            <AlertCircle size={15} className="shrink-0" />
+            {formError}
+          </div>
+        )}
 
         {/* Footer */}
         <div className="flex items-center gap-2.5 px-6 py-4 border-t border-border shrink-0">

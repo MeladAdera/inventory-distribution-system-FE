@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
+import { useToast } from '@/providers/ToastProvider';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { useProducts } from '@/features/shared/products/hooks/useProducts';
 import { useCategories } from '@/features/shared/categories/hooks/useCategories';
 import { useShops } from '@/features/admin/shops/hooks/useShops';
@@ -35,6 +37,7 @@ type ModalState =
 export default function ProductsPage() {
   const { t } = useI18n();
   const p = t.products;
+  const toast = useToast();
 
   const [search, setSearch] = useState('');
   const [shopNameFilter, setShopNameFilter] = useState('');
@@ -77,11 +80,13 @@ export default function ProductsPage() {
   const handleAdd = async (input: CreateProductInput): Promise<{ id: number }> => {
     const shop_id = user?.shopId ?? tokenUtils.getShopId();
     const result = await createProduct({ data: input, shop_id });
+    toast.success(p.toast.createSuccess);
     return result.data;
   };
 
   const handleEdit = async (id: number, input: UpdateProductInput) => {
     await updateProduct({ id, data: input });
+    toast.success(p.toast.editSuccess);
   };
 
   const handleUploadImage = async (id: number, file: File) => {
@@ -93,7 +98,12 @@ export default function ProductsPage() {
   };
 
   const handleDelete = async (product: Product) => {
-    await deleteProduct(product.id);
+    try {
+      await deleteProduct(product.id);
+      toast.success(p.toast.deleteSuccess);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
   };
 
   const handleRestock = async (product: Product, qty: number) => {

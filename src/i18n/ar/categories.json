@@ -39,5 +39,10 @@
     "change": "تغيير الصورة",
     "remove": "حذف الصورة",
     "hint": "JPG أو PNG أو WebP أو GIF، الحد الأقصى 5 ميجابايت"
+  },
+  "toast": {
+    "createSuccess": "تم إنشاء الفئة بنجاح",
+    "editSuccess": "تم تحديث الفئة بنجاح",
+    "deleteSuccess": "تم حذف الفئة"
   }
 }

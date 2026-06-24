@@ -39,5 +39,10 @@
     "change": "Change image",
     "remove": "Remove image",
     "hint": "JPG, PNG, WebP or GIF, max 5 MB"
+  },
+  "toast": {
+    "createSuccess": "Category created successfully",
+    "editSuccess": "Category updated successfully",
+    "deleteSuccess": "Category deleted"
   }
 }

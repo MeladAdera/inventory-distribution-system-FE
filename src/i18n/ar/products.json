@@ -87,5 +87,10 @@
     "remove": "حذف الصورة",
     "hint": "JPG أو PNG أو WebP أو GIF، الحد الأقصى 5 ميجابايت",
     "uploadError": "فشل رفع الصورة"
+  },
+  "toast": {
+    "createSuccess": "تم إنشاء المنتج بنجاح",
+    "editSuccess": "تم تحديث المنتج بنجاح",
+    "deleteSuccess": "تم حذف المنتج"
   }
 }

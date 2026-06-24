@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
 import { usePermission } from '@/common/hooks/usePermission';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { TransfersTableCard } from '@/features/shared/transfers/components/TransfersTableCard';
 import { TransferModal } from '@/features/shared/transfers/components/TransferModal';
 import { TransferDetailModal } from '@/features/shared/transfers/components/TransferDetailModal';
@@ -74,8 +75,8 @@ export default function TransfersPage() {
       await createTransfer({ items, shopId });
       setModalOpen(false);
       toast.success(p.toast.success);
-    } catch {
-      toast.error(p.toast.error);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   };
 
@@ -83,8 +84,8 @@ export default function TransfersPage() {
     try {
       await updateStatus({ id, data: { status } });
       toast.success(p.toast.statusUpdated);
-    } catch {
-      toast.error(p.toast.error);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   };
 
@@ -93,8 +94,8 @@ export default function TransfersPage() {
       await updateStatus({ id, data: { status: TransferStatus.CANCELLED } });
       toast.success(p.toast.cancelSuccess);
       setDetailOpen(false);
-    } catch {
-      toast.error(p.toast.cancelError);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   };
 
