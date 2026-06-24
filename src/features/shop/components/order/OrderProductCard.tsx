@@ -1,55 +1,9 @@
-import { Plus, Minus, Package } from 'lucide-react';
+import { Minus, Plus } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { Card, CardContent } from '@/common/components/ui/card';
-import { Button } from '@/common/components/ui/button';
+import { ProductBanner } from '@/features/shared/products/components/ProductBanner';
 import { InvStatusBadge } from '../inventory/InvStatusBadge';
 import type { OrderableProduct } from '../../types/clientOrderProducts.types';
-
-const PALETTE = ['#FAEACB', '#F8EBD3', '#DDE6F3', '#DCEBE9', '#F6DDDB', '#F5EFE4'];
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
-
-function resolveImageUrl(url: string) {
-  if (url.startsWith('blob:') || url.startsWith('http')) return url;
-  return `${API_BASE}${url}`;
-}
-
-function ProductBanner({ id, imageUrl }: { id: number; imageUrl: string | null }) {
-  const color = PALETTE[id % PALETTE.length];
-  return (
-    <div
-      style={{ backgroundColor: color }}
-      className="w-full h-36 overflow-hidden flex items-center justify-center"
-    >
-      {imageUrl ? (
-        <img src={resolveImageUrl(imageUrl)} alt="" className="w-full h-full object-contain" />
-      ) : (
-        <Package size={40} className="text-ink-700 opacity-30" />
-      )}
-    </div>
-  );
-}
-
-function Stepper({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  return (
-    <div className="flex items-center gap-1.5">
-      <Button
-        variant="secondary"
-        size="icon"
-        onClick={() => onChange(Math.max(0, value - 1))}
-        disabled={value === 0}
-        className="h-8 w-8 rounded-lg"
-      >
-        <Minus size={13} />
-      </Button>
-      <span className="font-mono text-[18px] font-bold text-ink-900 w-10 text-center tabular-nums select-none">
-        {value}
-      </span>
-      <Button size="icon" onClick={() => onChange(value + 1)} className="h-8 w-8 rounded-lg">
-        <Plus size={13} />
-      </Button>
-    </div>
-  );
-}
 
 interface OrderProductCardProps {
   product: OrderableProduct;
@@ -78,38 +32,73 @@ export function OrderProductCard({ product, qty, onQty, labels }: OrderProductCa
       )}
     >
       <div className="relative">
-        <ProductBanner id={product.id} imageUrl={product.image_url} />
+        <ProductBanner id={product.id} imageUrl={product.image_url} height="h-32" />
         {inCart && (
-          <span className="absolute top-3 inset-e-3 bg-amber-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm">
+          <span className="absolute top-2.5 inset-e-2.5 bg-amber-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm">
             {labels.addedToOrder}
           </span>
         )}
       </div>
 
-      <CardContent className="p-4 flex flex-col gap-3">
-        <p className="text-[15px] font-semibold text-ink-900 leading-snug">{product.name}</p>
+      <CardContent className="p-3 flex flex-col gap-2">
+        {/* Name */}
+        <p className="text-[14px] font-semibold text-ink-900 leading-snug truncate">
+          {product.name}
+        </p>
 
-        <div className="flex items-center gap-2">
-          <span className="text-[12px] text-ink-400">{labels.currentQty}:</span>
-          <span className="font-mono text-[13px] font-semibold text-ink-800 tabular-nums">
-            {product.current_quantity}
-          </span>
+        {/* Status + current qty inline */}
+        <div className="flex items-center justify-between gap-2">
           <InvStatusBadge
             status={product.status}
             enough={labels.statusEnough}
             low={labels.statusLow}
             out={labels.statusOut}
           />
+          <div className="text-right shrink-0">
+            <p className="text-[10px] text-ink-500 leading-none mb-0.5">{labels.currentQty}</p>
+            <p className="font-mono text-[18px] font-bold text-ink-900 tabular-nums leading-none">
+              {product.current_quantity}
+            </p>
+          </div>
         </div>
 
-        <div
-          className={cn(
-            'flex items-center justify-between pt-2.5 border-t border-border',
-            inCart && 'border-amber-200'
-          )}
-        >
-          <span className="text-[12px] text-ink-500 font-medium">{labels.requestedQty}</span>
-          <Stepper value={qty} onChange={onQty} />
+        {/* Quantity pill stepper */}
+        <div className="pt-1.5 border-t border-border">
+          <div
+            className={cn(
+              'flex items-center rounded-2xl border bg-paper shadow-sm overflow-hidden transition-colors',
+              inCart ? 'border-amber-300' : 'border-border'
+            )}
+          >
+            <button
+              onClick={() => onQty(Math.max(0, qty - 1))}
+              disabled={qty === 0}
+              className="w-10 h-10 flex items-center justify-center text-ink-400 hover:text-ink-700 transition-colors disabled:opacity-25 disabled:cursor-not-allowed shrink-0"
+            >
+              <Minus size={13} strokeWidth={2.5} />
+            </button>
+
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <span className="text-[9px] text-ink-400 leading-none mb-0.5">
+                {labels.requestedQty}
+              </span>
+              <span
+                className={cn(
+                  'font-mono text-[15px] font-bold tabular-nums leading-none',
+                  qty > 0 ? 'text-amber-600' : 'text-ink-300'
+                )}
+              >
+                {qty === 0 ? '—' : qty}
+              </span>
+            </div>
+
+            <button
+              onClick={() => onQty(qty + 1)}
+              className="w-10 h-10 flex items-center justify-center text-ink-400 hover:text-ink-700 transition-colors shrink-0"
+            >
+              <Plus size={13} strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
       </CardContent>
     </Card>
