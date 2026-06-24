@@ -1,5 +1,5 @@
-import { ShoppingCart, Pencil, Trash2 } from 'lucide-react';
-import { Stepper } from '@/common/components/Stepper';
+import { ShoppingCart, Pencil, Trash2, Minus, Plus } from 'lucide-react';
+import { cn } from '@/common/utils/cn';
 import { ProductBanner } from '@/features/shared/products/components/ProductBanner';
 import { InvStatusBadge } from './InvStatusBadge';
 import { Card, CardContent } from '@/common/components/ui/card';
@@ -38,68 +38,96 @@ export function ProductCard({
 
   return (
     <Card className="overflow-hidden">
-      <ProductBanner id={item.product_id} imageUrl={item.image_url} height="h-40" />
+      <ProductBanner id={item.product_id} imageUrl={item.image_url} height="h-32" />
 
-      <CardContent className="p-4 flex flex-col gap-3">
+      <CardContent className="p-3 flex flex-col gap-2">
         {/* Name + actions */}
         <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <p className="text-[15px] font-semibold text-ink-900 leading-snug truncate">
-              {item.product_name}
-            </p>
-            <div className="flex items-center gap-2 flex-wrap mt-1.5">
-              <InvStatusBadge
-                status={item.status}
-                enough={labels.statusEnough}
-                low={labels.statusLow}
-                out={labels.statusOut}
-              />
-              <button
-                onClick={onOrderMore}
-                className="inline-flex items-center gap-1 px-2.5 py-0.75 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 transition-colors whitespace-nowrap"
-              >
-                <ShoppingCart size={11} />
-                {labels.orderMore}
-              </button>
-            </div>
-          </div>
-
+          <p className="text-[14px] font-semibold text-ink-900 leading-snug truncate flex-1">
+            {item.product_name}
+          </p>
           {(onEdit || onDelete) && (
-            <div className="flex items-center gap-0.5 shrink-0 -me-1 -mt-0.5">
+            <div className="flex items-center gap-0.5 shrink-0 -me-0.5 -mt-0.5">
               {onEdit && (
                 <button
                   onClick={onEdit}
-                  className="w-7.5 h-7.5 rounded-lg flex items-center justify-center text-ink-400 hover:bg-sand-100 hover:text-ink-700 transition-colors"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-ink-400 hover:bg-sand-100 hover:text-ink-700 transition-colors"
                 >
-                  <Pencil size={14} />
+                  <Pencil size={13} />
                 </button>
               )}
               {onDelete && (
                 <button
                   onClick={onDelete}
-                  className="w-7.5 h-7.5 rounded-lg flex items-center justify-center text-ink-400 hover:bg-danger-50 hover:text-danger-700 transition-colors"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-ink-400 hover:bg-danger-50 hover:text-danger-700 transition-colors"
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={13} />
                 </button>
               )}
             </div>
           )}
         </div>
 
-        {/* Current quantity */}
-        <div>
-          <p className="text-[12px] text-ink-500 mb-1">{labels.currentQty}</p>
-          <p className="font-mono text-[24px] font-bold text-ink-900 tabular-nums leading-none">
-            {item.current_quantity}
-          </p>
+        {/* Status badge + qty inline */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+            <InvStatusBadge
+              status={item.status}
+              enough={labels.statusEnough}
+              low={labels.statusLow}
+              out={labels.statusOut}
+            />
+            <button
+              onClick={onOrderMore}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 transition-colors whitespace-nowrap"
+            >
+              <ShoppingCart size={10} />
+              {labels.orderMore}
+            </button>
+          </div>
+          <div className="text-right shrink-0">
+            <p className="text-[10px] text-ink-500 leading-none mb-0.5">{labels.currentQty}</p>
+            <p className="font-mono text-[18px] font-bold text-ink-900 tabular-nums leading-none">
+              {item.current_quantity}
+            </p>
+          </div>
         </div>
 
-        {/* Adjustment stepper */}
-        <div className="pt-1 border-t border-border">
-          <p className="text-[12px] text-ink-500 mb-2">{labels.updateQty}</p>
-          <Stepper value={delta} onChange={onDelta} min={-item.current_quantity} />
+        {/* Adjustment stepper — full-width pill */}
+        <div className="pt-1.5 border-t border-border">
+          <div className="flex items-center rounded-2xl border border-border bg-paper shadow-sm overflow-hidden">
+            <button
+              onClick={() => onDelta(Math.max(-item.current_quantity, delta - 1))}
+              disabled={delta <= -item.current_quantity}
+              className="w-10 h-10 flex items-center justify-center text-ink-400 hover:text-ink-700 transition-colors disabled:opacity-25 disabled:cursor-not-allowed shrink-0"
+            >
+              <Minus size={13} strokeWidth={2.5} />
+            </button>
+
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <span className="text-[9px] text-ink-400 leading-none mb-0.5">
+                {labels.updateQty}
+              </span>
+              <span
+                className={cn(
+                  'font-mono text-[15px] font-bold tabular-nums leading-none',
+                  delta > 0 ? 'text-success-700' : delta < 0 ? 'text-danger-700' : 'text-ink-300'
+                )}
+              >
+                {delta > 0 ? `+${delta}` : delta === 0 ? '—' : delta}
+              </span>
+            </div>
+
+            <button
+              onClick={() => onDelta(delta + 1)}
+              className="w-10 h-10 flex items-center justify-center text-ink-400 hover:text-ink-700 transition-colors shrink-0"
+            >
+              <Plus size={13} strokeWidth={2.5} />
+            </button>
+          </div>
+
           {delta !== 0 && (
-            <p className="text-[12px] text-ink-400 mt-1.5">
+            <p className="text-[10px] text-ink-400 mt-1 text-center">
               {labels.newQty}:{' '}
               <span className="font-mono font-semibold text-ink-700">{newQty}</span>
             </p>
