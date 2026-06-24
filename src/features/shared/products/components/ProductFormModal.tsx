@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Check, Camera, Loader2, Trash2, AlertCircle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { cn } from '@/common/utils/cn';
 import { productFormSchema, type ProductFormData } from '../validations/products.schema';
 import type { Product, CreateProductInput, UpdateProductInput } from '../types/products.types';
@@ -183,8 +184,8 @@ export function ProductFormModal({
       }
       onSuccess?.();
       onClose();
-    } catch {
-      setFormError(p.form.submitError ?? 'Something went wrong. Please try again.');
+    } catch (err) {
+      setFormError(getErrorMessage(err));
     }
   });
 

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { Button } from '@/common/components/ui/button';
 import { Input } from '@/common/components/ui/input';
 import { TypewriterText } from '@/common/components/TypewriterText';
@@ -85,8 +86,8 @@ export function ClientOrderPage() {
       toastSuccess(ord.toast.success);
       setModalOpen(false);
       router.push('/client/orders');
-    } catch {
-      toastError(ord.toast.error);
+    } catch (err) {
+      toastError(getErrorMessage(err));
     }
   }
 

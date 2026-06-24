@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { useI18n } from '@/providers/I18nProvider';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { useToast } from '@/providers/ToastProvider';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { StockStatus } from '@/features/shared/products/types/products.types';
@@ -172,8 +173,8 @@ export function ClientInventoryPage() {
       setChanges({});
       setModalOpen(false);
       toastSuccess(inv.toast.success);
-    } catch {
-      toastError(inv.toast.error ?? 'Failed to update inventory.');
+    } catch (err) {
+      toastError(getErrorMessage(err));
     }
   }
 
@@ -235,8 +236,8 @@ export function ClientInventoryPage() {
       await deleteProduct(product.id);
       await invalidateInvProducts();
       toastSuccess(inv.products.toast.deleteSuccess);
-    } catch {
-      toastError(inv.products.toast.deleteError);
+    } catch (err) {
+      toastError(getErrorMessage(err));
     }
   };
 

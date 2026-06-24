@@ -6,6 +6,7 @@ import { Plus, Loader2, AlertTriangle } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { ordersApi } from '@/features/shared/orders/api/orders.api';
 import { OrderStatus } from '@/features/shared/orders/types/orders.types';
 import type { Order } from '@/features/shared/orders/types/orders.types';
@@ -69,8 +70,8 @@ export function ClientOrdersPage() {
       await confirmReceived(orderId);
       toast.success(ords.toast.confirmReceivedSuccess);
       setModalOpen(false);
-    } catch {
-      toast.error(ords.toast.confirmReceivedError);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   }
 
@@ -79,8 +80,8 @@ export function ClientOrdersPage() {
       await cancelOrder(orderId);
       toast.success(ords.toast.cancelSuccess);
       setModalOpen(false);
-    } catch {
-      toast.error(ords.toast.cancelError);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   }
 
