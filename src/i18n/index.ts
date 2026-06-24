@@ -9,6 +9,9 @@ import transfersEn from './en/transfers.json';
 import shortagesEn from './en/shortages.json';
 import settingsEn from './en/settings.json';
 import clientEn from './en/client.json';
+import authEn from './en/auth.json';
+import usersEn from './en/users.json';
+import shopsEn from './en/shops.json';
 import sidebarAr from './ar/sidebar.json';
 import topbarAr from './ar/topbar.json';
 import bottomnavAr from './ar/bottomnav.json';
@@ -20,6 +23,9 @@ import transfersAr from './ar/transfers.json';
 import shortagesAr from './ar/shortages.json';
 import settingsAr from './ar/settings.json';
 import clientAr from './ar/client.json';
+import authAr from './ar/auth.json';
+import usersAr from './ar/users.json';
+import shopsAr from './ar/shops.json';
 
 export type Locale = 'ar' | 'en';
 
@@ -36,6 +42,9 @@ export const translations = {
     shortages: shortagesEn,
     settings: settingsEn,
     client: clientEn,
+    auth: authEn,
+    users: usersEn,
+    shops: shopsEn,
   },
   ar: {
     sidebar: sidebarAr,
@@ -49,6 +58,9 @@ export const translations = {
     shortages: shortagesAr,
     settings: settingsAr,
     client: clientAr,
+    auth: authAr,
+    users: usersAr,
+    shops: shopsAr,
   },
 } as const;
 

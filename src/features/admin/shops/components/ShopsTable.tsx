@@ -1,6 +1,9 @@
+'use client';
+
 import { DataTable, Badge } from '@/common/components';
 import type { Column } from '@/common/components';
 import type { BadgeVariant } from '@/common/components/Badge';
+import { useI18n } from '@/providers/I18nProvider';
 import { ShopType } from '../types/shops.types';
 import type { Shop } from '../types/shops.types';
 
@@ -26,33 +29,36 @@ export function ShopsTable({
   onEdit,
   onToggleStatus,
 }: ShopsTableProps) {
+  const { t } = useI18n();
+  const s = t.shops;
+
   const baseColumns: Column<Shop>[] = [
-    { key: 'name', header: 'Name' },
+    { key: 'name', header: s.table.name },
     {
       key: 'address',
-      header: 'Address',
+      header: s.table.address,
       render: (shop) => shop.address ?? '—',
     },
     {
       key: 'phone',
-      header: 'Phone',
+      header: s.table.phone,
       render: (shop) => shop.phone ?? '—',
     },
     {
       key: 'type',
-      header: 'Type',
+      header: s.table.type,
       render: (shop) => (
         <Badge variant={typeBadgeVariant[shop.type as ShopType]}>
-          {shop.type.charAt(0) + shop.type.slice(1).toLowerCase()}
+          {s.types[shop.type as keyof typeof s.types] ?? shop.type}
         </Badge>
       ),
     },
     {
       key: 'is_active',
-      header: 'Active',
+      header: s.table.status,
       render: (shop) => (
         <Badge variant={shop.is_active ? 'success' : 'danger'}>
-          {shop.is_active ? 'Active' : 'Inactive'}
+          {shop.is_active ? s.table.active : s.table.inactive}
         </Badge>
       ),
     },
@@ -68,7 +74,7 @@ export function ShopsTable({
             onClick={() => onEdit(shop)}
             className="text-xs font-medium text-blue-600 hover:underline"
           >
-            Edit
+            {s.table.edit}
           </button>
         )}
         {canToggleStatus && (
@@ -78,7 +84,7 @@ export function ShopsTable({
               shop.is_active ? 'text-red-600' : 'text-green-600'
             }`}
           >
-            {shop.is_active ? 'Deactivate' : 'Activate'}
+            {shop.is_active ? s.table.deactivate : s.table.activate}
           </button>
         )}
       </div>
@@ -92,8 +98,8 @@ export function ShopsTable({
       columns={columns}
       data={data}
       isLoading={isLoading}
-      keyExtractor={(s) => s.id}
-      emptyMessage="No shops found"
+      keyExtractor={(sh) => sh.id}
+      emptyMessage={s.table.empty}
     />
   );
 }

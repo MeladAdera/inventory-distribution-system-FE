@@ -10,6 +10,7 @@ import { ClientFormModal } from '@/features/admin/clients/components/ClientFormM
 import { ClientDeleteConfirmModal } from '@/features/admin/clients/components/ClientDeleteConfirmModal';
 import { AddShopOwnerModal } from '@/features/admin/clients/components/AddShopOwnerModal';
 import type { AdminClient } from '@/features/admin/clients/types/clients.types';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import type {
   ClientFormData,
   AddShopOwnerFormData,
@@ -69,8 +70,8 @@ export default function ClientsPage() {
       await createShopOwner(data);
       toast.success(p.toast.created);
       setModal({ type: 'none' });
-    } catch {
-      toast.error('Failed to create shop owner');
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   };
 
@@ -82,8 +83,8 @@ export default function ClientsPage() {
       });
       toast.success(p.toast.updated);
       setModal({ type: 'none' });
-    } catch {
-      toast.error('Failed to update client');
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   };
 
@@ -93,8 +94,8 @@ export default function ClientsPage() {
       await toggleStatus({ id: client.id, isActive: willActivate });
       toast.success(willActivate ? p.toast.activated : p.toast.deactivated);
       setModal({ type: 'none' });
-    } catch {
-      toast.error('Failed to update client status');
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   };
 

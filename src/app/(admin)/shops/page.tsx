@@ -8,6 +8,7 @@ import { useShops } from '@/features/admin/shops';
 import { ShopsTable } from '@/features/admin/shops/components/ShopsTable';
 import { EditShopModal } from '@/features/admin/shops/components/EditShopModal';
 import { ToggleShopStatusDialog } from '@/features/admin/shops/components/ToggleShopStatusDialog';
+import { useI18n } from '@/providers/I18nProvider';
 import { ShopType } from '@/features/admin/shops';
 import type { Shop } from '@/features/admin/shops';
 
@@ -15,6 +16,8 @@ const LIMIT = 10;
 
 export default function ShopsPage() {
   const router = useRouter();
+  const { t } = useI18n();
+  const s = t.shops;
   const { isEmployee, isWarehouseAdmin, isShopOwner } = usePermission();
 
   const [page, setPage] = useState(1);
@@ -60,8 +63,8 @@ export default function ShopsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Shops</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage shops and their status</p>
+          <h1 className="text-2xl font-bold text-gray-900">{s.page.title}</h1>
+          <p className="mt-1 text-sm text-gray-500">{s.page.subtitle}</p>
         </div>
       </div>
 
@@ -70,7 +73,7 @@ export default function ShopsPage() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name…"
+          placeholder={s.page.searchPlaceholder}
           className="input max-w-xs"
         />
         <select
@@ -81,16 +84,14 @@ export default function ShopsPage() {
           }}
           className="input w-44"
         >
-          <option value="">All types</option>
-          <option value={ShopType.WAREHOUSE}>Warehouse</option>
-          <option value={ShopType.SHOP}>Shop</option>
+          <option value="">{s.page.allTypes}</option>
+          <option value={ShopType.WAREHOUSE}>{s.types.WAREHOUSE}</option>
+          <option value={ShopType.SHOP}>{s.types.SHOP}</option>
         </select>
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
-          Failed to load shops. Please try refreshing the page.
-        </div>
+        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">{s.page.loadError}</div>
       )}
 
       <ShopsTable

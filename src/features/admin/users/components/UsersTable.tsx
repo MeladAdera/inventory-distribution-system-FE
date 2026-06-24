@@ -1,6 +1,9 @@
+'use client';
+
 import { DataTable, Badge } from '@/common/components';
 import type { Column } from '@/common/components';
 import type { BadgeVariant } from '@/common/components/Badge';
+import { useI18n } from '@/providers/I18nProvider';
 import { UserRole } from '@/features/auth/types/enums';
 import type { User } from '../types/users.types';
 
@@ -19,35 +22,38 @@ interface UsersTableProps {
 }
 
 export function UsersTable({ data, isLoading, canEdit, onEdit, onDeactivate }: UsersTableProps) {
+  const { t } = useI18n();
+  const u = t.users;
+
   const baseColumns: Column<User>[] = [
-    { key: 'name', header: 'Name' },
-    { key: 'email', header: 'Email' },
+    { key: 'name', header: u.table.name },
+    { key: 'email', header: u.table.email },
     {
       key: 'role',
-      header: 'Role',
+      header: u.table.role,
       render: (user) => (
         <Badge variant={roleBadgeVariant[user.role as UserRole]}>
-          {user.role.replace('_', ' ')}
+          {u.roles[user.role as keyof typeof u.roles] ?? user.role}
         </Badge>
       ),
     },
     {
       key: 'shop_id',
-      header: 'Shop',
+      header: u.table.shop,
       render: (user) => (user.shop_id ? `#${user.shop_id}` : '—'),
     },
     {
       key: 'is_active',
-      header: 'Status',
+      header: u.table.status,
       render: (user) => (
         <Badge variant={user.is_active ? 'success' : 'danger'}>
-          {user.is_active ? 'Active' : 'Inactive'}
+          {user.is_active ? u.table.active : u.table.inactive}
         </Badge>
       ),
     },
     {
       key: 'created_at',
-      header: 'Created',
+      header: u.table.created,
       render: (user) => new Date(user.created_at).toLocaleDateString(),
     },
   ];
@@ -61,14 +67,14 @@ export function UsersTable({ data, isLoading, canEdit, onEdit, onDeactivate }: U
           onClick={() => onEdit(user)}
           className="text-xs font-medium text-blue-600 hover:underline"
         >
-          Edit
+          {u.table.edit}
         </button>
         {user.is_active && (
           <button
             onClick={() => onDeactivate(user)}
             className="text-xs font-medium text-red-600 hover:underline"
           >
-            Deactivate
+            {u.table.deactivate}
           </button>
         )}
       </div>
@@ -83,7 +89,7 @@ export function UsersTable({ data, isLoading, canEdit, onEdit, onDeactivate }: U
       data={data}
       isLoading={isLoading}
       keyExtractor={(u) => u.id}
-      emptyMessage="No users found"
+      emptyMessage={u.table.empty}
     />
   );
 }

@@ -23,6 +23,8 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    const lang = typeof window !== 'undefined' ? document.documentElement.lang : 'en';
+    config.headers['Accept-Language'] = lang || 'en';
     return config;
   },
   (error) => Promise.reject(error)

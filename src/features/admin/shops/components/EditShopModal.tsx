@@ -6,12 +6,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Modal, FormField, Button, LoadingSpinner, ErrorAlert } from '@/common/components';
 import { useToast } from '@/providers';
+import { useI18n } from '@/providers/I18nProvider';
 import { shopsApi } from '../api/shops.api';
-import { updateShopSchema } from '../validations/shops.schema';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import type { Shop } from '../types/shops.types';
 
-type FormData = z.infer<typeof updateShopSchema>;
+interface FormData {
+  name?: string;
+  address?: string;
+  phone?: string;
+}
 
 interface EditShopModalProps {
   open: boolean;
@@ -22,14 +26,22 @@ interface EditShopModalProps {
 
 export function EditShopModal({ open, shop, onClose, onSuccess }: EditShopModalProps) {
   const toast = useToast();
+  const { t } = useI18n();
+  const m = t.shops.editShop;
   const [serverError, setServerError] = useState<string | null>(null);
+
+  const schema = z.object({
+    name: z.string().min(2, m.errName).optional(),
+    address: z.string().min(1, m.errAddress).optional(),
+    phone: z.string().min(1, m.errPhone).optional(),
+  });
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({ resolver: zodResolver(updateShopSchema) });
+  } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   useEffect(() => {
     if (shop) {
@@ -52,7 +64,7 @@ export function EditShopModal({ open, shop, onClose, onSuccess }: EditShopModalP
     setServerError(null);
     try {
       await shopsApi.update(shop.id, data);
-      toast.success('Shop updated successfully');
+      toast.success(m.toastSuccess);
       onSuccess();
     } catch (err) {
       setServerError(getErrorMessage(err));
@@ -60,29 +72,29 @@ export function EditShopModal({ open, shop, onClose, onSuccess }: EditShopModalP
   });
 
   return (
-    <Modal open={open} onClose={handleClose} title="Edit Shop" size="md">
+    <Modal open={open} onClose={handleClose} title={m.title} size="md">
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         {serverError && <ErrorAlert message={serverError} />}
 
-        <FormField label="Name" error={errors.name?.message}>
+        <FormField label={m.name} error={errors.name?.message}>
           <input {...register('name')} className="input" />
         </FormField>
 
-        <FormField label="Address" error={errors.address?.message}>
+        <FormField label={m.address} error={errors.address?.message}>
           <input {...register('address')} className="input" />
         </FormField>
 
-        <FormField label="Phone" error={errors.phone?.message}>
+        <FormField label={m.phone} error={errors.phone?.message}>
           <input {...register('phone')} className="input" />
         </FormField>
 
         <div className="flex justify-end gap-3 pt-2">
           <Button type="button" variant="secondary" onClick={handleClose} disabled={isSubmitting}>
-            Cancel
+            {m.cancel}
           </Button>
           <Button type="submit" disabled={isSubmitting} className="flex items-center gap-2">
             {isSubmitting && <LoadingSpinner size="sm" />}
-            Save Changes
+            {m.submit}
           </Button>
         </div>
       </form>

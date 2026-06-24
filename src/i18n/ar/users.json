@@ -1,0 +1,81 @@
+{
+  "page": {
+    "title": "المستخدمون",
+    "subtitle": "إدارة أعضاء الفريق وصلاحياتهم",
+    "searchPlaceholder": "ابحث بالاسم أو البريد الإلكتروني…",
+    "allRoles": "جميع الأدوار",
+    "btnCreateShopOwner": "+ إنشاء صاحب متجر",
+    "btnCreateEmployee": "+ إنشاء موظف",
+    "loadError": "فشل تحميل المستخدمين. يرجى تحديث الصفحة."
+  },
+  "roles": {
+    "WAREHOUSE_ADMIN": "مدير المستودع",
+    "SHOP_OWNER": "صاحب المتجر",
+    "EMPLOYEE": "موظف"
+  },
+  "table": {
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "role": "الدور",
+    "shop": "المتجر",
+    "status": "الحالة",
+    "created": "تاريخ الإنشاء",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "edit": "تعديل",
+    "deactivate": "تعطيل",
+    "empty": "لا يوجد مستخدمون"
+  },
+  "createEmployee": {
+    "title": "إنشاء موظف",
+    "name": "الاسم",
+    "namePlaceholder": "محمد أحمد",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "employee@example.com",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "••••••••",
+    "submit": "إنشاء موظف",
+    "cancel": "إلغاء",
+    "errName": "الاسم مطلوب",
+    "errEmail": "عنوان البريد الإلكتروني غير صالح",
+    "errPassword": "الحد الأدنى 6 أحرف",
+    "toastSuccess": "تم إنشاء الموظف بنجاح"
+  },
+  "createShopOwner": {
+    "title": "إنشاء صاحب متجر",
+    "shopName": "اسم المتجر",
+    "shopNamePlaceholder": "متجر الواحة",
+    "shopAddress": "عنوان المتجر",
+    "shopAddressPlaceholder": "شارع الرئيسي",
+    "ownerName": "اسم المالك",
+    "ownerNamePlaceholder": "أحمد محمد",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "owner@example.com",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "••••••••",
+    "submit": "إنشاء صاحب متجر",
+    "cancel": "إلغاء",
+    "errShopName": "اسم المتجر مطلوب",
+    "errOwnerName": "اسم المالك مطلوب",
+    "errEmail": "عنوان البريد الإلكتروني غير صالح",
+    "errPassword": "الحد الأدنى 6 أحرف",
+    "toastSuccess": "تم إنشاء صاحب المتجر بنجاح"
+  },
+  "editUser": {
+    "title": "تعديل المستخدم",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "submit": "حفظ التغييرات",
+    "cancel": "إلغاء",
+    "errName": "الاسم يجب أن يكون حرفين على الأقل",
+    "errEmail": "عنوان البريد الإلكتروني غير صالح",
+    "toastSuccess": "تم تحديث المستخدم بنجاح"
+  },
+  "deactivateUser": {
+    "title": "تعطيل المستخدم",
+    "description": "هل أنت متأكد من تعطيل {name}؟ لن يتمكن من تسجيل الدخول بعد الآن.",
+    "confirm": "تعطيل",
+    "cancel": "إلغاء",
+    "toastSuccess": "تم تعطيل {name}"
+  }
+}

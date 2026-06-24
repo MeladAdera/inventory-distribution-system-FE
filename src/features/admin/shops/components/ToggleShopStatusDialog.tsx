@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ConfirmDialog } from '@/common/components';
 import { useToast } from '@/providers';
+import { useI18n } from '@/providers/I18nProvider';
 import { shopsApi } from '../api/shops.api';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import type { Shop } from '../types/shops.types';
@@ -21,17 +22,22 @@ export function ToggleShopStatusDialog({
   onSuccess,
 }: ToggleShopStatusDialogProps) {
   const toast = useToast();
+  const { t } = useI18n();
+  const m = t.shops.toggleStatus;
   const [isLoading, setIsLoading] = useState(false);
 
   const isActive = shop?.is_active ?? false;
-  const action = isActive ? 'Deactivate' : 'Activate';
+  const name = shop?.name ?? '';
 
   const handleConfirm = async () => {
     if (!shop) return;
     setIsLoading(true);
     try {
       await shopsApi.updateStatus(shop.id, { isActive: !isActive });
-      toast.success(`${shop.name} has been ${isActive ? 'deactivated' : 'activated'}`);
+      const msg = isActive
+        ? m.toastDeactivated.replace('{name}', name)
+        : m.toastActivated.replace('{name}', name);
+      toast.success(msg);
       onSuccess();
     } catch (err) {
       toast.error(getErrorMessage(err));
@@ -46,9 +52,13 @@ export function ToggleShopStatusDialog({
       open={open}
       onClose={onClose}
       onConfirm={handleConfirm}
-      title={`${action} Shop`}
-      description={`Are you sure you want to ${action.toLowerCase()} "${shop?.name ?? 'this shop'}"?`}
-      confirmLabel={action}
+      title={isActive ? m.deactivateTitle : m.activateTitle}
+      description={
+        isActive
+          ? m.deactivateDescription.replace('{name}', name)
+          : m.activateDescription.replace('{name}', name)
+      }
+      confirmLabel={isActive ? m.deactivate : m.activate}
       isLoading={isLoading}
     />
   );

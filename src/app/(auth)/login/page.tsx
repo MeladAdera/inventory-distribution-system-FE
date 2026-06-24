@@ -4,10 +4,12 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { useLogin } from '@/features/auth/hooks/useLogin';
+import { useI18n } from '@/providers/I18nProvider';
 import { Button, FormField, LoadingSpinner, ErrorAlert } from '@/common/components';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const { form, onSubmit, isLoading, serverError } = useLogin();
   const {
@@ -24,29 +26,29 @@ export default function LoginPage() {
   return (
     <div className="rounded-lg bg-white p-8 shadow">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Inventory System</h1>
-        <p className="mt-1 text-sm text-gray-500">Sign in to your account to continue</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t.auth.login.title}</h1>
+        <p className="mt-1 text-sm text-gray-500">{t.auth.login.subtitle}</p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-5" noValidate>
         {serverError && <ErrorAlert message={serverError} />}
 
-        <FormField label="Email" error={errors.email?.message} required>
+        <FormField label={t.auth.login.email_label} error={errors.email?.message} required>
           <input
             {...register('email')}
             type="email"
             autoComplete="email"
-            placeholder="you@example.com"
+            placeholder={t.auth.login.email_placeholder}
             className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </FormField>
 
-        <FormField label="Password" error={errors.password?.message} required>
+        <FormField label={t.auth.login.password_label} error={errors.password?.message} required>
           <input
             {...register('password')}
             type="password"
             autoComplete="current-password"
-            placeholder="••••••••"
+            placeholder={t.auth.login.password_placeholder}
             className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </FormField>
@@ -58,7 +60,7 @@ export default function LoginPage() {
           disabled={isLoading}
         >
           {isLoading && <LoadingSpinner size="sm" />}
-          {isLoading ? 'Signing in...' : 'Sign in'}
+          {isLoading ? t.auth.login.submitting : t.auth.login.submit}
         </Button>
       </form>
     </div>

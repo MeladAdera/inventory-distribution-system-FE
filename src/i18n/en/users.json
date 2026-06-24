@@ -1,0 +1,81 @@
+{
+  "page": {
+    "title": "Users",
+    "subtitle": "Manage team members and their access",
+    "searchPlaceholder": "Search by name or email…",
+    "allRoles": "All roles",
+    "btnCreateShopOwner": "+ Create Shop Owner",
+    "btnCreateEmployee": "+ Create Employee",
+    "loadError": "Failed to load users. Please try refreshing the page."
+  },
+  "roles": {
+    "WAREHOUSE_ADMIN": "Warehouse Admin",
+    "SHOP_OWNER": "Shop Owner",
+    "EMPLOYEE": "Employee"
+  },
+  "table": {
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "shop": "Shop",
+    "status": "Status",
+    "created": "Created",
+    "active": "Active",
+    "inactive": "Inactive",
+    "edit": "Edit",
+    "deactivate": "Deactivate",
+    "empty": "No users found"
+  },
+  "createEmployee": {
+    "title": "Create Employee",
+    "name": "Name",
+    "namePlaceholder": "Bob Smith",
+    "email": "Email",
+    "emailPlaceholder": "bob@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Create Employee",
+    "cancel": "Cancel",
+    "errName": "Name is required",
+    "errEmail": "Invalid email address",
+    "errPassword": "Minimum 6 characters",
+    "toastSuccess": "Employee created successfully"
+  },
+  "createShopOwner": {
+    "title": "Create Shop Owner",
+    "shopName": "Shop Name",
+    "shopNamePlaceholder": "Downtown Retail",
+    "shopAddress": "Shop Address",
+    "shopAddressPlaceholder": "123 Main St",
+    "ownerName": "Owner Name",
+    "ownerNamePlaceholder": "Jane Doe",
+    "email": "Email",
+    "emailPlaceholder": "jane@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Create Shop Owner",
+    "cancel": "Cancel",
+    "errShopName": "Shop name is required",
+    "errOwnerName": "Owner name is required",
+    "errEmail": "Invalid email address",
+    "errPassword": "Minimum 6 characters",
+    "toastSuccess": "Shop owner created successfully"
+  },
+  "editUser": {
+    "title": "Edit User",
+    "name": "Name",
+    "email": "Email",
+    "submit": "Save Changes",
+    "cancel": "Cancel",
+    "errName": "Name must be at least 2 characters",
+    "errEmail": "Invalid email address",
+    "toastSuccess": "User updated successfully"
+  },
+  "deactivateUser": {
+    "title": "Deactivate User",
+    "description": "Are you sure you want to deactivate {name}? They will no longer be able to log in.",
+    "confirm": "Deactivate",
+    "cancel": "Cancel",
+    "toastSuccess": "{name} has been deactivated"
+  }
+}

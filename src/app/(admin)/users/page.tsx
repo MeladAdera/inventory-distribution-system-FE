@@ -10,6 +10,7 @@ import { CreateShopOwnerModal } from '@/features/admin/users/components/CreateSh
 import { CreateEmployeeModal } from '@/features/admin/users/components/CreateEmployeeModal';
 import { EditUserModal } from '@/features/admin/users/components/EditUserModal';
 import { DeactivateUserDialog } from '@/features/admin/users/components/DeactivateUserDialog';
+import { useI18n } from '@/providers/I18nProvider';
 import { UserRole } from '@/features/auth/types/enums';
 import type { User } from '@/features/admin/users';
 
@@ -17,6 +18,8 @@ const LIMIT = 10;
 
 export default function UsersPage() {
   const router = useRouter();
+  const { t } = useI18n();
+  const u = t.users;
   const { isEmployee, isWarehouseAdmin, isShopOwner } = usePermission();
 
   const [page, setPage] = useState(1);
@@ -67,15 +70,17 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Users</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage team members and their access</p>
+          <h1 className="text-2xl font-bold text-gray-900">{u.page.title}</h1>
+          <p className="mt-1 text-sm text-gray-500">{u.page.subtitle}</p>
         </div>
         <div className="flex gap-3">
           {isWarehouseAdmin && (
-            <Button onClick={() => setShowCreateShopOwner(true)}>+ Create Shop Owner</Button>
+            <Button onClick={() => setShowCreateShopOwner(true)}>
+              {u.page.btnCreateShopOwner}
+            </Button>
           )}
           {isShopOwner && (
-            <Button onClick={() => setShowCreateEmployee(true)}>+ Create Employee</Button>
+            <Button onClick={() => setShowCreateEmployee(true)}>{u.page.btnCreateEmployee}</Button>
           )}
         </div>
       </div>
@@ -85,7 +90,7 @@ export default function UsersPage() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name or email…"
+          placeholder={u.page.searchPlaceholder}
           className="input max-w-xs"
         />
         <select
@@ -96,17 +101,15 @@ export default function UsersPage() {
           }}
           className="input w-44"
         >
-          <option value="">All roles</option>
-          <option value={UserRole.WAREHOUSE_ADMIN}>Warehouse Admin</option>
-          <option value={UserRole.SHOP_OWNER}>Shop Owner</option>
-          <option value={UserRole.EMPLOYEE}>Employee</option>
+          <option value="">{u.page.allRoles}</option>
+          <option value={UserRole.WAREHOUSE_ADMIN}>{u.roles.WAREHOUSE_ADMIN}</option>
+          <option value={UserRole.SHOP_OWNER}>{u.roles.SHOP_OWNER}</option>
+          <option value={UserRole.EMPLOYEE}>{u.roles.EMPLOYEE}</option>
         </select>
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
-          Failed to load users. Please try refreshing the page.
-        </div>
+        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">{u.page.loadError}</div>
       )}
 
       <UsersTable

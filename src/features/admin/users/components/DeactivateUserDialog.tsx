@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ConfirmDialog } from '@/common/components';
 import { useToast } from '@/providers';
+import { useI18n } from '@/providers/I18nProvider';
 import { usersApi } from '../api/users.api';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import type { User } from '../types/users.types';
@@ -21,6 +22,8 @@ export function DeactivateUserDialog({
   onSuccess,
 }: DeactivateUserDialogProps) {
   const toast = useToast();
+  const { t } = useI18n();
+  const m = t.users.deactivateUser;
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConfirm = async () => {
@@ -28,7 +31,7 @@ export function DeactivateUserDialog({
     setIsLoading(true);
     try {
       await usersApi.deactivate(user.id);
-      toast.success(`${user.name} has been deactivated`);
+      toast.success(m.toastSuccess.replace('{name}', user.name));
       onSuccess();
     } catch (err) {
       toast.error(getErrorMessage(err));
@@ -43,9 +46,9 @@ export function DeactivateUserDialog({
       open={open}
       onClose={onClose}
       onConfirm={handleConfirm}
-      title="Deactivate User"
-      description={`Are you sure you want to deactivate ${user?.name ?? 'this user'}? They will no longer be able to log in.`}
-      confirmLabel="Deactivate"
+      title={m.title}
+      description={m.description.replace('{name}', user?.name ?? '')}
+      confirmLabel={m.confirm}
       isLoading={isLoading}
     />
   );

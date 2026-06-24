@@ -1,0 +1,48 @@
+{
+  "page": {
+    "title": "Shops",
+    "subtitle": "Manage shops and their status",
+    "searchPlaceholder": "Search by name…",
+    "allTypes": "All types",
+    "loadError": "Failed to load shops. Please try refreshing the page."
+  },
+  "types": {
+    "WAREHOUSE": "Warehouse",
+    "SHOP": "Shop"
+  },
+  "table": {
+    "name": "Name",
+    "address": "Address",
+    "phone": "Phone",
+    "type": "Type",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "edit": "Edit",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "empty": "No shops found"
+  },
+  "editShop": {
+    "title": "Edit Shop",
+    "name": "Name",
+    "address": "Address",
+    "phone": "Phone",
+    "submit": "Save Changes",
+    "cancel": "Cancel",
+    "errName": "Name must be at least 2 characters",
+    "errAddress": "Address cannot be empty",
+    "errPhone": "Phone cannot be empty",
+    "toastSuccess": "Shop updated successfully"
+  },
+  "toggleStatus": {
+    "activateTitle": "Activate Shop",
+    "deactivateTitle": "Deactivate Shop",
+    "activateDescription": "Are you sure you want to activate \"{name}\"?",
+    "deactivateDescription": "Are you sure you want to deactivate \"{name}\"?",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "toastActivated": "{name} has been activated",
+    "toastDeactivated": "{name} has been deactivated"
+  }
+}
