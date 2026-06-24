@@ -3,6 +3,14 @@ import { OrderStatus } from '@/features/shared/orders/types/orders.types';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import type { ClientOrder, ClientStatusFilter } from '../../types/clientOrders.types';
 
+function OrderIdChip({ id }: { id: number }) {
+  return (
+    <span className="inline-flex items-center gap-0.5 px-2 py-1 rounded-lg bg-sand-100 border border-border">
+      <span className="font-mono text-[13px] font-bold text-ink-800">{id}</span>
+    </span>
+  );
+}
+
 function formatDate(iso: string, locale: 'ar' | 'en'): string {
   const date = new Date(iso);
   if (locale === 'ar') {
@@ -100,36 +108,49 @@ export function OrdersTableCard({
         <>
           {/* Desktop table */}
           <div className="hidden sm:block">
-            <div className="grid grid-cols-[1fr_1.5fr_1fr_1.2fr_1fr] bg-sand-100 px-5 py-2.5 text-[12px] font-medium text-ink-500">
-              <span>{labels.table.orderNo}</span>
-              <span>{labels.table.date}</span>
-              <span>{labels.table.items}</span>
-              <span>{labels.table.status}</span>
-              <span>{labels.table.details}</span>
+            {/* Header */}
+            <div className="grid grid-cols-[auto_1fr_0.7fr_1.3fr_auto] items-center gap-4 bg-sand-100 border-b border-border px-6 py-3">
+              <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400 w-20">
+                {labels.table.orderNo}
+              </span>
+              <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400">
+                {labels.table.date}
+              </span>
+              <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400">
+                {labels.table.items}
+              </span>
+              <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400">
+                {labels.table.status}
+              </span>
+              <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400 w-16 text-center">
+                {labels.table.details}
+              </span>
             </div>
 
             {filtered.map((order) => (
               <div
                 key={order.id}
-                className="grid grid-cols-[1fr_1.5fr_1fr_1.2fr_1fr] items-center px-5 py-2 min-h-15 border-t border-border hover:bg-sand-50 transition-colors"
+                className="grid grid-cols-[auto_1fr_0.7fr_1.3fr_auto] items-center gap-4 px-6 py-4 border-b border-border last:border-b-0 hover:bg-sand-50 transition-colors"
               >
-                <span className="font-mono text-[13px] font-semibold text-ink-900">
-                  #{order.id}
-                </span>
+                <div className="w-20">
+                  <OrderIdChip id={order.id} />
+                </div>
                 <span className="text-[13px] text-ink-600">
                   {formatDate(order.created_at, locale)}
                 </span>
-                <span className="font-mono text-[13px] text-ink-700">
+                <span className="text-[13px] text-ink-600">
                   {order.total_items} {labels.table.itemsUnit}
                 </span>
                 <OrderStatusBadge status={order.status} label={statusLabels[order.status]} />
-                <button
-                  onClick={() => onView(order)}
-                  className="flex items-center gap-1.5 w-fit px-3 h-8 rounded-lg border border-border text-[13px] font-medium text-ink-700 hover:bg-sand-100 transition-colors"
-                >
-                  <Eye size={14} />
-                  {labels.table.viewBtn}
-                </button>
+                <div className="w-16 flex justify-center">
+                  <button
+                    onClick={() => onView(order)}
+                    className="inline-flex items-center gap-1.5 px-3 h-8 rounded-lg border border-border text-[13px] font-medium text-ink-700 hover:bg-sand-100 transition-colors whitespace-nowrap"
+                  >
+                    <Eye size={14} />
+                    {labels.table.viewBtn}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -137,25 +158,31 @@ export function OrdersTableCard({
           {/* Mobile cards */}
           <div className="sm:hidden flex flex-col divide-y divide-border">
             {filtered.map((order) => (
-              <div key={order.id} className="px-4 py-4 flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[14px] font-semibold text-ink-900">
-                    #{order.id}
-                  </span>
-                  <OrderStatusBadge status={order.status} label={statusLabels[order.status]} />
-                </div>
-                <p className="text-[13px] text-ink-500">{formatDate(order.created_at, locale)}</p>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[13px] text-ink-600">
-                    {order.total_items} {labels.table.itemsUnit}
+              <div key={order.id} className="px-5 py-4 flex flex-col gap-3">
+                {/* Row 1: big order number + view button */}
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-mono text-[18px] font-bold text-ink-900 leading-none px-2 py-1 rounded-lg bg-sand-100 border border-border">
+                    {order.id}
                   </span>
                   <button
                     onClick={() => onView(order)}
-                    className="flex items-center gap-1.5 px-3 h-8 rounded-lg border border-border text-[13px] font-medium text-ink-700 hover:bg-sand-100 transition-colors"
+                    className="flex items-center gap-1.5 px-4 h-9 rounded-lg bg-ink-900 text-amber-500 text-[13px] font-semibold hover:bg-ink-800 transition-colors shrink-0"
                   >
                     <Eye size={14} />
                     {labels.table.viewBtn}
                   </button>
+                </div>
+
+                {/* Row 2: date · items */}
+                <p className="text-[13px] text-ink-500">
+                  {formatDate(order.created_at, locale)}
+                  <span className="mx-2 text-ink-300">·</span>
+                  {order.total_items} {labels.table.itemsUnit}
+                </p>
+
+                {/* Row 3: status badge */}
+                <div>
+                  <OrderStatusBadge status={order.status} label={statusLabels[order.status]} />
                 </div>
               </div>
             ))}

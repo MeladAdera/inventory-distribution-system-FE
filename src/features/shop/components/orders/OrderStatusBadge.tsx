@@ -24,7 +24,7 @@ export function OrderStatusBadge({ status, label }: OrderStatusBadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 px-2.5 py-0.75 rounded-full text-[12px] font-medium whitespace-nowrap',
+        'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap',
         bg,
         text
       )}
