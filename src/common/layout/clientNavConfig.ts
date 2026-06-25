@@ -3,11 +3,12 @@ import {
   Package,
   ShoppingCart,
   ClipboardList,
+  Settings,
   type LucideIcon,
 } from 'lucide-react';
 
 export interface ClientNavItem {
-  id: 'dashboard' | 'inventory' | 'order' | 'orders';
+  id: 'dashboard' | 'inventory' | 'order' | 'orders' | 'settings';
   href: string;
   icon: LucideIcon;
 }
@@ -17,6 +18,7 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'inventory', href: '/client/inventory', icon: Package },
   { id: 'order', href: '/client/order', icon: ShoppingCart },
   { id: 'orders', href: '/client/orders', icon: ClipboardList },
+  { id: 'settings', href: '/client/settings', icon: Settings },
 ];
 
 /** First 3 items shown as tabs in the mobile bottom bar. The rest go in the More sheet. */
