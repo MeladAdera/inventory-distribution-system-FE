@@ -22,7 +22,10 @@ export function middleware(request: NextRequest) {
   // 2. Authenticated user on login → send to the correct portal
   if (isPublicOnlyRoute(pathname) && token) {
     const role = getRoleFromToken(request);
-    const dest = role === UserRole.SHOP_OWNER ? ROUTES.CLIENT_DASHBOARD : ROUTES.DASHBOARD;
+    const dest =
+      role === UserRole.SHOP_OWNER || role === UserRole.EMPLOYEE
+        ? ROUTES.CLIENT_DASHBOARD
+        : ROUTES.DASHBOARD;
     return NextResponse.redirect(new URL(dest, request.url));
   }
 
@@ -30,13 +33,13 @@ export function middleware(request: NextRequest) {
   if (token) {
     const role = getRoleFromToken(request);
 
-    // SHOP_OWNER must not access admin routes
-    if (isAdminRoute(pathname) && role === UserRole.SHOP_OWNER) {
+    // SHOP_OWNER and EMPLOYEE must not access admin routes
+    if (isAdminRoute(pathname) && (role === UserRole.SHOP_OWNER || role === UserRole.EMPLOYEE)) {
       return NextResponse.redirect(new URL(ROUTES.CLIENT_DASHBOARD, request.url));
     }
 
-    // WAREHOUSE_ADMIN / EMPLOYEE must not access client routes
-    if (isClientRoute(pathname) && role !== UserRole.SHOP_OWNER) {
+    // Only WAREHOUSE_ADMIN must not access client routes; EMPLOYEE shares the client portal
+    if (isClientRoute(pathname) && role !== UserRole.SHOP_OWNER && role !== UserRole.EMPLOYEE) {
       return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.url));
     }
   }

@@ -27,7 +27,11 @@ export function ClientTopBar({ onMenuClick }: ClientTopBarProps) {
   const pageKey = segments[1] ?? 'dashboard';
   const pageTitle = nav[pageKey] ?? '';
 
-  const clientName = c.user.name;
+  const { user } = useAuth();
+  const clientName = user?.name ?? '';
+  const roleLabel = user
+    ? ((t.settings.profile.roles as Record<string, string>)[user.role] ?? user.role)
+    : '';
   const initials = getInitials(clientName);
 
   useEffect(() => {
@@ -91,7 +95,7 @@ export function ClientTopBar({ onMenuClick }: ClientTopBarProps) {
               {/* User info */}
               <div className="px-3 py-3 border-b border-border">
                 <p className="text-[14px] font-semibold text-ink-900 truncate">{clientName}</p>
-                <p className="text-[12px] text-ink-500 truncate">{c.user.role}</p>
+                <p className="text-[12px] text-ink-500 truncate">{roleLabel}</p>
               </div>
 
               {/* Logout */}

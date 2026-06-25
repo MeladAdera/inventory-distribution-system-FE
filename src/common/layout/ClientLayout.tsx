@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { LogOut } from 'lucide-react';
 import { ClientSidebar } from './ClientSidebar';
 import { ClientTopBar } from './ClientTopBar';
 import { ClientNavDrawer } from './ClientNavDrawer';
@@ -10,6 +11,7 @@ import { ClientBottomNav } from './ClientBottomNav';
 import { BottomSheet } from './BottomSheet';
 import { CLIENT_NAV_OVERFLOW } from './clientNavConfig';
 import { useI18n } from '@/providers/I18nProvider';
+import { useAuth } from '@/features/auth';
 import { cn } from '@/common/utils/cn';
 
 interface ClientLayoutProps {
@@ -18,6 +20,7 @@ interface ClientLayoutProps {
 
 export function ClientLayout({ children }: ClientLayoutProps) {
   const { t } = useI18n();
+  const { logout } = useAuth();
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
@@ -66,6 +69,19 @@ export function ClientLayout({ children }: ClientLayoutProps) {
               </Link>
             );
           })}
+
+          <div className="mx-5 my-2 border-t border-border" />
+
+          <button
+            onClick={() => {
+              setMoreSheetOpen(false);
+              logout();
+            }}
+            className="flex items-center gap-3 w-full px-5 py-3.5 text-[15px] font-medium text-danger-700 hover:bg-danger-50 transition-colors"
+          >
+            <LogOut size={19} className="shrink-0" />
+            {t.client.topbar.logout}
+          </button>
         </div>
       </BottomSheet>
     </div>
