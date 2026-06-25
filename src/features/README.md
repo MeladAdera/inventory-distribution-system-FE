@@ -19,11 +19,14 @@ features/feature-name/
 ## Features
 
 - **auth** - Authentication, login, user session
-- **inventory** - Inventory management
-- **orders** - Order management
-- **products** - Product management
-- **shops** - Shop management
-- **users** - User management
+- **admin/users** - User management (shop owners + employees); modals reused by client portal
+- **admin/shops** - Shop management (admin portal)
+- **settings** - Profile and shop settings; shared between admin and client portals
+- **shop** - Client portal pages (dashboard, inventory, orders, employees, settings)
+- **shared/inventory** - Inventory management
+- **shared/orders** - Order management
+- **shared/products** - Product management
+- **shared/categories** - Category management
 
 ## Guidelines
 
