@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Warehouse, ArrowLeftRight } from 'lucide-react';
+import { Warehouse } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { getInitials } from '@/common/utils/string.utils';
 import { useI18n } from '@/providers/I18nProvider';
+import { useAuth } from '@/features/auth';
 import { CLIENT_NAV_ITEMS } from './clientNavConfig';
 
 interface ClientSidebarProps {
@@ -15,11 +16,15 @@ interface ClientSidebarProps {
 export function ClientSidebar({ fluid = false }: ClientSidebarProps) {
   const { t } = useI18n();
   const pathname = usePathname();
+  const { user } = useAuth();
 
   const c = t.client;
   const nav = c.nav as Record<string, string>;
-  const clientName = c.user.name;
-  const initials = getInitials(clientName);
+  const userName = user?.name ?? '';
+  const roleLabel = user
+    ? ((t.settings.profile.roles as Record<string, string>)[user.role] ?? user.role)
+    : '';
+  const initials = getInitials(userName);
 
   return (
     <aside
@@ -79,19 +84,10 @@ export function ClientSidebar({ fluid = false }: ClientSidebarProps) {
             <span className="text-[13px] font-semibold text-ink-900">{initials}</span>
           </div>
           <div className="overflow-hidden min-w-0">
-            <p className="text-[13px] font-medium text-sand-100 truncate">{clientName}</p>
-            <p className="text-[11px] text-[rgba(245,239,228,0.66)] truncate">{c.user.role}</p>
+            <p className="text-[13px] font-medium text-sand-100 truncate">{userName}</p>
+            <p className="text-[11px] text-[rgba(245,239,228,0.66)] truncate">{roleLabel}</p>
           </div>
         </div>
-
-        {/* ── Portal switch ── */}
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-2.5 px-3 py-2.25 rounded-lg text-[13px] font-medium text-[rgba(245,239,228,0.66)] hover:bg-white/6 hover:text-sand-100 transition-colors"
-        >
-          <ArrowLeftRight size={16} className="shrink-0" />
-          <span>{c.portalSwitch}</span>
-        </Link>
       </div>
     </aside>
   );
