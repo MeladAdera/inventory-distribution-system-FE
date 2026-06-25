@@ -7,6 +7,7 @@ import { X, Check } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { cn } from '@/common/utils/cn';
 import { addShopOwnerSchema, type AddShopOwnerFormData } from '../validations/clients.schema';
+import { PasswordInput } from '@/common/components';
 
 interface AddShopOwnerModalProps {
   open: boolean;
@@ -138,9 +139,8 @@ export function AddShopOwnerModal({
               required
               error={errors.password?.message ? p.add.errPassword : undefined}
             >
-              <input
+              <PasswordInput
                 {...register('password')}
-                type="password"
                 placeholder={p.add.passwordPlaceholder}
                 className={ipt(!!errors.password)}
                 dir="ltr"

@@ -4,7 +4,14 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Modal, FormField, Button, LoadingSpinner, ErrorAlert } from '@/common/components';
+import {
+  Modal,
+  FormField,
+  Button,
+  LoadingSpinner,
+  ErrorAlert,
+  PasswordInput,
+} from '@/common/components';
 import { useToast } from '@/providers';
 import { useI18n } from '@/providers/I18nProvider';
 import { usersApi } from '../api/users.api';
@@ -78,9 +85,8 @@ export function CreateEmployeeModal({ open, onClose, onSuccess }: CreateEmployee
         </FormField>
 
         <FormField label={m.password} error={errors.password?.message} required>
-          <input
+          <PasswordInput
             {...register('password')}
-            type="password"
             className="input"
             placeholder={m.passwordPlaceholder}
           />

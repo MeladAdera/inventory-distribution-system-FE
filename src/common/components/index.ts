@@ -9,6 +9,7 @@ export type { Column } from './DataTable';
 export { Modal } from './Modal';
 export { ConfirmDialog } from './ConfirmDialog';
 export { Pagination } from './Pagination';
+export { PasswordInput } from './PasswordInput';
 
 // Layout Components
 export {

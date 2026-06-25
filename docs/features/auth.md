@@ -2,7 +2,7 @@
 
 **Status**: ✅ Complete (Phase 1)
 **Created**: 2026-06-09
-**Last Updated**: 2026-06-09
+**Last Updated**: 2026-06-26
 **Tickets**: TICKET-009, TICKET-010, TICKET-011, TICKET-012, TICKET-013, TICKET-014, TICKET-015
 
 ---
@@ -41,7 +41,8 @@ src/providers/
 src/common/components/
 ├── FormField.tsx                # Label + input + inline error
 ├── LoadingSpinner.tsx           # Reusable SVG spinner
-└── ErrorAlert.tsx               # Accessible error message box
+├── ErrorAlert.tsx               # Accessible error message box
+└── PasswordInput.tsx            # Password field with show/hide eye toggle
 
 src/app/(auth)/
 └── login/
@@ -278,6 +279,18 @@ SVG spinner, inherits text color, uses Tailwind `animate-spin`.
 
 Red box with `role="alert"` for screen reader announcement.
 
+### `PasswordInput`
+
+```tsx
+<PasswordInput
+  {...register('password')}
+  placeholder="Enter password"
+  className="block w-full rounded-md border ..."
+/>
+```
+
+Drop-in replacement for `<input type="password">`. Renders a toggle button (Eye / EyeOff from lucide-react) on the trailing edge that switches between `type="password"` and `type="text"`. Accepts all standard `<input>` props via `forwardRef` — works directly with `react-hook-form`'s `register()`.
+
 ---
 
 ## Login Page
@@ -292,7 +305,7 @@ Red box with `role="alert"` for screen reader announcement.
 - Application title + subtitle
 - `ErrorAlert` (server error, shown above fields)
 - Email `FormField` with `<input type="email">`
-- Password `FormField` with `<input type="password">`
+- Password `FormField` with `<PasswordInput>` (eye toggle)
 - Submit button: disabled + spinner + "Signing in…" while loading
 
 ---

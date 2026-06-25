@@ -3,7 +3,7 @@
 **Status**: ✅ Complete  
 **Tickets**: TICKET-017, TICKET-022–027, TICKET-040–044  
 **Created**: 2026-06-10  
-**Last Updated**: 2026-06-10
+**Last Updated**: 2026-06-26
 
 ---
 
@@ -117,6 +117,7 @@ These live in `src/common/components/` and are reused by all subsequent features
 | `Modal` | Centered overlay dialog with backdrop and close button |
 | `ConfirmDialog` | Modal variant for destructive confirmations with loading state |
 | `Pagination` | Prev/Next with "Showing X–Y of Z" count |
+| `PasswordInput` | Drop-in `<input type="password">` replacement with Eye/EyeOff toggle; works with `react-hook-form` |
 
 The `ToastProvider` (in `src/providers/ToastProvider.tsx`) was also added — import `useToast` from `@/providers` to show success/error messages.
 

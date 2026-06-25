@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { useLogin } from '@/features/auth/hooks/useLogin';
 import { useI18n } from '@/providers/I18nProvider';
-import { Button, FormField, LoadingSpinner, ErrorAlert } from '@/common/components';
+import { Button, FormField, LoadingSpinner, ErrorAlert, PasswordInput } from '@/common/components';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -44,9 +44,8 @@ export default function LoginPage() {
         </FormField>
 
         <FormField label={t.auth.login.password_label} error={errors.password?.message} required>
-          <input
+          <PasswordInput
             {...register('password')}
-            type="password"
             autoComplete="current-password"
             placeholder={t.auth.login.password_placeholder}
             className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
