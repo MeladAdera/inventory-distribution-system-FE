@@ -10,6 +10,7 @@
     "orders": "My orders",
     "categories": "My categories",
     "products": "My products",
+    "employees": "Employees",
     "settings": "Settings",
     "more": "More"
   },
@@ -116,6 +117,28 @@
       "Stay on top of what you have",
       "Know your inventory, grow your business"
     ]
+  },
+  "employees": {
+    "title": "My Employees",
+    "subtitle": "Manage your shop's team members",
+    "addBtn": "+ Add Employee",
+    "count": "employees",
+    "loading": "Loading employees…",
+    "errorMsg": "Failed to load employees. Please try again.",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "editBtn": "Edit",
+      "deactivateBtn": "Deactivate",
+      "empty": "No employees yet"
+    },
+    "empty": {
+      "title": "No employees yet",
+      "sub": "Add your first employee to give them access to your shop."
+    }
   },
   "orders": {
     "title": "My orders",

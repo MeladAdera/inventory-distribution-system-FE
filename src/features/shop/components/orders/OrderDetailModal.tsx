@@ -73,7 +73,7 @@ export function OrderDetailModal({
       <div className="flex items-center gap-4 mb-5">
         <OrderStatusBadge status={order.status} label={labels.statusLabels[order.status]} />
         <div>
-          <p className="text-[16px] font-semibold text-ink-900">#{order.id}</p>
+          <p className="text-[16px] font-semibold text-ink-900 ">{order.id}</p>
           <p className="text-[13px] text-ink-500 mt-0.5">{formatDate(order.created_at, locale)}</p>
         </div>
       </div>

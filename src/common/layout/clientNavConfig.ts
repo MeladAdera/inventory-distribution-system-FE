@@ -3,12 +3,13 @@ import {
   Package,
   ShoppingCart,
   ClipboardList,
+  Users,
   Settings,
   type LucideIcon,
 } from 'lucide-react';
 
 export interface ClientNavItem {
-  id: 'dashboard' | 'inventory' | 'order' | 'orders' | 'settings';
+  id: 'dashboard' | 'inventory' | 'order' | 'orders' | 'employees' | 'settings';
   href: string;
   icon: LucideIcon;
 }
@@ -18,6 +19,7 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'inventory', href: '/client/inventory', icon: Package },
   { id: 'order', href: '/client/order', icon: ShoppingCart },
   { id: 'orders', href: '/client/orders', icon: ClipboardList },
+  { id: 'employees', href: '/client/employees', icon: Users },
   { id: 'settings', href: '/client/settings', icon: Settings },
 ];
 
