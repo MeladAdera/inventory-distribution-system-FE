@@ -12,7 +12,8 @@
     "products": "My products",
     "employees": "Employees",
     "settings": "Settings",
-    "more": "More"
+    "more": "More",
+    "auditLogs": "Activity log"
   },
   "moreSheet": {
     "title": "More",
@@ -259,6 +260,67 @@
       "Restock anything, anytime you need",
       "Your supplier is just a few taps away"
     ]
+  },
+  "auditLogs": {
+    "title": "Activity log",
+    "subtitle": "A complete record of all actions taken in your shop.",
+    "loading": "Loading activity log…",
+    "errorMsg": "Failed to load activity log. Please try again.",
+    "taglines": [
+      "Every action, fully recorded",
+      "A transparent history of your shop",
+      "Track what happened and when",
+      "Your complete activity trail"
+    ],
+    "filter": {
+      "typeAll": "All types",
+      "typeInventory": "Inventory",
+      "typeOrder": "Order",
+      "fromDate": "From",
+      "toDate": "To",
+      "clear": "Clear"
+    },
+    "table": {
+      "date": "Date",
+      "user": "User",
+      "type": "Type",
+      "action": "Action",
+      "entity": "Entity",
+      "qty": "Qty",
+      "notes": "Notes"
+    },
+    "types": {
+      "INVENTORY": "Inventory",
+      "ORDER": "Order"
+    },
+    "actions": {
+      "STOCK_IN": "Stock in",
+      "ADJUSTMENT": "Adjustment",
+      "TRANSFER_OUT": "Transfer out",
+      "TRANSFER_IN": "Transfer in",
+      "STATUS_CHANGED": "Status changed"
+    },
+    "entity": {
+      "inventory": "Inventory",
+      "order": "Order"
+    },
+    "empty": {
+      "title": "No activity yet",
+      "sub": "Actions in your shop will appear here."
+    },
+    "modal": {
+      "title": "Log detail",
+      "logId": "Log ID",
+      "user": "User",
+      "type": "Type",
+      "action": "Action",
+      "entity": "Entity",
+      "product": "Product",
+      "quantity": "Quantity",
+      "notes": "Notes",
+      "date": "Date",
+      "closeBtn": "Close"
+    }
   },
   "dashboard": {
     "greeting": "Welcome, Al Waha Grocery",

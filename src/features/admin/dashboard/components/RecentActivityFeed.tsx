@@ -51,9 +51,7 @@ function SkeletonItem() {
 
 export function RecentActivityFeed() {
   const { locale } = useI18n();
-  const { auditLogs, isLoading } = useAuditLogs({ limit: 6 });
-
-  const items: AuditLog[] = auditLogs?.data?.data ?? [];
+  const { logs: items, isLoading } = useAuditLogs({ limit: 6 });
 
   if (isLoading) {
     return (
