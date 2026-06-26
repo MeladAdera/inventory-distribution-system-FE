@@ -8,9 +8,17 @@
     "clients": "العملاء",
     "transfers": "نقل المخزون",
     "shortages": "نقص المخزون",
+    "auditLogs": "سجل التدقيق",
     "settings": "الإعدادات"
   },
   "collapse": "طي القائمة",
+  "pagination": {
+    "previous": "السابق",
+    "next": "التالي",
+    "showing": "عرض",
+    "of": "من أصل",
+    "results": "نتيجة"
+  },
   "user": {
     "roles": {
       "WAREHOUSE_ADMIN": "مدير المستودع",

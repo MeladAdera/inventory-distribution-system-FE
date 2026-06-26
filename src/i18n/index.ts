@@ -1,4 +1,5 @@
 import sidebarEn from './en/sidebar.json';
+import auditLogsEn from './en/audit-logs.json';
 import topbarEn from './en/topbar.json';
 import bottomnavEn from './en/bottomnav.json';
 import dashboardEn from './en/dashboard.json';
@@ -13,6 +14,7 @@ import authEn from './en/auth.json';
 import usersEn from './en/users.json';
 import shopsEn from './en/shops.json';
 import sidebarAr from './ar/sidebar.json';
+import auditLogsAr from './ar/audit-logs.json';
 import topbarAr from './ar/topbar.json';
 import bottomnavAr from './ar/bottomnav.json';
 import dashboardAr from './ar/dashboard.json';
@@ -45,6 +47,7 @@ export const translations = {
     auth: authEn,
     users: usersEn,
     shops: shopsEn,
+    auditLogs: auditLogsEn,
   },
   ar: {
     sidebar: sidebarAr,
@@ -61,6 +64,7 @@ export const translations = {
     auth: authAr,
     users: usersAr,
     shops: shopsAr,
+    auditLogs: auditLogsAr,
   },
 } as const;
 

@@ -8,9 +8,17 @@
     "clients": "Clients",
     "transfers": "Transfers",
     "shortages": "Shortages",
+    "auditLogs": "Audit Logs",
     "settings": "Settings"
   },
   "collapse": "Collapse",
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "showing": "Showing",
+    "of": "of",
+    "results": "results"
+  },
   "user": {
     "roles": {
       "WAREHOUSE_ADMIN": "Warehouse Admin",
