@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Pagination } from '@/common/components';
+import { Pagination, DatePickerButton } from '@/common/components';
 import { usePermission } from '@/common/hooks/usePermission';
 import { useI18n } from '@/providers/I18nProvider';
 import { useAuditLogs } from '@/features/admin/audit-logs';
@@ -19,7 +19,7 @@ const LIMIT = 15;
 
 export default function AuditLogsPage() {
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const al = t.auditLogs;
   const { isEmployee } = usePermission();
 
@@ -79,86 +79,86 @@ export default function AuditLogsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        <select
-          value={typeFilter}
-          onChange={(e) => {
-            setTypeFilter(e.target.value);
-            resetPage();
-          }}
-          className="input w-40"
-        >
-          <option value="">{al.filter.typeAll}</option>
-          <option value={AuditLogType.INVENTORY}>{al.filter.typeInventory}</option>
-          <option value={AuditLogType.ORDER}>{al.filter.typeOrder}</option>
-        </select>
-
-        <select
-          value={shopId}
-          onChange={(e) => {
-            setShopId(e.target.value);
-            resetPage();
-          }}
-          className="input w-48"
-        >
-          <option value="">{al.filter.allShops}</option>
-          {shopList.map((shop) => (
-            <option key={shop.id} value={shop.id}>
-              {shop.name}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={userId}
-          onChange={(e) => {
-            setUserId(e.target.value);
-            resetPage();
-          }}
-          className="input w-48"
-        >
-          <option value="">{al.filter.allUsers}</option>
-          {userList.map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.name}
-            </option>
-          ))}
-        </select>
-
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-500">{al.filter.fromDate}</label>
-          <input
-            type="date"
-            value={fromDate}
+      <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+        {/* Row 1: category selects — equal width, never wrap */}
+        <div className="flex gap-3">
+          <select
+            value={typeFilter}
             onChange={(e) => {
-              setFromDate(e.target.value);
+              setTypeFilter(e.target.value);
               resetPage();
             }}
-            className="input"
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-500">{al.filter.toDate}</label>
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => {
-              setToDate(e.target.value);
-              resetPage();
-            }}
-            className="input"
-          />
-        </div>
-
-        {hasActiveFilter && (
-          <button
-            onClick={clearFilters}
-            className="text-sm text-gray-500 hover:text-gray-800 underline underline-offset-2"
+            className="input flex-1"
           >
-            {al.filter.clear}
-          </button>
-        )}
+            <option value="">{al.filter.typeAll}</option>
+            <option value={AuditLogType.INVENTORY}>{al.filter.typeInventory}</option>
+            <option value={AuditLogType.ORDER}>{al.filter.typeOrder}</option>
+          </select>
+
+          <select
+            value={shopId}
+            onChange={(e) => {
+              setShopId(e.target.value);
+              resetPage();
+            }}
+            className="input flex-1"
+          >
+            <option value="">{al.filter.allShops}</option>
+            {shopList.map((shop) => (
+              <option key={shop.id} value={shop.id}>
+                {shop.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={userId}
+            onChange={(e) => {
+              setUserId(e.target.value);
+              resetPage();
+            }}
+            className="input flex-1"
+          >
+            <option value="">{al.filter.allUsers}</option>
+            {userList.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Row 2: date range + clear */}
+        <div className="flex flex-wrap items-center gap-2">
+          <DatePickerButton
+            value={fromDate}
+            onChange={(v) => {
+              setFromDate(v);
+              resetPage();
+            }}
+            placeholder={al.filter.fromDate}
+            locale={locale}
+          />
+          <span className="text-gray-300 text-sm">—</span>
+          <DatePickerButton
+            value={toDate}
+            onChange={(v) => {
+              setToDate(v);
+              resetPage();
+            }}
+            placeholder={al.filter.toDate}
+            locale={locale}
+          />
+
+          {hasActiveFilter && (
+            <button
+              onClick={clearFilters}
+              className="text-sm text-amber-600 hover:text-amber-800 font-medium underline underline-offset-2"
+            >
+              {al.filter.clear}
+            </button>
+          )}
+        </div>
       </div>
 
       {error && (

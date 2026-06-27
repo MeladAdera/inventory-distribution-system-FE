@@ -1,6 +1,7 @@
 import { Eye, ScrollText } from 'lucide-react';
 import { AuditLogType } from '@/features/admin/audit-logs';
 import type { AuditLog } from '@/features/admin/audit-logs';
+import { DatePickerButton } from '@/common/components';
 import { AuditLogTypeBadge } from './AuditLogTypeBadge';
 
 function formatDateTime(iso: string, locale: 'ar' | 'en'): string {
@@ -81,29 +82,22 @@ export function AuditLogsTableCard({
           <option value={AuditLogType.ORDER}>{labels.filter.typeOrder}</option>
         </select>
 
-        <div className="grid grid-cols-2 gap-2">
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-medium text-ink-400 px-0.5">
-              {labels.filter.fromDate}
-            </label>
-            <input
-              type="date"
-              value={fromDate}
-              onChange={(e) => onFromDateChange(e.target.value)}
-              className="h-10 w-full px-2.5 border border-border rounded-lg text-[13px] text-ink-700 bg-paper outline-none focus:border-amber-500"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-medium text-ink-400 px-0.5">
-              {labels.filter.toDate}
-            </label>
-            <input
-              type="date"
-              value={toDate}
-              onChange={(e) => onToDateChange(e.target.value)}
-              className="h-10 w-full px-2.5 border border-border rounded-lg text-[13px] text-ink-700 bg-paper outline-none focus:border-amber-500"
-            />
-          </div>
+        <div className="flex items-center gap-2">
+          <DatePickerButton
+            value={fromDate}
+            onChange={onFromDateChange}
+            placeholder={labels.filter.fromDate}
+            locale={locale}
+            className="flex-1 justify-center"
+          />
+          <span className="text-ink-300 text-sm shrink-0">—</span>
+          <DatePickerButton
+            value={toDate}
+            onChange={onToDateChange}
+            placeholder={labels.filter.toDate}
+            locale={locale}
+            className="flex-1 justify-center"
+          />
         </div>
 
         {hasActiveFilter && (
@@ -128,25 +122,19 @@ export function AuditLogsTableCard({
           <option value={AuditLogType.ORDER}>{labels.filter.typeOrder}</option>
         </select>
 
-        <div className="flex items-center gap-2">
-          <label className="text-[12px] text-ink-400">{labels.filter.fromDate}</label>
-          <input
-            type="date"
-            value={fromDate}
-            onChange={(e) => onFromDateChange(e.target.value)}
-            className="h-9 px-3 border border-border rounded-lg text-[13px] text-ink-700 bg-paper outline-none focus:border-amber-500"
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <label className="text-[12px] text-ink-400">{labels.filter.toDate}</label>
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => onToDateChange(e.target.value)}
-            className="h-9 px-3 border border-border rounded-lg text-[13px] text-ink-700 bg-paper outline-none focus:border-amber-500"
-          />
-        </div>
+        <DatePickerButton
+          value={fromDate}
+          onChange={onFromDateChange}
+          placeholder={labels.filter.fromDate}
+          locale={locale}
+        />
+        <span className="text-ink-300">—</span>
+        <DatePickerButton
+          value={toDate}
+          onChange={onToDateChange}
+          placeholder={labels.filter.toDate}
+          locale={locale}
+        />
 
         {hasActiveFilter && (
           <button
@@ -168,7 +156,7 @@ export function AuditLogsTableCard({
         <>
           {/* Desktop table */}
           <div className="hidden sm:block">
-            <div className="grid grid-cols-[1.4fr_1fr_0.7fr_0.9fr_0.7fr_1.6fr_auto] items-center gap-3 bg-sand-100 border-b border-border px-5 py-3">
+            <div className="grid grid-cols-[1.4fr_1fr_0.7fr_0.9fr_0.7fr_1.6fr_40px] items-center gap-3 bg-sand-100 border-b border-border px-5 py-3">
               {[
                 labels.table.date,
                 labels.table.user,
@@ -190,7 +178,7 @@ export function AuditLogsTableCard({
             {logs.map((log) => (
               <div
                 key={log.id}
-                className="grid grid-cols-[1.4fr_1fr_0.7fr_0.9fr_0.7fr_1.6fr_auto] items-center gap-3 px-5 py-3.5 border-b border-border last:border-b-0 hover:bg-sand-50 transition-colors"
+                className="grid grid-cols-[1.4fr_1fr_0.7fr_0.9fr_0.7fr_1.6fr_40px] items-center gap-3 px-5 py-3.5 border-b border-border last:border-b-0 hover:bg-sand-50 transition-colors"
               >
                 <span className="text-[12px] text-ink-500 tabular-nums">
                   {formatDateTime(log.created_at, locale)}

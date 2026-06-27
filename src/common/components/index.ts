@@ -10,6 +10,7 @@ export { Modal } from './Modal';
 export { ConfirmDialog } from './ConfirmDialog';
 export { Pagination } from './Pagination';
 export { PasswordInput } from './PasswordInput';
+export { DatePickerButton } from './DatePickerButton';
 
 // Layout Components
 export {

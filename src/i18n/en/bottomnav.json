@@ -12,6 +12,7 @@
     "shortages": "Shortages",
     "transfers": "Stock Transfer",
     "settings": "Settings",
+    "auditLogs": "Audit Logs",
     "clientPortal": "Client Portal",
     "logout": "Log out"
   }
