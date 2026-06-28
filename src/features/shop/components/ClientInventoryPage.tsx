@@ -193,11 +193,13 @@ export function ClientInventoryPage() {
         );
       }
 
+      await invalidateInvProducts();
       setChanges({});
       setModalOpen(false);
       toastSuccess(inv.toast.success);
     } catch (err) {
       toastError(getErrorMessage(err));
+      throw err;
     } finally {
       setIsSaving(false);
     }

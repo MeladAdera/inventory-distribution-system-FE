@@ -3,10 +3,9 @@
 import { useState } from 'react';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
-import { useReceipts } from '@/features/shared/receipts';
+import { useReceipts, ReceiptDetailModal } from '@/features/shared/receipts';
 import { TypewriterText } from '@/common/components/TypewriterText';
 import { ReceiptsTableCard } from './receipts/ReceiptsTableCard';
-import { ReceiptDetailModal } from './receipts/ReceiptDetailModal';
 import type { ReceiptListItem } from '@/features/shared/receipts';
 
 const LIMIT = 15;

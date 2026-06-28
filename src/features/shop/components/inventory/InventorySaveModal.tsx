@@ -48,9 +48,13 @@ export function InventorySaveModal({
   }
 
   async function handleConfirm() {
-    await onConfirm({ decreaseNotes, increaseNotes });
-    setDecreaseNotes('');
-    setIncreaseNotes('');
+    try {
+      await onConfirm({ decreaseNotes, increaseNotes });
+      setDecreaseNotes('');
+      setIncreaseNotes('');
+    } catch {
+      // onConfirm showed the error toast; keep notes so the user can retry
+    }
   }
 
   const hasChanges = decreases.length > 0 || increases.length > 0;

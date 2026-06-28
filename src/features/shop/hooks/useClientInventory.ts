@@ -1,16 +1,13 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { inventoryApi } from '@/features/shared/inventory/api/inventory.api';
 import { productsApi } from '@/features/shared/products/api/products.api';
 import { categoriesApi } from '@/features/shared/categories/api/categories.api';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { StockStatus } from '@/features/shared/products/types/products.types';
-import type {
-  InventoryItem,
-  AdjustInventoryInput,
-} from '@/features/shared/inventory/types/inventory.types';
+import type { InventoryItem } from '@/features/shared/inventory/types/inventory.types';
 import type { Product } from '@/features/shared/products/types/products.types';
 import type { Category } from '@/features/shared/categories/types/categories.types';
 import type { EnrichedInventoryItem, InventoryCategory } from '../types/clientInventory.types';
@@ -22,7 +19,6 @@ function computeStatus(qty: number, isLowStock: boolean, threshold: number): Sto
 }
 
 export function useClientInventory() {
-  const queryClient = useQueryClient();
   const shopId = useAuthStore((s) => s.user?.shopId);
 
   const inventoryQuery = useQuery({
@@ -88,18 +84,10 @@ export function useClientInventory() {
     return { categories: groupedCategories, allItems: groupedCategories.flatMap((c) => c.items) };
   }, [inventoryQuery.data, productsQuery.data, categoriesQuery.data]);
 
-  const adjustMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: AdjustInventoryInput }) =>
-      inventoryApi.adjust(id, data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['client-inventory'] }),
-  });
-
   return {
     categories,
     allItems,
     isLoading: inventoryQuery.isLoading || productsQuery.isLoading,
     error: inventoryQuery.error ?? productsQuery.error,
-    adjustInventory: adjustMutation.mutateAsync,
-    isAdjusting: adjustMutation.isPending,
   };
 }
