@@ -13,6 +13,7 @@
     "employees": "Employees",
     "settings": "Settings",
     "more": "More",
+    "receipts": "Receipts",
     "auditLogs": "Activity log"
   },
   "moreSheet": {
@@ -54,6 +55,55 @@
     "logout": "Log out",
     "accountLabel": "Account"
   },
+  "receipts": {
+    "title": "Receipts",
+    "subtitle": "A record of every batch stock decrease made in your shop.",
+    "loading": "Loading receipts…",
+    "errorMsg": "Failed to load receipts. Please try again.",
+    "taglines": [
+      "Every consumption, fully recorded",
+      "Track what left your shelves",
+      "A clear record of stock decreases",
+      "Know what was used and when"
+    ],
+    "filter": {
+      "fromDate": "From",
+      "toDate": "To",
+      "clear": "Clear"
+    },
+    "table": {
+      "receiptNo": "Receipt #",
+      "date": "Date",
+      "items": "Items",
+      "notes": "Notes",
+      "details": "Details",
+      "viewBtn": "View",
+      "itemsUnit": "items",
+      "noNotes": "—"
+    },
+    "empty": {
+      "title": "No receipts yet",
+      "sub": "Receipts are created automatically when you decrease stock quantities."
+    },
+    "modal": {
+      "title": "Receipt details",
+      "product": "Product",
+      "consumed": "Consumed",
+      "before": "Before",
+      "after": "After",
+      "price": "Unit price",
+      "totalPrice": "Total price",
+      "notesLabel": "Notes",
+      "createdBy": "Created by",
+      "date": "Date",
+      "closeBtn": "Close",
+      "noNotes": "No notes"
+    },
+    "toast": {
+      "createSuccess": "Receipt saved successfully",
+      "createError": "Failed to save receipt. Please try again."
+    }
+  },
   "inventory": {
     "title": "My inventory",
     "subtitle": "Increase the displayed quantity from your own back-stock. When it runs out, order more from the supplier.",
@@ -84,7 +134,12 @@
       "intro": "The following quantities will be updated:",
       "noChanges": "No changes made yet.",
       "confirm": "Confirm save",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "decreaseSection": "Stock decrease (saved as receipt)",
+      "increaseSection": "Stock increase",
+      "notesPlaceholder": "Reason or notes (optional)…",
+      "receiptNotesLabel": "Receipt notes",
+      "increaseNotesLabel": "Reason for increase"
     },
     "toast": {
       "success": "Inventory updated successfully",
