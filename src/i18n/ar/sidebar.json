@@ -8,6 +8,7 @@
     "clients": "العملاء",
     "transfers": "نقل المخزون",
     "shortages": "نقص المخزون",
+    "receipts": "الإيصالات",
     "auditLogs": "سجل التدقيق",
     "settings": "الإعدادات"
   },

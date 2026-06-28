@@ -13,7 +13,9 @@ import clientEn from './en/client.json';
 import authEn from './en/auth.json';
 import usersEn from './en/users.json';
 import shopsEn from './en/shops.json';
+import receiptsEn from './en/receipts.json';
 import sidebarAr from './ar/sidebar.json';
+import receiptsAr from './ar/receipts.json';
 import auditLogsAr from './ar/audit-logs.json';
 import topbarAr from './ar/topbar.json';
 import bottomnavAr from './ar/bottomnav.json';
@@ -48,6 +50,7 @@ export const translations = {
     users: usersEn,
     shops: shopsEn,
     auditLogs: auditLogsEn,
+    receipts: receiptsEn,
   },
   ar: {
     sidebar: sidebarAr,
@@ -65,6 +68,7 @@ export const translations = {
     users: usersAr,
     shops: shopsAr,
     auditLogs: auditLogsAr,
+    receipts: receiptsAr,
   },
 } as const;
 

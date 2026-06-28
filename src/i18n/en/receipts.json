@@ -1,0 +1,37 @@
+{
+  "page": {
+    "title": "Receipts",
+    "subtitle": "All stock consumption records across every shop.",
+    "loadError": "Failed to load receipts. Please try again."
+  },
+  "filter": {
+    "allShops": "All shops",
+    "fromDate": "From",
+    "toDate": "To",
+    "clear": "Clear filters"
+  },
+  "table": {
+    "receiptNo": "Receipt #",
+    "date": "Date",
+    "shop": "Shop",
+    "createdBy": "Created by",
+    "items": "Items",
+    "notes": "Notes",
+    "detail": "Detail"
+  },
+  "empty": "No receipts found.",
+  "modal": {
+    "title": "Receipt details",
+    "product": "Product",
+    "consumed": "Consumed",
+    "before": "Before",
+    "after": "After",
+    "price": "Unit price",
+    "totalPrice": "Total price",
+    "notesLabel": "Notes",
+    "createdBy": "Created by",
+    "date": "Date",
+    "closeBtn": "Close",
+    "noNotes": "No notes"
+  }
+}

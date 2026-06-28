@@ -8,6 +8,7 @@
     "clients": "Clients",
     "transfers": "Transfers",
     "shortages": "Shortages",
+    "receipts": "Receipts",
     "auditLogs": "Audit Logs",
     "settings": "Settings"
   },

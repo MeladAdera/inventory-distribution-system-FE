@@ -6,6 +6,7 @@ import {
   Truck,
   TrendingDown,
   ScrollText,
+  Receipt,
   Settings,
   type LucideIcon,
 } from 'lucide-react';
@@ -40,6 +41,7 @@ export const NAV_ITEMS: NavItem[] = [
     badge: 5,
     badgeVariant: 'danger',
   },
+  { id: 'receipts', href: '/receipts', icon: Receipt, section: 'main' },
   { id: 'auditLogs', href: '/audit-logs', icon: ScrollText, section: 'main' },
   { id: 'settings', href: '/settings', icon: Settings, section: 'manage' },
 ];
