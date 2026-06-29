@@ -205,7 +205,9 @@ export function ConsumptionTrendChart() {
             {page} / {totalPages}
           </span>
           <span>·</span>
-          <span>{total.toLocaleString(localeCode)} products</span>
+          <span>
+            {total.toLocaleString(localeCode)} {d.charts.products}
+          </span>
         </div>
       )}
     </div>

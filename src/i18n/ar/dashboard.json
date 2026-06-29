@@ -37,7 +37,8 @@
     "others": "أخرى",
     "selectShop": "اختر فرعاً",
     "selectShopPrompt": "اختر فرعاً لعرض استهلاك منتجاته",
-    "units": "وحدة"
+    "units": "وحدة",
+    "products": "منتج"
   },
   "lowStock": {
     "title": "تنبيهات نقص المخزون",

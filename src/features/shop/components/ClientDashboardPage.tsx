@@ -162,6 +162,8 @@ export function ClientDashboardPage() {
           label={kpi.totalProducts}
           value={allItems.length}
           sub={kpi.totalProductsSub}
+          clickable
+          onClick={() => router.push('/client/inventory')}
         />
         <KpiCard
           icon={AlertTriangle}
@@ -170,6 +172,8 @@ export function ClientDashboardPage() {
           label={kpi.toRefill}
           value={lowStockItems.length}
           sub={kpi.toRefillSub}
+          clickable
+          onClick={() => router.push('/client/inventory')}
         />
         <div className="col-span-2 md:col-span-1">
           <KpiCard
@@ -179,6 +183,8 @@ export function ClientDashboardPage() {
             label={kpi.lastOrder}
             value={lastOrderValue}
             sub={lastOrderSub}
+            clickable
+            onClick={() => router.push('/client/orders')}
           />
         </div>
       </div>

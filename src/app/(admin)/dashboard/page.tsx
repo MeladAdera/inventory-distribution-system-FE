@@ -60,6 +60,8 @@ export default function DashboardPage() {
       value: val(totalProducts),
       trend: undefined,
       sub: d.kpi.totalProductsSub,
+      clickable: true,
+      onClick: () => router.push('/products'),
     },
     {
       icon: Store,
@@ -69,6 +71,8 @@ export default function DashboardPage() {
       value: val(totalShops),
       trend: undefined,
       sub: d.kpi.totalClientsSub,
+      clickable: true,
+      onClick: () => router.push('/shops'),
     },
     {
       icon: ClipboardList,
@@ -78,6 +82,8 @@ export default function DashboardPage() {
       value: val(pendingOrders),
       trend: undefined,
       sub: d.kpi.stockValueSub,
+      clickable: true,
+      onClick: () => router.push('/transfers'),
     },
     {
       icon: TrendingDown,
@@ -98,6 +104,8 @@ export default function DashboardPage() {
       value: val(totalOrders),
       trend: undefined,
       sub: d.kpi.todayUsageSub,
+      clickable: true,
+      onClick: () => router.push('/transfers'),
     },
     {
       icon: CheckCircle2,
@@ -107,6 +115,8 @@ export default function DashboardPage() {
       value: val(completedOrders),
       trend: undefined,
       sub: d.kpi.monthlyUsageSub,
+      clickable: true,
+      onClick: () => router.push('/receipts'),
     },
   ];
 

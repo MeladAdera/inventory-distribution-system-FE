@@ -37,7 +37,8 @@
     "others": "Others",
     "selectShop": "Select a shop",
     "selectShopPrompt": "Select a shop to view its product consumption",
-    "units": "units"
+    "units": "units",
+    "products": "products"
   },
   "lowStock": {
     "title": "Low Stock Alerts",
