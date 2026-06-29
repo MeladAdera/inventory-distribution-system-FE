@@ -32,7 +32,12 @@
     "daily": "يومي",
     "weekly": "أسبوعي",
     "monthly": "شهري",
-    "today": "اليوم"
+    "today": "اليوم",
+    "allShops": "جميع الفروع",
+    "others": "أخرى",
+    "selectShop": "اختر فرعاً",
+    "selectShopPrompt": "اختر فرعاً لعرض استهلاك منتجاته",
+    "units": "وحدة"
   },
   "lowStock": {
     "title": "تنبيهات نقص المخزون",

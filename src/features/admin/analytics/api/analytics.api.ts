@@ -1,5 +1,5 @@
 import { apiClient } from '@/common/api';
-import type { TrendPeriod } from '../types/analytics.types';
+import type { TrendPeriod, ShopConsumptionParams } from '../types/analytics.types';
 
 export const analyticsApi = {
   topProducts: async (limit = 5) => {
@@ -9,6 +9,11 @@ export const analyticsApi = {
 
   consumptionTrend: async (period: TrendPeriod) => {
     const response = await apiClient.get('/analytics/consumption-trend', { params: { period } });
+    return response.data;
+  },
+
+  shopConsumption: async (params?: ShopConsumptionParams) => {
+    const response = await apiClient.get('/analytics/shop-consumption', { params });
     return response.data;
   },
 };
