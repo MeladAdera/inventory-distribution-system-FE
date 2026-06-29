@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { notificationsApi } from '../api/notifications.api';
 import type { Notification, NotificationListParams } from '../types/notifications.types';
 
@@ -10,10 +10,17 @@ export function useNotifications(params?: NotificationListParams) {
   const listQuery = useQuery({
     queryKey: ['notifications', params],
     queryFn: () => notificationsApi.list(params),
+    placeholderData: keepPreviousData,
   });
 
   // Handles both flat { data: Notification[] } and paginated { data: { data: Notification[] } }
-  const items: Notification[] = listQuery.data?.data?.data ?? listQuery.data?.data ?? [];
+  const paginated = listQuery.data?.data;
+  const items: Notification[] = Array.isArray(paginated) ? paginated : (paginated?.data ?? []);
+
+  const total: number = paginated?.total ?? items.length;
+  const totalPages: number = paginated?.totalPages ?? 1;
+  const hasNext: boolean = paginated?.hasNext ?? false;
+  const hasPrev: boolean = paginated?.hasPrev ?? false;
 
   const unreadCount = items.filter((n) => !n.is_read).length;
 
@@ -28,12 +35,18 @@ export function useNotifications(params?: NotificationListParams) {
   });
 
   return {
-    notifications: listQuery.data,
     items,
+    total,
+    totalPages,
+    hasNext,
+    hasPrev,
     unreadCount,
     isLoading: listQuery.isLoading,
+    isFetching: listQuery.isFetching,
     error: listQuery.error,
     markRead: markReadMutation.mutateAsync,
+    isMarkingRead: markReadMutation.isPending,
     markAllRead: markAllReadMutation.mutateAsync,
+    isMarkingAllRead: markAllReadMutation.isPending,
   };
 }

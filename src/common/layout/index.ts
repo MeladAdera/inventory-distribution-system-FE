@@ -6,8 +6,6 @@ export { BottomSheet } from './BottomSheet';
 export { DashboardLayout } from './DashboardLayout';
 export { useSidebarStore } from './sidebarStore';
 export type { NavItem } from './navConfig';
-export type { MockNotification, NotifType } from './mockNotifications';
-export { MOCK_NOTIFICATIONS } from './mockNotifications';
 export { ClientLayout } from './ClientLayout';
 export { ClientSidebar } from './ClientSidebar';
 export { ClientTopBar } from './ClientTopBar';

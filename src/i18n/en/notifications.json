@@ -1,0 +1,24 @@
+{
+  "page": {
+    "title": "Notifications",
+    "subtitle": "Low stock alerts and order updates from your warehouse"
+  },
+  "filters": {
+    "all": "All",
+    "unread": "Unread",
+    "read": "Read"
+  },
+  "types": {
+    "LOW_STOCK": "Low Stock",
+    "ORDER_UPDATE": "Order Update",
+    "ORDER_CREATED": "New Order",
+    "ORDER_STATUS": "Order Update"
+  },
+  "markAllRead": "Mark all read",
+  "total": "{count} total",
+  "emptyState": {
+    "all": "No notifications yet",
+    "unread": "You're all caught up!",
+    "read": "No read notifications"
+  }
+}

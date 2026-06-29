@@ -14,6 +14,7 @@ import authEn from './en/auth.json';
 import usersEn from './en/users.json';
 import shopsEn from './en/shops.json';
 import receiptsEn from './en/receipts.json';
+import notificationsEn from './en/notifications.json';
 import sidebarAr from './ar/sidebar.json';
 import receiptsAr from './ar/receipts.json';
 import auditLogsAr from './ar/audit-logs.json';
@@ -30,6 +31,7 @@ import clientAr from './ar/client.json';
 import authAr from './ar/auth.json';
 import usersAr from './ar/users.json';
 import shopsAr from './ar/shops.json';
+import notificationsAr from './ar/notifications.json';
 
 export type Locale = 'ar' | 'en';
 
@@ -51,6 +53,7 @@ export const translations = {
     shops: shopsEn,
     auditLogs: auditLogsEn,
     receipts: receiptsEn,
+    notifications: notificationsEn,
   },
   ar: {
     sidebar: sidebarAr,
@@ -69,6 +72,7 @@ export const translations = {
     shops: shopsAr,
     auditLogs: auditLogsAr,
     receipts: receiptsAr,
+    notifications: notificationsAr,
   },
 } as const;
 

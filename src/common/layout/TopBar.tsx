@@ -27,11 +27,15 @@ interface TopBarProps {
 const NOTIF_ICON: Record<NotificationType, typeof AlertTriangle> = {
   [NotificationType.LOW_STOCK]: AlertTriangle,
   [NotificationType.ORDER_UPDATE]: Inbox,
+  [NotificationType.ORDER_CREATED]: Inbox,
+  [NotificationType.ORDER_STATUS]: Inbox,
 };
 
 const NOTIF_COLOR: Record<NotificationType, string> = {
   [NotificationType.LOW_STOCK]: 'text-warning-700',
   [NotificationType.ORDER_UPDATE]: 'text-info-700',
+  [NotificationType.ORDER_CREATED]: 'text-info-700',
+  [NotificationType.ORDER_STATUS]: 'text-info-700',
 };
 
 export function TopBar({ onMenuClick }: TopBarProps) {
@@ -44,7 +48,12 @@ export function TopBar({ onMenuClick }: TopBarProps) {
   const notifRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLDivElement>(null);
 
-  const { items: notifications, unreadCount, markRead, markAllRead } = useNotifications();
+  const {
+    items: notifications,
+    unreadCount,
+    markRead,
+    markAllRead,
+  } = useNotifications({ limit: 20 });
 
   const pageTitles = t.topbar.pageTitles as Record<string, string>;
   const segments = pathname.split('/').filter(Boolean);
