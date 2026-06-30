@@ -14,7 +14,8 @@
     "settings": "الإعدادات",
     "more": "المزيد",
     "receipts": "الإيصالات",
-    "auditLogs": "سجل النشاط"
+    "auditLogs": "سجل النشاط",
+    "notifications": "الإشعارات"
   },
   "moreSheet": {
     "title": "المزيد",
@@ -53,7 +54,13 @@
     "menuLabel": "القائمة",
     "langSwitchLabel": "EN",
     "logout": "تسجيل الخروج",
-    "accountLabel": "الحساب"
+    "accountLabel": "الحساب",
+    "notifications": {
+      "title": "الإشعارات",
+      "markAllRead": "تعليم الكل كمقروء",
+      "viewAll": "عرض جميع الإشعارات",
+      "emptyState": "لا توجد إشعارات جديدة!"
+    }
   },
   "receipts": {
     "title": "الإيصالات",
