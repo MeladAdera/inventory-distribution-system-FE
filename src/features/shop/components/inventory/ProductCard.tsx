@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { ShoppingCart, Pencil, Trash2, Minus, Plus } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { ProductBanner } from '@/features/shared/products/components/ProductBanner';
@@ -35,6 +36,24 @@ export function ProductCard({
   onDelete,
 }: ProductCardProps) {
   const newQty = item.current_quantity + delta;
+  const [inputValue, setInputValue] = useState(delta === 0 ? '' : String(delta));
+
+  useEffect(() => {
+    setInputValue(delta === 0 ? '' : String(delta));
+  }, [delta]);
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const raw = e.target.value;
+    setInputValue(raw);
+    if (raw === '' || raw === '-') return;
+    const parsed = parseInt(raw, 10);
+    if (Number.isNaN(parsed)) return;
+    onDelta(Math.max(-item.current_quantity, parsed));
+  }
+
+  function handleInputBlur() {
+    setInputValue(delta === 0 ? '' : String(delta));
+  }
 
   return (
     <Card className="overflow-hidden">
@@ -108,14 +127,19 @@ export function ProductCard({
               <span className="text-[9px] text-ink-400 leading-none mb-0.5">
                 {labels.updateQty}
               </span>
-              <span
+              <input
+                type="text"
+                inputMode="numeric"
+                value={inputValue}
+                onChange={handleInputChange}
+                onBlur={handleInputBlur}
+                placeholder="—"
+                dir="ltr"
                 className={cn(
-                  'font-mono text-[15px] font-bold tabular-nums leading-none',
+                  'w-12 bg-transparent text-center outline-none font-mono text-[15px] font-bold tabular-nums leading-none placeholder:text-ink-300',
                   delta > 0 ? 'text-success-700' : delta < 0 ? 'text-danger-700' : 'text-ink-300'
                 )}
-              >
-                {delta > 0 ? `+${delta}` : delta === 0 ? '—' : delta}
-              </span>
+              />
             </div>
 
             <button
