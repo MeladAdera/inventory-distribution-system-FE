@@ -383,7 +383,7 @@ function ProductRow({ product, rowNum, p, onView, onEdit, onRestock, onDelete }:
         <span className="text-ink-600 whitespace-nowrap">{categoryName}</span>
 
         <span className="font-mono text-ink-700 whitespace-nowrap">
-          د.إ {Number(product.price).toFixed(2)}
+          ل.س {Number(product.price).toFixed(2)}
         </span>
 
         <span className="text-ink-600">{sourceLabel}</span>

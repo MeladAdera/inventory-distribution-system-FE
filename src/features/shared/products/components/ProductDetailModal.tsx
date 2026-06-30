@@ -44,7 +44,7 @@ export function ProductDetailModal({ open, product, onClose }: ProductDetailModa
       label: p.detail.currentQty,
       value: isLoadingDetail ? null : String(detail?.current_quantity ?? 0),
     },
-    { label: p.detail.price, value: `د.إ ${Number(product.price).toFixed(2)}` },
+    { label: p.detail.price, value: `ل.س ${Number(product.price).toFixed(2)}` },
     { label: p.detail.source, value: sourceLabel },
     { label: p.detail.barcode, value: product.barcode ?? '—' },
     { label: p.detail.category, value: categoryName },

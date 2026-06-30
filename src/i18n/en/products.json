@@ -50,7 +50,7 @@
     "category": "Category",
     "categoryPlaceholder": "Select a category",
     "description": "Description",
-    "price": "Price (AED)",
+    "price": "Price (SYP)",
     "pricePlaceholder": "0.00",
     "initialQty": "Initial quantity",
     "submitError": "Something went wrong. Please try again.",

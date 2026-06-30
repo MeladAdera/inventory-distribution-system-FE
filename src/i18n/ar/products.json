@@ -50,7 +50,7 @@
     "category": "الفئة",
     "categoryPlaceholder": "اختر فئة",
     "description": "الوصف",
-    "price": "السعر (د.إ)",
+    "price": "السعر (ل.س)",
     "pricePlaceholder": "0.00",
     "initialQty": "الكمية الابتدائية",
     "submitError": "حدث خطأ ما. يرجى المحاولة مجدداً.",
