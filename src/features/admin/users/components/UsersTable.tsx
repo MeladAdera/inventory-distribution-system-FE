@@ -19,9 +19,19 @@ interface UsersTableProps {
   canEdit: boolean;
   onEdit: (user: User) => void;
   onDeactivate: (user: User) => void;
+  onReactivate: (user: User) => void;
+  reactivatingId: number | null;
 }
 
-export function UsersTable({ data, isLoading, canEdit, onEdit, onDeactivate }: UsersTableProps) {
+export function UsersTable({
+  data,
+  isLoading,
+  canEdit,
+  onEdit,
+  onDeactivate,
+  onReactivate,
+  reactivatingId,
+}: UsersTableProps) {
   const { t } = useI18n();
   const u = t.users;
 
@@ -69,12 +79,20 @@ export function UsersTable({ data, isLoading, canEdit, onEdit, onDeactivate }: U
         >
           {u.table.edit}
         </button>
-        {user.is_active && (
+        {user.is_active ? (
           <button
             onClick={() => onDeactivate(user)}
             className="text-xs font-medium text-red-600 hover:underline"
           >
             {u.table.deactivate}
+          </button>
+        ) : (
+          <button
+            onClick={() => onReactivate(user)}
+            disabled={reactivatingId === user.id}
+            className="text-xs font-medium text-green-600 hover:underline disabled:opacity-50 disabled:no-underline"
+          >
+            {u.table.activate}
           </button>
         )}
       </div>

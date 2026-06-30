@@ -24,6 +24,7 @@
     "inactive": "غير نشط",
     "edit": "تعديل",
     "deactivate": "تعطيل",
+    "activate": "تفعيل",
     "empty": "لا يوجد مستخدمون"
   },
   "createEmployee": {
@@ -77,5 +78,8 @@
     "confirm": "تعطيل",
     "cancel": "إلغاء",
     "toastSuccess": "تم تعطيل {name}"
+  },
+  "activateUser": {
+    "toastSuccess": "تم إعادة تفعيل {name}"
   }
 }

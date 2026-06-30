@@ -69,6 +69,12 @@
     "delete": "Deactivate",
     "cancel": "Cancel"
   },
+  "activate": {
+    "title": "Confirm activation?",
+    "warning": "The client will be reactivated and can log in again.",
+    "confirm": "Activate",
+    "cancel": "Cancel"
+  },
   "toast": {
     "created": "Shop owner created successfully",
     "updated": "Client updated",

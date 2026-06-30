@@ -3,13 +3,13 @@
 **Status**: ✅ Complete  
 **Tickets**: TICKET-017, TICKET-022–027, TICKET-040–044  
 **Created**: 2026-06-10  
-**Last Updated**: 2026-06-26
+**Last Updated**: 2026-06-30
 
 ---
 
 ## Overview
 
-The Users feature lets `WAREHOUSE_ADMIN` and `SHOP_OWNER` roles manage team members. Admins can create shop owners (which also creates the shop); shop owners can create employees within their own shop. Both roles can edit and deactivate users.
+The Users feature lets `WAREHOUSE_ADMIN` and `SHOP_OWNER` roles manage team members. Admins can create shop owners (which also creates the shop); shop owners can create employees within their own shop. Both roles can edit, deactivate, and reactivate users.
 
 `EMPLOYEE` role has no access — they are redirected to `/dashboard` on load.
 
@@ -51,6 +51,7 @@ src/app/(dashboard)/users/
 | `POST` | `/users/employees` | Create employee in caller's shop | SHOP_OWNER |
 | `PATCH` | `/users/:id` | Update name / email | WAREHOUSE_ADMIN, SHOP_OWNER |
 | `DELETE` | `/users/:id` | Soft-delete (sets `is_active = false`) | WAREHOUSE_ADMIN, SHOP_OWNER |
+| `PATCH` | `/users/:id/activate` | Reactivate (sets `is_active = true`). No-op if already active. `SHOP_OWNER` can only target their own shop's employees — cross-shop returns `403`. | WAREHOUSE_ADMIN, SHOP_OWNER |
 
 ### Query Params (list)
 | Param | Type | Notes |
@@ -99,6 +100,7 @@ const {
   createEmployee,  // (data: CreateEmployeeInput) => Promise<void>
   updateUser,      // ({ id, data }) => Promise<void>
   deactivateUser,  // (id: number) => Promise<void>
+  reactivateUser,  // (id: number) => Promise<void>
 } = useUsers(params);
 ```
 
@@ -148,10 +150,10 @@ const {
 
 **Route**: `/users`
 
-| Role | Can see page | Create button shown | Edit/Deactivate shown |
-|------|:-----------:|:------------------:|:---------------------:|
+| Role | Can see page | Create button shown | Edit / Deactivate / Activate shown |
+|------|:-----------:|:------------------:|:----------------------------------:|
 | WAREHOUSE_ADMIN | ✓ | "Create Shop Owner" | ✓ |
-| SHOP_OWNER | ✓ | "Create Employee" | ✓ |
+| SHOP_OWNER | ✓ | "Create Employee" | ✓ (own shop's employees only) |
 | EMPLOYEE | ✗ (redirected to `/dashboard`) | — | — |
 
 **Filters**: search (debounced 300 ms) + role dropdown. Both reset pagination to page 1 on change.
@@ -187,8 +189,9 @@ const {
 - [ ] Create Shop Owner — form validates, success toast, list refreshes
 - [ ] Create Employee — form validates, success toast, list refreshes
 - [ ] Edit User — pre-fills current values, saves changes, success toast
-- [ ] Deactivate — confirm dialog shows user name, sets `is_active = false`, row status badge changes to "Inactive", Deactivate button disappears for that row
-- [ ] Deactivate button is hidden for already-inactive users
+- [ ] Deactivate — confirm dialog shows user name, sets `is_active = false`, row status badge changes to "Inactive", "Deactivate" button replaced by "Activate" for that row
+- [ ] Activate — clicking "Activate" on an inactive row fires immediately (no dialog), sets `is_active = true`, status badge changes to "Active", "Activate" button replaced by "Deactivate"
+- [ ] Activate shows success toast with user name; API errors (e.g. 403 cross-shop) surface as error toast
 - [ ] Server errors (e.g. duplicate email) surface inside the modal as an `ErrorAlert`
 - [ ] Pagination shows only when total > 10
 

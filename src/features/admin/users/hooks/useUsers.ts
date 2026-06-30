@@ -32,6 +32,11 @@ export function useUsers(params?: UserListParams) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
   });
 
+  const reactivateMutation = useMutation({
+    mutationFn: (id: number) => usersApi.reactivate(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
+  });
+
   return {
     users: listQuery.data,
     isLoading: listQuery.isLoading,
@@ -40,5 +45,6 @@ export function useUsers(params?: UserListParams) {
     createEmployee: createEmployeeMutation.mutateAsync,
     updateUser: updateMutation.mutateAsync,
     deactivateUser: deactivateMutation.mutateAsync,
+    reactivateUser: reactivateMutation.mutateAsync,
   };
 }

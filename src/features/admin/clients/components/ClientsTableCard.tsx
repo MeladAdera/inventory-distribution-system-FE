@@ -6,6 +6,7 @@ import {
   Eye,
   Pencil,
   Trash2,
+  RotateCcw,
   ChevronLeft,
   ChevronRight,
   Users,
@@ -306,6 +307,8 @@ function ClientRow({ client, rowNum, locale, p, onView, onEdit, onDelete }: Clie
   const lastActivity = locale === 'ar' ? client.last_activity_ar : client.last_activity_en;
   const statusLabel = p.toolbar.statuses[client.status];
 
+  const isActive = client.status === 'active';
+
   const actions = (
     <div className="flex items-center gap-0.5 justify-end">
       <IconBtn onClick={() => onView(client)} title={p.table.client} colorClass="text-ink-600">
@@ -316,10 +319,10 @@ function ClientRow({ client, rowNum, locale, p, onView, onEdit, onDelete }: Clie
       </IconBtn>
       <IconBtn
         onClick={() => onDelete(client)}
-        title={p.delete.delete}
-        colorClass="text-danger-700"
+        title={isActive ? p.delete.delete : p.activate.confirm}
+        colorClass={isActive ? 'text-danger-700' : 'text-teal-700'}
       >
-        <Trash2 size={15} />
+        {isActive ? <Trash2 size={15} /> : <RotateCcw size={15} />}
       </IconBtn>
     </div>
   );
@@ -403,10 +406,10 @@ function ClientRow({ client, rowNum, locale, p, onView, onEdit, onDelete }: Clie
           </IconBtn>
           <IconBtn
             onClick={() => onDelete(client)}
-            title={p.delete.delete}
-            colorClass="text-danger-700"
+            title={isActive ? p.delete.delete : p.activate.confirm}
+            colorClass={isActive ? 'text-danger-700' : 'text-teal-700'}
           >
-            <Trash2 size={15} />
+            {isActive ? <Trash2 size={15} /> : <RotateCcw size={15} />}
           </IconBtn>
         </div>
       </div>

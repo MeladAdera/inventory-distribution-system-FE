@@ -1,10 +1,12 @@
-import { Users, Pencil, UserX } from 'lucide-react';
+import { Users, Pencil, UserX, UserCheck } from 'lucide-react';
 import type { User } from '@/features/admin/users/types/users.types';
 
 interface EmployeesTableCardProps {
   employees: User[];
   onEdit: (user: User) => void;
   onDeactivate: (user: User) => void;
+  onReactivate: (user: User) => void;
+  reactivatingId: number | null;
   onAdd: () => void;
   labels: {
     table: {
@@ -15,6 +17,7 @@ interface EmployeesTableCardProps {
       inactive: string;
       editBtn: string;
       deactivateBtn: string;
+      activateBtn: string;
       empty: string;
     };
     empty: {
@@ -49,6 +52,8 @@ export function EmployeesTableCard({
   employees,
   onEdit,
   onDeactivate,
+  onReactivate,
+  reactivatingId,
   onAdd,
   labels,
 }: EmployeesTableCardProps) {
@@ -104,13 +109,22 @@ export function EmployeesTableCard({
                 <Pencil size={13} />
                 {labels.table.editBtn}
               </button>
-              {emp.is_active && (
+              {emp.is_active ? (
                 <button
                   onClick={() => onDeactivate(emp)}
                   className="inline-flex items-center gap-1.5 px-3 h-8 rounded-lg border border-red-200 text-[13px] font-medium text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <UserX size={13} />
                   {labels.table.deactivateBtn}
+                </button>
+              ) : (
+                <button
+                  onClick={() => onReactivate(emp)}
+                  disabled={reactivatingId === emp.id}
+                  className="inline-flex items-center gap-1.5 px-3 h-8 rounded-lg border border-teal-200 text-[13px] font-medium text-teal-700 hover:bg-teal-50 transition-colors disabled:opacity-50"
+                >
+                  <UserCheck size={13} />
+                  {labels.table.activateBtn}
                 </button>
               )}
             </div>
@@ -137,13 +151,22 @@ export function EmployeesTableCard({
                 <Pencil size={13} />
                 {labels.table.editBtn}
               </button>
-              {emp.is_active && (
+              {emp.is_active ? (
                 <button
                   onClick={() => onDeactivate(emp)}
                   className="inline-flex items-center gap-1.5 px-3 h-8 rounded-lg border border-red-200 text-[13px] font-medium text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <UserX size={13} />
                   {labels.table.deactivateBtn}
+                </button>
+              ) : (
+                <button
+                  onClick={() => onReactivate(emp)}
+                  disabled={reactivatingId === emp.id}
+                  className="inline-flex items-center gap-1.5 px-3 h-8 rounded-lg border border-teal-200 text-[13px] font-medium text-teal-700 hover:bg-teal-50 transition-colors disabled:opacity-50"
+                >
+                  <UserCheck size={13} />
+                  {labels.table.activateBtn}
                 </button>
               )}
             </div>

@@ -24,6 +24,7 @@
     "inactive": "Inactive",
     "edit": "Edit",
     "deactivate": "Deactivate",
+    "activate": "Activate",
     "empty": "No users found"
   },
   "createEmployee": {
@@ -77,5 +78,8 @@
     "confirm": "Deactivate",
     "cancel": "Cancel",
     "toastSuccess": "{name} has been deactivated"
+  },
+  "activateUser": {
+    "toastSuccess": "{name} has been reactivated"
   }
 }

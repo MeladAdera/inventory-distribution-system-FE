@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Plus, Loader2, AlertTriangle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
+import { useToast } from '@/providers';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { useUsers } from '@/features/admin/users/hooks/useUsers';
 import { UserRole } from '@/features/auth/types/enums';
 import { CreateEmployeeModal } from '@/features/admin/users/components/CreateEmployeeModal';
@@ -14,12 +16,26 @@ import type { User } from '@/features/admin/users/types/users.types';
 export function ClientEmployeesPage() {
   const { t } = useI18n();
   const emp = t.client.employees;
+  const toast = useToast();
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);
   const [deactivateUser, setDeactivateUser] = useState<User | null>(null);
+  const [reactivatingId, setReactivatingId] = useState<number | null>(null);
 
-  const { users, isLoading, error } = useUsers({ role: UserRole.EMPLOYEE });
+  const { users, isLoading, error, reactivateUser } = useUsers({ role: UserRole.EMPLOYEE });
+
+  const handleReactivate = async (user: User) => {
+    setReactivatingId(user.id);
+    try {
+      await reactivateUser(user.id);
+      toast.success(t.users.activateUser.toastSuccess.replace('{name}', user.name));
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setReactivatingId(null);
+    }
+  };
 
   const employees: User[] = users?.data?.data ?? [];
   const total: number = users?.data?.total ?? 0;
@@ -65,6 +81,8 @@ export function ClientEmployeesPage() {
         employees={employees}
         onEdit={setEditUser}
         onDeactivate={setDeactivateUser}
+        onReactivate={handleReactivate}
+        reactivatingId={reactivatingId}
         onAdd={() => setCreateOpen(true)}
         labels={{
           table: emp.table,

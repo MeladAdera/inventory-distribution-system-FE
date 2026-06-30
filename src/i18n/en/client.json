@@ -197,6 +197,7 @@
       "inactive": "Inactive",
       "editBtn": "Edit",
       "deactivateBtn": "Deactivate",
+      "activateBtn": "Activate",
       "empty": "No employees yet"
     },
     "empty": {

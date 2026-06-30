@@ -11,6 +11,8 @@ import { CreateEmployeeModal } from '@/features/admin/users/components/CreateEmp
 import { EditUserModal } from '@/features/admin/users/components/EditUserModal';
 import { DeactivateUserDialog } from '@/features/admin/users/components/DeactivateUserDialog';
 import { useI18n } from '@/providers/I18nProvider';
+import { useToast } from '@/providers';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { UserRole } from '@/features/auth/types/enums';
 import type { User } from '@/features/admin/users';
 
@@ -20,6 +22,7 @@ export default function UsersPage() {
   const router = useRouter();
   const { t } = useI18n();
   const u = t.users;
+  const toast = useToast();
   const { isEmployee, isWarehouseAdmin, isShopOwner } = usePermission();
 
   const [page, setPage] = useState(1);
@@ -31,6 +34,7 @@ export default function UsersPage() {
   const [showCreateEmployee, setShowCreateEmployee] = useState(false);
   const [editTarget, setEditTarget] = useState<User | null>(null);
   const [deactivateTarget, setDeactivateTarget] = useState<User | null>(null);
+  const [reactivatingId, setReactivatingId] = useState<number | null>(null);
 
   useEffect(() => {
     if (isEmployee) router.replace('/dashboard');
@@ -51,7 +55,7 @@ export default function UsersPage() {
     ...(debouncedSearch ? { search: debouncedSearch } : {}),
   };
 
-  const { users, isLoading, error } = useUsers(params);
+  const { users, isLoading, error, reactivateUser } = useUsers(params);
 
   const usersData = users?.data;
   const userList: User[] = usersData?.data ?? [];
@@ -63,6 +67,21 @@ export default function UsersPage() {
     setEditTarget(null);
     setDeactivateTarget(null);
   }, []);
+
+  const handleReactivate = useCallback(
+    async (user: User) => {
+      setReactivatingId(user.id);
+      try {
+        await reactivateUser(user.id);
+        toast.success(u.activateUser.toastSuccess.replace('{name}', user.name));
+      } catch (err) {
+        toast.error(getErrorMessage(err));
+      } finally {
+        setReactivatingId(null);
+      }
+    },
+    [reactivateUser, toast, u]
+  );
 
   if (isEmployee) return null;
 
@@ -118,6 +137,8 @@ export default function UsersPage() {
         canEdit={isWarehouseAdmin || isShopOwner}
         onEdit={setEditTarget}
         onDeactivate={setDeactivateTarget}
+        onReactivate={handleReactivate}
+        reactivatingId={reactivatingId}
       />
 
       {total > LIMIT && (

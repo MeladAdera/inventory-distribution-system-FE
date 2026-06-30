@@ -2,7 +2,7 @@
 
 **Status**: ✅ API Integrated  
 **Created Date**: 2026-06-11  
-**Last Updated**: 2026-06-16  
+**Last Updated**: 2026-06-30  
 **Assignee**: Melad Adera  
 **Ticket**: FIGMA-004
 
@@ -97,8 +97,19 @@ Schema: `clientFormSchema`
 Pre-fills from `AdminClient`: `name_ar` → name, phone (empty if `'—'`), `city_ar` → address
 
 ### `ClientDeleteConfirmModal` (deactivate / activate)
-Confirm button calls `PATCH /shops/:id/status { isActive: !current }`.  
-If client is active → deactivates. If inactive → activates. Toast confirms which action occurred.
+Context-aware — derives `willActivate = client.status === 'inactive'` and switches the entire dialog based on direction:
+
+| | Deactivate (active client) | Activate (inactive client) |
+|---|---|---|
+| Icon | `AlertTriangle` (danger) | `RotateCcw` (teal) |
+| Title | `clients.delete.title` | `clients.activate.title` |
+| Warning text | `clients.delete.warning` | `clients.activate.warning` |
+| Confirm button | danger (`bg-danger-700`) | teal (`bg-teal-700`) |
+| Confirm label | `clients.delete.delete` | `clients.activate.confirm` |
+
+Confirm button calls `PATCH /shops/:id/status { isActive: willActivate }`. Toast confirms which action occurred (`clients.toast.deactivated` or `clients.toast.activated`).
+
+The table row action button also reflects the direction: `Trash2` (red) for active clients, `RotateCcw` (teal) for inactive — on both desktop and mobile.
 
 ---
 
@@ -117,6 +128,7 @@ clients.add.{title, shopName, shopNamePlaceholder, shopAddress, shopAddressPlace
 clients.form.{editTitle, save, cancel, name, namePlaceholder, phone, phonePlaceholder,
               address, addressPlaceholder, errName, errPhone}
 clients.delete.{title, warning, delete, cancel}
+clients.activate.{title, warning, confirm, cancel}
 clients.toast.{created, updated, deactivated, activated}
 ```
 

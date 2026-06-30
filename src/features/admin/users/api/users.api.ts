@@ -36,4 +36,9 @@ export const usersApi = {
     const response = await apiClient.delete(`/users/${id}`);
     return response.data;
   },
+
+  reactivate: async (id: number) => {
+    const response = await apiClient.patch(`/users/${id}/activate`);
+    return response.data;
+  },
 };
