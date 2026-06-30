@@ -4,6 +4,7 @@ import {
   isPublicOnlyRoute,
   isAdminRoute,
   isClientRoute,
+  isEmployeeAllowedRoute,
   getTokenFromRequest,
   getRoleFromToken,
 } from '@/features/auth/utils/middleware.utils';
@@ -41,6 +42,15 @@ export function middleware(request: NextRequest) {
     // Only WAREHOUSE_ADMIN must not access client routes; EMPLOYEE shares the client portal
     if (isClientRoute(pathname) && role !== UserRole.SHOP_OWNER && role !== UserRole.EMPLOYEE) {
       return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.url));
+    }
+
+    // EMPLOYEE is limited to dashboard + inventory within the client portal
+    if (
+      role === UserRole.EMPLOYEE &&
+      isClientRoute(pathname) &&
+      !isEmployeeAllowedRoute(pathname)
+    ) {
+      return NextResponse.redirect(new URL(ROUTES.CLIENT_DASHBOARD, request.url));
     }
   }
 

@@ -9,6 +9,7 @@ import {
   Receipt,
   type LucideIcon,
 } from 'lucide-react';
+import { UserRole } from '@/features/auth/types/enums';
 
 export interface ClientNavItem {
   id:
@@ -35,6 +36,12 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'settings', href: '/client/settings', icon: Settings },
 ];
 
-/** First 3 items shown as tabs in the mobile bottom bar. The rest go in the More sheet. */
-export const CLIENT_NAV_PRIMARY = CLIENT_NAV_ITEMS.slice(0, 3);
-export const CLIENT_NAV_OVERFLOW = CLIENT_NAV_ITEMS.slice(3);
+// EMPLOYEE only sees dashboard + inventory; mirrors EMPLOYEE_ALLOWED_ROUTES in middleware.utils.ts
+const EMPLOYEE_NAV_IDS: ClientNavItem['id'][] = ['dashboard', 'inventory'];
+
+export function getClientNavItems(role?: UserRole): ClientNavItem[] {
+  if (role === UserRole.EMPLOYEE) {
+    return CLIENT_NAV_ITEMS.filter((item) => EMPLOYEE_NAV_IDS.includes(item.id));
+  }
+  return CLIENT_NAV_ITEMS;
+}

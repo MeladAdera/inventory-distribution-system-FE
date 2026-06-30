@@ -18,6 +18,10 @@ const ADMIN_ROUTES = [
 
 const PUBLIC_ONLY_ROUTES = [ROUTES.LOGIN];
 
+// Routes an EMPLOYEE may access inside the client portal. Everything else
+// under /client/* redirects to the dashboard for this role.
+const EMPLOYEE_ALLOWED_ROUTES = [ROUTES.CLIENT_DASHBOARD, ROUTES.CLIENT_INVENTORY];
+
 function matchesRoute(pathname: string, routes: string[]): boolean {
   return routes.some((r) => pathname === r || pathname.startsWith(`${r}/`));
 }
@@ -36,6 +40,10 @@ export function isAdminRoute(pathname: string): boolean {
 
 export function isClientRoute(pathname: string): boolean {
   return pathname === ROUTES.CLIENT_ROOT || pathname.startsWith(`${ROUTES.CLIENT_ROOT}/`);
+}
+
+export function isEmployeeAllowedRoute(pathname: string): boolean {
+  return matchesRoute(pathname, EMPLOYEE_ALLOWED_ROUTES);
 }
 
 export function isPublicOnlyRoute(pathname: string): boolean {

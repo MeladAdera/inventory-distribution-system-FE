@@ -7,7 +7,7 @@ import { cn } from '@/common/utils/cn';
 import { getInitials } from '@/common/utils/string.utils';
 import { useI18n } from '@/providers/I18nProvider';
 import { useAuth } from '@/features/auth';
-import { CLIENT_NAV_ITEMS } from './clientNavConfig';
+import { getClientNavItems } from './clientNavConfig';
 
 interface ClientSidebarProps {
   fluid?: boolean;
@@ -25,6 +25,7 @@ export function ClientSidebar({ fluid = false }: ClientSidebarProps) {
     ? ((t.settings.profile.roles as Record<string, string>)[user.role] ?? user.role)
     : '';
   const initials = getInitials(userName);
+  const navItems = getClientNavItems(user?.role);
 
   return (
     <aside
@@ -50,7 +51,7 @@ export function ClientSidebar({ fluid = false }: ClientSidebarProps) {
 
       {/* ── Navigation ── */}
       <nav className="flex-1 overflow-y-auto p-3 flex flex-col gap-0.75">
-        {CLIENT_NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href + '/');
           const Icon = item.icon;
           return (

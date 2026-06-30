@@ -9,7 +9,7 @@ import { ClientTopBar } from './ClientTopBar';
 import { ClientNavDrawer } from './ClientNavDrawer';
 import { ClientBottomNav } from './ClientBottomNav';
 import { BottomSheet } from './BottomSheet';
-import { CLIENT_NAV_OVERFLOW } from './clientNavConfig';
+import { getClientNavItems } from './clientNavConfig';
 import { useI18n } from '@/providers/I18nProvider';
 import { useAuth } from '@/features/auth';
 import { cn } from '@/common/utils/cn';
@@ -20,13 +20,14 @@ interface ClientLayoutProps {
 
 export function ClientLayout({ children }: ClientLayoutProps) {
   const { t } = useI18n();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
 
   const nav = t.client.nav as Record<string, string>;
   const sheet = t.client.moreSheet;
+  const overflowItems = getClientNavItems(user?.role).slice(3);
 
   return (
     <div className="flex h-screen overflow-hidden bg-page">
@@ -48,7 +49,7 @@ export function ClientLayout({ children }: ClientLayoutProps) {
       {/* More sheet (mobile) */}
       <BottomSheet open={moreSheetOpen} onClose={() => setMoreSheetOpen(false)} title={sheet.title}>
         <div className="-mx-5 -mt-4">
-          {CLIENT_NAV_OVERFLOW.map((item) => {
+          {overflowItems.map((item) => {
             const active = pathname === item.href || pathname.startsWith(item.href + '/');
             const Icon = item.icon;
             return (

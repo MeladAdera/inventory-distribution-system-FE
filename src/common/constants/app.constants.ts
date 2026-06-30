@@ -31,6 +31,7 @@ export const ROUTES = {
   NOTIFICATIONS: '/notifications',
   CLIENT_ROOT: '/client',
   CLIENT_DASHBOARD: '/client/dashboard',
+  CLIENT_INVENTORY: '/client/inventory',
 };
 
 // App Metadata
