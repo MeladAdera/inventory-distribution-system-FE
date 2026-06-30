@@ -146,7 +146,8 @@
       "increaseSection": "Stock increase",
       "notesPlaceholder": "Reason or notes (optional)…",
       "receiptNotesLabel": "Receipt notes",
-      "increaseNotesLabel": "Reason for increase"
+      "increaseNotesLabel": "Reason for increase",
+      "price": "Unit price"
     },
     "toast": {
       "success": "Inventory updated successfully",

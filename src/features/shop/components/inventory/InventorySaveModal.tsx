@@ -22,6 +22,7 @@ interface InventorySaveModalProps {
     notesPlaceholder: string;
     receiptNotesLabel: string;
     increaseNotesLabel: string;
+    price: string;
   };
 }
 
@@ -79,16 +80,20 @@ export function InventorySaveModal({
               <div className="flex flex-col gap-2.5 p-4 max-h-44 overflow-y-auto">
                 {decreases.map((item) => {
                   const delta = changes[item.id];
-                  const newQty = item.current_quantity + delta;
                   return (
                     <div key={item.id} className="flex items-center gap-3">
                       <ProductThumb id={item.product_id} size={28} />
                       <span className="flex-1 text-[14px] text-ink-800 truncate">
                         {item.product_name}
                       </span>
-                      <span className="font-mono text-[13px] font-medium text-danger-600 shrink-0">
-                        {item.current_quantity} → {newQty}
-                      </span>
+                      <div className="flex flex-col items-end gap-0.5 shrink-0">
+                        <span className="text-[11px] text-ink-400">
+                          {labels.price}: {item.price}
+                        </span>
+                        <span className="font-mono text-[13px] font-medium text-danger-600">
+                          {Math.abs(delta)}
+                        </span>
+                      </div>
                     </div>
                   );
                 })}
@@ -120,16 +125,20 @@ export function InventorySaveModal({
               <div className="flex flex-col gap-2.5 p-4 max-h-44 overflow-y-auto">
                 {increases.map((item) => {
                   const delta = changes[item.id];
-                  const newQty = item.current_quantity + delta;
                   return (
                     <div key={item.id} className="flex items-center gap-3">
                       <ProductThumb id={item.product_id} size={28} />
                       <span className="flex-1 text-[14px] text-ink-800 truncate">
                         {item.product_name}
                       </span>
-                      <span className="font-mono text-[13px] font-medium text-emerald-600 shrink-0">
-                        {item.current_quantity} → {newQty}
-                      </span>
+                      <div className="flex flex-col items-end gap-0.5 shrink-0">
+                        <span className="text-[11px] text-ink-400">
+                          {labels.price}: {item.price}
+                        </span>
+                        <span className="font-mono text-[13px] font-medium text-emerald-600">
+                          {delta}
+                        </span>
+                      </div>
                     </div>
                   );
                 })}

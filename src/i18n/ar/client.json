@@ -146,7 +146,8 @@
       "increaseSection": "زيادة المخزون",
       "notesPlaceholder": "سبب أو ملاحظات (اختياري)…",
       "receiptNotesLabel": "ملاحظات الإيصال",
-      "increaseNotesLabel": "سبب الزيادة"
+      "increaseNotesLabel": "سبب الزيادة",
+      "price": "سعر الوحدة"
     },
     "toast": {
       "success": "تم تحديث المخزون بنجاح",

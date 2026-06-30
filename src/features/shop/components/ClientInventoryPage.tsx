@@ -510,6 +510,7 @@ export function ClientInventoryPage() {
           notesPlaceholder: inv.modal.notesPlaceholder,
           receiptNotesLabel: inv.modal.receiptNotesLabel,
           increaseNotesLabel: inv.modal.increaseNotesLabel,
+          price: inv.modal.price,
         }}
       />
 

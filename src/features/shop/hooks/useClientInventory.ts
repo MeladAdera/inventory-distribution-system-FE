@@ -68,6 +68,7 @@ export function useClientInventory() {
         product_name: item.product_name ?? product?.name ?? 'Unknown',
         barcode: product?.barcode ?? undefined,
         current_quantity: qty,
+        price: product?.price ?? '0',
         low_stock_threshold: threshold,
         is_low_stock: item.is_low_stock ?? false,
         status: computeStatus(qty, item.is_low_stock ?? false, threshold),

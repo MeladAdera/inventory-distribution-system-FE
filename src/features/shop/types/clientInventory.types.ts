@@ -6,6 +6,7 @@ export interface EnrichedInventoryItem {
   product_name: string;
   barcode?: string;
   current_quantity: number;
+  price: string;
   low_stock_threshold: number;
   is_low_stock: boolean;
   status: StockStatus;
