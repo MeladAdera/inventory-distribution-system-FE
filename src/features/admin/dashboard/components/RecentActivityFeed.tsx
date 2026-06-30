@@ -4,6 +4,7 @@ import { Truck, MinusCircle, PlusCircle, Edit3 } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { formatRelativeTime } from '@/common/utils/string.utils';
 import { useI18n } from '@/providers/I18nProvider';
+import type { AppTranslations } from '@/i18n';
 import { useAuditLogs } from '@/features/admin/audit-logs/hooks/useAuditLogs';
 import type { AuditLog } from '@/features/admin/audit-logs/types/audit-logs.types';
 
@@ -27,14 +28,19 @@ function getActivityType(log: AuditLog): ActivityType {
   return 'consumption';
 }
 
-function getActivityText(log: AuditLog): string {
+function getActivityText(log: AuditLog, t: AppTranslations): string {
+  const units = t.auditLogs.units;
   if (log.notes) {
-    const qty = log.quantity != null ? ` (${log.quantity} units)` : '';
+    const qty = log.quantity != null ? ` (${log.quantity} ${units})` : '';
     return `${log.notes}${qty}`;
   }
-  const qty = log.quantity != null ? ` · ${log.quantity} units` : '';
-  const action = (log.action ?? 'activity').replace(/_/g, ' ').toLowerCase();
-  return `${action} — ${log.entity_type} #${log.entity_id}${qty}`;
+  const qty = log.quantity != null ? ` · ${log.quantity} ${units}` : '';
+  const action =
+    (t.auditLogs.actions as Record<string, string>)[log.action ?? ''] ??
+    (log.action ?? 'activity').replace(/_/g, ' ').toLowerCase();
+  const entity =
+    (t.auditLogs.entity as Record<string, string>)[log.entity_type ?? ''] ?? log.entity_type;
+  return `${action} — ${entity} #${log.entity_id}${qty}`;
 }
 
 function SkeletonItem() {
@@ -50,7 +56,7 @@ function SkeletonItem() {
 }
 
 export function RecentActivityFeed() {
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
   const { logs: items, isLoading } = useAuditLogs({ limit: 6 });
 
   if (isLoading) {
@@ -76,7 +82,7 @@ export function RecentActivityFeed() {
       {items.map((log) => {
         const type = getActivityType(log);
         const { Icon, color } = ICON_MAP[type];
-        const text = getActivityText(log);
+        const text = getActivityText(log, t);
         const time = formatRelativeTime(log.created_at, locale);
 
         return (

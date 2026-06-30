@@ -39,6 +39,7 @@
     "inventory": "Inventory",
     "order": "Order"
   },
+  "units": "units",
   "empty": "No audit logs found.",
   "modal": {
     "title": "Log detail",

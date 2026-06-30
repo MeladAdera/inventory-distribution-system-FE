@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
 import { AuditLogTypeBadge } from './AuditLogTypeBadge';
 import { useAuditLogDetail } from '../hooks/useAuditLogs';
+import { useI18n } from '@/providers/I18nProvider';
 
 interface AuditLogDetailModalLabels {
   title: string;
@@ -51,6 +52,7 @@ export function AuditLogDetailModal({
   entityLabels,
 }: AuditLogDetailModalProps) {
   const { log, isLoading } = useAuditLogDetail(logId);
+  const { locale } = useI18n();
 
   return (
     <Modal open={open} onClose={onClose} title={labels.title} size="md">
@@ -65,7 +67,7 @@ export function AuditLogDetailModal({
           </Row>
 
           <Row label={labels.date}>
-            {new Date(log.created_at).toLocaleString('en-GB', {
+            {new Date(log.created_at).toLocaleString(locale === 'ar' ? 'ar-EG' : 'en-GB', {
               day: 'numeric',
               month: 'long',
               year: 'numeric',
