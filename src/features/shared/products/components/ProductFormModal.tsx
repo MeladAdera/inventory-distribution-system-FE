@@ -23,9 +23,7 @@ interface ProductFormModalProps {
   onEdit: (id: number, data: UpdateProductInput) => Promise<void>;
   onUploadImage: (id: number, file: File) => Promise<void>;
   onDeleteImage: (id: number) => Promise<void>;
-  /** When provided, shows an initial quantity field and calls this after product creation */
   onStockIn?: (id: number, quantity: number) => Promise<void>;
-  /** Called after a successful add or edit, before the modal closes */
   onSuccess?: () => void;
 }
 
@@ -122,10 +120,10 @@ export function ProductFormModal({
     if (!file) return;
 
     const objectUrl = URL.createObjectURL(file);
+    if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(objectUrl);
 
     if (mode === 'edit' && product) {
-      if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(objectUrl);
       setIsUploadingImage(true);
       try {
         await onUploadImage(product.id, file);
@@ -133,8 +131,6 @@ export function ProductFormModal({
         setIsUploadingImage(false);
       }
     } else {
-      if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(objectUrl);
       setPendingFile(file);
     }
 
@@ -359,13 +355,16 @@ export function ProductFormModal({
                 step="0.01"
                 min="0"
                 placeholder={p.form.pricePlaceholder}
-                className={cn(ipt(!!errors.price), 'font-mono')}
+                className={cn(
+                  ipt(!!errors.price),
+                  'font-mono [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
+                )}
                 dir="ltr"
               />
             </Field>
 
             {mode === 'add' && onStockIn && (
-              <Field label={p.form.initialQty ?? 'Initial quantity'}>
+              <Field label={p.form.initialQty}>
                 <input
                   {...register('initialQuantity', { valueAsNumber: true })}
                   type="number"

@@ -11,6 +11,7 @@ export { ConfirmDialog } from './ConfirmDialog';
 export { Pagination } from './Pagination';
 export { PasswordInput } from './PasswordInput';
 export { DatePickerButton } from './DatePickerButton';
+export { GlobalSearch } from './GlobalSearch';
 
 // Layout Components
 export {

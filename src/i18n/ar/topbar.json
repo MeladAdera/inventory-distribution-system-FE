@@ -1,5 +1,13 @@
 {
-  "searchPlaceholder": "ابحث عن منتجات أو عملاء…",
+  "searchPlaceholder": "ابحث عن منتجات أو مستخدمين…",
+  "search": {
+    "searching": "جارٍ البحث…",
+    "noResults": "لا توجد نتائج لـ \"{q}\"",
+    "sections": {
+      "products": "المنتجات",
+      "users": "المستخدمون"
+    }
+  },
   "menuLabel": "القائمة",
   "langSwitchLabel": "EN",
   "user": {

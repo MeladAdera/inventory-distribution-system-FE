@@ -14,7 +14,7 @@ export function useReceipts(params?: ReceiptListParams) {
 
   const createMutation = useMutation({
     mutationFn: receiptsApi.create,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['receipts'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['receipts'], refetchType: 'all' }),
   });
 
   const receipts: ReceiptListItem[] = listQuery.data?.data?.data ?? [];

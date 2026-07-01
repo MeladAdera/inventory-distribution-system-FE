@@ -40,15 +40,25 @@ export default function ProductsPage() {
   const toast = useToast();
 
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [shopNameFilter, setShopNameFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
 
-  // Reset to page 1 when filters change
+  // Debounce search — fire API call 300ms after the user stops typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Reset to page 1 when non-search filters change
   useEffect(() => {
     setPage(1);
-  }, [search, shopNameFilter, categoryFilter]);
+  }, [shopNameFilter, categoryFilter]);
 
   const { user } = useAuthStore();
   const isAdmin = user?.role === UserRole.WAREHOUSE_ADMIN;
@@ -65,7 +75,7 @@ export default function ProductsPage() {
   } = useProducts({
     page,
     limit: PAGE_SIZE,
-    search: search || undefined,
+    search: debouncedSearch || undefined,
     shop_name: shopNameFilter || undefined,
     category_name: categoryFilter || undefined,
   });

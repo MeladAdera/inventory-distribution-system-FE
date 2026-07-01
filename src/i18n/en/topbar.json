@@ -1,5 +1,13 @@
 {
-  "searchPlaceholder": "Search products or clients…",
+  "searchPlaceholder": "Search products or users…",
+  "search": {
+    "searching": "Searching…",
+    "noResults": "No results for \"{q}\"",
+    "sections": {
+      "products": "Products",
+      "users": "Users"
+    }
+  },
   "menuLabel": "Menu",
   "langSwitchLabel": "ع",
   "user": {

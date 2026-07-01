@@ -83,7 +83,8 @@ export function useClientOrderProducts() {
 
   const createMutation = useMutation({
     mutationFn: (data: CreateOrderInput) => ordersApi.create(data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['client-orders'] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['client-orders'], refetchType: 'all' }),
   });
 
   return {

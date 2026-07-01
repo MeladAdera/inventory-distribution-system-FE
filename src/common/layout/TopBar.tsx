@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
   Bell,
-  Search,
   Menu,
   ChevronDown,
   Languages,
@@ -14,6 +13,7 @@ import {
   User,
   LogOut,
 } from 'lucide-react';
+import { GlobalSearch } from '@/common/components/GlobalSearch';
 import { cn } from '@/common/utils/cn';
 import { getInitials, formatRelativeTime } from '@/common/utils/string.utils';
 import { useI18n } from '@/providers/I18nProvider';
@@ -96,14 +96,7 @@ export function TopBar({ onMenuClick }: TopBarProps) {
       <div className="flex-1" />
 
       {/* Search — desktop only */}
-      <div className="hidden lg:flex items-center w-75 h-9.5 bg-paper border border-border rounded-lg px-3 gap-2">
-        <Search size={15} className="text-ink-400 shrink-0" />
-        <input
-          type="text"
-          placeholder={t.topbar.searchPlaceholder}
-          className="flex-1 text-[13px] text-ink-900 placeholder:text-ink-400 bg-transparent outline-none"
-        />
-      </div>
+      <GlobalSearch />
 
       {/* Right cluster */}
       <div className="flex items-center gap-2">

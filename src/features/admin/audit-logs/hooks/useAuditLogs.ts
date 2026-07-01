@@ -8,6 +8,7 @@ export function useAuditLogs(params?: AuditLogListParams) {
   const listQuery = useQuery({
     queryKey: ['audit-logs', params],
     queryFn: () => auditLogsApi.list(params),
+    staleTime: 0,
   });
 
   const logs: AuditLog[] = listQuery.data?.data?.data ?? [];

@@ -14,7 +14,7 @@ export function useOrders(params?: OrderListParams) {
 
   const createMutation = useMutation({
     mutationFn: ordersApi.create,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'], refetchType: 'all' }),
   });
 
   const updateStatusMutation = useMutation({
