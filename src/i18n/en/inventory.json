@@ -1,0 +1,54 @@
+{
+  "page": {
+    "title": "Inventory",
+    "subtitle": "{n} SKUs tracked"
+  },
+  "stats": {
+    "totalSKUs": "Total SKUs",
+    "totalSKUsSub": "Unique products",
+    "totalUnits": "Total Units",
+    "totalUnitsSub": "Combined stock",
+    "lowStock": "Low Stock",
+    "lowStockSub": "Below threshold",
+    "outOfStock": "Out of Stock",
+    "outOfStockSub": "Zero quantity"
+  },
+  "charts": {
+    "health": "Stock Health",
+    "healthy": "Healthy",
+    "low": "Low Stock",
+    "out": "Out of Stock",
+    "topProducts": "Top Products by Quantity",
+    "units": "units",
+    "noData": "No inventory data yet"
+  },
+  "table": {
+    "title": "All Inventory Items",
+    "searchPlaceholder": "Search product name...",
+    "showLowStock": "Low stock only",
+    "colNum": "#",
+    "colProduct": "Product",
+    "colQty": "Quantity",
+    "colThreshold": "Threshold",
+    "colStatus": "Status",
+    "colUpdated": "Last Updated",
+    "colActions": "Actions",
+    "restock": "Restock",
+    "empty": "No inventory items found"
+  },
+  "status": {
+    "healthy": "Healthy",
+    "low": "Low Stock",
+    "out": "Out of Stock"
+  },
+  "restock": {
+    "title": "Restock",
+    "subtitle": "Add units to \"{name}\"",
+    "currentStock": "Current stock",
+    "label": "Quantity to add",
+    "confirm": "Add Stock",
+    "cancel": "Cancel",
+    "success": "Stock updated successfully",
+    "error": "Failed to update stock"
+  }
+}

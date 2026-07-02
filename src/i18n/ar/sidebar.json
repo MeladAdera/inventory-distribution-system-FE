@@ -4,6 +4,7 @@
   "nav": {
     "dashboard": "لوحة التحكم",
     "products": "المنتجات",
+    "inventory": "المخزون",
     "categories": "الفئات",
     "clients": "العملاء",
     "transfers": "نقل المخزون",

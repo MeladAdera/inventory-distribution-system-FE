@@ -26,6 +26,7 @@ docs/
 │   │   ├── admin-layout-shell.md
 │   │   ├── dashboard.md
 │   │   ├── products.md
+│   │   ├── inventory.md
 │   │   ├── clients.md
 │   │   ├── transfers.md
 │   │   ├── shortages.md
@@ -87,6 +88,7 @@ Check `docs/api/` folder:
 | Shortages | [shortages.md](features/admin/shortages.md) | ✅ FIGMA-006 Complete — API Integrated |
 | Settings | [settings.md](features/admin/settings.md) | ✅ FIGMA-007 Complete — API Integrated |
 | Analytics | [analytics.md](features/admin/analytics.md) | ✅ Complete — TopConsumed + ConsumptionTrend on real API |
+| Inventory | [inventory.md](features/admin/inventory.md) | ✅ Complete — KPI cards, charts, table, restock modal |
 
 ### Client Portal Features
 | Feature | Document | Status |

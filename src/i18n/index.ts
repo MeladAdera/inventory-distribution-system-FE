@@ -1,4 +1,5 @@
 import sidebarEn from './en/sidebar.json';
+import inventoryEn from './en/inventory.json';
 import auditLogsEn from './en/audit-logs.json';
 import topbarEn from './en/topbar.json';
 import bottomnavEn from './en/bottomnav.json';
@@ -16,6 +17,7 @@ import shopsEn from './en/shops.json';
 import receiptsEn from './en/receipts.json';
 import notificationsEn from './en/notifications.json';
 import sidebarAr from './ar/sidebar.json';
+import inventoryAr from './ar/inventory.json';
 import receiptsAr from './ar/receipts.json';
 import auditLogsAr from './ar/audit-logs.json';
 import topbarAr from './ar/topbar.json';
@@ -54,6 +56,7 @@ export const translations = {
     auditLogs: auditLogsEn,
     receipts: receiptsEn,
     notifications: notificationsEn,
+    inventory: inventoryEn,
   },
   ar: {
     sidebar: sidebarAr,
@@ -73,6 +76,7 @@ export const translations = {
     auditLogs: auditLogsAr,
     receipts: receiptsAr,
     notifications: notificationsAr,
+    inventory: inventoryAr,
   },
 } as const;
 

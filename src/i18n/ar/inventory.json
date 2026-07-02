@@ -1,0 +1,54 @@
+{
+  "page": {
+    "title": "المخزون",
+    "subtitle": "{n} منتج مُتتبَّع"
+  },
+  "stats": {
+    "totalSKUs": "إجمالي المنتجات",
+    "totalSKUsSub": "منتجات فريدة",
+    "totalUnits": "إجمالي الوحدات",
+    "totalUnitsSub": "المخزون الكلي",
+    "lowStock": "مخزون منخفض",
+    "lowStockSub": "أقل من الحد الأدنى",
+    "outOfStock": "نفد المخزون",
+    "outOfStockSub": "الكمية صفر"
+  },
+  "charts": {
+    "health": "حالة المخزون",
+    "healthy": "جيد",
+    "low": "منخفض",
+    "out": "نفد",
+    "topProducts": "أعلى المنتجات كمية",
+    "units": "وحدة",
+    "noData": "لا توجد بيانات مخزون بعد"
+  },
+  "table": {
+    "title": "جميع عناصر المخزون",
+    "searchPlaceholder": "ابحث باسم المنتج...",
+    "showLowStock": "المنخفض فقط",
+    "colNum": "#",
+    "colProduct": "المنتج",
+    "colQty": "الكمية",
+    "colThreshold": "الحد الأدنى",
+    "colStatus": "الحالة",
+    "colUpdated": "آخر تحديث",
+    "colActions": "إجراءات",
+    "restock": "تزويد",
+    "empty": "لا توجد عناصر مخزون"
+  },
+  "status": {
+    "healthy": "جيد",
+    "low": "منخفض",
+    "out": "نفد"
+  },
+  "restock": {
+    "title": "تزويد المخزون",
+    "subtitle": "إضافة وحدات إلى \"{name}\"",
+    "currentStock": "المخزون الحالي",
+    "label": "الكمية المراد إضافتها",
+    "confirm": "إضافة مخزون",
+    "cancel": "إلغاء",
+    "success": "تم تحديث المخزون بنجاح",
+    "error": "فشل تحديث المخزون"
+  }
+}

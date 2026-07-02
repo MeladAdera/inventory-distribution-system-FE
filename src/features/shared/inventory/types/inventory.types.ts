@@ -14,6 +14,7 @@ export interface InventoryListParams {
   limit?: number;
   lowStock?: boolean;
   productId?: number;
+  shop_id?: number;
 }
 
 export interface StockInInput {

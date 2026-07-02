@@ -8,6 +8,7 @@ import {
   ScrollText,
   Receipt,
   Settings,
+  Warehouse,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -23,6 +24,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', href: '/dashboard', icon: LayoutDashboard, section: 'main' },
   { id: 'products', href: '/products', icon: Package, section: 'main' },
+  { id: 'inventory', href: '/inventory', icon: Warehouse, section: 'main' },
   { id: 'categories', href: '/categories', icon: Tag, section: 'main' },
   { id: 'clients', href: '/clients', icon: Users, section: 'main' },
   {
