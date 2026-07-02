@@ -5,6 +5,7 @@ import { Modal } from '@/common/components/Modal';
 import { ProductThumb } from '@/features/shared/products/components/ProductThumb';
 import { ClientAvatar } from '@/features/admin/clients/components/ClientAvatar';
 import { cn } from '@/common/utils/cn';
+import { useI18n } from '@/providers/I18nProvider';
 import { TransferStatus, NEXT_STATUS } from '../types/transfers.types';
 import type { Transfer } from '../types/transfers.types';
 
@@ -60,6 +61,8 @@ export function TransferDetailModal({
   onCancel,
   labels,
 }: TransferDetailModalProps) {
+  const { locale } = useI18n();
+
   if (isLoadingDetail || !transfer) {
     return (
       <Modal open={open} onClose={onClose} title={labels.title} size="lg">
@@ -70,11 +73,10 @@ export function TransferDetailModal({
     );
   }
 
-  const date = new Date(transfer.created_at).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+  const date = new Date(transfer.created_at).toLocaleDateString(
+    locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-GB',
+    { day: 'numeric', month: 'long', year: 'numeric' }
+  );
 
   const shopName = transfer.to_shop_name ?? `Shop #${transfer.to_shop_id}`;
   const nextStatus = NEXT_STATUS[transfer.status];

@@ -67,13 +67,16 @@ export function AuditLogDetailModal({
           </Row>
 
           <Row label={labels.date}>
-            {new Date(log.created_at).toLocaleString(locale === 'ar' ? 'ar-EG' : 'en-GB', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
+            {new Date(log.created_at).toLocaleString(
+              locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-GB',
+              {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              }
+            )}
           </Row>
 
           {log.shop_name && <Row label={labels.shop}>{log.shop_name}</Row>}

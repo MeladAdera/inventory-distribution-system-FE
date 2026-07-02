@@ -168,7 +168,7 @@ export function TransfersTableCard({
   onUpdateStatus,
   onView,
 }: TransfersTableCardProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const p = t.transfers;
 
   const pageCount = Math.ceil(total / pageSize);
@@ -250,6 +250,7 @@ export function TransfersTableCard({
             onUpdateStatus={onUpdateStatus}
             onView={onView}
             p={p}
+            locale={locale}
           />
         ))
       )}
@@ -297,6 +298,7 @@ interface TransferRowProps {
   onUpdateStatus: (id: number, status: TransferStatus) => void;
   onView: (transfer: Transfer) => void;
   p: TransfersT;
+  locale: 'ar' | 'en';
 }
 
 function TransferRow({
@@ -307,6 +309,7 @@ function TransferRow({
   onUpdateStatus,
   onView,
   p,
+  locale,
 }: TransferRowProps) {
   const shopName =
     transfer.to_shop_name ??
@@ -317,11 +320,10 @@ function TransferRow({
   const productName = firstItem?.product_name ?? '—';
   const qty = firstItem?.quantity ?? transfer.total_items;
 
-  const date = new Date(transfer.created_at).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
+  const date = new Date(transfer.created_at).toLocaleDateString(
+    locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-GB',
+    { day: 'numeric', month: 'short', year: 'numeric' }
+  );
 
   const nextStatus = NEXT_STATUS[transfer.status];
   const actionLabel = getActionLabel(transfer.status, p);

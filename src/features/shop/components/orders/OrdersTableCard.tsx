@@ -12,18 +12,11 @@ function OrderIdChip({ id }: { id: number }) {
 }
 
 function formatDate(iso: string, locale: 'ar' | 'en'): string {
-  const date = new Date(iso);
-  if (locale === 'ar') {
-    const day = date.getDate();
-    const year = date.getFullYear();
-    const month = new Intl.DateTimeFormat('ar', { month: 'long' }).format(date);
-    return `${day} / ${month} / ${year}`;
-  }
-  return new Intl.DateTimeFormat('en-GB', {
+  return new Date(iso).toLocaleDateString(locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-GB', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-  }).format(date);
+  });
 }
 
 interface OrdersTableCardProps {

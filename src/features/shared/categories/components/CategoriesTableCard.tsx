@@ -77,7 +77,7 @@ export function CategoriesTableCard({
   onEdit,
   onDelete,
 }: CategoriesTableCardProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const c = t.categories;
 
   const filtered = search
@@ -132,6 +132,7 @@ export function CategoriesTableCard({
             c={c}
             onEdit={onEdit}
             onDelete={onDelete}
+            locale={locale}
           />
         ))
       )}
@@ -168,14 +169,14 @@ interface CategoryRowProps {
   c: CategoriesT;
   onEdit: (c: Category) => void;
   onDelete: (c: Category) => void;
+  locale: 'ar' | 'en';
 }
 
-function CategoryRow({ category, rowNum, c, onEdit, onDelete }: CategoryRowProps) {
-  const createdDate = new Date(category.created_at).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
+function CategoryRow({ category, rowNum, c, onEdit, onDelete, locale }: CategoryRowProps) {
+  const createdDate = new Date(category.created_at).toLocaleDateString(
+    locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-GB',
+    { day: '2-digit', month: 'short', year: 'numeric' }
+  );
 
   const actions = (
     <div className="flex items-center gap-0.5 justify-end">

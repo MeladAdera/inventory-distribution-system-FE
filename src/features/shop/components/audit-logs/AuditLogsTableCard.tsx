@@ -6,7 +6,7 @@ import { AuditLogTypeBadge } from './AuditLogTypeBadge';
 
 function formatDateTime(iso: string, locale: 'ar' | 'en'): string {
   const date = new Date(iso);
-  return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG' : 'en-GB', {
+  return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-GB', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

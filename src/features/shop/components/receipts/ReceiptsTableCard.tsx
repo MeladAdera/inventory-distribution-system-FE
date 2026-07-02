@@ -4,7 +4,7 @@ import type { ReceiptListItem } from '@/features/shared/receipts';
 
 function formatDate(iso: string, locale: 'ar' | 'en'): string {
   const date = new Date(iso);
-  return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG' : 'en-GB', {
+  return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-US', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

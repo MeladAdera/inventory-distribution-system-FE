@@ -28,7 +28,7 @@ interface AuditLogsTableProps {
 }
 
 function formatDate(iso: string, locale: 'ar' | 'en'): string {
-  return new Date(iso).toLocaleString(locale === 'ar' ? 'ar-EG' : 'en-GB', {
+  return new Date(iso).toLocaleString(locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-GB', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

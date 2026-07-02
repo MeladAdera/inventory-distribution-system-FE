@@ -110,10 +110,13 @@ export function ClientDashboardPage() {
 
   const lastOrder = orders[0] ?? null;
   const lastOrderValue = lastOrder
-    ? new Date(lastOrder.created_at).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-GB', {
-        day: 'numeric',
-        month: 'short',
-      })
+    ? new Date(lastOrder.created_at).toLocaleDateString(
+        locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-GB',
+        {
+          day: 'numeric',
+          month: 'short',
+        }
+      )
     : '—';
   const lastOrderSub = lastOrder ? `#${lastOrder.id}` : kpi.lastOrderSub;
 

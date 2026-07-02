@@ -32,7 +32,7 @@ export function UsersTable({
   onReactivate,
   reactivatingId,
 }: UsersTableProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const u = t.users;
 
   const baseColumns: Column<User>[] = [
@@ -64,7 +64,11 @@ export function UsersTable({
     {
       key: 'created_at',
       header: u.table.created,
-      render: (user) => new Date(user.created_at).toLocaleDateString(),
+      render: (user) =>
+        new Date(user.created_at).toLocaleDateString(
+          locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-GB',
+          { day: 'numeric', month: 'short', year: 'numeric' }
+        ),
     },
   ];
 
