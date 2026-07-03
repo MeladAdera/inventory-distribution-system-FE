@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
-import { Truck, Settings, LogOut, Tag, TrendingDown, ScrollText } from 'lucide-react';
+import { Truck, Settings, LogOut, Tag, TrendingDown, TrendingUp, ScrollText } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { NavDrawer } from './NavDrawer';
@@ -29,6 +29,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const initials = getInitials(displayName);
 
   const sheetNavItems = [
+    { href: '/profit', icon: TrendingUp, label: s.profit },
     { href: '/categories', icon: Tag, label: s.categories },
     { href: '/shortages', icon: TrendingDown, label: s.shortages },
     { href: '/transfers', icon: Truck, label: s.transfers },

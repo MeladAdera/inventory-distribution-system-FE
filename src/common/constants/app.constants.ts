@@ -22,6 +22,7 @@ export const PAGINATION = {
 export const ROUTES = {
   LOGIN: '/login',
   DASHBOARD: '/dashboard',
+  PROFIT: '/profit',
   INVENTORY: '/inventory',
   ORDERS: '/orders',
   PRODUCTS: '/products',
@@ -32,6 +33,7 @@ export const ROUTES = {
   CLIENT_ROOT: '/client',
   CLIENT_DASHBOARD: '/client/dashboard',
   CLIENT_INVENTORY: '/client/inventory',
+  CLIENT_PROFIT: '/client/profit',
 };
 
 // App Metadata

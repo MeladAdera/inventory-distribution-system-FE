@@ -23,3 +23,24 @@ export interface ShopConsumptionParams {
   page?: number;
   limit?: number;
 }
+
+// ── Profit ──────────────────────────────────────────────────────────────────
+
+export interface ProfitSummary {
+  revenue: number;
+  cost: number;
+  profit: number;
+}
+
+export interface ProfitTrendPoint {
+  label: string;
+  revenue: number;
+  cost: number;
+  profit: number;
+}
+
+/** shopId: admin only — omit for warehouse profit, set to view a shop's sales profit */
+export interface ProfitParams {
+  period?: TrendPeriod;
+  shopId?: number;
+}

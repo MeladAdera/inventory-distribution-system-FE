@@ -22,6 +22,7 @@ docs/
 ├── features/
 │   ├── FEATURE_TEMPLATE.md
 │   ├── auth.md            # Shared — login, middleware, token layer
+│   ├── profit-dashboard.md # Shared — profit analytics page + buying price (cost) on products
 │   ├── admin/             # Admin portal (WAREHOUSE_ADMIN / EMPLOYEE)
 │   │   ├── admin-layout-shell.md
 │   │   ├── dashboard.md

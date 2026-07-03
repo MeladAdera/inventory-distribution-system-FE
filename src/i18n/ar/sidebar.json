@@ -3,6 +3,7 @@
   "sections": { "main": "الرئيسية", "manage": "الإدارة" },
   "nav": {
     "dashboard": "لوحة التحكم",
+    "profit": "الأرباح",
     "products": "المنتجات",
     "inventory": "المخزون",
     "categories": "الفئات",

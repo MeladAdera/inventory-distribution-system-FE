@@ -3,6 +3,7 @@
   "sections": { "main": "Main", "manage": "Manage" },
   "nav": {
     "dashboard": "Dashboard",
+    "profit": "Profit",
     "products": "Products",
     "inventory": "Inventory",
     "categories": "Categories",

@@ -1,0 +1,31 @@
+{
+  "header": {
+    "eyebrow": "Analytics",
+    "title": "Profit Dashboard"
+  },
+  "scope": {
+    "warehouse": "Warehouse"
+  },
+  "period": {
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly"
+  },
+  "currency": "SYP",
+  "cards": {
+    "revenue": "Revenue",
+    "revenueSub": "Total sales in the period",
+    "cost": "Cost",
+    "costSub": "Cost of goods sold",
+    "profit": "Profit",
+    "profitSub": "Revenue minus cost",
+    "legacyNote": "Transactions recorded before cost tracking was added count as zero cost, so older periods may overstate profit."
+  },
+  "chart": {
+    "title": "Profit trend",
+    "revenue": "Revenue",
+    "cost": "Cost",
+    "profit": "Profit",
+    "empty": "No data for this period yet"
+  }
+}

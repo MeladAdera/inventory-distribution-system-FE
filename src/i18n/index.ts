@@ -4,6 +4,7 @@ import auditLogsEn from './en/audit-logs.json';
 import topbarEn from './en/topbar.json';
 import bottomnavEn from './en/bottomnav.json';
 import dashboardEn from './en/dashboard.json';
+import profitEn from './en/profit.json';
 import productsEn from './en/products.json';
 import categoriesEn from './en/categories.json';
 import clientsEn from './en/clients.json';
@@ -23,6 +24,7 @@ import auditLogsAr from './ar/audit-logs.json';
 import topbarAr from './ar/topbar.json';
 import bottomnavAr from './ar/bottomnav.json';
 import dashboardAr from './ar/dashboard.json';
+import profitAr from './ar/profit.json';
 import productsAr from './ar/products.json';
 import categoriesAr from './ar/categories.json';
 import clientsAr from './ar/clients.json';
@@ -43,6 +45,7 @@ export const translations = {
     topbar: topbarEn,
     bottomnav: bottomnavEn,
     dashboard: dashboardEn,
+    profit: profitEn,
     products: productsEn,
     categories: categoriesEn,
     clients: clientsEn,
@@ -63,6 +66,7 @@ export const translations = {
     topbar: topbarAr,
     bottomnav: bottomnavAr,
     dashboard: dashboardAr,
+    profit: profitAr,
     products: productsAr,
     categories: categoriesAr,
     clients: clientsAr,

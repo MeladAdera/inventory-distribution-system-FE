@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  TrendingUp,
   Package,
   ShoppingCart,
   ClipboardList,
@@ -14,6 +15,7 @@ import { UserRole } from '@/features/auth/types/enums';
 export interface ClientNavItem {
   id:
     | 'dashboard'
+    | 'profit'
     | 'inventory'
     | 'order'
     | 'orders'
@@ -30,6 +32,7 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'inventory', href: '/client/inventory', icon: Package },
   { id: 'order', href: '/client/order', icon: ShoppingCart },
   { id: 'orders', href: '/client/orders', icon: ClipboardList },
+  { id: 'profit', href: '/client/profit', icon: TrendingUp },
   { id: 'receipts', href: '/client/receipts', icon: Receipt },
   { id: 'employees', href: '/client/employees', icon: Users },
   { id: 'auditLogs', href: '/client/audit-logs', icon: ScrollText },

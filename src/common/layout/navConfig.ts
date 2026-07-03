@@ -5,6 +5,7 @@ import {
   Users,
   Truck,
   TrendingDown,
+  TrendingUp,
   ScrollText,
   Receipt,
   Settings,
@@ -23,6 +24,7 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', href: '/dashboard', icon: LayoutDashboard, section: 'main' },
+  { id: 'profit', href: '/profit', icon: TrendingUp, section: 'main' },
   { id: 'products', href: '/products', icon: Package, section: 'main' },
   { id: 'inventory', href: '/inventory', icon: Warehouse, section: 'main' },
   { id: 'categories', href: '/categories', icon: Tag, section: 'main' },
