@@ -8,6 +8,11 @@ export const createProductSchema = z.object({
     .number()
     .positive()
     .refine((v) => Number(v.toFixed(2)) === v, { message: 'Max 2 decimal places' }),
+  cost_price: z
+    .number()
+    .min(0)
+    .refine((v) => Number(v.toFixed(2)) === v, { message: 'Max 2 decimal places' })
+    .optional(),
   category_id: z.number().positive(),
 });
 
@@ -20,6 +25,8 @@ export const productFormSchema = z.object({
   description: z.string().optional(),
   barcode: z.string().optional(),
   price: z.number().positive('Price must be greater than 0'),
+  // Registered with setValueAs (empty input → undefined), not valueAsNumber
+  cost_price: z.number().min(0, 'Must be 0 or more').optional(),
   category_id: z.number().positive('Category is required'),
   initialQuantity: z.number().min(0).optional(),
 });

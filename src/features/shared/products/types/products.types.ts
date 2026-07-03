@@ -19,6 +19,8 @@ export interface Product {
   description: string | null;
   barcode: string | null;
   price: string;
+  /** Buying price. `null` when hidden (shop users viewing warehouse products). */
+  cost_price: string | null;
   source: ProductSource;
   is_global: boolean;
   is_active: boolean;
@@ -48,6 +50,7 @@ export interface CreateProductInput {
   description?: string;
   barcode?: string;
   price: number;
+  cost_price?: number;
   category_id: number;
 }
 
@@ -56,5 +59,6 @@ export interface UpdateProductInput {
   description?: string;
   barcode?: string;
   price?: number;
+  cost_price?: number;
   category_id?: number;
 }

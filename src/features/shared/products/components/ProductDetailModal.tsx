@@ -45,6 +45,10 @@ export function ProductDetailModal({ open, product, onClose }: ProductDetailModa
       value: isLoadingDetail ? null : String(detail?.current_quantity ?? 0),
     },
     { label: p.detail.price, value: `ل.س ${Number(product.price).toFixed(2)}` },
+    // cost_price is null when the backend hides it (shop user on warehouse product)
+    ...(product.cost_price !== null
+      ? [{ label: p.detail.costPrice, value: `ل.س ${Number(product.cost_price).toFixed(2)}` }]
+      : []),
     { label: p.detail.source, value: sourceLabel },
     { label: p.detail.barcode, value: product.barcode ?? '—' },
     { label: p.detail.category, value: categoryName },

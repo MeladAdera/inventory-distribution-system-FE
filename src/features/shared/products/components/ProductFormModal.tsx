@@ -80,6 +80,7 @@ export function ProductFormModal({
         description: product.description ?? '',
         barcode: product.barcode ?? '',
         price: Number(product.price),
+        cost_price: product.cost_price !== null ? Number(product.cost_price) : undefined,
         category_id: product.category_id,
       });
       setPreviewUrl(product.image_url ?? null);
@@ -162,6 +163,8 @@ export function ProductFormModal({
           name: data.name,
           description: data.description,
           price: data.price,
+          // Only send cost_price when the field was visible (non-null from API)
+          ...(product.cost_price !== null && { cost_price: data.cost_price }),
         });
       } else {
         const created = await onAdd({
@@ -169,6 +172,7 @@ export function ProductFormModal({
           description: data.description || undefined,
           barcode: data.barcode || undefined,
           price: data.price,
+          cost_price: data.cost_price,
           category_id: data.category_id,
         });
         if (pendingFile) {
@@ -184,6 +188,10 @@ export function ProductFormModal({
       setFormError(getErrorMessage(err));
     }
   });
+
+  // Hide the cost input when the API returned null (warehouse margin is
+  // private to shop users) — an empty visible input would overwrite it with 0.
+  const showCostPrice = mode === 'add' || product?.cost_price != null;
 
   const title = mode === 'add' ? p.form.addTitle : p.form.editTitle;
   const currentImageUrl = imageRemoved
@@ -337,13 +345,8 @@ export function ProductFormModal({
             />
           </Field>
 
-          {/* Price + Initial quantity row */}
-          <div
-            className={cn(
-              'grid gap-4',
-              mode === 'add' && onStockIn ? 'grid-cols-2' : 'grid-cols-1'
-            )}
-          >
+          {/* Price + Buying price + Initial quantity row */}
+          <div className={cn('grid gap-4', showCostPrice ? 'grid-cols-2' : 'grid-cols-1')}>
             <Field
               label={p.form.price}
               required
@@ -362,6 +365,28 @@ export function ProductFormModal({
                 dir="ltr"
               />
             </Field>
+
+            {showCostPrice && (
+              <Field
+                label={p.form.costPrice}
+                error={errors.cost_price?.message ? p.form.errCostPrice : undefined}
+              >
+                <input
+                  {...register('cost_price', {
+                    setValueAs: (v) => (v === '' || v === null ? undefined : Number(v)),
+                  })}
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder={p.form.costPricePlaceholder}
+                  className={cn(
+                    ipt(!!errors.cost_price),
+                    'font-mono [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
+                  )}
+                  dir="ltr"
+                />
+              </Field>
+            )}
 
             {mode === 'add' && onStockIn && (
               <Field label={p.form.initialQty}>
