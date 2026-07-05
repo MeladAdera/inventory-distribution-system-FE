@@ -1,0 +1,38 @@
+import type { MetadataRoute } from 'next';
+
+// Native App Router manifest convention. Served at /manifest.webmanifest.
+// `scope` + `start_url` make the installed app behave as the shop-owner portal.
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: 'Shop Inventory',
+    short_name: 'Inventory',
+    description: 'Manage your shop inventory — works offline.',
+    lang: 'ar',
+    dir: 'rtl',
+    start_url: '/client/inventory',
+    scope: '/client/',
+    display: 'standalone',
+    background_color: '#1a1612',
+    theme_color: '#1a1612',
+    icons: [
+      {
+        src: '/icons/icon-192.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/icons/icon-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/icons/icon-maskable-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
+    ],
+  };
+}

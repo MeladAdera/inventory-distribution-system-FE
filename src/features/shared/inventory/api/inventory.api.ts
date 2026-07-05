@@ -1,3 +1,4 @@
+import type { AxiosRequestConfig } from 'axios';
 import { apiClient } from '@/common/api';
 import type {
   StockInInput,
@@ -21,8 +22,8 @@ export const inventoryApi = {
     return response.data;
   },
 
-  stockIn: async (data: StockInInput) => {
-    const response = await apiClient.post('/inventory/stock-in', data);
+  stockIn: async (data: StockInInput, config?: AxiosRequestConfig) => {
+    const response = await apiClient.post('/inventory/stock-in', data, config);
     return response.data;
   },
 

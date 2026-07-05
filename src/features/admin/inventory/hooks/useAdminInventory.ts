@@ -4,7 +4,10 @@ import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { inventoryApi } from '@/features/shared/inventory/api/inventory.api';
 import { useAuthStore } from '@/features/auth/store/authStore';
-import type { InventoryItem } from '@/features/shared/inventory/types/inventory.types';
+import type {
+  InventoryItem,
+  StockInInput,
+} from '@/features/shared/inventory/types/inventory.types';
 
 export interface AdminInventoryStats {
   totalSKUs: number;
@@ -45,7 +48,7 @@ export function useAdminInventory() {
   }, [items]);
 
   const stockInMutation = useMutation({
-    mutationFn: inventoryApi.stockIn,
+    mutationFn: (data: StockInInput) => inventoryApi.stockIn(data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-inventory'] }),
   });
 

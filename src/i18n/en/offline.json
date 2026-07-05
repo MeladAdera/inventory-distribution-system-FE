@@ -1,0 +1,27 @@
+{
+  "banner": {
+    "offline": "You're offline — changes are saved on this device and will sync when you reconnect.",
+    "pending": "{count} change(s) waiting to sync.",
+    "syncing": "Syncing your changes…",
+    "needsLogin": "Your session expired. Log in again to finish syncing your changes.",
+    "viewConflicts": "Review {count} conflict(s)"
+  },
+  "badge": {
+    "pendingSync": "Pending sync",
+    "conflict": "Sync failed"
+  },
+  "conflict": {
+    "title": "Some changes couldn't be saved",
+    "intro": "The server rejected these changes — usually because the stock would go invalid. Discard them, or edit again.",
+    "itemError": "Server said: {error}",
+    "increaseLabel": "Increase by {qty}",
+    "decreaseLabel": "Decrease by {qty}",
+    "discard": "Discard",
+    "editAgain": "Edit again",
+    "close": "Close"
+  },
+  "toast": {
+    "syncSuccess": "Your changes synced successfully.",
+    "syncFailedNeedsLogin": "Couldn't sync — please log in again."
+  }
+}

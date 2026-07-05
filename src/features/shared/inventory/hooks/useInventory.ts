@@ -2,7 +2,11 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { inventoryApi } from '../api/inventory.api';
-import type { InventoryListParams, AdjustInventoryInput } from '../types/inventory.types';
+import type {
+  InventoryListParams,
+  AdjustInventoryInput,
+  StockInInput,
+} from '../types/inventory.types';
 
 export function useInventory(params?: InventoryListParams) {
   const queryClient = useQueryClient();
@@ -13,7 +17,7 @@ export function useInventory(params?: InventoryListParams) {
   });
 
   const stockInMutation = useMutation({
-    mutationFn: inventoryApi.stockIn,
+    mutationFn: (data: StockInInput) => inventoryApi.stockIn(data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['inventory'] }),
   });
 

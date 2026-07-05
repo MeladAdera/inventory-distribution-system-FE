@@ -23,6 +23,7 @@ docs/
 │   ├── FEATURE_TEMPLATE.md
 │   ├── auth.md            # Shared — login, middleware, token layer
 │   ├── profit-dashboard.md # Shared — profit analytics page + buying price (cost) on products
+│   ├── offline-pwa.md     # Shared — offline-first PWA for shop inventory (SW, sync queue, IndexedDB)
 │   ├── admin/             # Admin portal (WAREHOUSE_ADMIN / EMPLOYEE)
 │   │   ├── admin-layout-shell.md
 │   │   ├── dashboard.md
@@ -97,6 +98,7 @@ Check `docs/api/` folder:
 | Client Portal Layout | [client-portal-layout.md](features/client/client-portal-layout.md) | ✅ CLIENT-001 Complete |
 | Client Dashboard | [client-dashboard.md](features/client/client-dashboard.md) | ✅ CLIENT-002 Complete (mock data) |
 | Client Inventory | [client-inventory.md](features/client/client-inventory.md) | ✅ CLIENT-003 Complete (mock data) |
+| Offline PWA (Client Inventory) | [offline-pwa.md](features/offline-pwa.md) | ✅ Implemented — device/DevTools verification pending |
 | Order Products | — | ⬜ CLIENT-004 Not started |
 | My Orders | — | ⬜ CLIENT-005 Not started |
 

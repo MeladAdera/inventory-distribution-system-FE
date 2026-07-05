@@ -5,13 +5,16 @@ import { I18nProvider } from './I18nProvider';
 import { QueryProvider } from './QueryProvider';
 import { AuthProvider } from './AuthProvider';
 import { ToastProvider } from './ToastProvider';
+import { OfflineSyncProvider } from './OfflineSyncProvider';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <I18nProvider>
       <QueryProvider>
         <AuthProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <OfflineSyncProvider>{children}</OfflineSyncProvider>
+          </ToastProvider>
         </AuthProvider>
       </QueryProvider>
     </I18nProvider>

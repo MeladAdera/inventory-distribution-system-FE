@@ -2,7 +2,12 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { receiptsApi } from '../api/receipts.api';
-import type { ReceiptListItem, Receipt, ReceiptListParams } from '../types/receipts.types';
+import type {
+  ReceiptListItem,
+  Receipt,
+  ReceiptListParams,
+  CreateReceiptInput,
+} from '../types/receipts.types';
 
 export function useReceipts(params?: ReceiptListParams) {
   const queryClient = useQueryClient();
@@ -13,7 +18,7 @@ export function useReceipts(params?: ReceiptListParams) {
   });
 
   const createMutation = useMutation({
-    mutationFn: receiptsApi.create,
+    mutationFn: (data: CreateReceiptInput) => receiptsApi.create(data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['receipts'], refetchType: 'all' }),
   });
 

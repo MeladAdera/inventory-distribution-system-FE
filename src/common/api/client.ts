@@ -33,7 +33,10 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as AxiosError['config'] & { _retry?: boolean };
+    const originalRequest = error.config as AxiosError['config'] & {
+      _retry?: boolean;
+      skipAuthRedirect?: boolean;
+    };
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -56,6 +59,14 @@ apiClient.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return apiClient(originalRequest);
       } catch {
+        // Background sync requests opt out of the forced redirect: a queue flush
+        // firing while the owner is on another page must not yank them to /login
+        // and lose the queue. Tag the error so the sync engine can pause and show
+        // a non-disruptive "log in again to finish syncing" banner instead.
+        if (originalRequest.skipAuthRedirect) {
+          return Promise.reject(Object.assign(error, { authRequired: true }));
+        }
+
         // Refresh failed — clear every token store and force re-login
         useAuthStore.getState().clearAuth();
         tokenUtils.clearTokens();

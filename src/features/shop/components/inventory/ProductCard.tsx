@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { ShoppingCart, Pencil, Trash2, Minus, Plus } from 'lucide-react';
+import { ShoppingCart, Pencil, Trash2, Minus, Plus, RefreshCw, AlertTriangle } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { ProductBanner } from '@/features/shared/products/components/ProductBanner';
 import { InvStatusBadge } from './InvStatusBadge';
 import { Card, CardContent } from '@/common/components/ui/card';
 import type { EnrichedInventoryItem } from '../../types/clientInventory.types';
+import type { SyncItemStatus } from '@/features/shared/inventory/offline/stockSyncEngine';
 
 export interface ProductCardLabels {
   currentQty: string;
@@ -14,6 +15,8 @@ export interface ProductCardLabels {
   statusLow: string;
   statusOut: string;
   newQty: string;
+  pendingSync: string;
+  conflict: string;
 }
 
 interface ProductCardProps {
@@ -24,6 +27,8 @@ interface ProductCardProps {
   onOrderMore: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  // Set when this item has an unsynced change waiting in the offline queue.
+  syncStatus?: SyncItemStatus;
 }
 
 export function ProductCard({
@@ -34,6 +39,7 @@ export function ProductCard({
   onOrderMore,
   onEdit,
   onDelete,
+  syncStatus,
 }: ProductCardProps) {
   const newQty = item.current_quantity + delta;
   const [inputValue, setInputValue] = useState(delta === 0 ? '' : String(delta));
@@ -62,9 +68,23 @@ export function ProductCard({
       <CardContent className="p-3 flex flex-col gap-2">
         {/* Name + actions */}
         <div className="flex items-start justify-between gap-2">
-          <p className="text-[14px] font-semibold text-ink-900 leading-snug truncate flex-1">
-            {item.product_name}
-          </p>
+          <div className="flex flex-col gap-1 min-w-0 flex-1">
+            <p className="text-[14px] font-semibold text-ink-900 leading-snug truncate">
+              {item.product_name}
+            </p>
+            {syncStatus === 'pending' && (
+              <span className="inline-flex items-center gap-1 self-start px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                <RefreshCw size={9} className="animate-spin" />
+                {labels.pendingSync}
+              </span>
+            )}
+            {syncStatus === 'conflict' && (
+              <span className="inline-flex items-center gap-1 self-start px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-danger-50 text-danger-700 border border-danger-200">
+                <AlertTriangle size={9} />
+                {labels.conflict}
+              </span>
+            )}
+          </div>
           {(onEdit || onDelete) && (
             <div className="flex items-center gap-0.5 shrink-0 -me-0.5 -mt-0.5">
               {onEdit && (

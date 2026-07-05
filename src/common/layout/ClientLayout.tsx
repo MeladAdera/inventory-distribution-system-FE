@@ -13,6 +13,7 @@ import { getClientNavItems } from './clientNavConfig';
 import { useI18n } from '@/providers/I18nProvider';
 import { useAuth } from '@/features/auth';
 import { cn } from '@/common/utils/cn';
+import { OfflineSyncBanner } from '@/features/shared/inventory/offline/OfflineSyncBanner';
 
 interface ClientLayoutProps {
   children: ReactNode;
@@ -37,6 +38,7 @@ export function ClientLayout({ children }: ClientLayoutProps) {
       {/* Main column */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <ClientTopBar onMenuClick={() => setDrawerOpen(true)} />
+        <OfflineSyncBanner />
         <main className="flex-1 overflow-y-auto p-4 lg:p-6 pb-20 md:pb-4 lg:pb-6">{children}</main>
       </div>
 

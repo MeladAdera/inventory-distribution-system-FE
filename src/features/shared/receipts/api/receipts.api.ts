@@ -1,3 +1,4 @@
+import type { AxiosRequestConfig } from 'axios';
 import { apiClient } from '@/common/api';
 import type { CreateReceiptInput, ReceiptListParams } from '../types/receipts.types';
 
@@ -12,8 +13,8 @@ export const receiptsApi = {
     return response.data;
   },
 
-  create: async (data: CreateReceiptInput) => {
-    const response = await apiClient.post('/receipts', data);
+  create: async (data: CreateReceiptInput, config?: AxiosRequestConfig) => {
+    const response = await apiClient.post('/receipts', data, config);
     return response.data;
   },
 };

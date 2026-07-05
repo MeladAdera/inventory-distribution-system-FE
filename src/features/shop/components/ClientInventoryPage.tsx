@@ -28,7 +28,10 @@ import { ProductFormModal } from '@/features/shared/products/components/ProductF
 import { DeleteConfirmModal } from '@/features/shared/products/components/DeleteConfirmModal';
 import { ProductSource } from '@/features/shared/products/types/products.types';
 import { inventoryApi } from '@/features/shared/inventory/api/inventory.api';
-import { receiptsApi } from '@/features/shared/receipts/api/receipts.api';
+import {
+  enqueueStockSave,
+  useStockSyncQueue,
+} from '@/features/shared/inventory/offline/stockSyncEngine';
 import { useClientInventory } from '../hooks/useClientInventory';
 import { CategoryCard } from './inventory/CategoryCard';
 import { ProductCard } from './inventory/ProductCard';
@@ -71,6 +74,8 @@ export function ClientInventoryPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const { categories: invCategories, allItems, isLoading, error } = useClientInventory();
+
+  const { itemStatus } = useStockSyncQueue();
 
   const {
     categories: rawCategories,
@@ -164,39 +169,22 @@ export function ClientInventoryPage() {
     decreaseNotes: string;
     increaseNotes: string;
   }) {
-    const itemMap = new Map(allItems.map((i) => [i.id, i]));
-    const decreases = Object.entries(changes).filter(([, delta]) => delta < 0);
-    const increases = Object.entries(changes).filter(([, delta]) => delta > 0);
-
     setIsSaving(true);
     try {
-      if (decreases.length > 0) {
-        await receiptsApi.create({
-          items: decreases.map(([idStr, delta]) => ({
-            inventoryId: Number(idStr),
-            quantity: Math.abs(delta),
-          })),
-          ...(decreaseNotes.trim() ? { notes: decreaseNotes.trim() } : {}),
-        });
-      }
-
-      if (increases.length > 0) {
-        await Promise.all(
-          increases.map(([idStr, delta]) => {
-            const item = itemMap.get(Number(idStr));
-            return inventoryApi.stockIn({
-              productId: item!.product_id,
-              quantity: delta,
-              ...(increaseNotes.trim() ? { notes: increaseNotes.trim() } : {}),
-            });
-          })
-        );
-      }
-
-      await invalidateInvProducts();
+      // Unified path: enqueue the batch. When online it flushes immediately;
+      // when offline it's durably queued and syncs on reconnect. Optimistic UI,
+      // pending badges, and conflict surfacing are all driven by the queue —
+      // so we don't call receiptsApi/inventoryApi or invalidate here anymore.
+      await enqueueStockSave({
+        queryClient,
+        changes,
+        items: allItems,
+        decreaseNotes,
+        increaseNotes,
+        shopId,
+      });
       setChanges({});
       setModalOpen(false);
-      toastSuccess(inv.toast.success);
     } catch (err) {
       toastError(getErrorMessage(err));
       throw err;
@@ -452,6 +440,7 @@ export function ClientInventoryPage() {
                     item={item}
                     delta={changes[item.id] ?? 0}
                     onDelta={(v) => handleDelta(item.id, v)}
+                    syncStatus={itemStatus.get(item.id)}
                     labels={{
                       currentQty: inv.currentQty,
                       updateQty: inv.updateQty,
@@ -460,6 +449,8 @@ export function ClientInventoryPage() {
                       statusLow: inv.statusLow,
                       statusOut: inv.statusOut,
                       newQty: inv.newQty ?? 'New quantity',
+                      pendingSync: t.offline.badge.pendingSync,
+                      conflict: t.offline.badge.conflict,
                     }}
                     onOrderMore={() => router.push(`/client/order?product=${item.product_id}`)}
                     onEdit={
