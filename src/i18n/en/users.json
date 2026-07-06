@@ -66,10 +66,14 @@
     "title": "Edit User",
     "name": "Name",
     "email": "Email",
+    "password": "New Password",
+    "passwordPlaceholder": "••••••••",
+    "passwordHint": "Leave blank to keep the current password",
     "submit": "Save Changes",
     "cancel": "Cancel",
     "errName": "Name must be at least 2 characters",
     "errEmail": "Invalid email address",
+    "errPassword": "Minimum 6 characters",
     "toastSuccess": "User updated successfully"
   },
   "deactivateUser": {

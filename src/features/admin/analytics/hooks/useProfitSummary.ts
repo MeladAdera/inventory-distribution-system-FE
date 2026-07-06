@@ -8,7 +8,7 @@ export function useProfitSummary(params: ProfitParams) {
   const query = useQuery({
     queryKey: ['analytics', 'profit-summary', params],
     queryFn: () => analyticsApi.profitSummary(params),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
     placeholderData: keepPreviousData,
   });
 

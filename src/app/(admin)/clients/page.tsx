@@ -7,6 +7,7 @@ import { useToast } from '@/providers/ToastProvider';
 import { useClients } from '@/features/admin/clients/hooks/useClients';
 import { ClientsTableCard } from '@/features/admin/clients/components/ClientsTableCard';
 import { ClientFormModal } from '@/features/admin/clients/components/ClientFormModal';
+import { ClientViewModal } from '@/features/admin/clients/components/ClientViewModal';
 import { ClientDeleteConfirmModal } from '@/features/admin/clients/components/ClientDeleteConfirmModal';
 import { AddShopOwnerModal } from '@/features/admin/clients/components/AddShopOwnerModal';
 import type { AdminClient } from '@/features/admin/clients/types/clients.types';
@@ -150,6 +151,11 @@ export default function ClientsPage() {
         isSubmitting={isUpdating}
         onClose={() => setModal({ type: 'none' })}
         onEdit={handleEdit}
+      />
+      <ClientViewModal
+        open={modal.type === 'view'}
+        client={modal.type === 'view' ? modal.client : null}
+        onClose={() => setModal({ type: 'none' })}
       />
       <ClientDeleteConfirmModal
         open={modal.type === 'delete'}

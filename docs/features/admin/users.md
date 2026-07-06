@@ -3,7 +3,7 @@
 **Status**: ✅ Complete  
 **Tickets**: TICKET-017, TICKET-022–027, TICKET-040–044  
 **Created**: 2026-06-10  
-**Last Updated**: 2026-06-30
+**Last Updated**: 2026-07-06
 
 ---
 
@@ -25,7 +25,7 @@ src/features/users/
 │   ├── UsersTable.tsx             # DataTable with role/status badges + action buttons
 │   ├── CreateShopOwnerModal.tsx   # Form: shopName, shopAddress, ownerName, email, password
 │   ├── CreateEmployeeModal.tsx    # Form: name, email, password
-│   ├── EditUserModal.tsx          # Form: name, email (pre-filled)
+│   ├── EditUserModal.tsx          # Form: name, email (pre-filled), password (optional, min 6 — blank keeps current)
 │   └── DeactivateUserDialog.tsx   # ConfirmDialog wrapping DELETE /users/:id
 ├── hooks/
 │   └── useUsers.ts                # List query + createShopOwner, createEmployee, update, deactivate mutations
@@ -49,7 +49,7 @@ src/app/(dashboard)/users/
 | `GET` | `/users/:id` | Single user | WAREHOUSE_ADMIN, SHOP_OWNER |
 | `POST` | `/users/shop-owners` | Create shop + owner in one request | WAREHOUSE_ADMIN |
 | `POST` | `/users/employees` | Create employee in caller's shop | SHOP_OWNER |
-| `PATCH` | `/users/:id` | Update name / email | WAREHOUSE_ADMIN, SHOP_OWNER |
+| `PATCH` | `/users/:id` | Update name / email / password. All fields optional — only changed fields are sent; password (min 6) is hashed server-side and never returned. `SHOP_OWNER` can only update their own employees; `WAREHOUSE_ADMIN` can update any user. | WAREHOUSE_ADMIN, SHOP_OWNER |
 | `DELETE` | `/users/:id` | Soft-delete (sets `is_active = false`) | WAREHOUSE_ADMIN, SHOP_OWNER |
 | `PATCH` | `/users/:id/activate` | Reactivate (sets `is_active = true`). No-op if already active. `SHOP_OWNER` can only target their own shop's employees — cross-shop returns `403`. | WAREHOUSE_ADMIN, SHOP_OWNER |
 
@@ -84,7 +84,7 @@ interface CreateShopOwnerInput {
 
 interface CreateEmployeeInput { name: string; email: string; password: string; }
 
-interface UpdateUserInput { name?: string; email?: string; }
+interface UpdateUserInput { name?: string; email?: string; password?: string; }
 ```
 
 ---
@@ -176,6 +176,7 @@ const {
 | | password | required, min 6 chars |
 | `updateUserSchema` | name | optional, min 2 chars |
 | | email | optional, valid email |
+| | password | optional, min 6 chars if provided (empty string treated as "unchanged") |
 
 ---
 
@@ -189,6 +190,8 @@ const {
 - [ ] Create Shop Owner — form validates, success toast, list refreshes
 - [ ] Create Employee — form validates, success toast, list refreshes
 - [ ] Edit User — pre-fills current values, saves changes, success toast
+- [ ] Edit User — leaving the new password field blank keeps the existing password (no `password` key sent in the PATCH body)
+- [ ] Edit User — entering a new password (min 6 chars) updates it; `EditUserModal` is shared, so this also works from the shop-owner "Employees" page
 - [ ] Deactivate — confirm dialog shows user name, sets `is_active = false`, row status badge changes to "Inactive", "Deactivate" button replaced by "Activate" for that row
 - [ ] Activate — clicking "Activate" on an inactive row fires immediately (no dialog), sets `is_active = true`, status badge changes to "Active", "Activate" button replaced by "Deactivate"
 - [ ] Activate shows success toast with user name; API errors (e.g. 403 cross-shop) surface as error toast

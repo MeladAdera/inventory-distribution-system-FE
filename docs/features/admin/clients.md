@@ -2,7 +2,7 @@
 
 **Status**: ✅ API Integrated  
 **Created Date**: 2026-06-11  
-**Last Updated**: 2026-06-30  
+**Last Updated**: 2026-07-06  
 **Assignee**: Melad Adera  
 **Ticket**: FIGMA-004
 
@@ -34,6 +34,7 @@ src/features/clients/
 │   ├── ClientsTableCard.tsx          # Table: toolbar + 8-col grid + skeleton + pagination
 │   ├── AddShopOwnerModal.tsx         # Create modal — shopName, shopAddress, ownerName, email, password
 │   ├── ClientFormModal.tsx           # Edit modal — name, phone, address (edit-only)
+│   ├── ClientViewModal.tsx           # Read-only detail modal (avatar, status, phone, address, products, last activity)
 │   └── ClientDeleteConfirmModal.tsx  # Deactivate/Activate confirm dialog
 ├── hooks/
 │   └── useClients.ts                 # TanStack Query list + 3 mutations
@@ -96,6 +97,11 @@ Calls: `PATCH /shops/:id`
 Schema: `clientFormSchema`  
 Pre-fills from `AdminClient`: `name_ar` → name, phone (empty if `'—'`), `city_ar` → address
 
+### `ClientViewModal` (view, read-only)
+Opened by the table's `Eye` icon button (`onView`). Displays `AdminClient` fields with no fetch/mutation of its own — avatar + name + status badge, then phone, address, product count, and last activity in a 2-column detail grid.
+
+> Fixed 2026-07-06: the table already called `onView` and the page tracked `modal.type === 'view'` state, but no modal was rendered for that state — clicking the button was a silent no-op. `ClientViewModal` now closes that gap.
+
 ### `ClientDeleteConfirmModal` (deactivate / activate)
 Context-aware — derives `willActivate = client.status === 'inactive'` and switches the entire dialog based on direction:
 
@@ -127,6 +133,7 @@ clients.add.{title, shopName, shopNamePlaceholder, shopAddress, shopAddressPlace
              save, cancel}
 clients.form.{editTitle, save, cancel, name, namePlaceholder, phone, phonePlaceholder,
               address, addressPlaceholder, errName, errPhone}
+clients.view.{title, phone, address, products, lastActivity, status, close}
 clients.delete.{title, warning, delete, cancel}
 clients.activate.{title, warning, confirm, cancel}
 clients.toast.{created, updated, deactivated, activated}
@@ -142,6 +149,7 @@ clients.toast.{created, updated, deactivated, activated}
 - [x] Status filter works client-side on the current page
 - [x] Add button opens `AddShopOwnerModal`; success → invalidates shop list query
 - [x] Edit button opens `ClientFormModal` pre-filled; success → invalidates shop list query
+- [x] View (eye) button opens `ClientViewModal` with the selected client's details (read-only)
 - [x] Deactivate/Activate confirm dialog toggles `is_active` via `PATCH /shops/:id/status`
 - [x] Toast shown for every mutation result (success and failure)
 - [x] `npx tsc --noEmit` — zero errors

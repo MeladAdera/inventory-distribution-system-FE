@@ -4,7 +4,14 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Modal, FormField, Button, LoadingSpinner, ErrorAlert } from '@/common/components';
+import {
+  Modal,
+  FormField,
+  Button,
+  LoadingSpinner,
+  ErrorAlert,
+  PasswordInput,
+} from '@/common/components';
 import { useToast } from '@/providers';
 import { useI18n } from '@/providers/I18nProvider';
 import { usersApi } from '../api/users.api';
@@ -14,6 +21,7 @@ import type { User } from '../types/users.types';
 interface FormData {
   name?: string;
   email?: string;
+  password?: string;
 }
 
 interface EditUserModalProps {
@@ -32,6 +40,7 @@ export function EditUserModal({ open, user, onClose, onSuccess }: EditUserModalP
   const schema = z.object({
     name: z.string().min(2, m.errName).optional(),
     email: z.string().email({ message: m.errEmail }).optional(),
+    password: z.string().min(6, m.errPassword).optional().or(z.literal('')),
   });
 
   const {
@@ -43,7 +52,7 @@ export function EditUserModal({ open, user, onClose, onSuccess }: EditUserModalP
 
   useEffect(() => {
     if (user) {
-      reset({ name: user.name, email: user.email });
+      reset({ name: user.name, email: user.email, password: '' });
     }
   }, [user, reset]);
 
@@ -57,7 +66,8 @@ export function EditUserModal({ open, user, onClose, onSuccess }: EditUserModalP
     if (!user) return;
     setServerError(null);
     try {
-      await usersApi.update(user.id, data);
+      const { password, ...rest } = data;
+      await usersApi.update(user.id, { ...rest, ...(password ? { password } : {}) });
       toast.success(m.toastSuccess);
       onSuccess();
     } catch (err) {
@@ -76,6 +86,15 @@ export function EditUserModal({ open, user, onClose, onSuccess }: EditUserModalP
 
         <FormField label={m.email} error={errors.email?.message}>
           <input {...register('email')} type="email" className="input" />
+        </FormField>
+
+        <FormField label={m.password} error={errors.password?.message}>
+          <PasswordInput
+            {...register('password')}
+            className="input"
+            placeholder={m.passwordPlaceholder}
+          />
+          <p className="text-[12px] text-ink-500 mt-1">{m.passwordHint}</p>
         </FormField>
 
         <div className="flex justify-end gap-3 pt-2">
