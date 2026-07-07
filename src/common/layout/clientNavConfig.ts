@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  LayoutGrid,
   TrendingUp,
   Package,
   ShoppingCart,
@@ -18,6 +19,7 @@ export interface ClientNavItem {
     | 'profit'
     | 'inventory'
     | 'order'
+    | 'sell'
     | 'orders'
     | 'receipts'
     | 'employees'
@@ -31,6 +33,7 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'dashboard', href: '/client/dashboard', icon: LayoutDashboard },
   { id: 'inventory', href: '/client/inventory', icon: Package },
   { id: 'order', href: '/client/order', icon: ShoppingCart },
+  { id: 'sell', href: '/client/sell', icon: LayoutGrid },
   { id: 'orders', href: '/client/orders', icon: ClipboardList },
   { id: 'profit', href: '/client/profit', icon: TrendingUp },
   { id: 'receipts', href: '/client/receipts', icon: Receipt },
@@ -39,8 +42,8 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'settings', href: '/client/settings', icon: Settings },
 ];
 
-// EMPLOYEE only sees dashboard + inventory; mirrors EMPLOYEE_ALLOWED_ROUTES in middleware.utils.ts
-const EMPLOYEE_NAV_IDS: ClientNavItem['id'][] = ['dashboard', 'inventory'];
+// EMPLOYEE only sees dashboard + inventory + sell; mirrors EMPLOYEE_ALLOWED_ROUTES in middleware.utils.ts
+const EMPLOYEE_NAV_IDS: ClientNavItem['id'][] = ['dashboard', 'inventory', 'sell'];
 
 export function getClientNavItems(role?: UserRole): ClientNavItem[] {
   if (role === UserRole.EMPLOYEE) {

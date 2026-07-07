@@ -7,6 +7,7 @@
     "dashboard": "Home",
     "inventory": "My inventory",
     "order": "Order products",
+    "sell": "Quick sell",
     "orders": "My orders",
     "profit": "Profit",
     "categories": "My categories",
@@ -324,6 +325,38 @@
       "Browse categories and build your order",
       "Restock anything, anytime you need",
       "Your supplier is just a few taps away"
+    ]
+  },
+  "sell": {
+    "loading": "Loading products…",
+    "errorMsg": "Failed to load products. Please try again.",
+    "search": "Search category or product…",
+    "addedBadge": "added",
+    "products": "products",
+    "backToCategories": "Categories",
+    "tapHint": "Tap a product to add one unit",
+    "tile": {
+      "stock": "Stock",
+      "outOfStock": "Out of stock"
+    },
+    "tray": {
+      "title": "Selected products",
+      "totalUnits": "Total selected",
+      "unitsUnit": "units",
+      "continueBtn": "Continue"
+    },
+    "toast": {
+      "stub": "Selection saved — checkout is coming soon"
+    },
+    "empty": {
+      "noCategories": "No categories available.",
+      "noProducts": "No products in this category."
+    },
+    "taglines": [
+      "Tap products to build the sale",
+      "Fast picking, straight from the shelf",
+      "Every tap adds one unit",
+      "Select, review, done"
     ]
   },
   "auditLogs": {

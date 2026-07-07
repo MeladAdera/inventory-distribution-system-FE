@@ -21,7 +21,11 @@ const PUBLIC_ONLY_ROUTES = [ROUTES.LOGIN];
 
 // Routes an EMPLOYEE may access inside the client portal. Everything else
 // under /client/* redirects to the dashboard for this role.
-const EMPLOYEE_ALLOWED_ROUTES = [ROUTES.CLIENT_DASHBOARD, ROUTES.CLIENT_INVENTORY];
+const EMPLOYEE_ALLOWED_ROUTES = [
+  ROUTES.CLIENT_DASHBOARD,
+  ROUTES.CLIENT_INVENTORY,
+  ROUTES.CLIENT_SELL,
+];
 
 function matchesRoute(pathname: string, routes: string[]): boolean {
   return routes.some((r) => pathname === r || pathname.startsWith(`${r}/`));
