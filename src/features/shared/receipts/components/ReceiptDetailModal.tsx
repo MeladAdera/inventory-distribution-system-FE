@@ -13,6 +13,9 @@ function formatDate(iso: string, locale: 'ar' | 'en'): string {
 
 interface ReceiptDetailModalProps {
   receiptId: number | null;
+  // Not part of GET /receipts/:id — comes from the list row (ReceiptListItem)
+  // the caller already fetched, same pattern as audit logs' user_name.
+  createdByName?: string;
   open: boolean;
   onClose: () => void;
   locale: 'ar' | 'en';
@@ -34,6 +37,7 @@ interface ReceiptDetailModalProps {
 
 export function ReceiptDetailModal({
   receiptId,
+  createdByName,
   open,
   onClose,
   locale,
@@ -57,6 +61,12 @@ export function ReceiptDetailModal({
                 {formatDate(receipt.created_at, locale)}
               </span>
             </div>
+            {createdByName && (
+              <div>
+                <span className="text-ink-400">{labels.createdBy}: </span>
+                <span className="text-ink-700 font-medium">{createdByName}</span>
+              </div>
+            )}
             {receipt.notes && (
               <div>
                 <span className="text-ink-400">{labels.notesLabel}: </span>

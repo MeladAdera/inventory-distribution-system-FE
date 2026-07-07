@@ -134,6 +134,7 @@ export default function ReceiptsPage() {
 
       <ReceiptDetailModal
         receiptId={selectedReceipt?.id ?? null}
+        createdByName={selectedReceipt?.created_by_name}
         open={!!selectedReceipt}
         onClose={() => setSelectedReceipt(null)}
         locale={locale}

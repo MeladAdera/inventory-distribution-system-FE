@@ -17,7 +17,7 @@ export function ClientReceiptsPage() {
   const [page, setPage] = useState(1);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [selectedReceiptId, setSelectedReceiptId] = useState<number | null>(null);
+  const [selectedReceipt, setSelectedReceipt] = useState<ReceiptListItem | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   const params = {
@@ -46,7 +46,7 @@ export function ClientReceiptsPage() {
   }
 
   function handleView(receipt: ReceiptListItem) {
-    setSelectedReceiptId(receipt.id);
+    setSelectedReceipt(receipt);
     setModalOpen(true);
   }
 
@@ -125,7 +125,8 @@ export function ClientReceiptsPage() {
       )}
 
       <ReceiptDetailModal
-        receiptId={selectedReceiptId}
+        receiptId={selectedReceipt?.id ?? null}
+        createdByName={selectedReceipt?.created_by_name}
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         locale={locale}
