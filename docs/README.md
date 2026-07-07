@@ -22,6 +22,7 @@ docs/
 ├── features/
 │   ├── FEATURE_TEMPLATE.md
 │   ├── auth.md            # Shared — login, middleware, token layer
+│   ├── landing.md         # Shared — public marketing page at `/` + auth pages re-skin
 │   ├── profit-dashboard.md # Shared — profit analytics page + buying price (cost) on products
 │   ├── offline-pwa.md     # Shared — offline-first PWA for shop inventory (SW, sync queue, IndexedDB)
 │   ├── admin/             # Admin portal (WAREHOUSE_ADMIN / EMPLOYEE)
@@ -82,6 +83,7 @@ Check `docs/api/` folder:
 | Feature | Document | Status |
 |---------|----------|--------|
 | Authentication | [auth.md](features/auth.md) | ✅ PHASE 1 Complete |
+| Landing Page | [landing.md](features/landing.md) | ✅ Complete — public marketing page + auth re-skin |
 | Admin Layout Shell | [admin-layout-shell.md](features/admin/admin-layout-shell.md) | ✅ FIGMA-001 Complete |
 | Dashboard | [dashboard.md](features/admin/dashboard.md) | ✅ FIGMA-002 Complete — API Integrated |
 | Products | [products.md](features/admin/products.md) | ✅ FIGMA-003 Complete — API Integrated |

@@ -12,6 +12,8 @@ export { Pagination } from './Pagination';
 export { PasswordInput } from './PasswordInput';
 export { DatePickerButton } from './DatePickerButton';
 export { GlobalSearch } from './GlobalSearch';
+export { Reveal } from './Reveal';
+export { CountUp } from './CountUp';
 
 // Layout Components
 export {

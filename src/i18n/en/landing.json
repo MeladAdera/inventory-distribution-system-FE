@@ -1,0 +1,264 @@
+{
+  "brand": "Inventory System",
+  "nav": {
+    "problems": "Why us",
+    "features": "Features",
+    "howItWorks": "How it works",
+    "showcase": "Product",
+    "login": "Sign in",
+    "getStarted": "Get Started",
+    "backHome": "Back to home"
+  },
+  "hero": {
+    "badge": "Built for small businesses",
+    "title1": "Reduce Losses.",
+    "title2": "Save Time.",
+    "title3": "Grow Your Business.",
+    "subtitle": "One simple platform to track your products, manage stock across branches, and see exactly where your money goes — no spreadsheets, no guesswork.",
+    "ctaPrimary": "Get Started",
+    "ctaSecondary": "Watch Demo",
+    "note": "Free to start · No credit card required",
+    "mock": {
+      "title": "Dashboard",
+      "revenue": "Today's Sales",
+      "revenueValue": "$2,480",
+      "products": "Products in Stock",
+      "productsValue": "1,254",
+      "alerts": "Low Stock Alerts",
+      "alertsValue": "3",
+      "chartTitle": "Weekly Sales",
+      "activityTitle": "Recent Activity",
+      "activity1": "Received 40 × Olive Oil 1L",
+      "activity2": "Sale — 12 items · $86.50",
+      "activity3": "Low stock: Rice 5kg (4 left)"
+    }
+  },
+  "problems": {
+    "title": "Running a business shouldn't feel like guesswork",
+    "subtitle": "If any of these sound familiar, you're losing time and money every single day.",
+    "items": [
+      {
+        "title": "Products run out unexpectedly",
+        "description": "You only find out something is out of stock when a customer asks for it — and walks away."
+      },
+      {
+        "title": "Everything is tracked by hand",
+        "description": "Hours disappear into notebooks and spreadsheets that are outdated the moment you finish them."
+      },
+      {
+        "title": "Stock counts never match",
+        "description": "Small counting mistakes quietly add up to real money lost every month."
+      },
+      {
+        "title": "Profits are a mystery",
+        "description": "You sell all day, but you can't say exactly how much you actually earned."
+      },
+      {
+        "title": "Branches don't add up",
+        "description": "Every branch keeps its own numbers, and getting the full picture takes days."
+      },
+      {
+        "title": "Paperwork piles up",
+        "description": "Receipts, orders, and supplier notes stack up faster than anyone can file them."
+      }
+    ]
+  },
+  "solution": {
+    "title": "One platform that handles it for you",
+    "subtitle": "Every problem above has a simple answer — built into your daily workflow.",
+    "items": [
+      {
+        "title": "Real-time inventory tracking",
+        "description": "Every sale and delivery updates your stock instantly. What you see is what's on the shelf."
+      },
+      {
+        "title": "Smart stock alerts",
+        "description": "Get notified before a product runs out, so you reorder on time — every time."
+      },
+      {
+        "title": "Sales & profit reports",
+        "description": "See your daily sales, costs, and real profit in one clear view. No math required."
+      },
+      {
+        "title": "Multi-branch management",
+        "description": "All your branches and warehouses in one account, with one true set of numbers."
+      },
+      {
+        "title": "Employee permissions",
+        "description": "Give each employee exactly the access they need — nothing more, nothing less."
+      },
+      {
+        "title": "Easy product management",
+        "description": "Add products, set prices, and organize categories in minutes, not hours."
+      }
+    ]
+  },
+  "how": {
+    "title": "How it works",
+    "subtitle": "Your daily operations, simplified into one automatic flow.",
+    "steps": [
+      {
+        "title": "Receive products",
+        "description": "Log incoming deliveries in seconds."
+      },
+      {
+        "title": "Manage inventory",
+        "description": "Stock levels stay organized and accurate."
+      },
+      {
+        "title": "Sell products",
+        "description": "Record sales with a couple of taps."
+      },
+      {
+        "title": "Inventory updates automatically",
+        "description": "No recounting, no spreadsheets."
+      },
+      {
+        "title": "Analytics & reports",
+        "description": "See profits and trends at a glance."
+      }
+    ]
+  },
+  "features": {
+    "title": "Everything your business needs",
+    "subtitle": "Powerful under the hood. Simple on the surface.",
+    "items": [
+      {
+        "title": "Inventory Management",
+        "description": "Track every product, quantity, and price in real time."
+      },
+      {
+        "title": "Multi-Branch Support",
+        "description": "Manage all your stores and warehouses from one place."
+      },
+      {
+        "title": "Sales Tracking",
+        "description": "Record sales quickly and keep a full history of every receipt."
+      },
+      {
+        "title": "Smart Reports",
+        "description": "Daily, weekly, and monthly reports that make sense at a glance."
+      },
+      {
+        "title": "Low Stock Alerts",
+        "description": "Automatic warnings before products run out."
+      },
+      {
+        "title": "Employee Management",
+        "description": "Accounts and permissions for every member of your team."
+      },
+      {
+        "title": "Warehouse Management",
+        "description": "Move stock between warehouses and shops with a full audit trail."
+      },
+      {
+        "title": "Offline Mode",
+        "description": "Keep selling without internet — everything syncs automatically."
+      }
+    ]
+  },
+  "why": {
+    "title": "Why businesses choose us",
+    "subtitle": "Not just software — a better way to run your day.",
+    "items": [
+      {
+        "title": "Reduce business losses",
+        "description": "Catch shortages, errors, and shrinkage before they cost you."
+      },
+      {
+        "title": "Save valuable time",
+        "description": "Automate the busywork and focus on your customers."
+      },
+      {
+        "title": "Better inventory accuracy",
+        "description": "One source of truth instead of scattered notes."
+      },
+      {
+        "title": "Easy to use",
+        "description": "Designed for business owners, not IT departments."
+      },
+      {
+        "title": "Faster daily operations",
+        "description": "Receive, sell, and transfer stock in a few taps."
+      },
+      {
+        "title": "Better decisions",
+        "description": "Clear numbers you can actually act on."
+      }
+    ],
+    "stats": [
+      { "value": 30, "suffix": "%", "label": "less inventory loss on average" },
+      { "value": 10, "suffix": "+", "label": "hours saved every week" },
+      { "value": 99, "suffix": "%", "label": "inventory accuracy" }
+    ]
+  },
+  "showcase": {
+    "title": "A dashboard you'll actually enjoy using",
+    "subtitle": "Clean, fast, and available in Arabic and English.",
+    "tabs": [
+      {
+        "label": "Dashboard",
+        "title": "Your whole business at a glance",
+        "description": "Sales, stock levels, and alerts — the moment you open the app."
+      },
+      {
+        "label": "Inventory",
+        "title": "Every product, always accurate",
+        "description": "Quantities update in real time with every sale and delivery."
+      },
+      {
+        "label": "Orders",
+        "title": "Orders without the phone calls",
+        "description": "Create, track, and receive orders in one organized flow."
+      },
+      {
+        "label": "Reports",
+        "title": "Know your real profit",
+        "description": "Clear profit and sales reports for any day, week, or month."
+      },
+      {
+        "label": "Analytics",
+        "title": "Spot trends before they cost you",
+        "description": "See your best sellers, slow movers, and busiest days."
+      },
+      {
+        "label": "Notifications",
+        "title": "Never miss what matters",
+        "description": "Low stock, incoming orders, and daily summaries — right on time."
+      }
+    ]
+  },
+  "builtFor": {
+    "title": "Built for businesses like yours",
+    "subtitle": "One platform, flexible enough for any kind of shop.",
+    "items": [
+      "Retail Stores",
+      "Supermarkets",
+      "Small Warehouses",
+      "Restaurants",
+      "Pharmacies",
+      "Local Shops"
+    ]
+  },
+  "testimonials": {
+    "title": "Loved by business owners",
+    "subtitle": "Early customers are already running their day on it. Their stories are coming soon.",
+    "placeholder": "Your success story could be here."
+  },
+  "cta": {
+    "title": "Take control of your inventory today",
+    "subtitle": "Join the businesses that stopped guessing and started growing.",
+    "button": "Get Started"
+  },
+  "footer": {
+    "tagline": "Simple inventory and operations management for small businesses.",
+    "product": "Product",
+    "links": {
+      "features": "Features",
+      "howItWorks": "How it works",
+      "showcase": "Product tour",
+      "login": "Sign in"
+    },
+    "rights": "All rights reserved."
+  }
+}
