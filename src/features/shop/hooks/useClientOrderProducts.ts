@@ -29,13 +29,15 @@ export function useClientOrderProducts() {
     queryFn: () => productsApi.list({ source: ProductSource.WAREHOUSE, limit: 100 }),
   });
 
+  // Same query key + params as useClientInventory — one shared cache entry for
+  // GET /inventory so the order, sell, and inventory pages never drift apart.
   const inventoryQuery = useQuery({
-    queryKey: ['order-inventory'],
+    queryKey: ['client-inventory'],
     queryFn: () => inventoryApi.list({ limit: 100 }),
   });
 
   const categoriesQuery = useQuery({
-    queryKey: ['order-categories', shopId],
+    queryKey: ['client-inventory-categories', shopId],
     queryFn: () => categoriesApi.list(shopId ? { shopId } : undefined),
     enabled: shopId !== undefined,
   });
