@@ -345,8 +345,17 @@
       "unitsUnit": "units",
       "continueBtn": "Continue"
     },
+    "modal": {
+      "title": "Confirm sale",
+      "intro": "The following items will be deducted from your stock:",
+      "notesLabel": "Notes (optional)",
+      "notesPlaceholder": "Any notes for this sale…",
+      "confirmBtn": "Confirm sale",
+      "cancelBtn": "Cancel"
+    },
     "toast": {
-      "stub": "Selection saved — checkout is coming soon"
+      "success": "Sale recorded successfully",
+      "queued": "You're offline — the sale was saved and will sync when you reconnect"
     },
     "empty": {
       "noCategories": "No categories available.",

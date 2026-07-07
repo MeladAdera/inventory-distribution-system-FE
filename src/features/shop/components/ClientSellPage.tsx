@@ -1,47 +1,60 @@
 'use client';
 
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Search, ChevronLeft, ChevronRight, Box, Loader2, AlertTriangle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
+import { getErrorMessage } from '@/common/utils/error.utils';
 import { Button } from '@/common/components/ui/button';
 import { Input } from '@/common/components/ui/input';
 import { TypewriterText } from '@/common/components/TypewriterText';
-import { useClientOrderProducts } from '../hooks/useClientOrderProducts';
-import { OrderCategoryCard } from './order/OrderCategoryCard';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import { enqueueStockSave } from '@/features/shared/inventory/offline/stockSyncEngine';
+import { getIsOnline } from '@/common/offline/connectivity/useOnlineStatus';
+import { useClientInventory } from '../hooks/useClientInventory';
+import { CategoryCard } from './inventory/CategoryCard';
 import { SellProductTile } from './sell/SellProductTile';
 import { SellTray } from './sell/SellTray';
+import { SellConfirmModal } from './sell/SellConfirmModal';
 
 export function ClientSellPage() {
   const { t, dir } = useI18n();
-  const { success: toastSuccess } = useToast();
+  const queryClient = useQueryClient();
+  const { success: toastSuccess, error: toastError } = useToast();
   const isRtl = dir === 'rtl';
   const sel = t.client.sell;
+  const inv = t.client.inventory;
 
-  const [selectedCatId, setSelectedCatId] = useState<number | null>(null);
+  const shopId = useAuthStore((s) => s.user?.shopId);
+
+  const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
   const [cart, setCart] = useState<Record<number, number>>({});
   const [query, setQuery] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { categories, isLoading, error } = useClientOrderProducts();
+  // The shop's own inventory: warehouse-bought stock and local products alike.
+  // Only stocked items appear — rows carry the inventory id POST /receipts needs.
+  const { categories, allItems, isLoading, error } = useClientInventory();
 
   // ── Derived ────────────────────────────────────────────────────────────────
-  const allProducts = categories.flatMap((c) => c.products);
   const selectedCategory = categories.find((c) => c.id === selectedCatId) ?? null;
 
-  const trayItems = allProducts
-    .filter((p) => (cart[p.id] ?? 0) > 0)
-    .map((p) => ({ product: p, qty: cart[p.id] }));
-  const totalUnits = trayItems.reduce((sum, item) => sum + item.qty, 0);
+  const trayItems = allItems
+    .filter((item) => (cart[item.id] ?? 0) > 0)
+    .map((item) => ({ item, qty: cart[item.id] }));
+  const totalUnits = trayItems.reduce((sum, entry) => sum + entry.qty, 0);
 
   const filteredCategories = categories.filter(
     (c) => !query || c.name.toLowerCase().includes(query.toLowerCase())
   );
-  const filteredProducts = (selectedCategory?.products ?? []).filter(
-    (p) => !query || p.name.toLowerCase().includes(query.toLowerCase())
+  const filteredItems = (selectedCategory?.items ?? []).filter(
+    (item) => !query || item.product_name.toLowerCase().includes(query.toLowerCase())
   );
 
   // ── Handlers ───────────────────────────────────────────────────────────────
-  function handleSelectCat(catId: number) {
+  function handleSelectCat(catId: string) {
     setSelectedCatId(catId);
     setQuery('');
   }
@@ -51,25 +64,44 @@ export function ClientSellPage() {
     setQuery('');
   }
 
-  function setQty(productId: number, value: number) {
+  function setQty(inventoryId: number, value: number) {
     setCart((prev) => {
       if (value <= 0) {
         const next = { ...prev };
-        delete next[productId];
+        delete next[inventoryId];
         return next;
       }
-      return { ...prev, [productId]: value };
+      return { ...prev, [inventoryId]: value };
     });
   }
 
   // Tapping a tile adds one unit, capped at the available stock
-  function handleTap(productId: number, stock: number) {
-    setQty(productId, Math.min((cart[productId] ?? 0) + 1, stock));
+  function handleTap(inventoryId: number, stock: number) {
+    setQty(inventoryId, Math.min((cart[inventoryId] ?? 0) + 1, stock));
   }
 
-  function handleContinue() {
-    // Checkout is not wired to the backend yet — UI-only for now
-    toastSuccess(sel.toast.stub);
+  async function handleConfirm(notes: string) {
+    setIsSubmitting(true);
+    try {
+      // Same offline-first path the inventory page uses for stock decreases:
+      // one atomic POST /receipts when online, durably queued when offline.
+      const wasOnline = getIsOnline();
+      await enqueueStockSave({
+        queryClient,
+        changes: Object.fromEntries(trayItems.map(({ item, qty }) => [item.id, -qty])),
+        items: allItems,
+        decreaseNotes: notes,
+        shopId,
+      });
+      setCart({});
+      setModalOpen(false);
+      toastSuccess(wasOnline ? sel.toast.success : sel.toast.queued);
+    } catch (err) {
+      toastError(getErrorMessage(err));
+      throw err;
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const BackChevron = isRtl ? ChevronRight : ChevronLeft;
@@ -128,12 +160,17 @@ export function ClientSellPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredCategories.map((cat) => (
-                <OrderCategoryCard
+                <CategoryCard
                   key={cat.id}
-                  category={cat}
-                  cartCount={cat.products.filter((p) => (cart[p.id] ?? 0) > 0).length}
+                  cat={cat}
+                  hasEdits={cat.items.some((item) => (cart[item.id] ?? 0) > 0)}
                   onClick={() => handleSelectCat(cat.id)}
-                  labels={{ addedBadge: sel.addedBadge, products: sel.products }}
+                  labels={{
+                    edited: sel.addedBadge,
+                    variants: inv.variants,
+                    totalQty: inv.totalQty,
+                    noProducts: sel.empty.noProducts,
+                  }}
                 />
               ))}
             </div>
@@ -172,19 +209,19 @@ export function ClientSellPage() {
             />
           </div>
 
-          {filteredProducts.length === 0 ? (
+          {filteredItems.length === 0 ? (
             <div className="flex flex-col items-center py-12 gap-3 text-center bg-paper border border-border rounded-xl">
               <Box size={28} className="text-ink-300" />
               <p className="text-[14px] text-ink-500">{sel.empty.noProducts}</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2.5">
-              {filteredProducts.map((product) => (
+              {filteredItems.map((item) => (
                 <SellProductTile
-                  key={product.id}
-                  product={product}
-                  qty={cart[product.id] ?? 0}
-                  onTap={() => handleTap(product.id, product.current_quantity)}
+                  key={item.id}
+                  item={item}
+                  qty={cart[item.id] ?? 0}
+                  onTap={() => handleTap(item.id, item.current_quantity)}
                   labels={tileLabels}
                 />
               ))}
@@ -198,17 +235,35 @@ export function ClientSellPage() {
         items={trayItems}
         totalUnits={totalUnits}
         onInc={(id) => {
-          const stock = allProducts.find((p) => p.id === id)?.current_quantity ?? 0;
+          const stock = allItems.find((item) => item.id === id)?.current_quantity ?? 0;
           handleTap(id, stock);
         }}
         onDec={(id) => setQty(id, (cart[id] ?? 0) - 1)}
         onRemove={(id) => setQty(id, 0)}
-        onContinue={handleContinue}
+        onContinue={() => setModalOpen(true)}
         labels={{
           title: sel.tray.title,
           totalUnits: sel.tray.totalUnits,
           unitsUnit: sel.tray.unitsUnit,
           continueBtn: sel.tray.continueBtn,
+        }}
+      />
+
+      <SellConfirmModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleConfirm}
+        items={trayItems}
+        totalUnits={totalUnits}
+        isSubmitting={isSubmitting}
+        labels={{
+          title: sel.modal.title,
+          intro: sel.modal.intro,
+          totalUnits: sel.tray.totalUnits,
+          notesLabel: sel.modal.notesLabel,
+          notesPlaceholder: sel.modal.notesPlaceholder,
+          confirmBtn: sel.modal.confirmBtn,
+          cancelBtn: sel.modal.cancelBtn,
         }}
       />
     </div>

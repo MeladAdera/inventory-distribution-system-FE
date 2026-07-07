@@ -1,6 +1,6 @@
 import { Package } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
-import type { OrderableProduct } from '../../types/clientOrderProducts.types';
+import type { EnrichedInventoryItem } from '../../types/clientInventory.types';
 
 const PALETTE = ['#FAEACB', '#F8EBD3', '#DDE6F3', '#DCEBE9', '#F6DDDB', '#F5EFE4'];
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
@@ -11,7 +11,7 @@ function resolveImageUrl(url: string) {
 }
 
 interface SellProductTileProps {
-  product: OrderableProduct;
+  item: EnrichedInventoryItem;
   qty: number;
   onTap: () => void;
   labels: {
@@ -20,10 +20,10 @@ interface SellProductTileProps {
   };
 }
 
-export function SellProductTile({ product, qty, onTap, labels }: SellProductTileProps) {
+export function SellProductTile({ item, qty, onTap, labels }: SellProductTileProps) {
   const selected = qty > 0;
-  const outOfStock = product.current_quantity === 0;
-  const color = PALETTE[product.id % PALETTE.length];
+  const outOfStock = item.current_quantity === 0;
+  const color = PALETTE[item.product_id % PALETTE.length];
 
   return (
     <button
@@ -53,9 +53,9 @@ export function SellProductTile({ product, qty, onTap, labels }: SellProductTile
         style={{ backgroundColor: color }}
         className="w-full h-16 sm:h-20 flex items-center justify-center overflow-hidden"
       >
-        {product.image_url ? (
+        {item.image_url ? (
           <img
-            src={resolveImageUrl(product.image_url)}
+            src={resolveImageUrl(item.image_url)}
             alt=""
             className="w-full h-full object-contain"
           />
@@ -67,7 +67,7 @@ export function SellProductTile({ product, qty, onTap, labels }: SellProductTile
       {/* Name + stock */}
       <div className="flex flex-col gap-0.5 px-2 py-1.5 w-full">
         <p className="text-[12px] font-semibold text-ink-900 leading-tight truncate">
-          {product.name}
+          {item.product_name}
         </p>
         <p
           className={cn(
@@ -75,7 +75,7 @@ export function SellProductTile({ product, qty, onTap, labels }: SellProductTile
             outOfStock ? 'text-danger-500 font-medium' : 'text-ink-400'
           )}
         >
-          {outOfStock ? labels.outOfStock : `${labels.stock}: ${product.current_quantity}`}
+          {outOfStock ? labels.outOfStock : `${labels.stock}: ${item.current_quantity}`}
         </p>
       </div>
     </button>

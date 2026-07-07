@@ -101,14 +101,19 @@ export function ClientInventoryPage() {
     [localProducts]
   );
 
-  // Merge: all known categories shown in grid; only those with inventory items show qty stats
+  // Merge: own categories always show (so new ones can receive products);
+  // warehouse categories only show once the shop has stock from them.
   const mergedCategories = useMemo<InventoryCategory[]>(() => {
     const invMap = new Map(invCategories.map((c) => [c.id, c]));
-    return rawCategories.map((cat) => {
-      const invCat = invMap.get(String(cat.id));
-      return invCat ?? { id: String(cat.id), name: cat.name, image_url: cat.image_url, items: [] };
-    });
-  }, [rawCategories, invCategories]);
+    return rawCategories
+      .filter((cat) => cat.shop_id === shopId || invMap.has(String(cat.id)))
+      .map((cat) => {
+        const invCat = invMap.get(String(cat.id));
+        return (
+          invCat ?? { id: String(cat.id), name: cat.name, image_url: cat.image_url, items: [] }
+        );
+      });
+  }, [rawCategories, invCategories, shopId]);
 
   // Raw category map for CRUD lookups (to get Category object by id)
   const rawCatMap = useMemo(
