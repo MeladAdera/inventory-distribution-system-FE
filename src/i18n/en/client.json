@@ -106,7 +106,13 @@
       "createdBy": "Created by",
       "date": "Date",
       "closeBtn": "Close",
-      "noNotes": "No notes"
+      "noNotes": "No notes",
+      "freeBadge": "Free",
+      "makeFreeBtn": "Mark as free",
+      "undoFreeBtn": "Undo free",
+      "freeSuccess": "Receipt marked as free",
+      "unfreeSuccess": "Free status undone",
+      "freeError": "Failed to update receipt. Please try again."
     },
     "toast": {
       "createSuccess": "Receipt saved successfully",
@@ -149,7 +155,9 @@
       "notesPlaceholder": "Reason or notes (optional)…",
       "receiptNotesLabel": "Receipt notes",
       "increaseNotesLabel": "Reason for increase",
-      "price": "Unit price"
+      "price": "Unit price",
+      "markFreeLabel": "Mark as free",
+      "markFreeHint": "Cost is still counted, but revenue from this receipt won't count toward profit."
     },
     "toast": {
       "success": "Inventory updated successfully",
@@ -351,7 +359,9 @@
       "notesLabel": "Notes (optional)",
       "notesPlaceholder": "Any notes for this sale…",
       "confirmBtn": "Confirm sale",
-      "cancelBtn": "Cancel"
+      "cancelBtn": "Cancel",
+      "markFreeLabel": "Mark as free",
+      "markFreeHint": "Cost is still counted, but revenue from this sale won't count toward profit."
     },
     "toast": {
       "success": "Sale recorded successfully",
@@ -394,7 +404,7 @@
       "action": "Action",
       "entity": "Entity",
       "qty": "Qty",
-      "notes": "Notes"
+      "receiptId": "Receipt ID"
     },
     "types": {
       "INVENTORY": "Inventory",
@@ -405,7 +415,9 @@
       "ADJUSTMENT": "Adjustment",
       "TRANSFER_OUT": "Transfer out",
       "TRANSFER_IN": "Transfer in",
-      "STATUS_CHANGED": "Status changed"
+      "STATUS_CHANGED": "Status changed",
+      "MARKED_FREE": "Marked free",
+      "UNMARKED_FREE": "Unmarked free"
     },
     "entity": {
       "inventory": "Inventory",
@@ -422,8 +434,10 @@
       "type": "Type",
       "action": "Action",
       "entity": "Entity",
+      "receipt": "Receipt",
       "product": "Product",
       "quantity": "Quantity",
+      "amount": "Amount",
       "notes": "Notes",
       "date": "Date",
       "closeBtn": "Close"

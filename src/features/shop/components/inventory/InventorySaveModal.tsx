@@ -7,7 +7,11 @@ import type { EnrichedInventoryItem } from '../../types/clientInventory.types';
 interface InventorySaveModalProps {
   open: boolean;
   onClose: () => void;
-  onConfirm: (notes: { decreaseNotes: string; increaseNotes: string }) => Promise<void>;
+  onConfirm: (notes: {
+    decreaseNotes: string;
+    increaseNotes: string;
+    isFree: boolean;
+  }) => Promise<void>;
   allItems: EnrichedInventoryItem[];
   changes: Record<number, number>;
   isSaving: boolean;
@@ -23,6 +27,8 @@ interface InventorySaveModalProps {
     receiptNotesLabel: string;
     increaseNotesLabel: string;
     price: string;
+    markFreeLabel: string;
+    markFreeHint: string;
   };
 }
 
@@ -37,6 +43,7 @@ export function InventorySaveModal({
 }: InventorySaveModalProps) {
   const [decreaseNotes, setDecreaseNotes] = useState('');
   const [increaseNotes, setIncreaseNotes] = useState('');
+  const [isFree, setIsFree] = useState(false);
 
   const decreases = allItems.filter((p) => (changes[p.id] ?? 0) < 0);
   const increases = allItems.filter((p) => (changes[p.id] ?? 0) > 0);
@@ -45,14 +52,16 @@ export function InventorySaveModal({
     if (isSaving) return;
     setDecreaseNotes('');
     setIncreaseNotes('');
+    setIsFree(false);
     onClose();
   }
 
   async function handleConfirm() {
     try {
-      await onConfirm({ decreaseNotes, increaseNotes });
+      await onConfirm({ decreaseNotes, increaseNotes, isFree });
       setDecreaseNotes('');
       setIncreaseNotes('');
+      setIsFree(false);
     } catch {
       // onConfirm showed the error toast; keep notes so the user can retry
     }
@@ -109,6 +118,20 @@ export function InventorySaveModal({
                   rows={2}
                   className="w-full px-3 py-2 text-[13px] text-ink-900 placeholder:text-ink-400 bg-page border border-border rounded-lg outline-none focus:border-amber-500 resize-none"
                 />
+                <label className="flex items-start gap-2 mt-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isFree}
+                    onChange={(e) => setIsFree(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded border-border accent-amber-600 shrink-0"
+                  />
+                  <span>
+                    <span className="block text-[13px] font-medium text-ink-700">
+                      {labels.markFreeLabel}
+                    </span>
+                    <span className="block text-[12px] text-ink-400">{labels.markFreeHint}</span>
+                  </span>
+                </label>
               </div>
             </div>
           )}

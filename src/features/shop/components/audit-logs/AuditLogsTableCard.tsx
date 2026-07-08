@@ -31,7 +31,7 @@ interface AuditLogsTableCardLabels {
     action: string;
     entity: string;
     qty: string;
-    notes: string;
+    receiptId: string;
   };
   types: Record<string, string>;
   actions: Record<string, string>;
@@ -163,7 +163,7 @@ export function AuditLogsTableCard({
                 labels.table.type,
                 labels.table.action,
                 labels.table.qty,
-                labels.table.notes,
+                labels.table.receiptId,
                 '',
               ].map((col, i) => (
                 <span
@@ -202,8 +202,8 @@ export function AuditLogsTableCard({
                     : '—'}
                 </span>
 
-                <span className="text-[12px] text-ink-400 truncate" title={log.notes ?? ''}>
-                  {log.notes ?? '—'}
+                <span className="text-[13px] text-ink-500 tabular-nums">
+                  {log.receipt_id != null ? `#${log.receipt_id}` : '—'}
                 </span>
 
                 <button
@@ -242,7 +242,12 @@ export function AuditLogsTableCard({
                   )}
                 </p>
 
-                {log.notes && <p className="text-[12px] text-ink-400 line-clamp-2">{log.notes}</p>}
+                {log.receipt_id != null && (
+                  <p className="text-[12px] text-ink-400">
+                    {labels.table.receiptId}:{' '}
+                    <span className="tabular-nums">#{log.receipt_id}</span>
+                  </p>
+                )}
 
                 <p className="text-[11px] text-ink-400 tabular-nums">
                   {formatDateTime(log.created_at, locale)}

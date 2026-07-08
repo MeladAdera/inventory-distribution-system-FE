@@ -21,7 +21,7 @@
     "type": "النوع",
     "action": "الإجراء",
     "qty": "الكمية",
-    "notes": "الملاحظات",
+    "receiptId": "رقم الإيصال",
     "detail": "تفاصيل"
   },
   "types": {
@@ -33,7 +33,9 @@
     "ADJUSTMENT": "تعديل",
     "TRANSFER_OUT": "تحويل صادر",
     "TRANSFER_IN": "تحويل وارد",
-    "STATUS_CHANGED": "تغيير الحالة"
+    "STATUS_CHANGED": "تغيير الحالة",
+    "MARKED_FREE": "تحديد كمجاني",
+    "UNMARKED_FREE": "إلغاء تحديد المجاني"
   },
   "entity": {
     "inventory": "مخزون",
@@ -49,8 +51,10 @@
     "type": "النوع",
     "action": "الإجراء",
     "entity": "العنصر",
+    "receipt": "الإيصال",
     "product": "المنتج",
     "quantity": "الكمية",
+    "amount": "المبلغ",
     "notes": "الملاحظات",
     "date": "التاريخ",
     "closeBtn": "إغلاق"

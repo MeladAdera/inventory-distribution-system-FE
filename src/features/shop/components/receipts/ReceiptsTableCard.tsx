@@ -31,6 +31,7 @@ interface ReceiptsTableCardProps {
       viewBtn: string;
       itemsUnit: string;
       noNotes: string;
+      freeBadge: string;
     };
     empty: { title: string; sub: string };
   };
@@ -144,8 +145,13 @@ export function ReceiptsTableCard({
                   <span className="text-[11px] text-ink-500">{labels.table.receiptNo}</span>
                   <span className="font-mono text-[13px] font-bold text-ink-800">{receipt.id}</span>
                 </span>
-                <span className="text-[13px] text-ink-600">
+                <span className="text-[13px] text-ink-600 flex items-center gap-2">
                   {formatDate(receipt.created_at, locale)}
+                  {receipt.is_free && (
+                    <span className="inline-flex items-center h-5 px-1.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-medium">
+                      {labels.table.freeBadge}
+                    </span>
+                  )}
                 </span>
                 <span className="text-[13px] text-ink-600">
                   {receipt.total_items} {labels.table.itemsUnit}
@@ -172,11 +178,18 @@ export function ReceiptsTableCard({
               <div key={receipt.id} className="px-5 py-4 flex flex-col gap-2.5">
                 {/* Row 1: receipt ID chip + view button */}
                 <div className="flex items-center justify-between gap-3">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sand-100 border border-border leading-none">
-                    <span className="text-[12px] text-ink-500">{labels.table.receiptNo}</span>
-                    <span className="font-mono text-[15px] font-bold text-ink-900">
-                      {receipt.id}
+                  <span className="inline-flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sand-100 border border-border leading-none">
+                      <span className="text-[12px] text-ink-500">{labels.table.receiptNo}</span>
+                      <span className="font-mono text-[15px] font-bold text-ink-900">
+                        {receipt.id}
+                      </span>
                     </span>
+                    {receipt.is_free && (
+                      <span className="inline-flex items-center h-5 px-1.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-medium">
+                        {labels.table.freeBadge}
+                      </span>
+                    )}
                   </span>
                   <button
                     onClick={() => onView(receipt)}

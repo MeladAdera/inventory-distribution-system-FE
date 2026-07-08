@@ -91,7 +91,7 @@ export function ClientReceiptsPage() {
         locale={locale}
         labels={{
           filter: r.filter,
-          table: r.table,
+          table: { ...r.table, freeBadge: r.modal.freeBadge },
           empty: r.empty,
         }}
       />

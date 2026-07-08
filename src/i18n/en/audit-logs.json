@@ -21,7 +21,7 @@
     "type": "Type",
     "action": "Action",
     "qty": "Qty",
-    "notes": "Notes",
+    "receiptId": "Receipt ID",
     "detail": "Detail"
   },
   "types": {
@@ -33,7 +33,9 @@
     "ADJUSTMENT": "Adjustment",
     "TRANSFER_OUT": "Transfer out",
     "TRANSFER_IN": "Transfer in",
-    "STATUS_CHANGED": "Status changed"
+    "STATUS_CHANGED": "Status changed",
+    "MARKED_FREE": "Marked free",
+    "UNMARKED_FREE": "Unmarked free"
   },
   "entity": {
     "inventory": "Inventory",
@@ -49,8 +51,10 @@
     "type": "Type",
     "action": "Action",
     "entity": "Entity",
+    "receipt": "Receipt",
     "product": "Product",
     "quantity": "Quantity",
+    "amount": "Amount",
     "notes": "Notes",
     "date": "Date",
     "closeBtn": "Close"

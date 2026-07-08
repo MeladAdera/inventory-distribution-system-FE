@@ -14,6 +14,7 @@ interface AdminReceiptsTableLabels {
     detail: string;
   };
   empty: string;
+  freeBadge: string;
 }
 
 interface AdminReceiptsTableProps {
@@ -40,7 +41,16 @@ export function AdminReceiptsTable({ data, isLoading, onView, labels }: AdminRec
     {
       key: 'id',
       header: labels.table.receiptNo,
-      render: (r) => <span className="font-mono text-sm font-semibold text-gray-700">#{r.id}</span>,
+      render: (r) => (
+        <span className="inline-flex items-center gap-2">
+          <span className="font-mono text-sm font-semibold text-gray-700">#{r.id}</span>
+          {r.is_free && (
+            <span className="inline-flex items-center h-5 px-1.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-medium">
+              {labels.freeBadge}
+            </span>
+          )}
+        </span>
+      ),
     },
     {
       key: 'created_at',

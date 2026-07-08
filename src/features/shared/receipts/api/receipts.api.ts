@@ -17,4 +17,9 @@ export const receiptsApi = {
     const response = await apiClient.post('/receipts', data, config);
     return response.data;
   },
+
+  setFree: async (id: number, isFree: boolean, config?: AxiosRequestConfig) => {
+    const response = await apiClient.patch(`/receipts/${id}/free`, { isFree }, config);
+    return response.data;
+  },
 };

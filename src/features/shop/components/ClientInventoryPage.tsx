@@ -170,9 +170,11 @@ export function ClientInventoryPage() {
   async function handleSave({
     decreaseNotes,
     increaseNotes,
+    isFree,
   }: {
     decreaseNotes: string;
     increaseNotes: string;
+    isFree: boolean;
   }) {
     setIsSaving(true);
     try {
@@ -186,6 +188,7 @@ export function ClientInventoryPage() {
         items: allItems,
         decreaseNotes,
         increaseNotes,
+        isFree,
         shopId,
       });
       setChanges({});
@@ -507,6 +510,8 @@ export function ClientInventoryPage() {
           receiptNotesLabel: inv.modal.receiptNotesLabel,
           increaseNotesLabel: inv.modal.increaseNotesLabel,
           price: inv.modal.price,
+          markFreeLabel: inv.modal.markFreeLabel,
+          markFreeHint: inv.modal.markFreeHint,
         }}
       />
 

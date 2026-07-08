@@ -80,7 +80,7 @@ export function ClientSellPage() {
     setQty(inventoryId, Math.min((cart[inventoryId] ?? 0) + 1, stock));
   }
 
-  async function handleConfirm(notes: string) {
+  async function handleConfirm(notes: string, isFree: boolean) {
     setIsSubmitting(true);
     try {
       // Same offline-first path the inventory page uses for stock decreases:
@@ -91,6 +91,7 @@ export function ClientSellPage() {
         changes: Object.fromEntries(trayItems.map(({ item, qty }) => [item.id, -qty])),
         items: allItems,
         decreaseNotes: notes,
+        isFree,
         shopId,
       });
       setCart({});
@@ -264,6 +265,8 @@ export function ClientSellPage() {
           notesPlaceholder: sel.modal.notesPlaceholder,
           confirmBtn: sel.modal.confirmBtn,
           cancelBtn: sel.modal.cancelBtn,
+          markFreeLabel: sel.modal.markFreeLabel,
+          markFreeHint: sel.modal.markFreeHint,
         }}
       />
     </div>

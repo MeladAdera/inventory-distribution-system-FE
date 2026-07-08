@@ -14,6 +14,7 @@ export interface Receipt {
   shop_id: number;
   created_by: number;
   notes: string | null;
+  is_free: boolean;
   created_at: string;
   total_price: number;
   items: ReceiptItem[];
@@ -27,6 +28,7 @@ export interface ReceiptListItem {
   created_by_name: string;
   total_items: number;
   notes: string | null;
+  is_free: boolean;
   created_at: string;
 }
 

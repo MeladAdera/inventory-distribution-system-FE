@@ -2,6 +2,8 @@ import { Loader2 } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
 import { ProductThumb } from '@/features/shared/products/components/ProductThumb';
 import { useReceiptDetail } from '@/features/shared/receipts';
+import { useToast } from '@/providers/ToastProvider';
+import { getErrorMessage } from '@/common/utils/error.utils';
 
 function formatDate(iso: string, locale: 'ar' | 'en'): string {
   return new Date(iso).toLocaleDateString(locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-GB', {
@@ -32,6 +34,12 @@ interface ReceiptDetailModalProps {
     date: string;
     closeBtn: string;
     noNotes: string;
+    freeBadge: string;
+    makeFreeBtn: string;
+    undoFreeBtn: string;
+    freeSuccess: string;
+    unfreeSuccess: string;
+    freeError: string;
   };
 }
 
@@ -43,7 +51,19 @@ export function ReceiptDetailModal({
   locale,
   labels,
 }: ReceiptDetailModalProps) {
-  const { receipt, isLoading } = useReceiptDetail(open ? receiptId : null);
+  const { receipt, isLoading, setFree, isSettingFree } = useReceiptDetail(open ? receiptId : null);
+  const { success: toastSuccess, error: toastError } = useToast();
+
+  async function handleToggleFree() {
+    if (!receipt) return;
+    const nextIsFree = !receipt.is_free;
+    try {
+      await setFree(nextIsFree);
+      toastSuccess(nextIsFree ? labels.freeSuccess : labels.unfreeSuccess);
+    } catch (err) {
+      toastError(getErrorMessage(err));
+    }
+  }
 
   return (
     <Modal open={open} onClose={onClose} title={`${labels.title} #${receiptId ?? ''}`} size="md">
@@ -54,7 +74,7 @@ export function ReceiptDetailModal({
       ) : (
         <div className="flex flex-col gap-5">
           {/* Meta row */}
-          <div className="flex flex-wrap gap-x-6 gap-y-2 text-[13px]">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]">
             <div>
               <span className="text-ink-400">{labels.date}: </span>
               <span className="text-ink-700 font-medium">
@@ -72,6 +92,11 @@ export function ReceiptDetailModal({
                 <span className="text-ink-400">{labels.notesLabel}: </span>
                 <span className="text-ink-700 font-medium">{receipt.notes}</span>
               </div>
+            )}
+            {receipt.is_free && (
+              <span className="inline-flex items-center h-5.5 px-2 rounded-full bg-amber-100 text-amber-700 text-[11px] font-medium">
+                {labels.freeBadge}
+              </span>
             )}
           </div>
 
@@ -137,7 +162,25 @@ export function ReceiptDetailModal({
         </div>
       )}
 
-      <div className="flex justify-end pt-4 border-t border-border mt-4">
+      <div className="flex items-center justify-between pt-4 border-t border-border mt-4">
+        {receipt && (
+          <button
+            onClick={handleToggleFree}
+            disabled={isSettingFree}
+            className="h-9 px-4 rounded-lg border border-amber-300 bg-amber-50 text-[13px] font-medium text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50"
+          >
+            {isSettingFree ? (
+              <span className="flex items-center gap-2">
+                <Loader2 size={14} className="animate-spin" />
+                {receipt.is_free ? labels.undoFreeBtn : labels.makeFreeBtn}
+              </span>
+            ) : receipt.is_free ? (
+              labels.undoFreeBtn
+            ) : (
+              labels.makeFreeBtn
+            )}
+          </button>
+        )}
         <button
           onClick={onClose}
           className="px-4 py-2 rounded-lg border border-border text-[14px] font-medium text-ink-700 hover:bg-sand-100 transition-colors"

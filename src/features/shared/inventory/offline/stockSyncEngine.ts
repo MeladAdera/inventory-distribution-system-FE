@@ -37,6 +37,8 @@ export interface StockSaveOp {
   shopId?: number;
   decreaseNotes?: string;
   increaseNotes?: string;
+  // Chosen at confirm time; applied via a follow-up PATCH once the receipt exists.
+  isFree?: boolean;
   // The batched decrease receipt is one atomic server call.
   decreases: StockSyncItem[];
   decreaseStatus: SyncItemStatus;
@@ -51,6 +53,12 @@ const SYNC_REQUEST_CONFIG: AxiosRequestConfig & { skipAuthRedirect: boolean } = 
 };
 
 const QUEUE_KEY = 'stock-sync-queue';
+
+// Set on every enqueue so processStockSave (invoked later by the flush loop,
+// possibly on a different page) can invalidate the receipts cache after a
+// decrease succeeds. The engine itself stays domain-agnostic — this is the
+// one piece of React Query wiring the receipts side effect needs.
+let activeQueryClient: QueryClient | null = null;
 
 // ── Meta store: connectivity-independent sync flags (auth expiry) ───────────
 interface StockSyncMeta {
@@ -93,7 +101,7 @@ async function processStockSave(
   // 1) Decreases — one atomic consumption receipt.
   if (next.decreases.length > 0 && next.decreaseStatus !== 'done') {
     try {
-      await receiptsApi.create(
+      const created = await receiptsApi.create(
         {
           items: next.decreases.map((d) => ({
             inventoryId: d.inventoryId,
@@ -107,6 +115,20 @@ async function processStockSave(
       next.decreaseStatus = 'done';
       next.decreases.forEach((d) => (d.status = 'done'));
       await ctx.commit(next);
+      // The free flag isn't part of POST /receipts — it's a separate PATCH,
+      // best-effort here since the receipt itself was already created successfully.
+      const createdId: number | undefined = created?.data?.id;
+      if (next.isFree && createdId) {
+        try {
+          await receiptsApi.setFree(createdId, true, SYNC_REQUEST_CONFIG);
+        } catch {
+          // Ignore — the receipt exists; the user can still toggle free from its detail view.
+        }
+      }
+      // A receipt was actually created on the server — the receipts list/detail
+      // queries are stale wherever they're cached (e.g. the Receipts page).
+      void activeQueryClient?.invalidateQueries({ queryKey: ['receipts'], refetchType: 'all' });
+      void activeQueryClient?.invalidateQueries({ queryKey: ['analytics'], refetchType: 'all' });
     } catch (err) {
       throwIfRetryable(err);
       const message = getErrorMessage(err);
@@ -173,6 +195,7 @@ interface EnqueueParams {
   items: { id: number; product_id: number; product_name: string }[];
   decreaseNotes?: string;
   increaseNotes?: string;
+  isFree?: boolean;
   shopId?: number;
 }
 
@@ -200,6 +223,7 @@ function buildStockSaveOp(params: EnqueueParams): StockSaveOp {
     shopId: params.shopId,
     decreaseNotes: params.decreaseNotes?.trim() || undefined,
     increaseNotes: params.increaseNotes?.trim() || undefined,
+    isFree: params.isFree,
     decreases,
     decreaseStatus: decreases.length ? 'pending' : 'done',
     increases,
@@ -237,6 +261,7 @@ function applyOptimisticPatch(queryClient: QueryClient, op: StockSaveOp) {
 export async function enqueueStockSave(params: EnqueueParams): Promise<void> {
   const op = buildStockSaveOp(params);
   if (op.decreases.length === 0 && op.increases.length === 0) return;
+  activeQueryClient = params.queryClient;
   applyOptimisticPatch(params.queryClient, op);
   await engine.enqueue(op);
   void flushStockQueue();

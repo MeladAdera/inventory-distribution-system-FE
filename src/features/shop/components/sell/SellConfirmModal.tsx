@@ -7,7 +7,7 @@ import type { SellTrayItem } from './SellTray';
 interface SellConfirmModalProps {
   open: boolean;
   onClose: () => void;
-  onConfirm: (notes: string) => Promise<void>;
+  onConfirm: (notes: string, isFree: boolean) => Promise<void>;
   items: SellTrayItem[];
   totalUnits: number;
   isSubmitting: boolean;
@@ -19,6 +19,8 @@ interface SellConfirmModalProps {
     notesPlaceholder: string;
     confirmBtn: string;
     cancelBtn: string;
+    markFreeLabel: string;
+    markFreeHint: string;
   };
 }
 
@@ -32,17 +34,20 @@ export function SellConfirmModal({
   labels,
 }: SellConfirmModalProps) {
   const [notes, setNotes] = useState('');
+  const [isFree, setIsFree] = useState(false);
 
   function handleClose() {
     if (isSubmitting) return;
     setNotes('');
+    setIsFree(false);
     onClose();
   }
 
   async function handleConfirm() {
     try {
-      await onConfirm(notes);
+      await onConfirm(notes, isFree);
       setNotes('');
+      setIsFree(false);
     } catch {
       // onConfirm showed the error toast; keep notes so the user can retry
     }
@@ -82,6 +87,19 @@ export function SellConfirmModal({
         rows={2}
         className="w-full px-3 py-2 text-[13px] text-ink-900 placeholder:text-ink-400 bg-page border border-border rounded-lg outline-none focus:border-amber-500 resize-none"
       />
+
+      <label className="flex items-start gap-2 mt-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={isFree}
+          onChange={(e) => setIsFree(e.target.checked)}
+          className="mt-0.5 w-4 h-4 rounded border-border accent-amber-600 shrink-0"
+        />
+        <span>
+          <span className="block text-[13px] font-medium text-ink-700">{labels.markFreeLabel}</span>
+          <span className="block text-[12px] text-ink-400">{labels.markFreeHint}</span>
+        </span>
+      </label>
 
       <div className="flex justify-end gap-2 pt-4 border-t border-border mt-4">
         <button

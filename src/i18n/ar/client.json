@@ -106,7 +106,13 @@
       "createdBy": "بواسطة",
       "date": "التاريخ",
       "closeBtn": "إغلاق",
-      "noNotes": "لا توجد ملاحظات"
+      "noNotes": "لا توجد ملاحظات",
+      "freeBadge": "مجاني",
+      "makeFreeBtn": "تحديد كمجاني",
+      "undoFreeBtn": "التراجع عن المجاني",
+      "freeSuccess": "تم تحديد الإيصال كمجاني",
+      "unfreeSuccess": "تم التراجع عن حالة المجاني",
+      "freeError": "فشل تحديث الإيصال. يرجى المحاولة مجدداً."
     },
     "toast": {
       "createSuccess": "تم حفظ الإيصال بنجاح",
@@ -149,7 +155,9 @@
       "notesPlaceholder": "سبب أو ملاحظات (اختياري)…",
       "receiptNotesLabel": "ملاحظات الإيصال",
       "increaseNotesLabel": "سبب الزيادة",
-      "price": "سعر الوحدة"
+      "price": "سعر الوحدة",
+      "markFreeLabel": "تحديد كمجاني",
+      "markFreeHint": "تُحتسب التكلفة كما هي، لكن إيرادات هذا الإيصال لن تُحتسب ضمن الأرباح."
     },
     "toast": {
       "success": "تم تحديث المخزون بنجاح",
@@ -351,7 +359,9 @@
       "notesLabel": "ملاحظات (اختياري)",
       "notesPlaceholder": "أي ملاحظات على هذه العملية…",
       "confirmBtn": "تأكيد البيع",
-      "cancelBtn": "إلغاء"
+      "cancelBtn": "إلغاء",
+      "markFreeLabel": "تحديد كمجاني",
+      "markFreeHint": "تُحتسب التكلفة كما هي، لكن إيرادات هذا البيع لن تُحتسب ضمن الأرباح."
     },
     "toast": {
       "success": "تم تسجيل البيع بنجاح",
@@ -394,7 +404,7 @@
       "action": "الإجراء",
       "entity": "العنصر",
       "qty": "الكمية",
-      "notes": "الملاحظات"
+      "receiptId": "رقم الإيصال"
     },
     "types": {
       "INVENTORY": "مخزون",
@@ -405,7 +415,9 @@
       "ADJUSTMENT": "تعديل",
       "TRANSFER_OUT": "تحويل صادر",
       "TRANSFER_IN": "تحويل وارد",
-      "STATUS_CHANGED": "تغيير الحالة"
+      "STATUS_CHANGED": "تغيير الحالة",
+      "MARKED_FREE": "تحديد كمجاني",
+      "UNMARKED_FREE": "إلغاء تحديد المجاني"
     },
     "entity": {
       "inventory": "مخزون",
@@ -422,8 +434,10 @@
       "type": "النوع",
       "action": "الإجراء",
       "entity": "العنصر",
+      "receipt": "الإيصال",
       "product": "المنتج",
       "quantity": "الكمية",
+      "amount": "المبلغ",
       "notes": "الملاحظات",
       "date": "التاريخ",
       "closeBtn": "إغلاق"

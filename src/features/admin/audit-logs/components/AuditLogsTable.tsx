@@ -12,7 +12,7 @@ interface AuditLogsTableLabels {
     type: string;
     action: string;
     qty: string;
-    notes: string;
+    receiptId: string;
     detail: string;
   };
   types: Record<string, string>;
@@ -79,11 +79,11 @@ export function AuditLogsTable({ data, isLoading, onView, labels }: AuditLogsTab
         log.quantity != null ? (log.quantity > 0 ? `+${log.quantity}` : String(log.quantity)) : '—',
     },
     {
-      key: 'notes',
-      header: labels.table.notes,
+      key: 'receipt_id',
+      header: labels.table.receiptId,
       render: (log) => (
-        <span className="line-clamp-1 max-w-xs block" title={log.notes ?? ''}>
-          {log.notes ?? '—'}
+        <span className="text-xs tabular-nums text-gray-500">
+          {log.receipt_id != null ? `#${log.receipt_id}` : '—'}
         </span>
       ),
     },

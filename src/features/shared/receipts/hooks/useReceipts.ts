@@ -38,10 +38,20 @@ export function useReceipts(params?: ReceiptListParams) {
 }
 
 export function useReceiptDetail(id: number | null) {
+  const queryClient = useQueryClient();
+
   const query = useQuery({
     queryKey: ['receipts', id],
     queryFn: () => receiptsApi.getById(id!),
     enabled: id !== null,
+  });
+
+  const setFreeMutation = useMutation({
+    mutationFn: (isFree: boolean) => receiptsApi.setFree(id!, isFree),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['receipts'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['analytics'], refetchType: 'all' });
+    },
   });
 
   const receipt: Receipt | null = query.data?.data ?? null;
@@ -50,5 +60,7 @@ export function useReceiptDetail(id: number | null) {
     receipt,
     isLoading: query.isLoading,
     error: query.error,
+    setFree: setFreeMutation.mutateAsync,
+    isSettingFree: setFreeMutation.isPending,
   };
 }

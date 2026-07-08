@@ -21,8 +21,10 @@ interface AuditLogDetailModalLabels {
   type: string;
   action: string;
   entity: string;
+  receipt: string;
   product: string;
   quantity: string;
+  amount: string;
   notes: string;
   date: string;
   closeBtn: string;
@@ -106,6 +108,12 @@ export function AuditLogDetailModal({
                 {entityLabels[log.entity_type] ?? log.entity_type} #{log.entity_id}
               </DetailRow>
 
+              {log.receipt_id != null && (
+                <DetailRow label={labels.receipt}>
+                  <span className="font-mono">#{log.receipt_id}</span>
+                </DetailRow>
+              )}
+
               {log.product_name && <DetailRow label={labels.product}>{log.product_name}</DetailRow>}
 
               {log.quantity != null && (
@@ -113,6 +121,12 @@ export function AuditLogDetailModal({
                   <span className={log.quantity < 0 ? 'text-danger-600' : 'text-success-600'}>
                     {log.quantity > 0 ? `+${log.quantity}` : String(log.quantity)}
                   </span>
+                </DetailRow>
+              )}
+
+              {log.amount != null && (
+                <DetailRow label={labels.amount}>
+                  <span className="font-mono">{Number(log.amount).toFixed(2)}</span>
                 </DetailRow>
               )}
 

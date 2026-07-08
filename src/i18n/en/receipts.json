@@ -32,6 +32,12 @@
     "createdBy": "Created by",
     "date": "Date",
     "closeBtn": "Close",
-    "noNotes": "No notes"
+    "noNotes": "No notes",
+    "freeBadge": "Free",
+    "makeFreeBtn": "Mark as free",
+    "undoFreeBtn": "Undo free",
+    "freeSuccess": "Receipt marked as free",
+    "unfreeSuccess": "Free status undone",
+    "freeError": "Failed to update receipt. Please try again."
   }
 }
