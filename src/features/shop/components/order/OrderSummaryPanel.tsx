@@ -4,6 +4,7 @@ import { CardShell } from '@/features/admin/dashboard/components/CardShell';
 interface OrderSummaryPanelProps {
   totalItems: number;
   totalUnits: number;
+  totalPrice: number;
   isSubmitting: boolean;
   onSubmit: () => void;
   labels: {
@@ -13,12 +14,15 @@ interface OrderSummaryPanelProps {
     itemsUnit: string;
     unitsUnit: string;
     submitBtn: string;
+    estimatedTotal: string;
+    estimatedTotalHint: string;
   };
 }
 
 export function OrderSummaryPanel({
   totalItems,
   totalUnits,
+  totalPrice,
   isSubmitting,
   onSubmit,
   labels,
@@ -33,12 +37,19 @@ export function OrderSummaryPanel({
               {totalItems} {labels.itemsUnit}
             </span>
           </div>
-          <div className="flex items-center justify-between py-2.5">
+          <div className="flex items-center justify-between py-2.5 border-b border-border">
             <span className="text-[13px] text-ink-500">{labels.totalUnits}</span>
             <span className="font-mono text-[14px] font-semibold text-ink-900">
               {totalUnits} {labels.unitsUnit}
             </span>
           </div>
+          <div className="flex items-center justify-between pt-2.5">
+            <span className="text-[13px] font-semibold text-ink-700">{labels.estimatedTotal}</span>
+            <span className="font-mono text-[16px] font-bold text-ink-900">
+              {totalPrice.toFixed(2)}
+            </span>
+          </div>
+          <p className="text-[11px] text-ink-400 mt-1">{labels.estimatedTotalHint}</p>
         </div>
 
         <button

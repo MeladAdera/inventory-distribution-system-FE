@@ -46,6 +46,7 @@ export function ClientOrderPage() {
   const cartItems = allProducts.filter((p) => (cart[p.id] ?? 0) > 0);
   const totalCartItems = cartItems.length;
   const totalCartUnits = cartItems.reduce((sum, p) => sum + (cart[p.id] ?? 0), 0);
+  const totalCartPrice = cartItems.reduce((sum, p) => sum + Number(p.price) * (cart[p.id] ?? 0), 0);
 
   const filteredCategories = categories.filter(
     (c) => !query || c.name.toLowerCase().includes(query.toLowerCase())
@@ -99,6 +100,7 @@ export function ClientOrderPage() {
     statusEnough: ord.productCard.statusEnough,
     statusLow: ord.productCard.statusLow,
     statusOut: ord.productCard.statusOut,
+    unitPrice: ord.productCard.unitPrice,
   };
 
   // ── Loading / Error ────────────────────────────────────────────────────────
@@ -279,6 +281,7 @@ export function ClientOrderPage() {
             <OrderSummaryPanel
               totalItems={totalCartItems}
               totalUnits={totalCartUnits}
+              totalPrice={totalCartPrice}
               isSubmitting={isSubmitting}
               onSubmit={() => setModalOpen(true)}
               labels={{
@@ -288,6 +291,8 @@ export function ClientOrderPage() {
                 itemsUnit: ord.review.itemsUnit,
                 unitsUnit: ord.review.unitsUnit,
                 submitBtn: ord.review.submitBtn,
+                estimatedTotal: ord.review.estimatedTotal,
+                estimatedTotalHint: ord.review.estimatedTotalHint,
               }}
             />
           </div>
@@ -312,12 +317,15 @@ export function ClientOrderPage() {
         onConfirm={handleSubmitConfirm}
         cartItems={cartItems}
         cart={cart}
+        totalPrice={totalCartPrice}
         isSubmitting={isSubmitting}
         labels={{
           title: ord.modal.title,
           intro: ord.modal.intro,
           confirmBtn: ord.modal.confirmBtn,
           cancelBtn: ord.modal.cancelBtn,
+          unitPrice: ord.modal.unitPrice,
+          estimatedTotal: ord.modal.estimatedTotal,
         }}
       />
     </div>

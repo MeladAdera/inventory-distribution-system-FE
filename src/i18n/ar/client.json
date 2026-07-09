@@ -292,7 +292,8 @@
       "addedToOrder": "مضاف للطلب",
       "statusEnough": "كافية",
       "statusLow": "مخزون منخفض",
-      "statusOut": "نفد المخزون"
+      "statusOut": "نفد المخزون",
+      "unitPrice": "سعر الوحدة"
     },
     "bottomBar": {
       "itemsAdded": "أصناف مضافة",
@@ -310,14 +311,19 @@
       "notesLabel": "ملاحظات للمورد (اختياري)",
       "notesPlaceholder": "أي تعليمات خاصة للمورد…",
       "submitBtn": "إرسال الطلب",
-      "addLineBtn": "إضافة منتج آخر"
+      "addLineBtn": "إضافة منتج آخر",
+      "unitPrice": "سعر الوحدة",
+      "estimatedTotal": "الإجمالي التقديري",
+      "estimatedTotalHint": "السعر النهائي يؤكده المستودع عند معالجة الطلب."
     },
     "modal": {
       "title": "تأكيد إرسال الطلب",
       "intro": "سيتم إرسال الطلب التالي:",
       "notesLabel": "الملاحظات:",
       "confirmBtn": "تأكيد الإرسال",
-      "cancelBtn": "إلغاء"
+      "cancelBtn": "إلغاء",
+      "unitPrice": "سعر الوحدة",
+      "estimatedTotal": "الإجمالي التقديري"
     },
     "toast": {
       "success": "تم إرسال طلبك بنجاح",

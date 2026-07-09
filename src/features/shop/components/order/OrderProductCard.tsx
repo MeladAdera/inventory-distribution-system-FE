@@ -16,6 +16,7 @@ interface OrderProductCardProps {
     statusEnough: string;
     statusLow: string;
     statusOut: string;
+    unitPrice: string;
   };
 }
 
@@ -44,6 +45,14 @@ export function OrderProductCard({ product, qty, onQty, labels }: OrderProductCa
         {/* Name */}
         <p className="text-[14px] font-semibold text-ink-900 leading-snug truncate">
           {product.name}
+        </p>
+
+        {/* Unit price */}
+        <p className="text-[12px] text-ink-500">
+          {labels.unitPrice}:{' '}
+          <span className="font-mono font-semibold text-ink-700">
+            {Number(product.price).toFixed(2)}
+          </span>
         </p>
 
         {/* Status + current qty inline */}

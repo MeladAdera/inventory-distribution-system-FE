@@ -292,7 +292,8 @@
       "addedToOrder": "Added to order",
       "statusEnough": "Enough",
       "statusLow": "Low stock",
-      "statusOut": "Out of stock"
+      "statusOut": "Out of stock",
+      "unitPrice": "Unit price"
     },
     "bottomBar": {
       "itemsAdded": "items added",
@@ -310,14 +311,19 @@
       "notesLabel": "Notes for supplier (optional)",
       "notesPlaceholder": "Any special instructions for the supplier…",
       "submitBtn": "Submit order",
-      "addLineBtn": "Add another product"
+      "addLineBtn": "Add another product",
+      "unitPrice": "Unit price",
+      "estimatedTotal": "Estimated total",
+      "estimatedTotalHint": "Final price is confirmed by the warehouse when the order is processed."
     },
     "modal": {
       "title": "Confirm order submission",
       "intro": "The following order will be submitted:",
       "notesLabel": "Notes:",
       "confirmBtn": "Confirm",
-      "cancelBtn": "Cancel"
+      "cancelBtn": "Cancel",
+      "unitPrice": "Unit price",
+      "estimatedTotal": "Estimated total"
     },
     "toast": {
       "success": "Your order was submitted successfully",

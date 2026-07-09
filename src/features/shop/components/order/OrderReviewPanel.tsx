@@ -25,25 +25,35 @@ export function OrderReviewPanel({
   return (
     <CardShell title={labels.productsTitle}>
       <div className="-mx-5 -mb-5">
-        {cartItems.map((product) => (
-          <div
-            key={product.id}
-            className="flex items-center gap-3 px-5 py-3 border-b border-border last:border-0"
-          >
-            <ProductThumb id={product.id} size={38} />
-            <span className="flex-1 text-[14px] text-ink-800 truncate">{product.name}</span>
-            <span className="font-mono text-[14px] font-semibold text-ink-900 shrink-0 me-1">
-              {cart[product.id]}
-            </span>
-            <button
-              onClick={() => onEditProduct(product.category_id)}
-              className="p-1.5 rounded-lg text-ink-400 hover:text-amber-700 hover:bg-amber-50 transition-colors shrink-0"
-              title={labels.backBtn}
+        {cartItems.map((product) => {
+          const qty = cart[product.id];
+          const unitPrice = Number(product.price);
+          const lineTotal = unitPrice * qty;
+          return (
+            <div
+              key={product.id}
+              className="flex items-center gap-3 px-5 py-3 border-b border-border last:border-0"
             >
-              <Pencil size={14} />
-            </button>
-          </div>
-        ))}
+              <ProductThumb id={product.id} size={38} />
+              <div className="flex-1 min-w-0">
+                <p className="text-[14px] text-ink-800 truncate">{product.name}</p>
+                <p className="font-mono text-[11px] text-ink-400">
+                  {qty} × {unitPrice.toFixed(2)}
+                </p>
+              </div>
+              <span className="font-mono text-[14px] font-semibold text-ink-900 shrink-0 me-1">
+                {lineTotal.toFixed(2)}
+              </span>
+              <button
+                onClick={() => onEditProduct(product.category_id)}
+                className="p-1.5 rounded-lg text-ink-400 hover:text-amber-700 hover:bg-amber-50 transition-colors shrink-0"
+                title={labels.backBtn}
+              >
+                <Pencil size={14} />
+              </button>
+            </div>
+          );
+        })}
 
         <div className="px-5 py-4">
           <button

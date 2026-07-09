@@ -9,12 +9,15 @@ interface OrderSubmitModalProps {
   onConfirm: () => void;
   cartItems: OrderableProduct[];
   cart: Record<number, number>;
+  totalPrice: number;
   isSubmitting: boolean;
   labels: {
     title: string;
     intro: string;
     confirmBtn: string;
     cancelBtn: string;
+    unitPrice: string;
+    estimatedTotal: string;
   };
 }
 
@@ -24,6 +27,7 @@ export function OrderSubmitModal({
   onConfirm,
   cartItems,
   cart,
+  totalPrice,
   isSubmitting,
   labels,
 }: OrderSubmitModalProps) {
@@ -31,19 +35,31 @@ export function OrderSubmitModal({
     <Modal open={open} onClose={onClose} title={labels.title} size="md">
       <p className="text-[14px] text-ink-600 mb-4">{labels.intro}</p>
 
-      <div className="flex flex-col max-h-52 overflow-y-auto mb-4">
-        {cartItems.map((product) => (
-          <div
-            key={product.id}
-            className="flex items-center gap-3 py-2.5 border-b border-border last:border-0"
-          >
-            <ProductThumb id={product.id} size={28} />
-            <span className="flex-1 text-[14px] text-ink-800 truncate">{product.name}</span>
-            <span className="font-mono text-[13px] font-semibold text-ink-900 shrink-0">
-              {cart[product.id]}
-            </span>
-          </div>
-        ))}
+      <div className="flex flex-col max-h-52 overflow-y-auto mb-2">
+        {cartItems.map((product) => {
+          const qty = cart[product.id];
+          const lineTotal = Number(product.price) * qty;
+          return (
+            <div
+              key={product.id}
+              className="flex items-center gap-3 py-2.5 border-b border-border last:border-0"
+            >
+              <ProductThumb id={product.id} size={28} />
+              <span className="flex-1 text-[14px] text-ink-800 truncate">{product.name}</span>
+              <span className="font-mono text-[12px] text-ink-400 shrink-0">{qty} ×</span>
+              <span className="font-mono text-[13px] font-semibold text-ink-900 shrink-0 w-14 text-end">
+                {lineTotal.toFixed(2)}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex items-center justify-between px-1 py-2 mb-4">
+        <span className="text-[13px] font-semibold text-ink-700">{labels.estimatedTotal}</span>
+        <span className="font-mono text-[15px] font-bold text-ink-900">
+          {totalPrice.toFixed(2)}
+        </span>
       </div>
 
       <div className="flex justify-end gap-2 pt-4 border-t border-border">
