@@ -162,7 +162,8 @@ export function ProductFormModal({
         await onEdit(product.id, {
           name: data.name,
           description: data.description,
-          price: data.price,
+          // Selling price is now the per-shop inventory.sale_price (edited on the card),
+          // so product edit no longer touches price.
           // Only send cost_price when the field was visible (non-null from API)
           ...(product.cost_price !== null && { cost_price: data.cost_price }),
         });
@@ -192,6 +193,11 @@ export function ProductFormModal({
   // Hide the cost input when the API returned null (warehouse margin is
   // private to shop users) — an empty visible input would overwrite it with 0.
   const showCostPrice = mode === 'add' || product?.cost_price != null;
+  // Price (products.price) is only the catalog seed default — set at creation.
+  // Selling price is edited per-shop on the inventory card, so hide price on edit.
+  const showPrice = mode === 'add';
+  const showInitialQty = mode === 'add' && !!onStockIn;
+  const priceFieldCount = (showPrice ? 1 : 0) + (showCostPrice ? 1 : 0) + (showInitialQty ? 1 : 0);
 
   const title = mode === 'add' ? p.form.addTitle : p.form.editTitle;
   const currentImageUrl = imageRemoved
@@ -346,25 +352,27 @@ export function ProductFormModal({
           </Field>
 
           {/* Price + Buying price + Initial quantity row */}
-          <div className={cn('grid gap-4', showCostPrice ? 'grid-cols-2' : 'grid-cols-1')}>
-            <Field
-              label={p.form.price}
-              required
-              error={errors.price?.message ? p.form.errPrice : undefined}
-            >
-              <input
-                {...register('price', { valueAsNumber: true })}
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder={p.form.pricePlaceholder}
-                className={cn(
-                  ipt(!!errors.price),
-                  'font-mono [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
-                )}
-                dir="ltr"
-              />
-            </Field>
+          <div className={cn('grid gap-4', priceFieldCount >= 2 ? 'grid-cols-2' : 'grid-cols-1')}>
+            {showPrice && (
+              <Field
+                label={p.form.price}
+                required
+                error={errors.price?.message ? p.form.errPrice : undefined}
+              >
+                <input
+                  {...register('price', { valueAsNumber: true })}
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder={p.form.pricePlaceholder}
+                  className={cn(
+                    ipt(!!errors.price),
+                    'font-mono [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
+                  )}
+                  dir="ltr"
+                />
+              </Field>
+            )}
 
             {showCostPrice && (
               <Field

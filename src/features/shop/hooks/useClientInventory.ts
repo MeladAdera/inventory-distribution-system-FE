@@ -69,6 +69,8 @@ export function useClientInventory() {
         barcode: product?.barcode ?? undefined,
         current_quantity: qty,
         price: product?.price ?? '0',
+        sale_price: item.sale_price ?? product?.price ?? '0',
+        avg_cost: item.avg_cost ?? '0',
         low_stock_threshold: threshold,
         is_low_stock: item.is_low_stock ?? false,
         status: computeStatus(qty, item.is_low_stock ?? false, threshold),

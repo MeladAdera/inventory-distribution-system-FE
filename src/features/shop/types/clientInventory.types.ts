@@ -6,7 +6,12 @@ export interface EnrichedInventoryItem {
   product_name: string;
   barcode?: string;
   current_quantity: number;
+  /** Catalog / list default price from the product (reference only; not the sale price). */
   price: string;
+  /** Per-shop selling price — source of truth for a sale (2dp string). */
+  sale_price: string;
+  /** Moving-average cost basis (4dp string). '0' fallback until the backend value is present. */
+  avg_cost: string;
   low_stock_threshold: number;
   is_low_stock: boolean;
   status: StockStatus;

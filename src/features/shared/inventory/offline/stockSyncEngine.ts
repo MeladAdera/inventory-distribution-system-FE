@@ -29,6 +29,9 @@ export interface StockSyncItem {
   productId: number; // snapshotted at enqueue time — replay must not depend on live query data
   productName: string;
   delta: number; // signed: negative = decrease, positive = increase
+  // Increases only: unit cost for this batch, snapshotted at enqueue (like productId/delta,
+  // replay must not re-read live data). undefined → omit from the request (backend inherit rule).
+  unitCost?: number;
   status: SyncItemStatus;
   error?: string;
 }
@@ -150,6 +153,8 @@ async function processStockSave(
         {
           productId: inc.productId,
           quantity: inc.delta,
+          // Omit the key entirely when no cost was captured — never send null/"".
+          ...(inc.unitCost !== undefined ? { unitCost: inc.unitCost } : {}),
           ...(next.increaseNotes ? { notes: next.increaseNotes } : {}),
         },
         SYNC_REQUEST_CONFIG
@@ -163,6 +168,15 @@ async function processStockSave(
       inc.error = getErrorMessage(err);
       await ctx.commit(next);
     }
+  }
+
+  // A stock-in recomputes the row's avg_cost server-side; refetch so the cached
+  // inventory (and any avg-cost preview derived from it) reconciles to the truth.
+  if (next.increases.some((i) => i.status === 'done')) {
+    void activeQueryClient?.invalidateQueries({
+      queryKey: ['client-inventory'],
+      refetchType: 'all',
+    });
   }
 
   const hasConflict =
@@ -193,6 +207,9 @@ interface EnqueueParams {
   queryClient: QueryClient;
   changes: Record<number, number>;
   items: { id: number; product_id: number; product_name: string }[];
+  // Per-increase unit cost, keyed by inventory id (same key as `changes`). Absent
+  // key → omit unitCost from the request (backend inherit rule). Decreases ignore this.
+  unitCosts?: Record<number, number>;
   decreaseNotes?: string;
   increaseNotes?: string;
   isFree?: boolean;
@@ -215,8 +232,13 @@ function buildStockSaveOp(params: EnqueueParams): StockSaveOp {
       delta,
       status: 'pending',
     };
-    if (delta < 0) decreases.push(entry);
-    else increases.push(entry);
+    if (delta < 0) {
+      decreases.push(entry);
+    } else {
+      const unitCost = params.unitCosts?.[inventoryId];
+      if (unitCost !== undefined) entry.unitCost = unitCost;
+      increases.push(entry);
+    }
   }
 
   return {

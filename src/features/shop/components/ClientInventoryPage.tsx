@@ -36,7 +36,12 @@ import { useClientInventory } from '../hooks/useClientInventory';
 import { CategoryCard } from './inventory/CategoryCard';
 import { ProductCard } from './inventory/ProductCard';
 import { InventorySaveModal } from './inventory/InventorySaveModal';
-import type { StockFilter, InventoryCategory } from '../types/clientInventory.types';
+import { SetPriceModal } from './inventory/SetPriceModal';
+import type {
+  StockFilter,
+  InventoryCategory,
+  EnrichedInventoryItem,
+} from '../types/clientInventory.types';
 import type {
   Category,
   CreateCategoryInput,
@@ -123,6 +128,8 @@ export function ClientInventoryPage() {
 
   const [catModal, setCatModal] = useState<CatModal>({ type: 'none' });
   const [prodModal, setProdModal] = useState<ProdModal>({ type: 'none' });
+  const [priceItem, setPriceItem] = useState<EnrichedInventoryItem | null>(null);
+  const [isSavingPrice, setIsSavingPrice] = useState(false);
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
   const [changes, setChanges] = useState<Record<number, number>>({});
   const [query, setQuery] = useState('');
@@ -171,10 +178,12 @@ export function ClientInventoryPage() {
     decreaseNotes,
     increaseNotes,
     isFree,
+    unitCosts,
   }: {
     decreaseNotes: string;
     increaseNotes: string;
     isFree: boolean;
+    unitCosts: Record<number, number>;
   }) {
     setIsSaving(true);
     try {
@@ -186,6 +195,7 @@ export function ClientInventoryPage() {
         queryClient,
         changes,
         items: allItems,
+        unitCosts,
         decreaseNotes,
         increaseNotes,
         isFree,
@@ -248,6 +258,23 @@ export function ClientInventoryPage() {
     await inventoryApi.stockIn({ productId, quantity });
     await invalidateInvProducts();
   };
+
+  // Per-shop selling price → PATCH /inventory/:id/price. Throws on failure so the
+  // modal keeps the input for retry (incl. a 403 if the row isn't this shop's).
+  async function handleUpdateSalePrice(salePrice: number) {
+    if (!priceItem) return;
+    setIsSavingPrice(true);
+    try {
+      await inventoryApi.updateSalePrice(priceItem.id, { salePrice });
+      await queryClient.invalidateQueries({ queryKey: ['client-inventory'] });
+      toastSuccess(inv.priceModal.toastSuccess);
+    } catch (err) {
+      toastError(getErrorMessage(err));
+      throw err;
+    } finally {
+      setIsSavingPrice(false);
+    }
+  }
 
   const handleProductEdit = async (id: number, data: UpdateProductInput) => {
     await updateProduct({ id, data });
@@ -459,8 +486,10 @@ export function ClientInventoryPage() {
                       newQty: inv.newQty ?? 'New quantity',
                       pendingSync: t.offline.badge.pendingSync,
                       conflict: t.offline.badge.conflict,
+                      price: inv.price,
                     }}
                     onOrderMore={() => router.push(`/client/order?product=${item.product_id}`)}
+                    onEditPrice={() => setPriceItem(item)}
                     onEdit={
                       localProd
                         ? () => setProdModal({ type: 'edit', product: localProd })
@@ -512,6 +541,27 @@ export function ClientInventoryPage() {
           price: inv.modal.price,
           markFreeLabel: inv.modal.markFreeLabel,
           markFreeHint: inv.modal.markFreeHint,
+          unitCostLabel: inv.modal.unitCostLabel,
+          avgCostLabel: inv.modal.avgCostLabel,
+          costWarning: inv.modal.costWarning,
+        }}
+      />
+
+      <SetPriceModal
+        open={priceItem !== null}
+        item={priceItem}
+        onClose={() => setPriceItem(null)}
+        onSave={handleUpdateSalePrice}
+        isSaving={isSavingPrice}
+        labels={{
+          title: inv.priceModal.title,
+          priceLabel: inv.priceModal.priceLabel,
+          catalogDefault: inv.priceModal.catalogDefault,
+          avgCost: inv.priceModal.avgCost,
+          profitPerUnit: inv.priceModal.profitPerUnit,
+          margin: inv.priceModal.margin,
+          save: inv.priceModal.save,
+          cancel: inv.priceModal.cancel,
         }}
       />
 

@@ -137,6 +137,18 @@
     "statusLow": "Low stock",
     "statusOut": "Out of stock",
     "newQty": "New quantity",
+    "price": "Price",
+    "priceModal": {
+      "title": "Set selling price",
+      "priceLabel": "Selling price",
+      "catalogDefault": "Catalog default",
+      "avgCost": "Avg cost",
+      "profitPerUnit": "Profit / unit",
+      "margin": "margin",
+      "save": "Save",
+      "cancel": "Cancel",
+      "toastSuccess": "Selling price updated"
+    },
     "loading": "Loading inventory…",
     "errorMsg": "Failed to load inventory. Please try again.",
     "filters": {
@@ -157,7 +169,10 @@
       "increaseNotesLabel": "Reason for increase",
       "price": "Unit price",
       "markFreeLabel": "Mark as free",
-      "markFreeHint": "Cost is still counted, but revenue from this receipt won't count toward profit."
+      "markFreeHint": "Cost is still counted, but revenue from this receipt won't count toward profit.",
+      "unitCostLabel": "Unit cost",
+      "avgCostLabel": "Avg cost",
+      "costWarning": "Cost looks unusually far from the current average — double-check."
     },
     "toast": {
       "success": "Inventory updated successfully",
