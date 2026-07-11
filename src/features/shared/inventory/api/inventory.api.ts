@@ -4,6 +4,7 @@ import type {
   StockInInput,
   AdjustInventoryInput,
   InventoryListParams,
+  UpdateSalePriceInput,
 } from '../types/inventory.types';
 
 export const inventoryApi = {
@@ -29,6 +30,13 @@ export const inventoryApi = {
 
   adjust: async (id: number, data: AdjustInventoryInput) => {
     const response = await apiClient.patch(`/inventory/${id}`, data);
+    return response.data;
+  },
+
+  // Shop-owner scoped: sets the per-shop selling price on this inventory row.
+  // 403 if the row isn't the caller's shop.
+  updateSalePrice: async (id: number, data: UpdateSalePriceInput) => {
+    const response = await apiClient.patch(`/inventory/${id}/price`, data);
     return response.data;
   },
 };

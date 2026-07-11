@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ShoppingCart, Pencil, Trash2, Minus, Plus, RefreshCw, AlertTriangle } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
+import { formatMoney } from '@/common/utils/money';
 import { ProductBanner } from '@/features/shared/products/components/ProductBanner';
 import { InvStatusBadge } from './InvStatusBadge';
 import { Card, CardContent } from '@/common/components/ui/card';
@@ -17,6 +18,7 @@ export interface ProductCardLabels {
   newQty: string;
   pendingSync: string;
   conflict: string;
+  price: string;
 }
 
 interface ProductCardProps {
@@ -27,6 +29,7 @@ interface ProductCardProps {
   onOrderMore: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onEditPrice?: () => void;
   // Set when this item has an unsynced change waiting in the offline queue.
   syncStatus?: SyncItemStatus;
 }
@@ -39,6 +42,7 @@ export function ProductCard({
   onOrderMore,
   onEdit,
   onDelete,
+  onEditPrice,
   syncStatus,
 }: ProductCardProps) {
   const newQty = item.current_quantity + delta;
@@ -131,6 +135,22 @@ export function ProductCard({
             </p>
           </div>
         </div>
+
+        {/* Selling price — tap to edit (per-shop, applies to local + warehouse) */}
+        {onEditPrice && (
+          <button
+            onClick={onEditPrice}
+            className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg border border-border bg-paper hover:bg-sand-100 transition-colors"
+          >
+            <span className="text-[11px] text-ink-500">{labels.price}</span>
+            <span className="flex items-center gap-1.5">
+              <span className="font-mono text-[13px] font-semibold text-ink-900">
+                {formatMoney(item.sale_price)}
+              </span>
+              <Pencil size={11} className="text-ink-400" />
+            </span>
+          </button>
+        )}
 
         {/* Adjustment stepper — full-width pill */}
         <div className="pt-1.5 border-t border-border">
