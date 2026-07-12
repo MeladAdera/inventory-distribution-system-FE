@@ -191,6 +191,10 @@ export function TransferModal({
   const { data: productsData } = useTransferProducts();
   const products = productsData?.data?.data ?? [];
 
+  // A deactivated shop cannot receive orders (backend rejects with 400), so only
+  // offer active shops as transfer destinations.
+  const activeShops = shops.filter((s) => s.is_active);
+
   const {
     register,
     handleSubmit,
@@ -281,7 +285,7 @@ export function TransferModal({
                 className={sel(!!errors.shopId)}
               >
                 <option value="">{m.shopPlaceholder}</option>
-                {shops.map((s) => (
+                {activeShops.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name}
                   </option>

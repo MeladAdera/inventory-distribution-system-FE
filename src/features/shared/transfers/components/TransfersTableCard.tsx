@@ -9,8 +9,8 @@ import { TransferStatus, NEXT_STATUS } from '../types/transfers.types';
 import type { Transfer } from '../types/transfers.types';
 import type { Shop } from '@/features/admin/shops/types/shops.types';
 
-const GRID = '1.1fr 1.6fr 1.8fr 0.8fr 1.3fr 1.2fr';
-const HEADER_KEYS = ['date', 'shop', 'product', 'qty', 'status', 'actions'] as const;
+const GRID = '1.1fr 1.5fr 1.6fr 0.7fr 0.9fr 1.2fr 1.2fr';
+const HEADER_KEYS = ['date', 'shop', 'product', 'qty', 'total', 'status', 'actions'] as const;
 
 type TransfersT = ReturnType<typeof useI18n>['t']['transfers'];
 
@@ -44,9 +44,9 @@ function SkeletonRow() {
   return (
     <div
       className="grid gap-4 px-5 py-4 border-t border-border"
-      style={{ gridTemplateColumns: 'repeat(6, 1fr)' }}
+      style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}
     >
-      {Array.from({ length: 6 }).map((_, i) => (
+      {Array.from({ length: 7 }).map((_, i) => (
         <div
           key={i}
           className="h-3 rounded skeleton-shimmer"
@@ -361,6 +361,11 @@ function TransferRow({
         {/* Qty */}
         <span className="font-mono font-semibold text-ink-900">{qty}</span>
 
+        {/* Total price */}
+        <span className="font-mono text-ink-700">
+          {transfer.total_price != null ? transfer.total_price.toFixed(2) : '—'}
+        </span>
+
         {/* Status */}
         <StatusBadge status={transfer.status} label={p.status[transfer.status]} />
 
@@ -397,7 +402,14 @@ function TransferRow({
               <p className="font-mono text-xs text-ink-500 mt-0.5">{date}</p>
             </div>
           </div>
-          <span className="font-mono font-semibold text-ink-900 text-sm shrink-0">×{qty}</span>
+          <div className="shrink-0 text-end">
+            <span className="font-mono font-semibold text-ink-900 text-sm">×{qty}</span>
+            {transfer.total_price != null && (
+              <p className="font-mono text-xs text-ink-500 mt-0.5">
+                {transfer.total_price.toFixed(2)}
+              </p>
+            )}
+          </div>
         </div>
 
         {firstItem && (

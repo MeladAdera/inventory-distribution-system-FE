@@ -21,6 +21,7 @@ export function useClientOrders() {
       id: o.id,
       status: o.status,
       total_items: o.total_items,
+      total_price: o.total_price,
       created_at: o.created_at,
       items: o.items ?? [],
     }));
