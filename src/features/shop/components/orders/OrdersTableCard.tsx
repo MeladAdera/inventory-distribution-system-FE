@@ -41,6 +41,7 @@ interface OrdersTableCardProps {
       orderNo: string;
       date: string;
       items: string;
+      total: string;
       status: string;
       details: string;
       viewBtn: string;
@@ -102,7 +103,7 @@ export function OrdersTableCard({
           {/* Desktop table */}
           <div className="hidden sm:block">
             {/* Header */}
-            <div className="grid grid-cols-[auto_1fr_0.7fr_1.3fr_auto] items-center gap-4 bg-sand-100 border-b border-border px-6 py-3">
+            <div className="grid grid-cols-[auto_1fr_0.7fr_0.8fr_1.3fr_auto] items-center gap-4 bg-sand-100 border-b border-border px-6 py-3">
               <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400 w-20">
                 {labels.table.orderNo}
               </span>
@@ -111,6 +112,9 @@ export function OrdersTableCard({
               </span>
               <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400">
                 {labels.table.items}
+              </span>
+              <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400">
+                {labels.table.total}
               </span>
               <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400">
                 {labels.table.status}
@@ -123,7 +127,7 @@ export function OrdersTableCard({
             {filtered.map((order) => (
               <div
                 key={order.id}
-                className="grid grid-cols-[auto_1fr_0.7fr_1.3fr_auto] items-center gap-4 px-6 py-4 border-b border-border last:border-b-0 hover:bg-sand-50 transition-colors"
+                className="grid grid-cols-[auto_1fr_0.7fr_0.8fr_1.3fr_auto] items-center gap-4 px-6 py-4 border-b border-border last:border-b-0 hover:bg-sand-50 transition-colors"
               >
                 <div className="w-20">
                   <OrderIdChip id={order.id} />
@@ -133,6 +137,9 @@ export function OrdersTableCard({
                 </span>
                 <span className="text-[13px] text-ink-600">
                   {order.total_items} {labels.table.itemsUnit}
+                </span>
+                <span className="font-mono text-[13px] text-ink-700">
+                  {order.total_price != null ? order.total_price.toFixed(2) : '—'}
                 </span>
                 <OrderStatusBadge status={order.status} label={statusLabels[order.status]} />
                 <div className="w-16 flex justify-center">
@@ -166,11 +173,17 @@ export function OrdersTableCard({
                   </button>
                 </div>
 
-                {/* Row 2: date · items */}
+                {/* Row 2: date · items · total */}
                 <p className="text-[13px] text-ink-500">
                   {formatDate(order.created_at, locale)}
                   <span className="mx-2 text-ink-300">·</span>
                   {order.total_items} {labels.table.itemsUnit}
+                  {order.total_price != null && (
+                    <>
+                      <span className="mx-2 text-ink-300">·</span>
+                      <span className="font-mono text-ink-700">{order.total_price.toFixed(2)}</span>
+                    </>
+                  )}
                 </p>
 
                 {/* Row 3: status badge */}

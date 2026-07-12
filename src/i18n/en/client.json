@@ -247,6 +247,7 @@
       "orderNo": "Order #",
       "date": "Order date",
       "items": "Items",
+      "total": "Total",
       "status": "Status",
       "details": "Details",
       "viewBtn": "View",

@@ -18,7 +18,13 @@ const STATUS_STYLES: Record<TransferStatus, string> = {
   CANCELLED: 'bg-red-50 text-red-700 border-red-200',
 };
 
-const CANCELLABLE = new Set([TransferStatus.PENDING, TransferStatus.PROCESSING]);
+// Admin can cancel while the order is still in the warehouse's hands.
+// Backend allows PENDING, PROCESSING, and SHIPPED (cancelling returns reserved stock).
+const CANCELLABLE = new Set([
+  TransferStatus.PENDING,
+  TransferStatus.PROCESSING,
+  TransferStatus.SHIPPED,
+]);
 
 interface TransferDetailModalProps {
   transfer: Transfer | null;
@@ -172,7 +178,7 @@ export function TransferDetailModal({
             {labels.actionLabels.awaitingReceipt}
           </span>
         )}
-        {isAdmin && CANCELLABLE.has(transfer.status) ? (
+        {isAdmin && CANCELLABLE.has(transfer.status) && (
           <button
             onClick={() => onCancel(transfer.id)}
             disabled={isCancelling}
@@ -187,14 +193,13 @@ export function TransferDetailModal({
               labels.cancelBtn
             )}
           </button>
-        ) : (
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-lg border border-border text-[14px] font-medium text-ink-700 hover:bg-sand-100 transition-colors"
-          >
-            {labels.closeBtn}
-          </button>
         )}
+        <button
+          onClick={onClose}
+          className="px-4 py-2 rounded-lg border border-border text-[14px] font-medium text-ink-700 hover:bg-sand-100 transition-colors"
+        >
+          {labels.closeBtn}
+        </button>
         {isAdmin && nextStatus && (
           <button
             onClick={() => onUpdateStatus(transfer.id, nextStatus)}
