@@ -5,6 +5,7 @@ import { useAuth } from '@/features/auth';
 import { usePermission } from '@/common/hooks/usePermission';
 import { ProfileCard } from '@/features/settings/components/ProfileCard';
 import { ShopCard } from '@/features/settings/components/ShopCard';
+import { ChangePasswordCard } from '@/features/settings/components/ChangePasswordCard';
 import type { UserRole } from '@/features/auth/types/enums';
 
 export default function SettingsPage() {
@@ -30,6 +31,8 @@ export default function SettingsPage() {
         />
 
         {isShopOwner && user.shopId && <ShopCard shopId={user.shopId} />}
+
+        <ChangePasswordCard />
       </div>
     </div>
   );

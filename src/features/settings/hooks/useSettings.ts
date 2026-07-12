@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi } from '@/features/admin/users/api/users.api';
 import { shopsApi } from '@/features/admin/shops/api/shops.api';
+import { authApi } from '@/features/auth/api/auth.api';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import type { UpdateUserInput } from '@/features/admin/users/types/users.types';
 import type { UpdateShopInput } from '@/features/admin/shops/types/shops.types';
@@ -25,6 +26,17 @@ export function useProfileSettings(userId: number) {
   return {
     updateProfile: updateMutation.mutateAsync,
     isUpdating: updateMutation.isPending,
+  };
+}
+
+export function useChangePassword() {
+  const changeMutation = useMutation({
+    mutationFn: authApi.changePassword,
+  });
+
+  return {
+    changePassword: changeMutation.mutateAsync,
+    isChanging: changeMutation.isPending,
   };
 }
 

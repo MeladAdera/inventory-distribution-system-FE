@@ -15,6 +15,11 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface ChangePasswordInput {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;

@@ -34,5 +34,28 @@
       "success": "Shop updated successfully",
       "error": "Failed to update shop"
     }
+  },
+  "security": {
+    "title": "Password",
+    "subtitle": "Change the password you use to sign in",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "submit": "Change password",
+    "hint": "Changing your password signs you out of all devices. You'll need to log in again.",
+    "validation": {
+      "currentRequired": "Enter your current password",
+      "newRequired": "Enter a new password",
+      "newMin": "Password must be at least 6 characters",
+      "confirmRequired": "Re-enter the new password",
+      "mismatch": "Passwords do not match"
+    },
+    "done": {
+      "title": "Password changed",
+      "subtitle": "Signing you out — please log in again with your new password."
+    },
+    "toast": {
+      "success": "Password changed successfully"
+    }
   }
 }

@@ -30,6 +30,44 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Single-flight token refresh.
+//
+// Refresh tokens rotate on every /auth/refresh, and the backend now treats a
+// re-used (already-rotated) refresh token as theft — it revokes ALL of the
+// user's tokens and forces a re-login. So concurrent 401s must NOT each fire
+// their own refresh with the same token. Instead the first 401 starts the
+// refresh and every other in-flight 401 awaits the same promise, then retries
+// with the single new access token.
+let refreshPromise: Promise<string> | null = null;
+
+async function runTokenRefresh(): Promise<string> {
+  const refreshToken = tokenUtils.getRefreshToken();
+  if (!refreshToken) {
+    throw new Error('NO_REFRESH_TOKEN');
+  }
+
+  const response = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
+  // Success responses are enveloped by the backend's global TransformInterceptor
+  // as { success, data, timestamp }, so the tokens live under `data` — never at
+  // the top level. The `?? response.data` is a defensive fallback only.
+  const body = response.data?.data ?? response.data;
+  const { accessToken, refreshToken: newRefreshToken } = body;
+
+  // Persist the freshly rotated pair immediately so the very next refresh sends
+  // the newest token, never the one we just consumed.
+  tokenUtils.setTokens(accessToken, newRefreshToken);
+  return accessToken;
+}
+
+function refreshAccessToken(): Promise<string> {
+  if (!refreshPromise) {
+    refreshPromise = runTokenRefresh().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
+}
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -42,20 +80,7 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = tokenUtils.getRefreshToken();
-        if (!refreshToken) {
-          if (typeof window !== 'undefined') {
-            window.location.href = '/login';
-          }
-          return Promise.reject(error);
-        }
-
-        const response = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
-        const { accessToken, refreshToken: newRefreshToken } = response.data;
-
-        // Sync all token stores so no layer has stale values
-        tokenUtils.setTokens(accessToken, newRefreshToken);
-
+        const accessToken = await refreshAccessToken();
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return apiClient(originalRequest);
       } catch {
@@ -67,7 +92,7 @@ apiClient.interceptors.response.use(
           return Promise.reject(Object.assign(error, { authRequired: true }));
         }
 
-        // Refresh failed — clear every token store and force re-login
+        // Refresh failed (or reuse-detected) — clear every token store and force re-login
         useAuthStore.getState().clearAuth();
         tokenUtils.clearTokens();
         if (typeof window !== 'undefined') {
