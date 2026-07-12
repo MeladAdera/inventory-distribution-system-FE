@@ -21,7 +21,8 @@ docs/
 ├── README.md              # This file
 ├── features/
 │   ├── FEATURE_TEMPLATE.md
-│   ├── auth.md            # Shared — login, middleware, token layer
+│   ├── auth.md            # Shared — login, middleware, token layer (single-flight refresh)
+│   ├── change-password.md # Shared — self-service password change card on both settings pages
 │   ├── landing.md         # Shared — public marketing page at `/` + auth pages re-skin
 │   ├── profit-dashboard.md # Shared — profit analytics page + buying price (cost) on products
 │   ├── offline-pwa.md     # Shared — offline-first PWA for shop inventory (SW, sync queue, IndexedDB)
@@ -82,7 +83,8 @@ Check `docs/api/` folder:
 ### Admin Portal Features
 | Feature | Document | Status |
 |---------|----------|--------|
-| Authentication | [auth.md](features/auth.md) | ✅ PHASE 1 Complete |
+| Authentication | [auth.md](features/auth.md) | ✅ PHASE 1 Complete — single-flight token refresh |
+| Change Password | [change-password.md](features/change-password.md) | ✅ Complete — self-service on both settings pages |
 | Landing Page | [landing.md](features/landing.md) | ✅ Complete — public marketing page + auth re-skin |
 | Admin Layout Shell | [admin-layout-shell.md](features/admin/admin-layout-shell.md) | ✅ FIGMA-001 Complete |
 | Dashboard | [dashboard.md](features/admin/dashboard.md) | ✅ FIGMA-002 Complete — API Integrated |

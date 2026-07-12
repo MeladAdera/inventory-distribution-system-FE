@@ -124,24 +124,56 @@ src/middleware.ts
 ### Token Refresh (Axios Interceptor)
 
 ```
-Any API call returns 401
+Any API call returns 401 (and not already retried)
       ↓
-client.ts response interceptor
+client.ts response interceptor  →  refreshAccessToken()  ← single-flight
       ↓
-reads localStorage['refreshToken']
+reads cookie['refresh_token']
       ↓
-POST /auth/refresh
+POST /auth/refresh   { refreshToken }
       ↓
-  success  →  tokenUtils.setTokens()          — localStorage + cookie updated
-             useAuthStore.getState().setTokens() — Zustand updated
-             retry original request
+  success  →  unwrap response.data.data (enveloped) → { accessToken, refreshToken }
+             tokenUtils.setTokens()   — both cookies rotated immediately
+             retry the original request with the new access token
       ↓
-  failure  →  useAuthStore.getState().clearAuth() — Zustand cleared
-             tokenUtils.clearTokens()           — localStorage + cookie cleared
-             window.location.href = '/login'
+  failure  →  skipAuthRedirect?  →  reject with { authRequired: true }  (offline sync opts out)
+             else: useAuthStore.getState().clearAuth() + tokenUtils.clearTokens()
+                   window.location.href = '/login'
 ```
 
-The interceptor lives outside React so it uses `useAuthStore.getState()` (Zustand's static accessor) instead of the `useAuthStore()` hook. Both reach the same store — the static form just works without a React component context.
+**Single-flight refresh (reuse-detection safe).** Refresh tokens rotate on every call, and the backend now treats a **re-used (already-rotated) refresh token as theft** — it revokes *all* of the user's tokens and forces a re-login. So concurrent `401`s must not each fire their own refresh:
+
+```typescript
+let refreshPromise: Promise<string> | null = null;
+
+function refreshAccessToken(): Promise<string> {
+  if (!refreshPromise) {
+    refreshPromise = runTokenRefresh().finally(() => { refreshPromise = null; });
+  }
+  return refreshPromise;   // every in-flight 401 awaits the SAME promise
+}
+```
+
+The first `401` starts the refresh; every other `401` in flight awaits the same promise and retries with the single new access token. Without this, a page firing several requests against an expired token would refresh in parallel — the winner rotates the token and the losers resend the consumed one → forced logout.
+
+**Envelope unwrap.** `/auth/refresh` responses are enveloped by the backend (`{ success, data, timestamp }`), so tokens live at `response.data.data.accessToken`. The interceptor unwraps `response.data?.data ?? response.data` (the fallback is defensive only). The earlier code read `response.data.accessToken` (top-level) and silently wrote `undefined` tokens — fixed alongside the single-flight guard.
+
+The interceptor lives outside React, so it uses `useAuthStore.getState()` (Zustand's static accessor) instead of the `useAuthStore()` hook. Both reach the same store — the static form just works without a React component context.
+
+### Change Password
+
+```
+Settings → ChangePasswordCard  →  useChangePassword()
+      ↓
+authApi.changePassword({ currentPassword, newPassword })  →  POST /auth/change-password
+      ↓
+  204  →  backend revokes ALL refresh tokens
+          toast + "signing you out" state → useAuth().logout() → /login  (after ~1.5s)
+      ↓
+  401 auth.CURRENT_PASSWORD_INCORRECT / 400  →  getErrorMessage(err) → error toast
+```
+
+Any authenticated user can change their own password. Because success revokes every refresh token, the UI logs the user out and sends them to `/login` rather than letting them hit a surprise forced logout when the access token expires. Full write-up: [change-password.md](./change-password.md).
 
 ### State Management
 
@@ -163,6 +195,11 @@ Cookies are the single source of truth for tokens. Zustand is in-memory UI state
 interface LoginCredentials {
   email: string;
   password: string;
+}
+
+interface ChangePasswordInput {
+  currentPassword: string;
+  newPassword: string;
 }
 
 interface RequestUser {
@@ -197,6 +234,7 @@ authApi.login(credentials: LoginCredentials)   → Promise<LoginResponse>
 authApi.logout()                               → Promise<void>
 authApi.refreshToken(refreshToken: string)     → Promise<RefreshTokenResponse>
 authApi.getCurrentUser()                       → Promise<CurrentUserResponse>
+authApi.changePassword(data: ChangePasswordInput) → Promise<void>   // POST /auth/change-password (204)
 ```
 
 ---

@@ -23,6 +23,7 @@ Shop owners can correct their own name/email and keep their branch details (addr
 |---------|:-:|:-:|
 | My Profile | ✅ | ✅ |
 | My Shop | ✅ | — |
+| Change Password | ✅ | ✅ |
 
 ---
 
@@ -36,6 +37,7 @@ Shop owners can correct their own name/email and keep their branch details (addr
 - [x] Shop card: inline edit for all three fields via `PATCH /shops/:id`
 - [x] Shop card: skeleton loading state while `GET /shops/:id` fetches
 - [x] Both cards: success/error toasts on save
+- [x] Change Password card: current/new/confirm fields with show/hide toggle + forced re-login on success (see [change-password.md](../change-password.md))
 - [x] AR/EN i18n for all labels, placeholders, toasts, and role names
 
 ### Non-Functional Requirements
@@ -81,12 +83,15 @@ ClientSettingsPage (page.tsx)
 │   ├── InfoRow ×3        ← view mode
 │   ├── FieldRow ×2       ← edit mode
 │   └── CardFooter
-└── ShopCard              ← SHOP_OWNER only
-    ├── CardHeader
-    ├── ShopBanner        ← store icon + name + type badge
-    ├── InfoRow ×3        ← view mode
-    ├── FieldRow ×3       ← edit mode
-    └── CardFooter
+├── ShopCard              ← SHOP_OWNER only
+│   ├── CardHeader
+│   ├── ShopBanner        ← store icon + name + type badge
+│   ├── InfoRow ×3        ← view mode
+│   ├── FieldRow ×3       ← edit mode
+│   └── CardFooter
+└── ChangePasswordCard    ← new
+    ├── FieldRow ×3        → PasswordInput (common, eye toggle)
+    └── submit + hint footer
 ```
 
 ---
@@ -114,6 +119,8 @@ settings.profile.roles.WAREHOUSE_ADMIN / SHOP_OWNER / EMPLOYEE
 settings.profile.toast.success / error
 settings.shop.title / subtitle / name / address / phone / edit / save / cancel
 settings.shop.toast.success / error
+settings.security.title / subtitle / currentPassword / newPassword / confirmPassword / submit / hint
+settings.security.validation.* / settings.security.done.* / settings.security.toast.success
 ```
 
 ---

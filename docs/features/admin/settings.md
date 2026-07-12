@@ -21,6 +21,7 @@ Users can correct their own name/email without going through an admin. Shop Owne
 |---------|:-:|:-:|:-:|
 | My Profile | ✅ | ✅ | ✅ |
 | My Shop | — | ✅ | — |
+| Change Password | ✅ | ✅ | ✅ |
 
 ---
 
@@ -35,6 +36,7 @@ Users can correct their own name/email without going through an admin. Shop Owne
 - [x] Shop card: skeleton loading state while `GET /shops/:id` fetches
 - [x] Both cards: success/error toasts on save
 - [x] Both cards: Save/Cancel footer with disabled state while saving
+- [x] Change Password card: current/new/confirm fields with show/hide toggle, RHF validation, and forced re-login on success (see [change-password.md](../change-password.md))
 - [x] AR/EN i18n for all labels, placeholders, toasts, and role names
 
 ### Non-Functional Requirements
@@ -83,12 +85,15 @@ SettingsPage
 │   ├── InfoRow ×3        (view mode — shared)
 │   ├── FieldRow ×2       (edit mode — shared)
 │   └── CardFooter        (shared)
-└── ShopCard              (SHOP_OWNER only)
-    ├── CardHeader        (shared)
-    ├── ShopBanner        (store icon + shop name + type badge)
-    ├── InfoRow ×3        (view mode — shared)
-    ├── FieldRow ×3       (edit mode — shared)
-    └── CardFooter        (shared)
+├── ShopCard              (SHOP_OWNER only)
+│   ├── CardHeader        (shared)
+│   ├── ShopBanner        (store icon + shop name + type badge)
+│   ├── InfoRow ×3        (view mode — shared)
+│   ├── FieldRow ×3       (edit mode — shared)
+│   └── CardFooter        (shared)
+└── ChangePasswordCard
+    ├── FieldRow ×3        (shared) → PasswordInput (common, eye toggle)
+    └── submit + hint footer
 ```
 
 ---
@@ -127,6 +132,10 @@ settings.profile.roles.WAREHOUSE_ADMIN / SHOP_OWNER / EMPLOYEE
 settings.profile.toast.success / error
 settings.shop.title / subtitle / name / address / phone / edit / save / cancel
 settings.shop.toast.success / error
+settings.security.title / subtitle / currentPassword / newPassword / confirmPassword / submit / hint
+settings.security.validation.currentRequired / newRequired / newMin / confirmRequired / mismatch
+settings.security.done.title / subtitle
+settings.security.toast.success
 ```
 
 ---
@@ -144,6 +153,6 @@ settings.shop.toast.success / error
 ## 🚧 Known Limitations / Future Work
 
 - **UI preferences** — theme switcher (warm/ink), accent color, table density, language default are planned but not yet built. These will be client-side only (localStorage/Zustand), no backend needed.
-- **Password change** — not in scope for this phase. Will require a separate `PATCH /users/:id/password` endpoint.
+- **Password change** — ✅ shipped 2026-07-12 via the Change Password card (`POST /auth/change-password`). See [change-password.md](../change-password.md).
 - **Avatar upload** — no file upload support yet. Initials-based avatar is the current solution.
 - **Employee visibility** — Employees see the Profile card but cannot edit their own data (the `PATCH /users/:id` endpoint is restricted to `WAREHOUSE_ADMIN` and `SHOP_OWNER`). A future task should either hide the Edit button for employees or add a dedicated self-edit endpoint.
