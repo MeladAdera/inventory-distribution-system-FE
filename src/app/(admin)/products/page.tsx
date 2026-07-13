@@ -12,11 +12,9 @@ import { useAuthStore } from '@/features/auth/store/authStore';
 import { UserRole } from '@/features/auth/types/enums';
 import { ShopType } from '@/features/admin/shops/types/shops.types';
 import { tokenUtils } from '@/features/auth/utils/token.utils';
-import { inventoryApi } from '@/features/shared/inventory/api/inventory.api';
 import { ProductsTableCard } from '@/features/shared/products/components/ProductsTableCard';
 import { ProductFormModal } from '@/features/shared/products/components/ProductFormModal';
 import { ProductDetailModal } from '@/features/shared/products/components/ProductDetailModal';
-import { RestockModal } from '@/features/shared/products/components/RestockModal';
 import { DeleteConfirmModal } from '@/features/shared/products/components/DeleteConfirmModal';
 import type {
   Product,
@@ -31,7 +29,6 @@ type ModalState =
   | { type: 'add' }
   | { type: 'edit'; product: Product }
   | { type: 'view'; product: Product }
-  | { type: 'restock'; product: Product }
   | { type: 'delete'; product: Product };
 
 export default function ProductsPage() {
@@ -116,10 +113,6 @@ export default function ProductsPage() {
     }
   };
 
-  const handleRestock = async (product: Product, qty: number) => {
-    await inventoryApi.stockIn({ productId: product.id, quantity: qty });
-  };
-
   // ── Render ─────────────────────────────────────────────────────────────
 
   return (
@@ -128,7 +121,10 @@ export default function ProductsPage() {
       <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
           <h1 className="text-[26px] font-semibold leading-tight text-ink-900">{p.page.title}</h1>
-          <p className="mt-1 text-sm text-ink-500">{p.page.count.replace('{n}', String(total))}</p>
+          <p className="mt-1 text-sm text-ink-500">{p.page.subtitle}</p>
+          <p className="mt-0.5 text-[13px] text-ink-400">
+            {p.page.count.replace('{n}', String(total))}
+          </p>
         </div>
         <button
           onClick={() => setModal({ type: 'add' })}
@@ -160,7 +156,6 @@ export default function ProductsPage() {
         onAddProduct={() => setModal({ type: 'add' })}
         onView={(prod) => setModal({ type: 'view', product: prod })}
         onEdit={(prod) => setModal({ type: 'edit', product: prod })}
-        onRestock={(prod) => setModal({ type: 'restock', product: prod })}
         onDelete={(prod) => setModal({ type: 'delete', product: prod })}
       />
 
@@ -180,12 +175,6 @@ export default function ProductsPage() {
         open={modal.type === 'view'}
         product={modal.type === 'view' ? modal.product : null}
         onClose={() => setModal({ type: 'none' })}
-      />
-      <RestockModal
-        open={modal.type === 'restock'}
-        product={modal.type === 'restock' ? modal.product : null}
-        onClose={() => setModal({ type: 'none' })}
-        onConfirm={handleRestock}
       />
       <DeleteConfirmModal
         open={modal.type === 'delete'}

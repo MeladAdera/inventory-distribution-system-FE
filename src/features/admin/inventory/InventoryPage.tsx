@@ -1,16 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import { PackagePlus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/ui/card';
+import { useProducts } from '@/features/shared/products/hooks/useProducts';
+import { ProductSource } from '@/features/shared/products/types/products.types';
 import { useAdminInventory } from './hooks/useAdminInventory';
 import { InventoryStatsCards } from './components/InventoryStatsCards';
 import { StockHealthChart } from './components/StockHealthChart';
 import { TopStockChart } from './components/TopStockChart';
 import { InventoryTable } from './components/InventoryTable';
 import { InventoryRestockModal } from './components/InventoryRestockModal';
+import { StockInModal } from './components/StockInModal';
 import type { InventoryItem } from '@/features/shared/inventory/types/inventory.types';
 
 export function InventoryPage() {
@@ -20,8 +24,16 @@ export function InventoryPage() {
 
   const { items, stats, isLoading, stockIn } = useAdminInventory();
 
+  // Full warehouse catalog for the stock-in picker — includes products that
+  // have no inventory row yet (first-time stock-in creates one).
+  const { products: catalogProducts } = useProducts({
+    source: ProductSource.WAREHOUSE,
+    limit: 999,
+  });
+
   const [lowStockFilter, setLowStockFilter] = useState(false);
   const [restockItem, setRestockItem] = useState<InventoryItem | null>(null);
+  const [stockInOpen, setStockInOpen] = useState(false);
 
   async function handleRestock(item: InventoryItem, qty: number) {
     try {
@@ -32,14 +44,33 @@ export function InventoryPage() {
     }
   }
 
+  async function handleStockIn(productId: number, qty: number) {
+    try {
+      await stockIn({ productId, quantity: qty });
+      toast.success(iv.restock.success);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+      throw err;
+    }
+  }
+
   return (
     <div className="max-w-330 mx-auto pb-16 lg:pb-6 space-y-6">
       {/* ── Page header ── */}
-      <div>
-        <h1 className="text-[26px] font-semibold leading-tight text-ink-900">{iv.page.title}</h1>
-        <p className="mt-1 text-sm text-ink-500">
-          {iv.page.subtitle.replace('{n}', isLoading ? '…' : String(stats.totalSKUs))}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-[26px] font-semibold leading-tight text-ink-900">{iv.page.title}</h1>
+          <p className="mt-1 text-sm text-ink-500">
+            {iv.page.subtitle.replace('{n}', isLoading ? '…' : String(stats.totalSKUs))}
+          </p>
+        </div>
+        <button
+          onClick={() => setStockInOpen(true)}
+          className="inline-flex items-center gap-2 h-10 px-4 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors shrink-0"
+        >
+          <PackagePlus size={16} />
+          {iv.stockIn.btn}
+        </button>
       </div>
 
       {/* ── KPI cards ── */}
@@ -86,6 +117,15 @@ export function InventoryPage() {
         item={restockItem}
         onClose={() => setRestockItem(null)}
         onConfirm={handleRestock}
+      />
+
+      {/* ── First-time stock-in (any catalog product) ── */}
+      <StockInModal
+        open={stockInOpen}
+        products={catalogProducts}
+        items={items}
+        onClose={() => setStockInOpen(false)}
+        onConfirm={handleStockIn}
       />
     </div>
   );

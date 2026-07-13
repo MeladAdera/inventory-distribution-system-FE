@@ -1,7 +1,8 @@
 {
   "page": {
-    "title": "Products",
-    "count": "{n} products",
+    "title": "Product Catalog",
+    "subtitle": "Product definitions shops browse and order. Manage actual stock from the Inventory page.",
+    "count": "{n} products in the catalog",
     "addProduct": " Add product"
   },
   "toolbar": {
@@ -63,7 +64,6 @@
   },
   "detail": {
     "title": "Product details",
-    "currentQty": "Current stock",
     "price": "Selling price",
     "costPrice": "Buying price",
     "source": "Source",
@@ -72,12 +72,6 @@
     "description": "Description",
     "status": "Status",
     "createdAt": "Created"
-  },
-  "restock": {
-    "title": "Add stock",
-    "qtyLabel": "Quantity to add",
-    "addStock": "Add stock",
-    "cancel": "Cancel"
   },
   "delete": {
     "title": "Confirm delete?",

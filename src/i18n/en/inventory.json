@@ -50,5 +50,17 @@
     "cancel": "Cancel",
     "success": "Stock updated successfully",
     "error": "Failed to update stock"
+  },
+  "stockIn": {
+    "btn": "Stock in product",
+    "title": "Stock in",
+    "subtitle": "Add stock for any catalog product — including ones not stocked yet.",
+    "productLabel": "Product",
+    "productPlaceholder": "Choose a product…",
+    "newBadge": "No stock yet — this adds its first inventory record.",
+    "currentStock": "Current stock",
+    "qtyLabel": "Quantity to add",
+    "confirm": "Add stock",
+    "cancel": "Cancel"
   }
 }

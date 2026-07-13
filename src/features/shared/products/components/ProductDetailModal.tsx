@@ -5,7 +5,6 @@ import { X } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { cn } from '@/common/utils/cn';
 import type { Product } from '../types/products.types';
-import { useProduct } from '../hooks/useProducts';
 import { ProductThumb } from './ProductThumb';
 import { StatusBadge } from './StatusBadge';
 
@@ -18,11 +17,6 @@ interface ProductDetailModalProps {
 export function ProductDetailModal({ open, product, onClose }: ProductDetailModalProps) {
   const { t } = useI18n();
   const p = t.products;
-
-  const { data: detailData, isLoading: isLoadingDetail } = useProduct(
-    open && product ? product.id : null
-  );
-  const detail = detailData?.data ?? null;
 
   useEffect(() => {
     if (!open) return;
@@ -40,10 +34,6 @@ export function ProductDetailModal({ open, product, onClose }: ProductDetailModa
   const createdAt = new Date(product.created_at).toLocaleDateString();
 
   const rows: { label: string; value: string | null }[] = [
-    {
-      label: p.detail.currentQty,
-      value: isLoadingDetail ? null : String(detail?.current_quantity ?? 0),
-    },
     { label: p.detail.price, value: `ل.س ${Number(product.price).toFixed(2)}` },
     // cost_price is null when the backend hides it (shop user on warehouse product)
     ...(product.cost_price !== null

@@ -28,5 +28,4 @@ export { StatusBadge } from './components/StatusBadge';
 export { ProductsTableCard } from './components/ProductsTableCard';
 export { ProductFormModal } from './components/ProductFormModal';
 export { ProductDetailModal } from './components/ProductDetailModal';
-export { RestockModal } from './components/RestockModal';
 export { DeleteConfirmModal } from './components/DeleteConfirmModal';

@@ -3,7 +3,6 @@
 import {
   Search,
   Download,
-  PackagePlus,
   Eye,
   Pencil,
   Trash2,
@@ -109,7 +108,6 @@ interface ProductsTableCardProps {
   onAddProduct: () => void;
   onView: (p: Product) => void;
   onEdit: (p: Product) => void;
-  onRestock: (p: Product) => void;
   onDelete: (p: Product) => void;
 }
 
@@ -135,7 +133,6 @@ export function ProductsTableCard({
   onAddProduct,
   onView,
   onEdit,
-  onRestock,
   onDelete,
 }: ProductsTableCardProps) {
   const { t } = useI18n();
@@ -230,7 +227,6 @@ export function ProductsTableCard({
             p={p}
             onView={onView}
             onEdit={onEdit}
-            onRestock={onRestock}
             onDelete={onDelete}
           />
         ))
@@ -328,24 +324,16 @@ interface ProductRowProps {
   p: ProductsT;
   onView: (p: Product) => void;
   onEdit: (p: Product) => void;
-  onRestock: (p: Product) => void;
   onDelete: (p: Product) => void;
 }
 
-function ProductRow({ product, rowNum, p, onView, onEdit, onRestock, onDelete }: ProductRowProps) {
+function ProductRow({ product, rowNum, p, onView, onEdit, onDelete }: ProductRowProps) {
   const categoryName = product.category_name;
   const sourceLabel = p.toolbar.sources[product.source as ProductSource];
   const statusLabel = product.is_active ? p.toolbar.statuses.active : p.toolbar.statuses.inactive;
 
   const actions = (
     <div className="flex items-center gap-0.5 justify-end">
-      <IconBtn
-        onClick={() => onRestock(product)}
-        title={p.restock.title}
-        colorClass="text-success-700"
-      >
-        <PackagePlus size={15} />
-      </IconBtn>
       <IconBtn onClick={() => onView(product)} title={p.detail.title} colorClass="text-ink-600">
         <Eye size={15} />
       </IconBtn>
