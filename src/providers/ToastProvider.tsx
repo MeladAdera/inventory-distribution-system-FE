@@ -4,14 +4,20 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+
 interface Toast {
   id: string;
   message: string;
   type: 'success' | 'error';
+  action?: ToastAction;
 }
 
 interface ToastContextValue {
-  success: (message: string) => void;
+  success: (message: string, action?: ToastAction) => void;
   error: (message: string) => void;
 }
 
@@ -26,17 +32,23 @@ export function useToast() {
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const add = (message: string, type: Toast['type']) => {
+  const remove = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const add = (message: string, type: Toast['type'], action?: ToastAction) => {
     const id = Math.random().toString(36).slice(2);
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
+    setToasts((prev) => [...prev, { id, message, type, action }]);
+    // Actionable toasts linger a bit longer so the action is reachable
+    setTimeout(() => remove(id), action ? 6000 : 4000);
   };
 
   return (
     <ToastContext.Provider
-      value={{ success: (msg) => add(msg, 'success'), error: (msg) => add(msg, 'error') }}
+      value={{
+        success: (msg, action) => add(msg, 'success', action),
+        error: (msg) => add(msg, 'error'),
+      }}
     >
       {children}
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
@@ -54,6 +66,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <XCircle className="h-4 w-4 shrink-0" />
             )}
             {toast.message}
+            {toast.action && (
+              <button
+                onClick={() => {
+                  remove(toast.id);
+                  toast.action!.onClick();
+                }}
+                className="ms-1 shrink-0 font-bold underline underline-offset-2 hover:opacity-80"
+              >
+                {toast.action.label}
+              </button>
+            )}
           </div>
         ))}
       </div>

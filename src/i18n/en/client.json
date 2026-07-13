@@ -122,6 +122,7 @@
   "inventory": {
     "title": "My inventory",
     "subtitle": "Increase the displayed quantity from your own back-stock. When it runs out, order more from the supplier.",
+    "browseCatalog": "Browse catalog",
     "search": "Search category or product…",
     "saveChanges": "Save changes",
     "edited": "Edited",
@@ -356,6 +357,39 @@
       "Restock anything, anytime you need",
       "Your supplier is just a few taps away"
     ]
+  },
+  "catalog": {
+    "title": "Browse Catalog",
+    "subtitle": "Add warehouse products to your shop — they start out-of-stock, ready to reorder.",
+    "search": "Search products…",
+    "allChip": "All",
+    "productsCount": "products",
+    "loading": "Loading catalog…",
+    "errorMsg": "Failed to load the catalog. Please try again.",
+    "card": {
+      "add": "Add",
+      "adding": "Adding…",
+      "added": "Added",
+      "notInShop": "Not in your shop",
+      "inShopStock": "In your shop · {qty} in stock",
+      "inShopOut": "In your shop · out of stock"
+    },
+    "toast": {
+      "added": "Added “{name}” to your shop",
+      "setStock": "Set stock",
+      "stockSet": "Opening stock saved"
+    },
+    "sheet": {
+      "title": "Set opening stock",
+      "hint": "Already have some on the shelf? Enter how many you're starting with.",
+      "save": "Save opening stock",
+      "skip": "Skip — start at 0"
+    },
+    "empty": {
+      "noProducts": "The warehouse catalog is empty.",
+      "noMatch": "No products match your search.",
+      "clearSearch": "Clear search"
+    }
   },
   "sell": {
     "loading": "Loading products…",

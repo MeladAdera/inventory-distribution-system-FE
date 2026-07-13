@@ -33,6 +33,7 @@ export const ROUTES = {
   CLIENT_ROOT: '/client',
   CLIENT_DASHBOARD: '/client/dashboard',
   CLIENT_INVENTORY: '/client/inventory',
+  CLIENT_CATALOG: '/client/catalog',
   CLIENT_SELL: '/client/sell',
   CLIENT_PROFIT: '/client/profit',
 };

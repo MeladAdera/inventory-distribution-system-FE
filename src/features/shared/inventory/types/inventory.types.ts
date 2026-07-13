@@ -41,6 +41,12 @@ export interface AdjustInventoryInput {
   reason?: string;
 }
 
+export interface AddInventoryInput {
+  productId: number;
+  /** Optional opening balance; omit for a plain "track this product" add (starts at 0). */
+  quantity?: number;
+}
+
 export interface UpdateSalePriceInput {
   salePrice: number;
 }

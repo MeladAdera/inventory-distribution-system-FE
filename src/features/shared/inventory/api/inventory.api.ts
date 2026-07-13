@@ -2,6 +2,7 @@ import type { AxiosRequestConfig } from 'axios';
 import { apiClient } from '@/common/api';
 import type {
   StockInInput,
+  AddInventoryInput,
   AdjustInventoryInput,
   InventoryListParams,
   UpdateSalePriceInput,
@@ -20,6 +21,14 @@ export const inventoryApi = {
 
   getById: async (id: number) => {
     const response = await apiClient.get(`/inventory/${id}`);
+    return response.data;
+  },
+
+  // Shop-scoped (SHOP_OWNER / EMPLOYEE): registers a product on the caller's shop
+  // inventory without moving stock. Idempotent — POSTing an already-tracked product
+  // returns the existing row. 403 when the product isn't available to this shop.
+  add: async (data: AddInventoryInput) => {
+    const response = await apiClient.post('/inventory', data);
     return response.data;
   },
 

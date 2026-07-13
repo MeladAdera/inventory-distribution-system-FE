@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Package,
+  PackageSearch,
   Box,
   Plus,
   Loader2,
@@ -339,15 +340,24 @@ export function ClientInventoryPage() {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {/* Add category button — only in category grid view */}
+          {/* Browse warehouse catalog + Add category — only in category grid view */}
           {!selectedCatId && (
-            <button
-              onClick={() => setCatModal({ type: 'add' })}
-              className="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-lg border border-border bg-paper text-[13px] font-medium text-ink-700 hover:bg-sand-100 transition-colors"
-            >
-              <Plus size={15} />
-              {inv.categories.addBtn}
-            </button>
+            <>
+              <button
+                onClick={() => router.push('/client/catalog')}
+                className="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-lg border border-amber-300 bg-amber-50 text-[13px] font-medium text-amber-700 hover:bg-amber-100 transition-colors"
+              >
+                <PackageSearch size={15} />
+                {inv.browseCatalog}
+              </button>
+              <button
+                onClick={() => setCatModal({ type: 'add' })}
+                className="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-lg border border-border bg-paper text-[13px] font-medium text-ink-700 hover:bg-sand-100 transition-colors"
+              >
+                <Plus size={15} />
+                {inv.categories.addBtn}
+              </button>
+            </>
           )}
 
           {/* Save inventory changes button */}
@@ -380,6 +390,13 @@ export function ClientInventoryPage() {
           <div className="flex flex-col items-center py-16 gap-3 text-center">
             <Package size={32} className="text-ink-300" />
             <p className="text-[14px] text-ink-500">{inv.empty.noProducts}</p>
+            <button
+              onClick={() => router.push('/client/catalog')}
+              className="inline-flex items-center gap-1.5 h-10 px-4 rounded-lg border border-amber-300 bg-amber-50 text-[13px] font-medium text-amber-700 hover:bg-amber-100 transition-colors"
+            >
+              <PackageSearch size={15} />
+              {inv.browseCatalog}
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
