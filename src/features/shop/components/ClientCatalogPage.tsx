@@ -5,6 +5,7 @@ import { Search, Box, Loader2, AlertTriangle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
 import { getErrorMessage } from '@/common/utils/error.utils';
+import { getCategoryIcon } from '@/features/shared/categories/utils/categoryIcons';
 import { useCatalog } from '../hooks/useCatalog';
 import { CategoryChips } from './catalog/CategoryChips';
 import { CatalogProductCard } from './catalog/CatalogProductCard';
@@ -34,7 +35,7 @@ export function ClientCatalogPage() {
     inventoryId: number;
   } | null>(null);
 
-  const chipNames = categories.map((c) => c.name);
+  const chipCategories = categories.map((c) => ({ name: c.name, icon: c.icon }));
 
   const visibleCategories = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -133,7 +134,7 @@ export function ClientCatalogPage() {
       {!isEmpty && (
         <div className="mb-5">
           <CategoryChips
-            categories={chipNames}
+            categories={chipCategories}
             active={activeCategory}
             onSelect={setActiveCategory}
             allLabel={cat.allChip}
@@ -163,27 +164,33 @@ export function ClientCatalogPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-7">
-          {visibleCategories.map((category) => (
-            <section key={category.name}>
-              <div className="flex items-baseline justify-between mb-2.5 px-0.5">
-                <h2 className="text-[15px] font-semibold text-ink-700">{category.name}</h2>
-                <span className="text-[12px] text-ink-400 tabular-nums">
-                  {category.items.length} {cat.productsCount}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                {category.items.map((item) => (
-                  <CatalogProductCard
-                    key={item.id}
-                    item={item}
-                    isAdding={addingIds.has(item.id)}
-                    onAdd={() => handleAdd(item)}
-                    labels={cardLabels}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
+          {visibleCategories.map((category) => {
+            const SectionIcon = getCategoryIcon(category.icon);
+            return (
+              <section key={category.name}>
+                <div className="flex items-center justify-between mb-2.5 px-0.5">
+                  <h2 className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-ink-700">
+                    <SectionIcon size={15} className="text-ink-400 shrink-0" />
+                    {category.name}
+                  </h2>
+                  <span className="text-[12px] text-ink-400 tabular-nums">
+                    {category.items.length} {cat.productsCount}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                  {category.items.map((item) => (
+                    <CatalogProductCard
+                      key={item.id}
+                      item={item}
+                      isAdding={addingIds.has(item.id)}
+                      onAdd={() => handleAdd(item)}
+                      labels={cardLabels}
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
       )}
 

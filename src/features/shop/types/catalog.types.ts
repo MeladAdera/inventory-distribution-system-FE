@@ -14,5 +14,7 @@ export interface CatalogProduct extends Product {
 
 export interface CatalogCategory {
   name: string;
+  /** Lucide icon name from the products' category; null when unset. */
+  icon: string | null;
   items: CatalogProduct[];
 }

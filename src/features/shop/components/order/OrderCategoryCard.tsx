@@ -1,6 +1,6 @@
-import { Tag } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { Card, CardContent } from '@/common/components/ui/card';
+import { getCategoryIcon } from '@/features/shared/categories/utils/categoryIcons';
 import type { OrderableCategory } from '../../types/clientOrderProducts.types';
 
 const PALETTE = ['#FAEACB', '#F8EBD3', '#DDE6F3', '#DCEBE9', '#F6DDDB', '#F5EFE4'];
@@ -11,8 +11,17 @@ function resolveImageUrl(url: string) {
   return `${API_BASE}${url}`;
 }
 
-function CategoryBanner({ id, imageUrl }: { id: number; imageUrl: string | null }) {
+function CategoryBanner({
+  id,
+  imageUrl,
+  icon,
+}: {
+  id: number;
+  imageUrl: string | null;
+  icon: string | null;
+}) {
   const color = PALETTE[id % PALETTE.length];
+  const Icon = getCategoryIcon(icon);
   return (
     <div
       style={{ backgroundColor: color }}
@@ -21,7 +30,7 @@ function CategoryBanner({ id, imageUrl }: { id: number; imageUrl: string | null 
       {imageUrl ? (
         <img src={resolveImageUrl(imageUrl)} alt="" className="w-full h-full object-contain" />
       ) : (
-        <Tag size={36} className="text-ink-700 opacity-30" />
+        <Icon size={36} className="text-ink-700 opacity-30" />
       )}
     </div>
   );
@@ -52,7 +61,7 @@ export function OrderCategoryCard({
       )}
     >
       <div className="relative">
-        <CategoryBanner id={category.id} imageUrl={category.image_url} />
+        <CategoryBanner id={category.id} imageUrl={category.image_url} icon={category.icon} />
         {cartCount > 0 && (
           <span className="absolute top-3 inset-e-3 bg-amber-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm">
             {cartCount} {labels.addedBadge}

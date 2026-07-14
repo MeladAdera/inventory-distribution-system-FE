@@ -15,6 +15,8 @@ export interface Product {
   shop_name: string;
   category_id: number;
   category_name: string;
+  /** Lucide icon name of the product's category; null when uncategorized. */
+  category_icon: string | null;
   name: string;
   description: string | null;
   barcode: string | null;

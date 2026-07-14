@@ -8,6 +8,7 @@ import { useI18n } from '@/providers/I18nProvider';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import { cn } from '@/common/utils/cn';
 import { categorySchema } from '../validations/categories.schema';
+import { CATEGORY_ICONS, CATEGORY_ICON_NAMES } from '../utils/categoryIcons';
 import { CategoryThumb } from './CategoryThumb';
 import type { Category, CreateCategoryInput, UpdateCategoryInput } from '../types/categories.types';
 import type { z } from 'zod';
@@ -45,6 +46,7 @@ export function CategoryFormModal({
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isDeletingImage, setIsDeletingImage] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
 
   const {
     register,
@@ -61,9 +63,11 @@ export function CategoryFormModal({
     if (mode === 'edit' && category) {
       reset({ name: category.name });
       setPreviewUrl(category.image_url ?? null);
+      setSelectedIcon(category.icon ?? null);
     } else {
       reset({ name: '' });
       setPreviewUrl(null);
+      setSelectedIcon(null);
     }
     setPendingFile(null);
     setImageRemoved(false);
@@ -129,10 +133,12 @@ export function CategoryFormModal({
   const onSubmit = handleSubmit(async (data) => {
     setFormError(null);
     try {
+      // Omitting icon leaves the existing value unchanged on the backend.
+      const icon = selectedIcon ?? undefined;
       if (mode === 'edit' && category) {
-        await onEdit(category.id, { name: data.name });
+        await onEdit(category.id, { name: data.name, icon });
       } else {
-        const created = await onAdd({ name: data.name });
+        const created = await onAdd({ name: data.name, icon });
         if (pendingFile) {
           await onUploadImage(created.id, pendingFile);
         }
@@ -183,7 +189,12 @@ export function CategoryFormModal({
           {/* Image upload zone */}
           <div className="flex items-center gap-4 p-3.5 border border-dashed border-border rounded-lg bg-sand-100">
             <div className="relative shrink-0 group">
-              <CategoryThumb id={category?.id ?? 0} size={56} imageUrl={currentImageUrl} />
+              <CategoryThumb
+                id={category?.id ?? 0}
+                size={56}
+                imageUrl={currentImageUrl}
+                icon={selectedIcon}
+              />
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
@@ -255,6 +266,34 @@ export function CategoryFormModal({
               )}
             />
             {errors.name && <p className="text-xs text-danger-700">{c.form.errName}</p>}
+          </div>
+
+          {/* Icon picker */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-ink-600">{c.form.icon}</label>
+            <p className="text-[12px] text-ink-400 -mt-0.5">{c.form.iconHint}</p>
+            <div className="grid grid-cols-8 sm:grid-cols-10 gap-1.5 p-2.5 border border-border rounded-lg max-h-40 overflow-y-auto">
+              {CATEGORY_ICON_NAMES.map((name) => {
+                const Icon = CATEGORY_ICONS[name];
+                const active = selectedIcon === name;
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    title={name}
+                    onClick={() => setSelectedIcon(active ? null : name)}
+                    className={cn(
+                      'aspect-square rounded-lg flex items-center justify-center transition-colors',
+                      active
+                        ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-400'
+                        : 'text-ink-500 hover:bg-sand-100 hover:text-ink-700'
+                    )}
+                  >
+                    <Icon size={17} />
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </form>
 

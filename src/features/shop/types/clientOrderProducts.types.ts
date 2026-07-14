@@ -14,6 +14,7 @@ export interface OrderableProduct {
 export interface OrderableCategory {
   id: number;
   name: string;
+  icon: string | null;
   image_url: string | null;
   products: OrderableProduct[];
 }

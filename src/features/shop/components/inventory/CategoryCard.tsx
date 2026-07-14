@@ -36,7 +36,7 @@ export function CategoryCard({
       onClick={onClick}
       className="overflow-hidden cursor-pointer transition-all duration-180 hover:-translate-y-px hover:shadow-(--shadow-sm)"
     >
-      <CategoryBanner id={catId} imageUrl={cat.image_url} height="h-36" />
+      <CategoryBanner id={catId} imageUrl={cat.image_url} icon={cat.icon} height="h-36" />
 
       <CardContent className="p-4 flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">

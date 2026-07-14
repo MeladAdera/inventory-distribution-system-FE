@@ -57,6 +57,7 @@ export function useClientInventory() {
         grouped.set(categoryId, {
           id: String(categoryId),
           name: categoryName,
+          icon: catMap.get(categoryId)?.icon ?? null,
           image_url: catMap.get(categoryId)?.image_url ?? null,
           items: [],
         });

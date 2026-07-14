@@ -116,7 +116,13 @@ export function ClientInventoryPage() {
       .map((cat) => {
         const invCat = invMap.get(String(cat.id));
         return (
-          invCat ?? { id: String(cat.id), name: cat.name, image_url: cat.image_url, items: [] }
+          invCat ?? {
+            id: String(cat.id),
+            name: cat.name,
+            icon: cat.icon,
+            image_url: cat.image_url,
+            items: [],
+          }
         );
       });
   }, [rawCategories, invCategories, shopId]);

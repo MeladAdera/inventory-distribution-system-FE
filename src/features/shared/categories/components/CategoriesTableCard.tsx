@@ -203,7 +203,12 @@ function CategoryRow({ category, rowNum, c, onEdit, onDelete, locale }: Category
         <span className="font-mono text-xs text-ink-400">{rowNum}</span>
 
         <div className="flex items-center gap-3 min-w-0">
-          <CategoryThumb id={category.id} size={38} imageUrl={category.image_url} />
+          <CategoryThumb
+            id={category.id}
+            size={38}
+            imageUrl={category.image_url}
+            icon={category.icon}
+          />
           <span className="font-medium text-ink-900 truncate">{category.name}</span>
         </div>
 
@@ -214,7 +219,12 @@ function CategoryRow({ category, rowNum, c, onEdit, onDelete, locale }: Category
 
       {/* Mobile card */}
       <div className="md:hidden flex flex-col">
-        <CategoryBanner id={category.id} imageUrl={category.image_url} height="h-36" />
+        <CategoryBanner
+          id={category.id}
+          imageUrl={category.image_url}
+          icon={category.icon}
+          height="h-36"
+        />
         <div className="p-4 flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="font-semibold text-ink-900 text-[15px] truncate">{category.name}</p>

@@ -24,6 +24,7 @@ export interface EnrichedInventoryItem {
 export interface InventoryCategory {
   id: string;
   name: string;
+  icon: string | null;
   image_url: string | null;
   items: EnrichedInventoryItem[];
 }

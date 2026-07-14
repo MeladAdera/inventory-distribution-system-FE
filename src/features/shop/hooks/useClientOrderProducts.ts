@@ -72,6 +72,7 @@ export function useClientOrderProducts() {
         grouped.set(product.category_id, {
           id: product.category_id,
           name: product.category_name,
+          icon: catMap.get(product.category_id)?.icon ?? null,
           image_url: catMap.get(product.category_id)?.image_url ?? null,
           products: [],
         });

@@ -95,6 +95,8 @@ export function useCatalog() {
     });
     const cats: CatalogCategory[] = Array.from(grouped, ([name, prods]) => ({
       name,
+      // category_icon travels on every product row, so no separate category fetch.
+      icon: prods[0].category_icon ?? null,
       items: prods,
     }));
     return { categories: cats, isEmpty: items.length === 0 };
