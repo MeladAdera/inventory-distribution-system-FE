@@ -13,8 +13,8 @@
     ]
   },
   "kpi": {
-    "totalProducts": "Total products",
-    "totalProductsSub": "Across all categories",
+    "totalProducts": "Orderable products",
+    "totalProductsSub": "{n} more catalog-only items",
     "totalClients": "Total shops",
     "totalClientsSub": "Active branches",
     "stockValue": "Pending orders",

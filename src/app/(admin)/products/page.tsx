@@ -40,6 +40,7 @@ export default function ProductsPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [shopNameFilter, setShopNameFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [orderableFilter, setOrderableFilter] = useState(''); // '' | 'true' | 'false'
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
 
@@ -55,7 +56,7 @@ export default function ProductsPage() {
   // Reset to page 1 when non-search filters change
   useEffect(() => {
     setPage(1);
-  }, [shopNameFilter, categoryFilter]);
+  }, [shopNameFilter, categoryFilter, orderableFilter]);
 
   const { user } = useAuthStore();
   const isAdmin = user?.role === UserRole.WAREHOUSE_ADMIN;
@@ -75,6 +76,7 @@ export default function ProductsPage() {
     search: debouncedSearch || undefined,
     shop_name: shopNameFilter || undefined,
     category_name: categoryFilter || undefined,
+    is_orderable: orderableFilter === '' ? undefined : orderableFilter === 'true',
   });
 
   const categoryShopId = isAdmin ? user?.shopId : undefined;
@@ -146,12 +148,14 @@ export default function ProductsPage() {
         search={search}
         shopNameFilter={shopNameFilter}
         categoryFilter={categoryFilter}
+        orderableFilter={orderableFilter}
         categories={categories}
         shops={shopsData?.data ?? []}
         isAdmin={isAdmin}
         onSearchChange={setSearch}
         onShopNameChange={setShopNameFilter}
         onCategoryChange={setCategoryFilter}
+        onOrderableChange={setOrderableFilter}
         onPageChange={setPage}
         onAddProduct={() => setModal({ type: 'add' })}
         onView={(prod) => setModal({ type: 'view', product: prod })}
@@ -170,6 +174,7 @@ export default function ProductsPage() {
         onEdit={handleEdit}
         onUploadImage={handleUploadImage}
         onDeleteImage={handleDeleteImage}
+        showOrderableFlag
       />
       <ProductDetailModal
         open={modal.type === 'view'}

@@ -7,6 +7,7 @@ import { inventoryApi } from '@/features/shared/inventory/api/inventory.api';
 import { ordersApi } from '@/features/shared/orders/api/orders.api';
 import { categoriesApi } from '@/features/shared/categories/api/categories.api';
 import { useAuthStore } from '@/features/auth/store/authStore';
+import { isAxiosError } from '@/common/utils/error.utils';
 import { ProductSource, StockStatus } from '@/features/shared/products/types/products.types';
 import type { Product } from '@/features/shared/products/types/products.types';
 import type { InventoryItem } from '@/features/shared/inventory/types/inventory.types';
@@ -24,9 +25,12 @@ export function useClientOrderProducts() {
   const queryClient = useQueryClient();
   const shopId = useAuthStore((s) => s.user?.shopId);
 
+  // is_orderable filters out catalog-only listings — the warehouse can only
+  // fulfill orders for products it actually stocks.
   const productsQuery = useQuery({
     queryKey: ['order-products'],
-    queryFn: () => productsApi.list({ source: ProductSource.WAREHOUSE, limit: 100 }),
+    queryFn: () =>
+      productsApi.list({ source: ProductSource.WAREHOUSE, is_orderable: true, limit: 100 }),
   });
 
   // Same query key + params as useClientInventory — one shared cache entry for
@@ -88,6 +92,13 @@ export function useClientOrderProducts() {
     mutationFn: (data: CreateOrderInput) => ordersApi.create(data),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['client-orders'], refetchType: 'all' }),
+    onError: (err) => {
+      // A 400 (not orderable / out of stock / insufficient stock) means the
+      // cached picker list no longer matches the warehouse — refetch it.
+      if (isAxiosError(err) && err.response?.status === 400) {
+        queryClient.invalidateQueries({ queryKey: ['order-products'] });
+      }
+    },
   });
 
   return {

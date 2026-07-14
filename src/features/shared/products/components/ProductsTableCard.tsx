@@ -98,12 +98,15 @@ interface ProductsTableCardProps {
   search: string;
   shopNameFilter: string;
   categoryFilter: string;
+  /** '' = all, 'true' = orderable only, 'false' = catalog-only */
+  orderableFilter: string;
   categories: Category[];
   shops: Shop[];
   isAdmin: boolean;
   onSearchChange: (v: string) => void;
   onShopNameChange: (v: string) => void;
   onCategoryChange: (v: string) => void;
+  onOrderableChange: (v: string) => void;
   onPageChange: (p: number) => void;
   onAddProduct: () => void;
   onView: (p: Product) => void;
@@ -123,12 +126,14 @@ export function ProductsTableCard({
   search,
   shopNameFilter,
   categoryFilter,
+  orderableFilter,
   categories,
   shops,
   isAdmin,
   onSearchChange,
   onShopNameChange,
   onCategoryChange,
+  onOrderableChange,
   onPageChange,
   onAddProduct,
   onView,
@@ -173,6 +178,17 @@ export function ProductsTableCard({
               {cat.name}
             </option>
           ))}
+        </select>
+
+        {/* Orderable filter */}
+        <select
+          value={orderableFilter}
+          onChange={(e) => onOrderableChange(e.target.value)}
+          className={selectCls}
+        >
+          <option value="">{p.toolbar.allAvailability}</option>
+          <option value="true">{p.toolbar.orderable}</option>
+          <option value="false">{p.toolbar.catalogOnly}</option>
         </select>
 
         {/* Shop filter (admin only) */}
@@ -316,6 +332,16 @@ function EmptyState({ onAdd, p }: { onAdd: () => void; p: ProductsT }) {
   );
 }
 
+// ── Catalog-only pill ──────────────────────────────────────────────────────
+
+function CatalogOnlyPill({ label }: { label: string }) {
+  return (
+    <span className="text-[11px] font-medium px-1.5 py-0.5 rounded-md bg-sand-100 border border-border text-ink-500 whitespace-nowrap shrink-0">
+      {label}
+    </span>
+  );
+}
+
 // ── Table row ──────────────────────────────────────────────────────────────
 
 interface ProductRowProps {
@@ -362,6 +388,7 @@ function ProductRow({ product, rowNum, p, onView, onEdit, onDelete }: ProductRow
         <div className="flex items-center gap-3 min-w-0">
           <ProductThumb id={product.id} size={38} imageUrl={product.image_url} />
           <span className="font-medium text-ink-900 truncate">{product.name}</span>
+          {!product.is_orderable && <CatalogOnlyPill label={p.table.catalogOnly} />}
         </div>
 
         <span className="font-mono text-xs text-ink-500 whitespace-nowrap">
@@ -387,7 +414,10 @@ function ProductRow({ product, rowNum, p, onView, onEdit, onDelete }: ProductRow
         <div className="p-4 flex flex-col gap-2.5">
           <div className="flex items-start justify-between gap-2">
             <p className="font-semibold text-ink-900 text-[15px] leading-snug">{product.name}</p>
-            <StatusBadge isActive={product.is_active} label={statusLabel} />
+            <div className="flex items-center gap-1.5 shrink-0">
+              {!product.is_orderable && <CatalogOnlyPill label={p.table.catalogOnly} />}
+              <StatusBadge isActive={product.is_active} label={statusLabel} />
+            </div>
           </div>
           <div className="flex flex-wrap gap-x-5 gap-y-1 text-[13px]">
             <span className="text-ink-500">

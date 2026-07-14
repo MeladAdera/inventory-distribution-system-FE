@@ -32,6 +32,7 @@ export default function DashboardPage() {
 
   const {
     totalProducts,
+    catalogProducts,
     totalShops,
     pendingOrders,
     lowStockItems,
@@ -59,7 +60,7 @@ export default function DashboardPage() {
       label: d.kpi.totalProducts,
       value: val(totalProducts),
       trend: undefined,
-      sub: d.kpi.totalProductsSub,
+      sub: d.kpi.totalProductsSub.replace('{n}', isLoading ? '—' : String(catalogProducts)),
       clickable: true,
       onClick: () => router.push('/products'),
     },

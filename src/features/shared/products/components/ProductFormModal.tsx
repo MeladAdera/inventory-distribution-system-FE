@@ -7,7 +7,11 @@ import { X, Check, Camera, Loader2, Trash2, AlertCircle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import { cn } from '@/common/utils/cn';
-import { productFormSchema, type ProductFormData } from '../validations/products.schema';
+import {
+  productFormSchema,
+  productFormAddSchema,
+  type ProductFormData,
+} from '../validations/products.schema';
 import type { Product, CreateProductInput, UpdateProductInput } from '../types/products.types';
 import type { Category } from '@/features/shared/categories/types/categories.types';
 import { ProductThumb } from './ProductThumb';
@@ -25,6 +29,8 @@ interface ProductFormModalProps {
   onDeleteImage: (id: number) => Promise<void>;
   onStockIn?: (id: number, quantity: number) => Promise<void>;
   onSuccess?: () => void;
+  /** Admin-only: show the "available to order from warehouse" toggle. */
+  showOrderableFlag?: boolean;
 }
 
 export function ProductFormModal({
@@ -40,6 +46,7 @@ export function ProductFormModal({
   onDeleteImage,
   onStockIn,
   onSuccess,
+  showOrderableFlag = false,
 }: ProductFormModalProps) {
   const { t } = useI18n();
   const p = t.products;
@@ -52,6 +59,12 @@ export function ProductFormModal({
   const [isDeletingImage, setIsDeletingImage] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
+  // Selling price is always editable when adding. On edit, the warehouse admin
+  // may still update the catalog's own (wholesale) price — but shop owners'
+  // local products route selling price through per-shop inventory.sale_price
+  // instead (edited on the inventory card), so it stays hidden for them.
+  const showPrice = mode === 'add' || showOrderableFlag;
+
   const {
     register,
     handleSubmit,
@@ -59,7 +72,7 @@ export function ProductFormModal({
     watch,
     formState: { errors, isSubmitting },
   } = useForm<ProductFormData>({
-    resolver: zodResolver(productFormSchema),
+    resolver: zodResolver(showPrice ? productFormAddSchema : productFormSchema),
     defaultValues: {
       name: '',
       description: '',
@@ -82,6 +95,7 @@ export function ProductFormModal({
         price: Number(product.price),
         cost_price: product.cost_price !== null ? Number(product.cost_price) : undefined,
         category_id: product.category_id,
+        is_orderable: product.is_orderable,
       });
       setPreviewUrl(product.image_url ?? null);
     } else {
@@ -91,6 +105,7 @@ export function ProductFormModal({
         barcode: '',
         price: 0,
         category_id: defaultCategoryId ?? 0,
+        is_orderable: true,
       });
       setPreviewUrl(null);
     }
@@ -162,19 +177,23 @@ export function ProductFormModal({
         await onEdit(product.id, {
           name: data.name,
           description: data.description,
-          // Selling price is now the per-shop inventory.sale_price (edited on the card),
-          // so product edit no longer touches price.
-          // Only send cost_price when the field was visible (non-null from API)
+          // Only sent when the field was visible: price for admins (see
+          // showPrice), cost_price when the API returned it (non-null).
+          ...(showPrice && { price: data.price }),
           ...(product.cost_price !== null && { cost_price: data.cost_price }),
+          ...(showOrderableFlag && { is_orderable: data.is_orderable }),
         });
       } else {
         const created = await onAdd({
           name: data.name,
           description: data.description || undefined,
           barcode: data.barcode || undefined,
-          price: data.price,
+          // Guaranteed present: this branch only runs in 'add' mode, validated
+          // by productFormAddSchema (price required + positive there).
+          price: data.price!,
           cost_price: data.cost_price,
           category_id: data.category_id,
+          ...(showOrderableFlag && { is_orderable: data.is_orderable }),
         });
         if (pendingFile) {
           await onUploadImage(created.id, pendingFile);
@@ -193,9 +212,6 @@ export function ProductFormModal({
   // Hide the cost input when the API returned null (warehouse margin is
   // private to shop users) — an empty visible input would overwrite it with 0.
   const showCostPrice = mode === 'add' || product?.cost_price != null;
-  // Price (products.price) is only the catalog seed default — set at creation.
-  // Selling price is edited per-shop on the inventory card, so hide price on edit.
-  const showPrice = mode === 'add';
   const showInitialQty = mode === 'add' && !!onStockIn;
   const priceFieldCount = (showPrice ? 1 : 0) + (showCostPrice ? 1 : 0) + (showInitialQty ? 1 : 0);
 
@@ -350,6 +366,23 @@ export function ProductFormModal({
               className={cn(ipt(false), 'min-h-18 resize-y h-auto py-2')}
             />
           </Field>
+
+          {/* Orderable flag — admin only */}
+          {showOrderableFlag && (
+            <label className="flex items-start gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                {...register('is_orderable')}
+                className="mt-0.5 w-4 h-4 rounded border-border accent-amber-600 shrink-0"
+              />
+              <span>
+                <span className="block text-[13px] font-medium text-ink-700">
+                  {p.form.orderable}
+                </span>
+                <span className="block text-[12px] text-ink-400">{p.form.orderableHint}</span>
+              </span>
+            </label>
+          )}
 
           {/* Price + Buying price + Initial quantity row */}
           <div className={cn('grid gap-4', priceFieldCount >= 2 ? 'grid-cols-2' : 'grid-cols-1')}>

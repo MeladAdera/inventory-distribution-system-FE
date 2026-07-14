@@ -22,9 +22,17 @@ function extractShopsTotal(data: unknown): number {
 }
 
 export function useDashboardStats() {
+  // Orderable = products the warehouse actually stocks/fulfills; catalog-only
+  // templates are counted separately so the headline number stays honest.
   const productsQ = useQuery({
-    queryKey: ['dashboard', 'products-total'],
-    queryFn: () => productsApi.list({ limit: 1 }),
+    queryKey: ['dashboard', 'products-total', { is_orderable: true }],
+    queryFn: () => productsApi.list({ is_orderable: true, limit: 1 }),
+    staleTime: STALE,
+  });
+
+  const catalogQ = useQuery({
+    queryKey: ['dashboard', 'products-total', { is_orderable: false }],
+    queryFn: () => productsApi.list({ is_orderable: false, limit: 1 }),
     staleTime: STALE,
   });
 
@@ -60,6 +68,7 @@ export function useDashboardStats() {
 
   return {
     totalProducts: productsQ.data?.data?.total ?? 0,
+    catalogProducts: catalogQ.data?.data?.total ?? 0,
     totalShops: extractShopsTotal(shopsQ.data),
     pendingOrders: pendingQ.data?.data?.total ?? 0,
     lowStockItems: lowStockQ.data?.data?.total ?? 0,
@@ -67,6 +76,7 @@ export function useDashboardStats() {
     completedOrders: completedQ.data?.data?.total ?? 0,
     isLoading:
       productsQ.isLoading ||
+      catalogQ.isLoading ||
       shopsQ.isLoading ||
       pendingQ.isLoading ||
       lowStockQ.isLoading ||

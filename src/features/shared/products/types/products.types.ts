@@ -26,6 +26,8 @@ export interface Product {
   source: ProductSource;
   is_global: boolean;
   is_active: boolean;
+  /** false = catalog-only listing (no real warehouse stock); cannot be ordered via POST /orders. */
+  is_orderable: boolean;
   image_url: string | null;
   created_at: string;
   updated_at: string;
@@ -43,6 +45,7 @@ export interface ProductListParams {
   shop_id?: number;
   shop_name?: string;
   is_active?: boolean;
+  is_orderable?: boolean;
   stock_status?: StockStatus;
   search?: string; // case-insensitive, matches name or barcode
 }
@@ -54,6 +57,7 @@ export interface CreateProductInput {
   price: number;
   cost_price?: number;
   category_id: number;
+  is_orderable?: boolean;
 }
 
 export interface UpdateProductInput {
@@ -63,4 +67,5 @@ export interface UpdateProductInput {
   price?: number;
   cost_price?: number;
   category_id?: number;
+  is_orderable?: boolean;
 }

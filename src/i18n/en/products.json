@@ -11,6 +11,9 @@
     "allSources": "All sources",
     "allShops": "All shops",
     "allStatuses": "All statuses",
+    "allAvailability": "All availability",
+    "orderable": "Orderable",
+    "catalogOnly": "Catalog only",
     "export": "Export",
     "sources": {
       "WAREHOUSE": "Warehouse",
@@ -29,7 +32,8 @@
     "price": "Price",
     "source": "Source",
     "status": "Status",
-    "actions": "Actions"
+    "actions": "Actions",
+    "catalogOnly": "Catalog only"
   },
   "emptyState": {
     "title": "No matching results",
@@ -56,6 +60,8 @@
     "costPrice": "Buying price (SYP)",
     "costPricePlaceholder": "0.00",
     "initialQty": "Initial quantity",
+    "orderable": "Available to order from warehouse",
+    "orderableHint": "Off = catalog-only listing. Shops can add it to their inventory but can't order it from the warehouse.",
     "submitError": "Something went wrong. Please try again.",
     "errName": "Name must be at least 3 characters",
     "errPrice": "Price must be greater than 0",

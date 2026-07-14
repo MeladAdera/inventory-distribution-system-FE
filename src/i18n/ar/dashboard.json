@@ -13,8 +13,8 @@
     ]
   },
   "kpi": {
-    "totalProducts": "إجمالي المنتجات",
-    "totalProductsSub": "عبر جميع الفئات",
+    "totalProducts": "منتجات متاحة للطلب",
+    "totalProductsSub": "{n} منتج كتالوج فقط إضافي",
     "totalClients": "إجمالي الفروع",
     "totalClientsSub": "فروع نشطة",
     "stockValue": "طلبات معلقة",

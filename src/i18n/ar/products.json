@@ -11,6 +11,9 @@
     "allSources": "كل المصادر",
     "allShops": "كل المتاجر",
     "allStatuses": "كل الحالات",
+    "allAvailability": "كل حالات التوفر",
+    "orderable": "متاح للطلب",
+    "catalogOnly": "كتالوج فقط",
     "export": "تصدير",
     "sources": {
       "WAREHOUSE": "المستودع",
@@ -29,7 +32,8 @@
     "price": "السعر",
     "source": "المصدر",
     "status": "الحالة",
-    "actions": "إجراءات"
+    "actions": "إجراءات",
+    "catalogOnly": "كتالوج فقط"
   },
   "emptyState": {
     "title": "لا توجد نتائج مطابقة",
@@ -56,6 +60,8 @@
     "costPrice": "سعر الشراء (ل.س)",
     "costPricePlaceholder": "0.00",
     "initialQty": "الكمية الابتدائية",
+    "orderable": "متاح للطلب من المستودع",
+    "orderableHint": "عند الإيقاف: منتج كتالوج فقط — يمكن للمحلات إضافته إلى مخزونها لكن لا يمكنها طلبه من المستودع.",
     "submitError": "حدث خطأ ما. يرجى المحاولة مجدداً.",
     "errName": "الاسم يجب أن يكون 3 أحرف على الأقل",
     "errPrice": "يجب أن يكون السعر أكبر من صفر",
