@@ -41,6 +41,7 @@ docs/
 │       ├── client-portal-layout.md
 │       ├── client-dashboard.md
 │       ├── client-inventory.md
+│       ├── client-catalog.md
 │       └── ...
 └── api/
     └── authentication.md
@@ -103,8 +104,9 @@ Check `docs/api/` folder:
 | Client Dashboard | [client-dashboard.md](features/client/client-dashboard.md) | ✅ CLIENT-002 Complete (mock data) |
 | Client Inventory | [client-inventory.md](features/client/client-inventory.md) | ✅ CLIENT-003 Complete (mock data) |
 | Offline PWA (Client Inventory) | [offline-pwa.md](features/offline-pwa.md) | ✅ Implemented — device/DevTools verification pending |
-| Order Products | — | ⬜ CLIENT-004 Not started |
-| My Orders | — | ⬜ CLIENT-005 Not started |
+| Browse Catalog | [client-catalog.md](features/client/client-catalog.md) | ✅ Complete — API integrated |
+| Order Products | [client-order.md](features/client/client-order.md) | ✅ CLIENT-004 Complete — API integrated |
+| My Orders | [client-orders.md](features/client/client-orders.md) | ✅ CLIENT-005 Complete — API integrated |
 
 ### API Documentation
 | Topic | Document | Status |
