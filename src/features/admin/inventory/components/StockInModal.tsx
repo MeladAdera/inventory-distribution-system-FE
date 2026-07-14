@@ -1,13 +1,20 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { X, Plus, Minus, PackagePlus } from 'lucide-react';
+import { AlertTriangle, X, Plus, Minus, PackagePlus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { Button } from '@/common/components/ui/button';
 import { Input } from '@/common/components/ui/input';
 import { Card, CardContent } from '@/common/components/ui/card';
+import { formatMoney } from '@/common/utils/money';
 import type { Product } from '@/features/shared/products/types/products.types';
 import type { InventoryItem } from '@/features/shared/inventory/types/inventory.types';
+import {
+  COST_DEVIATION_WARN,
+  parseCost,
+  defaultCostInput,
+  blendedAvg,
+} from '../utils/inventoryCost';
 
 interface Props {
   open: boolean;
@@ -16,7 +23,7 @@ interface Props {
   /** Existing inventory rows, to show current stock for the picked product. */
   items: InventoryItem[];
   onClose: () => void;
-  onConfirm: (productId: number, qty: number) => Promise<void>;
+  onConfirm: (productId: number, qty: number, unitCost?: number) => Promise<void>;
 }
 
 export function StockInModal({ open, products, items, onClose, onConfirm }: Props) {
@@ -25,12 +32,14 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
 
   const [productId, setProductId] = useState<number | ''>('');
   const [qty, setQty] = useState(1);
+  const [costInput, setCostInput] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (open) {
       setProductId('');
       setQty(1);
+      setCostInput('');
     }
   }, [open]);
 
@@ -44,11 +53,26 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
   const selectedRow = productId === '' ? undefined : rowByProduct.get(productId);
   const isNew = productId !== '' && !selectedRow;
 
+  const oldQty = selectedRow?.current_quantity ?? 0;
+  const oldAvg = Number(selectedRow?.avg_cost);
+  const hasOldAvg = Number.isFinite(oldAvg) && oldAvg > 0;
+  const addCost = parseCost(costInput);
+  const hasCost = !Number.isNaN(addCost) && addCost >= 0;
+  const newAvg = hasCost ? blendedAvg(oldQty, oldAvg, qty, addCost) : oldAvg;
+  const deviates =
+    hasCost && hasOldAvg && Math.abs(addCost - oldAvg) / oldAvg > COST_DEVIATION_WARN;
+
+  function handleProductChange(id: number | '') {
+    setProductId(id);
+    setCostInput(defaultCostInput(id === '' ? undefined : rowByProduct.get(id)));
+  }
+
   async function handleConfirm() {
     if (productId === '' || qty < 1) return;
     setLoading(true);
     try {
-      await onConfirm(productId, qty);
+      const cost = parseCost(costInput);
+      await onConfirm(productId, qty, Number.isNaN(cost) ? undefined : cost);
       onClose();
     } finally {
       setLoading(false);
@@ -84,7 +108,9 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
             <label className="block text-sm font-medium text-ink-700 mb-2">{si.productLabel}</label>
             <select
               value={productId}
-              onChange={(e) => setProductId(e.target.value === '' ? '' : Number(e.target.value))}
+              onChange={(e) =>
+                handleProductChange(e.target.value === '' ? '' : Number(e.target.value))
+              }
               className="w-full h-10 border border-border rounded-lg bg-paper text-[13px] text-ink-800 px-3 focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-50 cursor-pointer"
             >
               <option value="">{si.productPlaceholder}</option>
@@ -141,6 +167,38 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
               </Button>
             </div>
           </div>
+
+          {/* Unit cost + blended-average preview */}
+          {productId !== '' && (
+            <div>
+              <label className="block text-sm font-medium text-ink-700 mb-2">
+                {si.unitCostLabel}
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                inputMode="decimal"
+                dir="ltr"
+                value={costInput}
+                onChange={(e) => setCostInput(e.target.value)}
+                placeholder="0.00"
+                className="w-full h-10 px-3 text-[13px] font-mono text-ink-900 bg-page border border-border rounded-lg outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              />
+              {(hasCost || hasOldAvg) && (
+                <p className="mt-1.5 text-[12px] font-mono text-ink-400">
+                  {si.avgCostLabel}: {hasOldAvg ? `${formatMoney(oldAvg)} → ` : ''}
+                  <span className="text-ink-700 font-medium">{formatMoney(newAvg)}</span>
+                </p>
+              )}
+              {deviates && (
+                <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-amber-700">
+                  <AlertTriangle size={12} className="shrink-0" />
+                  <span>{si.costWarning}</span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3">

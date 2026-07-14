@@ -35,18 +35,18 @@ export function InventoryPage() {
   const [restockItem, setRestockItem] = useState<InventoryItem | null>(null);
   const [stockInOpen, setStockInOpen] = useState(false);
 
-  async function handleRestock(item: InventoryItem, qty: number) {
+  async function handleRestock(item: InventoryItem, qty: number, unitCost?: number) {
     try {
-      await stockIn({ productId: item.product_id, quantity: qty });
+      await stockIn({ productId: item.product_id, quantity: qty, unitCost });
       toast.success(iv.restock.success);
     } catch (err) {
       toast.error(getErrorMessage(err));
     }
   }
 
-  async function handleStockIn(productId: number, qty: number) {
+  async function handleStockIn(productId: number, qty: number, unitCost?: number) {
     try {
-      await stockIn({ productId, quantity: qty });
+      await stockIn({ productId, quantity: qty, unitCost });
       toast.success(iv.restock.success);
     } catch (err) {
       toast.error(getErrorMessage(err));

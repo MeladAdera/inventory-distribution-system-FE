@@ -46,6 +46,9 @@
     "subtitle": "Add units to \"{name}\"",
     "currentStock": "Current stock",
     "label": "Quantity to add",
+    "unitCostLabel": "Unit cost",
+    "avgCostLabel": "Avg cost",
+    "costWarning": "This price is very different from the current average cost. Please double-check it.",
     "confirm": "Add Stock",
     "cancel": "Cancel",
     "success": "Stock updated successfully",
@@ -60,6 +63,9 @@
     "newBadge": "No stock yet — this adds its first inventory record.",
     "currentStock": "Current stock",
     "qtyLabel": "Quantity to add",
+    "unitCostLabel": "Unit cost",
+    "avgCostLabel": "Avg cost",
+    "costWarning": "This price is very different from the current average cost. Please double-check it.",
     "confirm": "Add stock",
     "cancel": "Cancel"
   }

@@ -1,18 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Plus, Minus } from 'lucide-react';
+import { AlertTriangle, X, Plus, Minus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { Button } from '@/common/components/ui/button';
 import { Input } from '@/common/components/ui/input';
 import { Card, CardContent } from '@/common/components/ui/card';
+import { formatMoney } from '@/common/utils/money';
 import type { InventoryItem } from '@/features/shared/inventory/types/inventory.types';
+import {
+  COST_DEVIATION_WARN,
+  parseCost,
+  defaultCostInput,
+  blendedAvg,
+} from '../utils/inventoryCost';
 
 interface Props {
   open: boolean;
   item: InventoryItem | null;
   onClose: () => void;
-  onConfirm: (item: InventoryItem, qty: number) => Promise<void>;
+  onConfirm: (item: InventoryItem, qty: number, unitCost?: number) => Promise<void>;
 }
 
 export function InventoryRestockModal({ open, item, onClose, onConfirm }: Props) {
@@ -20,21 +27,35 @@ export function InventoryRestockModal({ open, item, onClose, onConfirm }: Props)
   const iv = t.inventory.restock;
 
   const [qty, setQty] = useState(1);
+  const [costInput, setCostInput] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (open) setQty(1);
-  }, [open]);
+    if (open) {
+      setQty(1);
+      setCostInput(defaultCostInput(item ?? undefined));
+    }
+  }, [open, item]);
 
   if (!open || !item) return null;
 
   const name = item.product_name ?? `Product ${item.product_id}`;
 
+  const oldQty = item.current_quantity;
+  const oldAvg = Number(item.avg_cost);
+  const hasOldAvg = Number.isFinite(oldAvg) && oldAvg > 0;
+  const addCost = parseCost(costInput);
+  const hasCost = !Number.isNaN(addCost) && addCost >= 0;
+  const newAvg = hasCost ? blendedAvg(oldQty, oldAvg, qty, addCost) : oldAvg;
+  const deviates =
+    hasCost && hasOldAvg && Math.abs(addCost - oldAvg) / oldAvg > COST_DEVIATION_WARN;
+
   async function handleConfirm() {
     if (!item || qty < 1) return;
     setLoading(true);
     try {
-      await onConfirm(item, qty);
+      const cost = parseCost(costInput);
+      await onConfirm(item, qty, Number.isNaN(cost) ? undefined : cost);
       onClose();
     } finally {
       setLoading(false);
@@ -102,6 +123,36 @@ export function InventoryRestockModal({ open, item, onClose, onConfirm }: Props)
                 <Plus size={14} />
               </Button>
             </div>
+          </div>
+
+          {/* Unit cost + blended-average preview */}
+          <div>
+            <label className="block text-sm font-medium text-ink-700 mb-2">
+              {iv.unitCostLabel}
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              inputMode="decimal"
+              dir="ltr"
+              value={costInput}
+              onChange={(e) => setCostInput(e.target.value)}
+              placeholder="0.00"
+              className="w-full h-10 px-3 text-[13px] font-mono text-ink-900 bg-page border border-border rounded-lg outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            />
+            {(hasCost || hasOldAvg) && (
+              <p className="mt-1.5 text-[12px] font-mono text-ink-400">
+                {iv.avgCostLabel}: {hasOldAvg ? `${formatMoney(oldAvg)} → ` : ''}
+                <span className="text-ink-700 font-medium">{formatMoney(newAvg)}</span>
+              </p>
+            )}
+            {deviates && (
+              <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-amber-700">
+                <AlertTriangle size={12} className="shrink-0" />
+                <span>{iv.costWarning}</span>
+              </div>
+            )}
           </div>
 
           {/* Actions */}
