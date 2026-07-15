@@ -224,6 +224,7 @@ export function ClientSellPage() {
                   qty={cart[item.id] ?? 0}
                   onTap={() => handleTap(item.id, item.current_quantity)}
                   labels={tileLabels}
+                  categoryIcon={selectedCategory.icon}
                 />
               ))}
             </div>

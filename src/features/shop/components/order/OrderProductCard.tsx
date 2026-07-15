@@ -18,9 +18,17 @@ interface OrderProductCardProps {
     statusOut: string;
     unitPrice: string;
   };
+  /** Lucide icon name from the product's category; shown as a placeholder when there's no photo. */
+  categoryIcon?: string | null;
 }
 
-export function OrderProductCard({ product, qty, onQty, labels }: OrderProductCardProps) {
+export function OrderProductCard({
+  product,
+  qty,
+  onQty,
+  labels,
+  categoryIcon,
+}: OrderProductCardProps) {
   const inCart = qty > 0;
 
   return (
@@ -33,7 +41,12 @@ export function OrderProductCard({ product, qty, onQty, labels }: OrderProductCa
       )}
     >
       <div className="relative">
-        <ProductBanner id={product.id} imageUrl={product.image_url} height="h-32" />
+        <ProductBanner
+          id={product.id}
+          imageUrl={product.image_url}
+          height="h-32"
+          categoryIcon={categoryIcon}
+        />
         {inCart && (
           <span className="absolute top-2.5 inset-e-2.5 bg-amber-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm">
             {labels.addedToOrder}

@@ -499,6 +499,7 @@ export function ClientInventoryPage() {
                     delta={changes[item.id] ?? 0}
                     onDelta={(v) => handleDelta(item.id, v)}
                     syncStatus={itemStatus.get(item.id)}
+                    categoryIcon={selectedCat.icon}
                     labels={{
                       currentQty: inv.currentQty,
                       updateQty: inv.updateQty,

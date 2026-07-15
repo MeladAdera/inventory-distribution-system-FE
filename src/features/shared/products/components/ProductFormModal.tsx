@@ -198,8 +198,11 @@ export function ProductFormModal({
         if (pendingFile) {
           await onUploadImage(created.id, pendingFile);
         }
-        if (onStockIn) {
-          await onStockIn(created.id, data.initialQuantity ?? 0);
+        // Backend rejects a stock-in of 0 ("quantity must be a positive number") — a
+        // blank/zero initial quantity means "no opening stock", so skip the call
+        // entirely rather than sending a request we know will be rejected.
+        if (onStockIn && data.initialQuantity && data.initialQuantity > 0) {
+          await onStockIn(created.id, data.initialQuantity);
         }
       }
       onSuccess?.();

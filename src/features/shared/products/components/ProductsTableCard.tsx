@@ -386,7 +386,12 @@ function ProductRow({ product, rowNum, p, onView, onEdit, onDelete }: ProductRow
         <span className="font-mono text-xs text-ink-400">{rowNum}</span>
 
         <div className="flex items-center gap-3 min-w-0">
-          <ProductThumb id={product.id} size={38} imageUrl={product.image_url} />
+          <ProductThumb
+            id={product.id}
+            size={38}
+            imageUrl={product.image_url}
+            categoryIcon={product.category_icon}
+          />
           <span className="font-medium text-ink-900 truncate">{product.name}</span>
           {!product.is_orderable && <CatalogOnlyPill label={p.table.catalogOnly} />}
         </div>

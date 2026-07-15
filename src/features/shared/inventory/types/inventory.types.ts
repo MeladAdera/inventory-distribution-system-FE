@@ -7,6 +7,9 @@ export interface InventoryItem {
   updated_at: string;
   product_name?: string;
   is_low_stock?: boolean;
+  category_id?: number;
+  category_name?: string;
+  category_icon?: string | null;
   /** Moving-average cost basis for this (shop, product) row. DECIMAL string, 4dp (e.g. "6.0000"). */
   avg_cost?: string;
   /** Per-shop selling price (source of truth for a sale). DECIMAL string, 2dp (e.g. "25.00").

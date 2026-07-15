@@ -32,6 +32,8 @@ interface ProductCardProps {
   onEditPrice?: () => void;
   // Set when this item has an unsynced change waiting in the offline queue.
   syncStatus?: SyncItemStatus;
+  /** Lucide icon name from the item's category; shown as a placeholder when there's no photo. */
+  categoryIcon?: string | null;
 }
 
 export function ProductCard({
@@ -44,6 +46,7 @@ export function ProductCard({
   onDelete,
   onEditPrice,
   syncStatus,
+  categoryIcon,
 }: ProductCardProps) {
   const newQty = item.current_quantity + delta;
   const [inputValue, setInputValue] = useState(delta === 0 ? '' : String(delta));
@@ -67,7 +70,12 @@ export function ProductCard({
 
   return (
     <Card className="overflow-hidden">
-      <ProductBanner id={item.product_id} imageUrl={item.image_url} height="h-32" />
+      <ProductBanner
+        id={item.product_id}
+        imageUrl={item.image_url}
+        height="h-32"
+        categoryIcon={categoryIcon}
+      />
 
       <CardContent className="p-3 flex flex-col gap-2">
         {/* Name + actions */}

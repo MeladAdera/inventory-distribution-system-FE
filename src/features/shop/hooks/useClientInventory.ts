@@ -48,8 +48,12 @@ export function useClientInventory() {
 
     invItems.forEach((item) => {
       const product = productMap.get(item.product_id);
-      const categoryName: string = product?.category_name ?? 'General';
-      const categoryId: number = product?.category_id ?? 0;
+      // The inventory row already carries its own category (joined server-side) —
+      // trust that first. Falling back to a separate products-list lookup here
+      // silently dumped items into a bogus "General" bucket whenever that second
+      // query hadn't caught up with a just-created product (stale cache/pagination).
+      const categoryName: string = item.category_name ?? product?.category_name ?? 'General';
+      const categoryId: number = item.category_id ?? product?.category_id ?? 0;
       const qty: number = item.current_quantity ?? 0;
       const threshold: number = item.low_stock_threshold ?? 0;
 
@@ -57,7 +61,7 @@ export function useClientInventory() {
         grouped.set(categoryId, {
           id: String(categoryId),
           name: categoryName,
-          icon: catMap.get(categoryId)?.icon ?? null,
+          icon: item.category_icon ?? catMap.get(categoryId)?.icon ?? null,
           image_url: catMap.get(categoryId)?.image_url ?? null,
           items: [],
         });

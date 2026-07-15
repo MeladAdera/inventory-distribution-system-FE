@@ -240,6 +240,7 @@ export function ClientOrderPage() {
                   qty={cart[product.id] ?? 0}
                   onQty={(v) => handleQty(product.id, v)}
                   labels={productCardLabels}
+                  categoryIcon={selectedCategory.icon}
                 />
               ))}
             </div>

@@ -30,7 +30,12 @@ export function CatalogProductCard({ item, isAdding, onAdd, labels }: CatalogPro
 
   return (
     <div className="flex flex-col bg-paper border border-border rounded-xl overflow-hidden">
-      <ProductBanner id={item.id} imageUrl={item.image_url} height="h-24" />
+      <ProductBanner
+        id={item.id}
+        imageUrl={item.image_url}
+        height="h-24"
+        categoryIcon={item.category_icon}
+      />
 
       <div className="flex flex-col gap-1 p-2.5 flex-1">
         <p className="text-[13px] font-semibold text-ink-900 leading-tight truncate">{item.name}</p>

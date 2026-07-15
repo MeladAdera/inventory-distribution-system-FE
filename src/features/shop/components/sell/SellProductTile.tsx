@@ -1,5 +1,5 @@
-import { Package } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
+import { getCategoryIcon } from '@/features/shared/categories/utils/categoryIcons';
 import type { EnrichedInventoryItem } from '../../types/clientInventory.types';
 
 const PALETTE = ['#FAEACB', '#F8EBD3', '#DDE6F3', '#DCEBE9', '#F6DDDB', '#F5EFE4'];
@@ -18,12 +18,15 @@ interface SellProductTileProps {
     stock: string;
     outOfStock: string;
   };
+  /** Lucide icon name from the item's category; shown as a placeholder when there's no photo. */
+  categoryIcon?: string | null;
 }
 
-export function SellProductTile({ item, qty, onTap, labels }: SellProductTileProps) {
+export function SellProductTile({ item, qty, onTap, labels, categoryIcon }: SellProductTileProps) {
   const selected = qty > 0;
   const outOfStock = item.current_quantity === 0;
   const color = PALETTE[item.product_id % PALETTE.length];
+  const Icon = getCategoryIcon(categoryIcon);
 
   return (
     <button
@@ -60,7 +63,7 @@ export function SellProductTile({ item, qty, onTap, labels }: SellProductTilePro
             className="w-full h-full object-contain"
           />
         ) : (
-          <Package size={24} className="text-ink-700 opacity-40" />
+          <Icon size={24} className="text-ink-700 opacity-40" />
         )}
       </div>
 

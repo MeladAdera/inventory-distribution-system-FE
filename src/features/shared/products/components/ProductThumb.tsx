@@ -1,4 +1,4 @@
-import { Package } from 'lucide-react';
+import { getCategoryIcon } from '@/features/shared/categories/utils/categoryIcons';
 
 const PALETTE = ['#FAEACB', '#F8EBD3', '#DDE6F3', '#DCEBE9', '#F6DDDB', '#F5EFE4'];
 
@@ -13,9 +13,11 @@ interface ProductThumbProps {
   id?: number;
   size?: number;
   imageUrl?: string | null;
+  /** Lucide icon name from the product's category; falls back to Package when null/unknown. */
+  categoryIcon?: string | null;
 }
 
-export function ProductThumb({ id = 0, size = 38, imageUrl }: ProductThumbProps) {
+export function ProductThumb({ id = 0, size = 38, imageUrl, categoryIcon }: ProductThumbProps) {
   if (imageUrl) {
     return (
       <div
@@ -29,12 +31,13 @@ export function ProductThumb({ id = 0, size = 38, imageUrl }: ProductThumbProps)
 
   const color = PALETTE[id % PALETTE.length];
   const iconSize = Math.round(size * 0.47);
+  const Icon = getCategoryIcon(categoryIcon);
   return (
     <div
       style={{ backgroundColor: color, width: size, height: size }}
       className="rounded-lg flex items-center justify-center shrink-0 border border-black/6"
     >
-      <Package size={iconSize} className="text-ink-700 opacity-50" />
+      <Icon size={iconSize} className="text-ink-700 opacity-50" />
     </div>
   );
 }

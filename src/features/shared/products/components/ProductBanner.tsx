@@ -1,4 +1,4 @@
-import { Package } from 'lucide-react';
+import { getCategoryIcon } from '@/features/shared/categories/utils/categoryIcons';
 
 const PALETTE = ['#FAEACB', '#F8EBD3', '#DDE6F3', '#DCEBE9', '#F6DDDB', '#F5EFE4'];
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
@@ -12,10 +12,13 @@ interface ProductBannerProps {
   id: number;
   imageUrl: string | null;
   height?: string;
+  /** Lucide icon name from the product's category; falls back to Package when null/unknown. */
+  categoryIcon?: string | null;
 }
 
-export function ProductBanner({ id, imageUrl, height = 'h-36' }: ProductBannerProps) {
+export function ProductBanner({ id, imageUrl, height = 'h-36', categoryIcon }: ProductBannerProps) {
   const color = PALETTE[id % PALETTE.length];
+  const Icon = getCategoryIcon(categoryIcon);
   return (
     <div
       style={{ backgroundColor: color }}
@@ -24,7 +27,7 @@ export function ProductBanner({ id, imageUrl, height = 'h-36' }: ProductBannerPr
       {imageUrl ? (
         <img src={resolveImageUrl(imageUrl)} alt="" className="w-full h-full object-contain" />
       ) : (
-        <Package size={36} className="text-ink-700 opacity-40" />
+        <Icon size={36} className="text-ink-700 opacity-40" />
       )}
     </div>
   );
