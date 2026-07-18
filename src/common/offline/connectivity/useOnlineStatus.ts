@@ -1,6 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { tokenUtils } from '@/features/auth/utils/token.utils';
 
 // Shared connectivity state. `navigator.onLine` alone is unreliable (it reports
 // "online" for a connected-but-dead network), so we combine it with a periodic
@@ -30,10 +31,11 @@ async function probe(): Promise<boolean> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 4000);
   try {
+    const token = tokenUtils.getAccessToken();
     await fetch(`${base}/inventory?limit=1`, {
       method: 'GET',
       signal: controller.signal,
-      credentials: 'include',
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
     return true;
   } catch {
