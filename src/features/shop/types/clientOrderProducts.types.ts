@@ -1,4 +1,4 @@
-import { StockStatus } from '@/features/shared/products/types/products.types';
+import type { DisplayStockStatus } from '@/features/shared/products/types/products.types';
 
 export interface OrderableProduct {
   id: number;
@@ -7,7 +7,7 @@ export interface OrderableProduct {
   category_name: string;
   price: string;
   current_quantity: number;
-  status: StockStatus;
+  status: DisplayStockStatus;
   image_url: string | null;
 }
 

@@ -8,14 +8,18 @@ import { ordersApi } from '@/features/shared/orders/api/orders.api';
 import { categoriesApi } from '@/features/shared/categories/api/categories.api';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { isAxiosError } from '@/common/utils/error.utils';
-import { ProductSource, StockStatus } from '@/features/shared/products/types/products.types';
+import {
+  ProductSource,
+  StockStatus,
+  type DisplayStockStatus,
+} from '@/features/shared/products/types/products.types';
 import type { Product } from '@/features/shared/products/types/products.types';
 import type { InventoryItem } from '@/features/shared/inventory/types/inventory.types';
 import type { Category } from '@/features/shared/categories/types/categories.types';
 import type { CreateOrderInput } from '@/features/shared/orders/types/orders.types';
 import type { OrderableProduct, OrderableCategory } from '../types/clientOrderProducts.types';
 
-function computeStatus(qty: number, isLowStock: boolean, threshold: number): StockStatus {
+function computeStatus(qty: number, isLowStock: boolean, threshold: number): DisplayStockStatus {
   if (qty === 0) return StockStatus.OUT_OF_STOCK;
   if (isLowStock || qty <= threshold) return StockStatus.LOW_STOCK;
   return StockStatus.HIGH_STOCK;
@@ -25,12 +29,17 @@ export function useClientOrderProducts() {
   const queryClient = useQueryClient();
   const shopId = useAuthStore((s) => s.user?.shopId);
 
-  // is_orderable filters out catalog-only listings — the warehouse can only
-  // fulfill orders for products it actually stocks.
+  // is_orderable filters out catalog-only listings; stock_status=IN_STOCK filters
+  // out products the warehouse is flagged orderable for but currently has 0 of.
   const productsQuery = useQuery({
     queryKey: ['order-products'],
     queryFn: () =>
-      productsApi.list({ source: ProductSource.WAREHOUSE, is_orderable: true, limit: 100 }),
+      productsApi.list({
+        source: ProductSource.WAREHOUSE,
+        is_orderable: true,
+        stock_status: StockStatus.IN_STOCK,
+        limit: 100,
+      }),
   });
 
   // Same query key + params as useClientInventory — one shared cache entry for

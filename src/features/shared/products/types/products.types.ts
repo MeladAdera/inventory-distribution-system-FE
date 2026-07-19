@@ -7,7 +7,12 @@ export enum StockStatus {
   OUT_OF_STOCK = 'OUT_OF_STOCK',
   LOW_STOCK = 'LOW_STOCK',
   HIGH_STOCK = 'HIGH_STOCK',
+  /** GET /products query filter only — never a computed per-item display status. */
+  IN_STOCK = 'IN_STOCK',
 }
+
+/** The 3 states computeStatus() actually produces; excludes the IN_STOCK query-only filter value. */
+export type DisplayStockStatus = Exclude<StockStatus, StockStatus.IN_STOCK>;
 
 export interface Product {
   id: number;

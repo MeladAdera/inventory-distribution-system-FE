@@ -1,4 +1,4 @@
-import { StockStatus } from '@/features/shared/products/types/products.types';
+import type { DisplayStockStatus } from '@/features/shared/products/types/products.types';
 
 export interface EnrichedInventoryItem {
   id: number;
@@ -14,7 +14,7 @@ export interface EnrichedInventoryItem {
   avg_cost: string;
   low_stock_threshold: number;
   is_low_stock: boolean;
-  status: StockStatus;
+  status: DisplayStockStatus;
   category_id: number;
   category_name: string;
   updated_at: string;

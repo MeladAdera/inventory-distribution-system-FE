@@ -6,13 +6,16 @@ import { inventoryApi } from '@/features/shared/inventory/api/inventory.api';
 import { productsApi } from '@/features/shared/products/api/products.api';
 import { categoriesApi } from '@/features/shared/categories/api/categories.api';
 import { useAuthStore } from '@/features/auth/store/authStore';
-import { StockStatus } from '@/features/shared/products/types/products.types';
+import {
+  StockStatus,
+  type DisplayStockStatus,
+} from '@/features/shared/products/types/products.types';
 import type { InventoryItem } from '@/features/shared/inventory/types/inventory.types';
 import type { Product } from '@/features/shared/products/types/products.types';
 import type { Category } from '@/features/shared/categories/types/categories.types';
 import type { EnrichedInventoryItem, InventoryCategory } from '../types/clientInventory.types';
 
-function computeStatus(qty: number, isLowStock: boolean, threshold: number): StockStatus {
+function computeStatus(qty: number, isLowStock: boolean, threshold: number): DisplayStockStatus {
   if (qty === 0) return StockStatus.OUT_OF_STOCK;
   if (isLowStock || qty <= threshold) return StockStatus.LOW_STOCK;
   return StockStatus.HIGH_STOCK;
@@ -21,20 +24,30 @@ function computeStatus(qty: number, isLowStock: boolean, threshold: number): Sto
 export function useClientInventory() {
   const shopId = useAuthStore((s) => s.user?.shopId);
 
+  // staleTime: 0 — these keys are persisted to IndexedDB for offline use
+  // (see QueryProvider's OFFLINE_QUERY_KEYS) and shared between shop owner and
+  // employee sessions. With the app-wide 5min staleTime, a restored persisted
+  // snapshot reads as "fresh" on mount/refresh, so edits made from another
+  // session wouldn't show up until a local mutation happened to invalidate the
+  // cache. Forcing immediate staleness still shows the cached/persisted data
+  // instantly, but always revalidates against the server in the background.
   const inventoryQuery = useQuery({
     queryKey: ['client-inventory'],
     queryFn: () => inventoryApi.list({ limit: 100 }),
+    staleTime: 0,
   });
 
   const productsQuery = useQuery({
     queryKey: ['client-inventory-products'],
     queryFn: () => productsApi.list({ limit: 100 }),
+    staleTime: 0,
   });
 
   const categoriesQuery = useQuery({
     queryKey: ['client-inventory-categories', shopId],
     queryFn: () => categoriesApi.list(shopId ? { shopId } : undefined),
     enabled: shopId !== undefined,
+    staleTime: 0,
   });
 
   const { categories, allItems } = useMemo(() => {

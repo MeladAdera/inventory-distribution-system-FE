@@ -1,14 +1,17 @@
 import { cn } from '@/common/utils/cn';
-import { StockStatus } from '@/features/shared/products/types/products.types';
+import {
+  StockStatus,
+  type DisplayStockStatus,
+} from '@/features/shared/products/types/products.types';
 
 interface InvStatusBadgeProps {
-  status: StockStatus;
+  status: DisplayStockStatus;
   enough: string;
   low: string;
   out: string;
 }
 
-const STATUS_STYLES: Record<StockStatus, { bg: string; text: string; dot: string }> = {
+const STATUS_STYLES: Record<DisplayStockStatus, { bg: string; text: string; dot: string }> = {
   [StockStatus.HIGH_STOCK]: {
     bg: 'bg-success-100',
     text: 'text-success-700',
@@ -27,7 +30,7 @@ const STATUS_STYLES: Record<StockStatus, { bg: string; text: string; dot: string
 };
 
 export function InvStatusBadge({ status, enough, low, out }: InvStatusBadgeProps) {
-  const labels: Record<StockStatus, string> = {
+  const labels: Record<DisplayStockStatus, string> = {
     [StockStatus.HIGH_STOCK]: enough,
     [StockStatus.LOW_STOCK]: low,
     [StockStatus.OUT_OF_STOCK]: out,
