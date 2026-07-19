@@ -26,7 +26,7 @@ export function InventoryPage() {
 
   // Full warehouse catalog for the stock-in picker — includes products that
   // have no inventory row yet (first-time stock-in creates one).
-  const { products: catalogProducts } = useProducts({
+  const { products: catalogProducts, updateProduct } = useProducts({
     source: ProductSource.WAREHOUSE,
     limit: 999,
   });
@@ -44,9 +44,17 @@ export function InventoryPage() {
     }
   }
 
-  async function handleStockIn(productId: number, qty: number, unitCost?: number) {
+  async function handleStockIn(
+    productId: number,
+    qty: number,
+    unitCost?: number,
+    makeOrderable?: boolean
+  ) {
     try {
       await stockIn({ productId, quantity: qty, unitCost });
+      if (makeOrderable) {
+        await updateProduct({ id: productId, data: { is_orderable: true } });
+      }
       toast.success(iv.restock.success);
     } catch (err) {
       toast.error(getErrorMessage(err));

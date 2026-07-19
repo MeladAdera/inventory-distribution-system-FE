@@ -66,6 +66,8 @@
     "unitCostLabel": "Unit cost",
     "avgCostLabel": "Avg cost",
     "costWarning": "This price is very different from the current average cost. Please double-check it.",
+    "makeOrderableLabel": "Also make this product orderable by shops",
+    "makeOrderableHint": "This product is catalog-only right now — shops can't order it until it's marked orderable.",
     "confirm": "Add stock",
     "cancel": "Cancel"
   }

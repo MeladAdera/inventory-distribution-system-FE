@@ -23,7 +23,12 @@ interface Props {
   /** Existing inventory rows, to show current stock for the picked product. */
   items: InventoryItem[];
   onClose: () => void;
-  onConfirm: (productId: number, qty: number, unitCost?: number) => Promise<void>;
+  onConfirm: (
+    productId: number,
+    qty: number,
+    unitCost?: number,
+    makeOrderable?: boolean
+  ) => Promise<void>;
 }
 
 export function StockInModal({ open, products, items, onClose, onConfirm }: Props) {
@@ -33,6 +38,7 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
   const [productId, setProductId] = useState<number | ''>('');
   const [qty, setQty] = useState(1);
   const [costInput, setCostInput] = useState('');
+  const [makeOrderable, setMakeOrderable] = useState(true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -40,6 +46,7 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
       setProductId('');
       setQty(1);
       setCostInput('');
+      setMakeOrderable(true);
     }
   }, [open]);
 
@@ -51,7 +58,11 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
   if (!open) return null;
 
   const selectedRow = productId === '' ? undefined : rowByProduct.get(productId);
+  const selectedProduct = productId === '' ? undefined : products.find((p) => p.id === productId);
   const isNew = productId !== '' && !selectedRow;
+  // Only a catalog-only product needs this decision — an already-orderable
+  // product just gets more stock, nothing to ask.
+  const showOrderableToggle = selectedProduct !== undefined && !selectedProduct.is_orderable;
 
   const oldQty = selectedRow?.current_quantity ?? 0;
   const oldAvg = Number(selectedRow?.avg_cost);
@@ -65,6 +76,7 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
   function handleProductChange(id: number | '') {
     setProductId(id);
     setCostInput(defaultCostInput(id === '' ? undefined : rowByProduct.get(id)));
+    setMakeOrderable(true);
   }
 
   async function handleConfirm() {
@@ -72,7 +84,12 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
     setLoading(true);
     try {
       const cost = parseCost(costInput);
-      await onConfirm(productId, qty, Number.isNaN(cost) ? undefined : cost);
+      await onConfirm(
+        productId,
+        qty,
+        Number.isNaN(cost) ? undefined : cost,
+        showOrderableToggle ? makeOrderable : undefined
+      );
       onClose();
     } finally {
       setLoading(false);
@@ -197,6 +214,22 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
                   <span>{si.costWarning}</span>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Catalog-only product: offer to mark it orderable in the same step */}
+          {showOrderableToggle && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={makeOrderable}
+                  onChange={(e) => setMakeOrderable(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500 shrink-0"
+                />
+                <span className="text-sm text-amber-800">{si.makeOrderableLabel}</span>
+              </label>
+              <p className="mt-1.5 text-[12px] text-amber-700">{si.makeOrderableHint}</p>
             </div>
           )}
 
