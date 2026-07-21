@@ -46,18 +46,16 @@ export function ClientBottomNav({ onMoreClick }: ClientBottomNavProps) {
         );
       })}
 
-      {overflowItems.length > 0 && (
-        <button
-          onClick={onMoreClick}
-          className={cn(
-            'flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors',
-            overflowActive ? 'text-amber-700' : 'text-ink-400 hover:text-ink-700'
-          )}
-        >
-          <Menu size={20} />
-          <span>{nav['more'] ?? 'More'}</span>
-        </button>
-      )}
+      <button
+        onClick={onMoreClick}
+        className={cn(
+          'flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors',
+          overflowActive ? 'text-amber-700' : 'text-ink-400 hover:text-ink-700'
+        )}
+      >
+        <Menu size={20} />
+        <span>{nav['more'] ?? 'More'}</span>
+      </button>
     </nav>
   );
 }
