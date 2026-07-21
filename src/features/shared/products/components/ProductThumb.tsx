@@ -15,14 +15,21 @@ interface ProductThumbProps {
   imageUrl?: string | null;
   /** Lucide icon name from the product's category; falls back to Package when null/unknown. */
   categoryIcon?: string | null;
+  className?: string;
 }
 
-export function ProductThumb({ id = 0, size = 38, imageUrl, categoryIcon }: ProductThumbProps) {
+export function ProductThumb({
+  id = 0,
+  size = 38,
+  imageUrl,
+  categoryIcon,
+  className = 'flex',
+}: ProductThumbProps) {
   if (imageUrl) {
     return (
       <div
         style={{ width: size, height: size }}
-        className="rounded-lg overflow-hidden shrink-0 border border-black/6 bg-sand-100"
+        className={`rounded-lg overflow-hidden shrink-0 border border-black/6 bg-sand-100 ${className}`}
       >
         <img src={resolveImageUrl(imageUrl)} alt="" className="w-full h-full object-cover" />
       </div>
@@ -35,7 +42,7 @@ export function ProductThumb({ id = 0, size = 38, imageUrl, categoryIcon }: Prod
   return (
     <div
       style={{ backgroundColor: color, width: size, height: size }}
-      className="rounded-lg flex items-center justify-center shrink-0 border border-black/6"
+      className={`rounded-lg items-center justify-center shrink-0 border border-black/6 ${className}`}
     >
       <Icon size={iconSize} className="text-ink-700 opacity-50" />
     </div>

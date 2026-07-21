@@ -107,13 +107,13 @@ export function ReceiptDetailModal({
               <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400">
                 {labels.product}
               </span>
-              <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400 text-end w-12">
+              <span className="hidden sm:block text-[11px] font-semibold tracking-wider uppercase text-ink-400 text-end w-12">
                 {labels.before}
               </span>
               <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400 text-end w-14">
                 {labels.consumed}
               </span>
-              <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400 text-end w-12">
+              <span className="hidden sm:block text-[11px] font-semibold tracking-wider uppercase text-ink-400 text-end w-12">
                 {labels.after}
               </span>
               <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400 text-end w-16">
@@ -131,16 +131,16 @@ export function ReceiptDetailModal({
                     className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-3 px-4 py-3"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <ProductThumb id={item.product_id} size={26} />
+                      <ProductThumb id={item.product_id} size={26} className="hidden sm:flex" />
                       <span className="text-[13px] text-ink-800 truncate">{item.product_name}</span>
                     </div>
-                    <span className="font-mono text-[13px] text-ink-400 w-12 text-end">
+                    <span className="hidden sm:block font-mono text-[13px] text-ink-400 w-12 text-end">
                       {item.quantity_before}
                     </span>
                     <span className="font-mono text-[13px] font-semibold text-danger-600 w-14 text-end">
                       −{item.quantity}
                     </span>
-                    <span className="font-mono text-[13px] text-ink-700 w-12 text-end">
+                    <span className="hidden sm:block font-mono text-[13px] text-ink-700 w-12 text-end">
                       {item.quantity_after}
                     </span>
                     <span className="font-mono text-[13px] text-ink-600 w-16 text-end">
