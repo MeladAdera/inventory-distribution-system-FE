@@ -17,7 +17,9 @@ const ADMIN_ROUTES = [
   ROUTES.AUDIT_LOGS,
 ];
 
-const PUBLIC_ONLY_ROUTES = [ROUTES.LOGIN];
+// Signed-in users have no business here — password recovery is for locked-out users,
+// and an authenticated user changes their password from settings instead.
+const PUBLIC_ONLY_ROUTES = [ROUTES.LOGIN, ROUTES.FORGOT_PASSWORD];
 
 // Routes an EMPLOYEE may access inside the client portal. Everything else
 // under /client/* redirects to the dashboard for this role.

@@ -20,6 +20,16 @@ export interface ChangePasswordInput {
   newPassword: string;
 }
 
+export interface ForgotPasswordInput {
+  email: string;
+}
+
+export interface ResetPasswordInput {
+  email: string;
+  code: string;
+  newPassword: string;
+}
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
@@ -34,6 +44,11 @@ export type LoginResponse = ApiResponse<{
 export type RefreshTokenResponse = ApiResponse<AuthTokens>;
 
 export type CurrentUserResponse = ApiResponse<RequestUser>;
+
+// Both forgot/reset endpoints return only a generic localized message.
+export type ForgotPasswordResponse = ApiResponse<{ message: string }>;
+
+export type ResetPasswordResponse = ApiResponse<{ message: string }>;
 
 export interface AuthState {
   user: RequestUser | null;

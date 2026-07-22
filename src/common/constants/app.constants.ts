@@ -21,6 +21,7 @@ export const PAGINATION = {
 // Routes
 export const ROUTES = {
   LOGIN: '/login',
+  FORGOT_PASSWORD: '/forgot-password',
   DASHBOARD: '/dashboard',
   PROFIT: '/profit',
   INVENTORY: '/inventory',

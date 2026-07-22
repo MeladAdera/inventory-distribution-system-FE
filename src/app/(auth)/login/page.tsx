@@ -8,6 +8,7 @@ import { useAuthStore } from '@/features/auth/store/authStore';
 import { useLogin } from '@/features/auth/hooks/useLogin';
 import { useI18n } from '@/providers/I18nProvider';
 import { Button, FormField, LoadingSpinner, ErrorAlert, PasswordInput } from '@/common/components';
+import { ROUTES } from '@/common/constants/app.constants';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -62,6 +63,15 @@ export default function LoginPage() {
               className="input bg-page"
             />
           </FormField>
+
+          <div className="flex justify-end">
+            <Link
+              href={ROUTES.FORGOT_PASSWORD}
+              className="text-sm text-ink-500 transition-colors hover:text-ink-900"
+            >
+              {t.auth.login.forgot_link}
+            </Link>
+          </div>
 
           <Button
             type="submit"
