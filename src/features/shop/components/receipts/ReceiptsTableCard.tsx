@@ -11,6 +11,14 @@ function formatDate(iso: string, locale: 'ar' | 'en'): string {
   }).format(date);
 }
 
+function formatTime(iso: string, locale: 'ar' | 'en'): string {
+  const date = new Date(iso);
+  return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+}
+
 interface ReceiptsTableCardProps {
   receipts: ReceiptListItem[];
   fromDate: string;
@@ -147,6 +155,9 @@ export function ReceiptsTableCard({
                 </span>
                 <span className="text-[13px] text-ink-600 flex items-center gap-2">
                   {formatDate(receipt.created_at, locale)}
+                  <span className="text-ink-400 tabular-nums">
+                    {formatTime(receipt.created_at, locale)}
+                  </span>
                   {receipt.is_free && (
                     <span className="inline-flex items-center h-5 px-1.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-medium">
                       {labels.table.freeBadge}
@@ -200,11 +211,15 @@ export function ReceiptsTableCard({
                   </button>
                 </div>
 
-                {/* Row 2: items count · date */}
+                {/* Row 2: items count · date · time */}
                 <p className="text-[13px] text-ink-600">
                   {receipt.total_items} {labels.table.itemsUnit}
                   <span className="mx-2 text-ink-300">·</span>
                   {formatDate(receipt.created_at, locale)}
+                  <span className="mx-2 text-ink-300">·</span>
+                  <span className="text-ink-400 tabular-nums">
+                    {formatTime(receipt.created_at, locale)}
+                  </span>
                 </p>
 
                 {/* Row 3: notes (if any) */}

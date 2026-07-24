@@ -42,8 +42,8 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'settings', href: '/client/settings', icon: Settings },
 ];
 
-// EMPLOYEE only sees dashboard + inventory + sell; mirrors EMPLOYEE_ALLOWED_ROUTES in middleware.utils.ts
-const EMPLOYEE_NAV_IDS: ClientNavItem['id'][] = ['dashboard', 'inventory', 'sell'];
+// EMPLOYEE sees dashboard + inventory + sell + receipts; mirrors EMPLOYEE_ALLOWED_ROUTES in middleware.utils.ts
+const EMPLOYEE_NAV_IDS: ClientNavItem['id'][] = ['dashboard', 'inventory', 'sell', 'receipts'];
 
 export function getClientNavItems(role?: UserRole): ClientNavItem[] {
   if (role === UserRole.EMPLOYEE) {

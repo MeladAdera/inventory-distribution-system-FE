@@ -28,6 +28,7 @@ const EMPLOYEE_ALLOWED_ROUTES = [
   ROUTES.CLIENT_INVENTORY,
   ROUTES.CLIENT_CATALOG,
   ROUTES.CLIENT_SELL,
+  ROUTES.CLIENT_RECEIPTS,
 ];
 
 function matchesRoute(pathname: string, routes: string[]): boolean {

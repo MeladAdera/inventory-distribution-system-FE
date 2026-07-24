@@ -1,9 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Pagination, DatePickerButton } from '@/common/components';
-import { usePermission } from '@/common/hooks/usePermission';
 import { useI18n } from '@/providers/I18nProvider';
 import { useReceipts, ReceiptDetailModal } from '@/features/shared/receipts';
 import { useShops, ShopType } from '@/features/admin/shops';
@@ -14,20 +12,13 @@ import type { ReceiptListItem } from '@/features/shared/receipts';
 const LIMIT = 15;
 
 export default function ReceiptsPage() {
-  const router = useRouter();
   const { t, locale } = useI18n();
   const r = t.receipts;
-  const { isEmployee } = usePermission();
-
   const [page, setPage] = useState(1);
   const [shopId, setShopId] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [selectedReceipt, setSelectedReceipt] = useState<ReceiptListItem | null>(null);
-
-  useEffect(() => {
-    if (isEmployee) router.replace('/dashboard');
-  }, [isEmployee, router]);
 
   const { shops: shopsData } = useShops({ type: ShopType.SHOP, limit: 999 });
   const shopList: Shop[] = shopsData?.data ?? [];
@@ -54,8 +45,6 @@ export default function ReceiptsPage() {
     setToDate('');
     setPage(1);
   }
-
-  if (isEmployee) return null;
 
   return (
     <div className="space-y-6">

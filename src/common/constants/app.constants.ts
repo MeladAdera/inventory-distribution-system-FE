@@ -37,6 +37,7 @@ export const ROUTES = {
   CLIENT_CATALOG: '/client/catalog',
   CLIENT_SELL: '/client/sell',
   CLIENT_PROFIT: '/client/profit',
+  CLIENT_RECEIPTS: '/client/receipts',
 };
 
 // App Metadata
