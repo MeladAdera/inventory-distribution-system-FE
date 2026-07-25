@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Loader2, Receipt } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
+import { formatMoney } from '@/common/utils/money';
 import { ProductThumb } from '@/features/shared/products/components/ProductThumb';
 import type { SellTrayItem } from './SellTray';
 
@@ -10,11 +11,13 @@ interface SellConfirmModalProps {
   onConfirm: (notes: string, isFree: boolean) => Promise<void>;
   items: SellTrayItem[];
   totalUnits: number;
+  totalPrice: number;
   isSubmitting: boolean;
   labels: {
     title: string;
     intro: string;
     totalUnits: string;
+    totalPrice: string;
     notesLabel: string;
     notesPlaceholder: string;
     confirmBtn: string;
@@ -30,6 +33,7 @@ export function SellConfirmModal({
   onConfirm,
   items,
   totalUnits,
+  totalPrice,
   isSubmitting,
   labels,
 }: SellConfirmModalProps) {
@@ -72,9 +76,15 @@ export function SellConfirmModal({
         ))}
       </div>
 
-      <p className="text-[13px] text-ink-600 mb-4">
+      <p className="text-[13px] text-ink-600 mb-1">
         {labels.totalUnits}:{' '}
         <span className="font-mono font-bold text-ink-900 tabular-nums">{totalUnits}</span>
+      </p>
+      <p className="text-[13px] text-ink-600 mb-4">
+        {labels.totalPrice}:{' '}
+        <span className="font-mono font-bold text-amber-600 tabular-nums">
+          {formatMoney(totalPrice)}
+        </span>
       </p>
 
       <label className="block text-[12px] font-medium text-ink-500 mb-1.5">

@@ -407,6 +407,7 @@
       "title": "المنتجات المحددة",
       "totalUnits": "إجمالي المحدد",
       "unitsUnit": "قطعة",
+      "totalPrice": "السعر الإجمالي",
       "continueBtn": "متابعة"
     },
     "modal": {

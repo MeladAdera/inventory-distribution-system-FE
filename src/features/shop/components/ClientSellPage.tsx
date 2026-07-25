@@ -45,6 +45,10 @@ export function ClientSellPage() {
     .filter((item) => (cart[item.id] ?? 0) > 0)
     .map((item) => ({ item, qty: cart[item.id] }));
   const totalUnits = trayItems.reduce((sum, entry) => sum + entry.qty, 0);
+  const totalPrice = trayItems.reduce(
+    (sum, entry) => sum + Number(entry.item.sale_price) * entry.qty,
+    0
+  );
 
   const filteredCategories = categories.filter(
     (c) => !query || c.name.toLowerCase().includes(query.toLowerCase())
@@ -236,6 +240,7 @@ export function ClientSellPage() {
       <SellTray
         items={trayItems}
         totalUnits={totalUnits}
+        totalPrice={totalPrice}
         onInc={(id) => {
           const stock = allItems.find((item) => item.id === id)?.current_quantity ?? 0;
           handleTap(id, stock);
@@ -247,6 +252,7 @@ export function ClientSellPage() {
           title: sel.tray.title,
           totalUnits: sel.tray.totalUnits,
           unitsUnit: sel.tray.unitsUnit,
+          totalPrice: sel.tray.totalPrice,
           continueBtn: sel.tray.continueBtn,
         }}
       />
@@ -257,11 +263,13 @@ export function ClientSellPage() {
         onConfirm={handleConfirm}
         items={trayItems}
         totalUnits={totalUnits}
+        totalPrice={totalPrice}
         isSubmitting={isSubmitting}
         labels={{
           title: sel.modal.title,
           intro: sel.modal.intro,
           totalUnits: sel.tray.totalUnits,
+          totalPrice: sel.tray.totalPrice,
           notesLabel: sel.modal.notesLabel,
           notesPlaceholder: sel.modal.notesPlaceholder,
           confirmBtn: sel.modal.confirmBtn,

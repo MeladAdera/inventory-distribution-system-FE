@@ -407,6 +407,7 @@
       "title": "Selected products",
       "totalUnits": "Total selected",
       "unitsUnit": "units",
+      "totalPrice": "Total price",
       "continueBtn": "Continue"
     },
     "modal": {
