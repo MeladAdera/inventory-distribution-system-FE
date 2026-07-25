@@ -15,6 +15,11 @@ export interface Receipt {
   created_by: number;
   notes: string | null;
   is_free: boolean;
+  is_cancelled: boolean;
+  /** Cancel metadata — detail endpoint only, null while the receipt is active */
+  cancelled_at: string | null;
+  cancelled_by: number | null;
+  cancel_reason: string | null;
   created_at: string;
   total_price: number;
   items: ReceiptItem[];
@@ -29,6 +34,7 @@ export interface ReceiptListItem {
   total_items: number;
   notes: string | null;
   is_free: boolean;
+  is_cancelled: boolean;
   created_at: string;
 }
 
@@ -41,6 +47,13 @@ export interface CreateReceiptInput {
   items: CreateReceiptItem[];
   notes?: string;
 }
+
+export interface CancelReceiptInput {
+  /** Optional, max 500 chars — omitted entirely when the user leaves it blank */
+  reason?: string;
+}
+
+export const CANCEL_REASON_MAX_LENGTH = 500;
 
 export interface ReceiptListParams {
   page?: number;

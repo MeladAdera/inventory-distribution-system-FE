@@ -1,5 +1,6 @@
 import { DataTable } from '@/common/components';
 import type { Column } from '@/common/components/DataTable';
+import { cn } from '@/common/utils/cn';
 import { useI18n } from '@/providers/I18nProvider';
 import type { ReceiptListItem } from '@/features/shared/receipts';
 
@@ -15,6 +16,7 @@ interface AdminReceiptsTableLabels {
   };
   empty: string;
   freeBadge: string;
+  cancelledBadge: string;
 }
 
 interface AdminReceiptsTableProps {
@@ -43,10 +45,22 @@ export function AdminReceiptsTable({ data, isLoading, onView, labels }: AdminRec
       header: labels.table.receiptNo,
       render: (r) => (
         <span className="inline-flex items-center gap-2">
-          <span className="font-mono text-sm font-semibold text-gray-700">#{r.id}</span>
+          <span
+            className={cn(
+              'font-mono text-sm font-semibold text-gray-700',
+              r.is_cancelled && 'line-through text-gray-400'
+            )}
+          >
+            #{r.id}
+          </span>
           {r.is_free && (
             <span className="inline-flex items-center h-5 px-1.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-medium">
               {labels.freeBadge}
+            </span>
+          )}
+          {r.is_cancelled && (
+            <span className="inline-flex items-center h-5 px-1.5 rounded-full bg-red-100 text-red-700 text-[10px] font-medium">
+              {labels.cancelledBadge}
             </span>
           )}
         </span>

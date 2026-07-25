@@ -114,7 +114,12 @@ export default function ReceiptsPage() {
         data={receipts}
         isLoading={isLoading}
         onView={setSelectedReceipt}
-        labels={{ table: r.table, empty: r.empty, freeBadge: r.modal.freeBadge }}
+        labels={{
+          table: r.table,
+          empty: r.empty,
+          freeBadge: r.modal.freeBadge,
+          cancelledBadge: r.modal.cancelledBadge,
+        }}
       />
 
       {total > LIMIT && (

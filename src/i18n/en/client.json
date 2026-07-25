@@ -112,7 +112,20 @@
       "undoFreeBtn": "Undo free",
       "freeSuccess": "Receipt marked as free",
       "unfreeSuccess": "Free status undone",
-      "freeError": "Failed to update receipt. Please try again."
+      "freeError": "Failed to update receipt. Please try again.",
+      "cancelledBadge": "Cancelled",
+      "cancelledOn": "Cancelled on",
+      "cancelReasonLabel": "Reason",
+      "cancelBtn": "Cancel receipt",
+      "cancelSuccess": "Receipt cancelled — stock returned",
+      "cancelModal": {
+        "title": "Cancel receipt",
+        "warning": "The items go back into your stock and this receipt stops counting toward your sales and profit. This cannot be undone.",
+        "reasonLabel": "Reason (optional)",
+        "reasonPlaceholder": "e.g. Customer changed their mind",
+        "confirmBtn": "Cancel receipt",
+        "keepBtn": "Keep it"
+      }
     },
     "toast": {
       "createSuccess": "Receipt saved successfully",

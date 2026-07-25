@@ -40,6 +40,7 @@ interface ReceiptsTableCardProps {
       itemsUnit: string;
       noNotes: string;
       freeBadge: string;
+      cancelledBadge: string;
     };
     empty: { title: string; sub: string };
   };
@@ -163,6 +164,11 @@ export function ReceiptsTableCard({
                       {labels.table.freeBadge}
                     </span>
                   )}
+                  {receipt.is_cancelled && (
+                    <span className="inline-flex items-center h-5 px-1.5 rounded-full bg-danger-100 text-danger-700 text-[10px] font-medium">
+                      {labels.table.cancelledBadge}
+                    </span>
+                  )}
                 </span>
                 <span className="text-[13px] text-ink-600">
                   {receipt.total_items} {labels.table.itemsUnit}
@@ -199,6 +205,11 @@ export function ReceiptsTableCard({
                     {receipt.is_free && (
                       <span className="inline-flex items-center h-5 px-1.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-medium">
                         {labels.table.freeBadge}
+                      </span>
+                    )}
+                    {receipt.is_cancelled && (
+                      <span className="inline-flex items-center h-5 px-1.5 rounded-full bg-danger-100 text-danger-700 text-[10px] font-medium">
+                        {labels.table.cancelledBadge}
                       </span>
                     )}
                   </span>
