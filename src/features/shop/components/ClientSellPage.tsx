@@ -163,22 +163,44 @@ export function ClientSellPage() {
               <p className="text-[14px] text-ink-500">{sel.empty.noCategories}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredCategories.map((cat) => (
-                <CategoryCard
-                  key={cat.id}
-                  cat={cat}
-                  hasEdits={cat.items.some((item) => (cart[item.id] ?? 0) > 0)}
-                  onClick={() => handleSelectCat(cat.id)}
-                  labels={{
-                    edited: sel.addedBadge,
-                    variants: inv.variants,
-                    totalQty: inv.totalQty,
-                    noProducts: sel.empty.noProducts,
-                  }}
-                />
-              ))}
-            </div>
+            <>
+              {/* Mobile — compact square tiles; column count is fluid, not hardcoded */}
+              <div className="grid sm:hidden grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2.5">
+                {filteredCategories.map((cat) => (
+                  <CategoryCard
+                    key={cat.id}
+                    cat={cat}
+                    hasEdits={cat.items.some((item) => (cart[item.id] ?? 0) > 0)}
+                    onClick={() => handleSelectCat(cat.id)}
+                    compact
+                    labels={{
+                      edited: sel.addedBadge,
+                      variants: inv.variants,
+                      totalQty: inv.totalQty,
+                      noProducts: sel.empty.noProducts,
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Tablet/desktop — full info card */}
+              <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredCategories.map((cat) => (
+                  <CategoryCard
+                    key={cat.id}
+                    cat={cat}
+                    hasEdits={cat.items.some((item) => (cart[item.id] ?? 0) > 0)}
+                    onClick={() => handleSelectCat(cat.id)}
+                    labels={{
+                      edited: sel.addedBadge,
+                      variants: inv.variants,
+                      totalQty: inv.totalQty,
+                      noProducts: sel.empty.noProducts,
+                    }}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
       )}
