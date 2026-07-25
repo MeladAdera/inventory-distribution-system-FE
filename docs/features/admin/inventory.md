@@ -2,7 +2,7 @@
 
 **Status**: Complete  
 **Created Date**: 2026-07-02  
-**Last Updated**: 2026-07-02  
+**Last Updated**: 2026-07-25  
 **Assignee**: Melad Adera
 
 ---
@@ -19,6 +19,19 @@ The Inventory admin page (`/inventory`) gives warehouse admins a real-time view 
 - Restock modal lets admins add stock without going to the Products page
 - Scoped to the warehouse's own `shop_id` so clients' inventory is never mixed in
 - Bilingual (AR/EN) with full RTL/LTR layout support and Levantine Arabic date formatting (تموز, آب…)
+
+### Since this doc was written
+
+This page absorbed **stock management** from the Products page (which is now a pure catalog screen):
+`StockInModal` adds stock for any warehouse product — including ones with no inventory row yet, whose
+first stock-in creates it — alongside the existing per-row `InventoryRestockModal`.
+
+Both stock-add modals then grew two things, documented in full elsewhere:
+
+| Change | Doc |
+|---|---|
+| **Unit cost capture** — cost input, `Avg cost: 8 → 8.4` preview, >50 % deviation warning, empty = inherit (`inventoryCost.ts` helpers); `unitCost` threads through `handleStockIn` / `handleRestock` into `POST /inventory/stock-in` | [inventory-costing-and-pricing.md](../inventory-costing-and-pricing.md) |
+| **"Also make this product orderable by shops"** — shown only when the picked product is catalog-only; on confirm, fires `PATCH /products/:id { is_orderable: true }` after the stock-in | [catalog-vs-orderable.md](../catalog-vs-orderable.md) |
 
 ---
 
@@ -123,6 +136,8 @@ interface InventoryListParams {
 interface StockInInput {
   productId: number;
   quantity: number;
+  /** Omit the key entirely to inherit the current avg cost; 0 means genuinely free stock */
+  unitCost?: number;
   notes?: string;
 }
 ```

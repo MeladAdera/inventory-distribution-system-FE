@@ -47,7 +47,7 @@ src/app/client/order/
 ## Data Flow
 
 ```
-GET /products?source=WAREHOUSE&limit=100
+GET /products?source=WAREHOUSE&is_orderable=true&stock_status=IN_STOCK&limit=100
     +
 GET /inventory?limit=100
     ↓  useClientOrderProducts()
@@ -140,9 +140,23 @@ Row 2: "Current quantity"   [current_quantity]  [InvStatusBadge]
 Row 3: "Requested quantity" [Stepper: − qty +]
 ```
 
-`InvStatusBadge` reused from `components/inventory/InvStatusBadge.tsx` — no duplication.
+`InvStatusBadge` reused from `components/inventory/InvStatusBadge.tsx` — no duplication. The card's
+placeholder banner uses the selected category's Lucide icon when the product has no photo
+([category-icons.md](../category-icons.md)).
 
 **Stepper** (local to `OrderProductCard`): min = 0, no max. Setting qty to 0 removes the product from the cart.
+
+**The requested-quantity value is a text input**, not a read-only number: ordering 40 cases meant 40
+taps on `+`. Details:
+
+- `type="text"` + `inputMode="numeric"` (numeric keypad without the spinner arrows), `dir="ltr"` so
+  digits stay LTR in Arabic
+- `onChange` strips non-digits (`replace(/\D/g, '')`) and calls `onQty(parsed)` — an empty field is
+  local-only state and does **not** push `0`, so clearing the box to retype doesn't drop the product
+  out of the cart mid-edit
+- `onBlur` re-syncs the display from the cart (`qty === 0 ? '' : String(qty)`), and a `useEffect` on
+  `qty` keeps it in step with the ± buttons
+- Placeholder `—` when nothing is requested, matching the previous read-only look
 
 **Sticky bottom bar** — appears when `step === 2 && totalCartItems > 0`:
 ```
@@ -271,11 +285,15 @@ function formatOrderDate(locale: 'ar' | 'en'): string {
 
 | Action | Endpoint | Notes |
 |--------|----------|-------|
-| Load products | `GET /products?source=WAREHOUSE&limit=100` | `source=WAREHOUSE` = warehouse catalog |
+| Load products | `GET /products?source=WAREHOUSE&is_orderable=true&stock_status=IN_STOCK&limit=100` | Only what the warehouse both *supplies* and *currently has* — see [catalog-vs-orderable.md](../catalog-vs-orderable.md) |
 | Load stock levels | `GET /inventory?limit=100` | Joined with products for current qty + status |
 | Submit order | `POST /orders` | `{ items: [{ productId, quantity }] }` — shop owner only |
 
 On submit success, `['client-orders']` query is invalidated so My Orders reflects the new order immediately.
+
+On a **400** (not orderable / out of stock / insufficient stock) the mutation's `onError` invalidates
+`['order-products']`: a 400 means the cached picker list no longer matches the warehouse, so it
+refetches instead of letting the shop retry an impossible order.
 
 ---
 

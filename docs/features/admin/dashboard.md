@@ -69,11 +69,12 @@ Layer 4 — Bottom Row  (stacked → 1.5fr / 1fr desktop)
 ## 🪝 Data Hooks
 
 ### `useDashboardStats`
-Runs 6 parallel queries on mount (1-minute staleTime each):
+Runs 7 parallel queries on mount (1-minute staleTime each):
 
 | Query key | Endpoint | Value extracted |
 |-----------|----------|-----------------|
-| `['dashboard', 'products-total']` | `GET /products?limit=1` | `data.total` |
+| `['dashboard', 'products-total', { is_orderable: true }]` | `GET /products?is_orderable=true&limit=1` | `data.total` → `totalProducts` |
+| `['dashboard', 'products-total', { is_orderable: false }]` | `GET /products?is_orderable=false&limit=1` | `data.total` → `catalogProducts` |
 | `['dashboard', 'shops-total']` | `GET /shops?type=SHOP&limit=1` | `data.total` |
 | `['dashboard', 'pending-orders']` | `GET /orders?status=PENDING&limit=1` | `data.total` |
 | `['dashboard', 'low-stock-count']` | `GET /inventory?lowStock=true&limit=1` | `data.total` |
@@ -81,6 +82,12 @@ Runs 6 parallel queries on mount (1-minute staleTime each):
 | `['dashboard', 'completed-orders']` | `GET /orders?status=COMPLETED&limit=1` | `data.total` |
 
 While loading, all KPI values display `'—'`.
+
+**Products KPI counts only orderable products.** Catalog-only listings (`is_orderable: false`) are
+products the warehouse doesn't actually stock, so counting them made the headline number
+overstate the catalog. They're reported in the card's sub-line instead — `dashboard.kpi.totalProductsSub`
+is `"{n} more catalog-only items"`, filled by the page with `catalogProducts` (`'—'` while loading).
+See [catalog-vs-orderable.md](../catalog-vs-orderable.md).
 
 ### Self-contained components
 - **LowStockAlertsTable** — calls `useShortages()` internally; shows first 5 rows; "Replenish" → `/shortages`

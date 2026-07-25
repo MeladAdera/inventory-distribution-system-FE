@@ -105,28 +105,44 @@ Tablet slide-in drawer (visible `md` to `lg`). Renders `<ClientSidebar fluid />`
 | Visibility | `md:hidden` (mobile only) |
 | Position | `fixed bottom-0` |
 | Height | `h-14` (56px) |
-| Items | 4 (no "More" button — all 4 items fit) |
+| Items | First 3 role-visible nav items (`navItems.slice(0, 3)`) + a permanent **"More"** button |
 
-Active item: amber-500 icon + amber-600 label. Inactive: ink-400 icon + ink-300 label.
+Active item: amber-500 icon + amber-600 label. Inactive: ink-400 icon + ink-300 label. The "More"
+button highlights when any overflow route is active.
+
+**The "More" button is always rendered**, even when the role's nav list has no overflow items. It used
+to be conditional on `overflowItems.length > 0`, which hid the whole bottom sheet — and with it the
+**Logout** action that lives there — from `EMPLOYEE` users, whose allowed items fit inside the first
+three slots. An employee on a phone had no way to sign out.
 
 ---
 
 ### `clientNavConfig.ts`
 
 ```ts
-export interface ClientNavItem {
-  id: 'dashboard' | 'inventory' | 'order' | 'orders';
-  href: string;
-  icon: LucideIcon;
-}
-
 export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
-  { id: 'dashboard', href: '/client/dashboard', icon: LayoutDashboard },
-  { id: 'inventory', href: '/client/inventory', icon: Package },
-  { id: 'order',     href: '/client/order',     icon: ShoppingCart },
-  { id: 'orders',    href: '/client/orders',    icon: ClipboardList },
+  { id: 'dashboard', href: '/client/dashboard',  icon: LayoutDashboard },
+  { id: 'inventory', href: '/client/inventory',  icon: Package },
+  { id: 'order',     href: '/client/order',      icon: ShoppingCart },
+  { id: 'sell',      href: '/client/sell',       icon: LayoutGrid },
+  { id: 'orders',    href: '/client/orders',     icon: ClipboardList },
+  { id: 'profit',    href: '/client/profit',     icon: TrendingUp },
+  { id: 'receipts',  href: '/client/receipts',   icon: Receipt },
+  { id: 'employees', href: '/client/employees',  icon: Users },
+  { id: 'auditLogs', href: '/client/audit-logs', icon: ScrollText },
+  { id: 'settings',  href: '/client/settings',   icon: Settings },
 ];
+
+// EMPLOYEE sees a subset; mirrors EMPLOYEE_ALLOWED_ROUTES in middleware.utils.ts
+const EMPLOYEE_NAV_IDS = ['dashboard', 'inventory', 'sell', 'receipts'];
+
+getClientNavItems(role)   // EMPLOYEE → filtered list; everyone else → all items
 ```
+
+`getClientNavItems(role)` is the single source for every nav surface (sidebar, drawer, bottom nav,
+More sheet), so a role change can't leave one surface out of sync. `receipts` was added to the
+employee list alongside the `/client/receipts` middleware allowance — employees record sales, so they
+need to see the receipts they produce.
 
 ---
 
@@ -157,10 +173,13 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
 ## Route Protection
 
 Access to all `/client/*` routes is enforced by `src/middleware.ts`:
-- Non-`SHOP_OWNER` roles hitting `/client/*` are redirected to `/dashboard`
 - Unauthenticated requests are redirected to `/login`
+- `WAREHOUSE_ADMIN` hitting `/client/*` is redirected to the admin `/dashboard`
+- `EMPLOYEE` may only reach `EMPLOYEE_ALLOWED_ROUTES` (`/client/dashboard`, `/client/inventory`,
+  `/client/catalog`, `/client/sell`, `/client/receipts`); anything else under `/client/*` redirects to
+  the client dashboard
 
-See [auth.md](auth.md) for middleware implementation details.
+See [auth.md](../auth.md) for middleware implementation details.
 
 ---
 

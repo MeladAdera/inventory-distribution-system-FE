@@ -23,9 +23,14 @@ docs/
 │   ├── FEATURE_TEMPLATE.md
 │   ├── auth.md            # Shared — login, middleware, token layer (single-flight refresh)
 │   ├── change-password.md # Shared — self-service password change card on both settings pages
+│   ├── forgot-password.md # Shared — public 3-step password recovery at `/forgot-password`
 │   ├── landing.md         # Shared — public marketing page at `/` + auth pages re-skin
 │   ├── profit-dashboard.md # Shared — profit analytics page + buying price (cost) on products
 │   ├── offline-pwa.md     # Shared — offline-first PWA for shop inventory (SW, sync queue, IndexedDB)
+│   ├── inventory-costing-and-pricing.md  # Shared — per-shop avg_cost + sale_price
+│   ├── catalog-vs-orderable.md           # Shared — is_orderable across products/inventory/orders/KPI
+│   ├── category-icons.md                 # Shared — category Lucide icon as product placeholder
+│   ├── receipt-cancellation.md           # Shared — cancel a receipt, restock, reason trail
 │   ├── admin/             # Admin portal (WAREHOUSE_ADMIN / EMPLOYEE)
 │   │   ├── admin-layout-shell.md
 │   │   ├── dashboard.md
@@ -42,6 +47,8 @@ docs/
 │       ├── client-dashboard.md
 │       ├── client-inventory.md
 │       ├── client-catalog.md
+│       ├── client-sell.md
+│       ├── client-receipts.md
 │       └── ...
 └── api/
     └── authentication.md
@@ -86,6 +93,7 @@ Check `docs/api/` folder:
 |---------|----------|--------|
 | Authentication | [auth.md](features/auth.md) | ✅ PHASE 1 Complete — single-flight token refresh |
 | Change Password | [change-password.md](features/change-password.md) | ✅ Complete — self-service on both settings pages |
+| Forgot / Reset Password | [forgot-password.md](features/forgot-password.md) | ✅ Complete — 6-digit code flow at `/forgot-password` |
 | Landing Page | [landing.md](features/landing.md) | ✅ Complete — public marketing page + auth re-skin |
 | Admin Layout Shell | [admin-layout-shell.md](features/admin/admin-layout-shell.md) | ✅ FIGMA-001 Complete |
 | Dashboard | [dashboard.md](features/admin/dashboard.md) | ✅ FIGMA-002 Complete — API Integrated |
@@ -95,7 +103,16 @@ Check `docs/api/` folder:
 | Shortages | [shortages.md](features/admin/shortages.md) | ✅ FIGMA-006 Complete — API Integrated |
 | Settings | [settings.md](features/admin/settings.md) | ✅ FIGMA-007 Complete — API Integrated |
 | Analytics | [analytics.md](features/admin/analytics.md) | ✅ Complete — TopConsumed + ConsumptionTrend on real API |
-| Inventory | [inventory.md](features/admin/inventory.md) | ✅ Complete — KPI cards, charts, table, restock modal |
+| Inventory | [inventory.md](features/admin/inventory.md) | ✅ Complete — KPI cards, charts, table, stock-in + restock with unit cost |
+
+### Shared / Cross-cutting Features
+| Feature | Document | Status |
+|---------|----------|--------|
+| Inventory Cost Basis & Selling Price | [inventory-costing-and-pricing.md](features/inventory-costing-and-pricing.md) | ✅ Complete — per-shop `avg_cost` + `sale_price`, admin unit-cost capture |
+| Catalog-only vs. Orderable Products | [catalog-vs-orderable.md](features/catalog-vs-orderable.md) | ✅ Complete — `is_orderable` filter, pill, stock-in prompt, KPI split |
+| Category Icons on Products | [category-icons.md](features/category-icons.md) | ✅ Complete — category Lucide icon replaces the generic placeholder |
+| Receipt Cancellation | [receipt-cancellation.md](features/receipt-cancellation.md) | ✅ Complete — restock + reason trail, admin & client |
+| Profit Dashboard | [profit-dashboard.md](features/profit-dashboard.md) | ✅ Complete — profit analytics + product cost |
 
 ### Client Portal Features
 | Feature | Document | Status |
@@ -105,8 +122,10 @@ Check `docs/api/` folder:
 | Client Inventory | [client-inventory.md](features/client/client-inventory.md) | ✅ CLIENT-003 Complete (mock data) |
 | Offline PWA (Client Inventory) | [offline-pwa.md](features/offline-pwa.md) | ✅ Implemented — device/DevTools verification pending |
 | Browse Catalog | [client-catalog.md](features/client/client-catalog.md) | ✅ Complete — API integrated |
-| Order Products | [client-order.md](features/client/client-order.md) | ✅ CLIENT-004 Complete — API integrated |
+| Order Products | [client-order.md](features/client/client-order.md) | ✅ CLIENT-004 Complete — API integrated, typed quantities |
 | My Orders | [client-orders.md](features/client/client-orders.md) | ✅ CLIENT-005 Complete — API integrated |
+| Quick Sell | [client-sell.md](features/client/client-sell.md) | ✅ Complete — tap-to-sell till, offline-capable |
+| Client Receipts | [client-receipts.md](features/client/client-receipts.md) | ✅ CLIENT-008 Complete — API integrated, free + cancel |
 
 ### API Documentation
 | Topic | Document | Status |

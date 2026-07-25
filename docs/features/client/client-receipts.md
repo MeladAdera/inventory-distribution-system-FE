@@ -4,6 +4,8 @@
 **Version**: 1.0.0  
 **Ticket**: CLIENT-008  
 **Route**: `/client/receipts`  
+**Roles**: `SHOP_OWNER`, `EMPLOYEE`  
+**Last Updated**: 2026-07-25  
 **File**: `src/features/shop/components/ClientReceiptsPage.tsx`  
 **Page**: `src/app/client/receipts/page.tsx`
 
@@ -16,6 +18,19 @@ The Receipts page gives shop owners and employees a paginated, filterable histor
 The page replaces the old behavior where each inventory decrease was an independent `PATCH /inventory/:id` call with no shared record. Decreases now always go through `POST /receipts`. Stock **increases** continue to go through `POST /inventory/stock-in` (per item, with an optional reason).
 
 > **Related change**: The inventory save modal (`InventorySaveModal`) was redesigned to split changes into two sections — a red "Stock decrease (saved as receipt)" section and a green "Stock increase" section, each with its own notes field.
+
+### Changes since 1.0.0
+
+The receipts layer moved to `src/features/shared/receipts/` and is now shared with the admin receipts
+page (`/receipts`), so features land on both portals at once. Beyond what's written below:
+
+| Change | Where it's documented |
+|---|---|
+| **Free receipts** — `is_free` flag, amber "Free" badge, `PATCH /receipts/:id/free`, and a "mark as free" checkbox at creation time | [Free receipts](#free-receipts) below |
+| **Cancellation** — `is_cancelled` + reason, red "Cancelled" pill on list rows, cancel panel and one-way `Cancel receipt` action in the detail modal | [receipt-cancellation.md](../receipt-cancellation.md) |
+| **Quick Sell** — most receipts now originate from the till page rather than the inventory page | [client-sell.md](client-sell.md) |
+| **Time beside the date** on desktop rows and mobile cards; product name replaces the thumbnail on narrow screens in the detail modal | this page / [receipt-cancellation.md](../receipt-cancellation.md) |
+| **Employees may open this page** (`/client/receipts` added to `EMPLOYEE_ALLOWED_ROUTES` + the employee nav) | [auth.md](../auth.md) |
 
 ---
 
@@ -239,6 +254,27 @@ Date: 27 Jun 2026   Notes: End of day stock count
 
 ---
 
+## Free receipts
+
+Stock sometimes leaves the shelf without being sold — a giveaway, a sample, a replacement for a
+damaged item. Such a receipt is marked **free**: the stock decrease and its cost still count, but the
+revenue is excluded from profit ("Cost is still counted, but revenue from this sale won't count
+toward profit").
+
+| Piece | Detail |
+|---|---|
+| Flag | `is_free: boolean` on both `Receipt` and `ReceiptListItem` |
+| At creation | Checkbox in the sell confirm modal and the inventory save modal → `isFree` on `POST /receipts` |
+| After the fact | `PATCH /receipts/:id/free` with `{ isFree }` — `useReceiptDetail().setFree` / `isSettingFree` |
+| Detail modal | Amber `Make free` / `Undo free` button in the footer (hidden once the receipt is cancelled); success/failure toasts |
+| List rows | Amber "Free" pill next to the receipt number (client table + `AdminReceiptsTable`) |
+
+Setting the flag at creation time rather than only as a post-hoc toggle matters: the person recording
+a giveaway knows it's a giveaway *then*, and a receipt that spends a while counted as revenue skews
+the profit figures in between.
+
+---
+
 ## Inventory Save Modal Changes
 
 `InventorySaveModal` was redesigned to handle the two different save paths:
@@ -333,8 +369,10 @@ Inventory modal additions under `t.client.inventory.modal`:
 | Action | Endpoint | Notes |
 |--------|----------|-------|
 | Load receipts list | `GET /receipts?page&limit&fromDate&toDate` | Server-paginated, 15 per page |
-| Load receipt detail | `GET /receipts/:id` | Includes `items`, `price`, `total_price` |
-| Create receipt (from inventory page) | `POST /receipts` | Atomic — all items or none; `quantity` always positive |
+| Load receipt detail | `GET /receipts/:id` | Includes `items`, `price`, `total_price`, and the cancel metadata |
+| Create receipt (from inventory or sell page) | `POST /receipts` | Atomic — all items or none; `quantity` always positive; optional `isFree` |
+| Toggle free | `PATCH /receipts/:id/free` | `{ isFree }` |
+| Cancel receipt | `PATCH /receipts/:id/cancel` | `{ reason? }` — restocks the items, drops the receipt from sales/profit ([receipt-cancellation.md](../receipt-cancellation.md)) |
 
 Response envelope: `{ success, data: { … } }`
 
@@ -355,7 +393,8 @@ Added to `CLIENT_NAV_ITEMS` in `src/common/layout/clientNavConfig.ts`:
 { id: 'receipts', href: '/client/receipts', icon: Receipt }  // Receipt from lucide-react
 ```
 
-Falls in the overflow group (position 5), shown in the "More" sheet on mobile.
+Falls in the overflow group, so on mobile it lives in the "More" sheet. `receipts` is also in
+`EMPLOYEE_NAV_IDS` — employees record the sales, so they can read the receipts they produce.
 
 ---
 
