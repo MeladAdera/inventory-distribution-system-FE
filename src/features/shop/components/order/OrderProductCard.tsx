@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { Card, CardContent } from '@/common/components/ui/card';
@@ -30,6 +31,26 @@ export function OrderProductCard({
   categoryIcon,
 }: OrderProductCardProps) {
   const inCart = qty > 0;
+  const [inputValue, setInputValue] = useState(qty === 0 ? '' : String(qty));
+
+  useEffect(() => {
+    setInputValue(qty === 0 ? '' : String(qty));
+  }, [qty]);
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const digitsOnly = e.target.value.replace(/\D/g, '');
+    if (digitsOnly === '') {
+      setInputValue('');
+      return;
+    }
+    const parsed = parseInt(digitsOnly, 10);
+    setInputValue(String(parsed));
+    onQty(parsed);
+  }
+
+  function handleInputBlur() {
+    setInputValue(qty === 0 ? '' : String(qty));
+  }
 
   return (
     <Card
@@ -104,14 +125,19 @@ export function OrderProductCard({
               <span className="text-[9px] text-ink-400 leading-none mb-0.5">
                 {labels.requestedQty}
               </span>
-              <span
+              <input
+                type="text"
+                inputMode="numeric"
+                value={inputValue}
+                onChange={handleInputChange}
+                onBlur={handleInputBlur}
+                placeholder="—"
+                dir="ltr"
                 className={cn(
-                  'font-mono text-[15px] font-bold tabular-nums leading-none',
+                  'w-12 bg-transparent text-center outline-none font-mono text-[15px] font-bold tabular-nums leading-none placeholder:text-ink-300',
                   qty > 0 ? 'text-amber-600' : 'text-ink-300'
                 )}
-              >
-                {qty === 0 ? '—' : qty}
-              </span>
+              />
             </div>
 
             <button
