@@ -42,6 +42,11 @@ export interface StockSaveOp {
   increaseNotes?: string;
   // Chosen at confirm time; applied via a follow-up PATCH once the receipt exists.
   isFree?: boolean;
+  // Credit sale. Unlike isFree these ride INSIDE the receipt request, so a
+  // partial payment is created atomically with the sale — there is no window
+  // where the goods have moved but the debt is missing.
+  customerId?: number;
+  paidAmount?: string;
   // The batched decrease receipt is one atomic server call.
   decreases: StockSyncItem[];
   decreaseStatus: SyncItemStatus;
@@ -111,6 +116,8 @@ async function processStockSave(
             quantity: Math.abs(d.delta),
           })),
           ...(next.decreaseNotes ? { notes: next.decreaseNotes } : {}),
+          ...(next.customerId !== undefined ? { customerId: next.customerId } : {}),
+          ...(next.paidAmount !== undefined ? { paidAmount: next.paidAmount } : {}),
         },
         SYNC_REQUEST_CONFIG
       );
@@ -132,6 +139,11 @@ async function processStockSave(
       // queries are stale wherever they're cached (e.g. the Receipts page).
       void activeQueryClient?.invalidateQueries({ queryKey: ['receipts'], refetchType: 'all' });
       void activeQueryClient?.invalidateQueries({ queryKey: ['analytics'], refetchType: 'all' });
+      // A credit sale changed what this customer owes and added a debt row.
+      if (next.customerId !== undefined) {
+        void activeQueryClient?.invalidateQueries({ queryKey: ['customers'], refetchType: 'all' });
+        void activeQueryClient?.invalidateQueries({ queryKey: ['debts'], refetchType: 'all' });
+      }
     } catch (err) {
       throwIfRetryable(err);
       const message = getErrorMessage(err);
@@ -213,6 +225,9 @@ interface EnqueueParams {
   decreaseNotes?: string;
   increaseNotes?: string;
   isFree?: boolean;
+  // Credit sale — both omitted for a normal fully-paid sale.
+  customerId?: number;
+  paidAmount?: string;
   shopId?: number;
 }
 
@@ -246,6 +261,8 @@ function buildStockSaveOp(params: EnqueueParams): StockSaveOp {
     decreaseNotes: params.decreaseNotes?.trim() || undefined,
     increaseNotes: params.increaseNotes?.trim() || undefined,
     isFree: params.isFree,
+    customerId: params.customerId,
+    paidAmount: params.paidAmount,
     decreases,
     decreaseStatus: decreases.length ? 'pending' : 'done',
     increases,

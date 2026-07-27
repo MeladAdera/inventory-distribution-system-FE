@@ -1,3 +1,5 @@
+import type { DebtStatus } from '@/features/shared/debts/types/debts.types';
+
 export interface ReceiptItem {
   id: number;
   inventory_id: number;
@@ -9,6 +11,18 @@ export interface ReceiptItem {
   quantity_after: number;
 }
 
+/**
+ * The debt a credit sale created, returned inline on the receipt so a partial
+ * payment needs no second request. `null` on a normal, fully-paid cash sale.
+ */
+export interface ReceiptDebt {
+  id: number;
+  total_amount: string;
+  paid_amount: string;
+  remaining: string;
+  status: DebtStatus;
+}
+
 export interface Receipt {
   id: number;
   shop_id: number;
@@ -16,6 +30,10 @@ export interface Receipt {
   notes: string | null;
   is_free: boolean;
   is_cancelled: boolean;
+  /** Set only when the sale was made on credit to a known customer. */
+  customer_id: number | null;
+  customer_name: string | null;
+  debt: ReceiptDebt | null;
   /** Cancel metadata — detail endpoint only, null while the receipt is active */
   cancelled_at: string | null;
   cancelled_by: number | null;
@@ -46,6 +64,16 @@ export interface CreateReceiptItem {
 export interface CreateReceiptInput {
   items: CreateReceiptItem[];
   notes?: string;
+  /**
+   * Who owes the balance. Required whenever `paidAmount` is less than the total —
+   * omitting it returns 400 receipt.CUSTOMER_REQUIRED.
+   */
+  customerId?: number;
+  /**
+   * Money string. Omit for a normal fully-paid sale; "0.00" sells entirely on
+   * credit. Greater than the total returns 400 receipt.PAID_EXCEEDS_TOTAL.
+   */
+  paidAmount?: string;
 }
 
 export interface CancelReceiptInput {

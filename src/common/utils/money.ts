@@ -56,6 +56,14 @@ export function addMoney(a: string | number, b: string | number): string {
   return formatMinor(parseMoney(a) + parseMoney(b));
 }
 
+/**
+ * Multiply money by a whole number — a line total (unit price × quantity).
+ * Exact, because scaling integer minor units by an integer never loses precision.
+ */
+export function multiplyMoney(value: string | number, quantity: number): string {
+  return formatMinor(parseMoney(value) * quantity);
+}
+
 /** Sum a list of money strings. Unparseable entries count as zero. */
 export function sumMoney(values: (string | number)[]): string {
   return formatMinor(

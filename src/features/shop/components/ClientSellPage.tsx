@@ -11,12 +11,19 @@ import { Input } from '@/common/components/ui/input';
 import { TypewriterText } from '@/common/components/TypewriterText';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { enqueueStockSave } from '@/features/shared/inventory/offline/stockSyncEngine';
-import { getIsOnline } from '@/common/offline/connectivity/useOnlineStatus';
+import { getIsOnline, useOnlineStatus } from '@/common/offline/connectivity/useOnlineStatus';
+import { multiplyMoney, sumMoney } from '@/common/utils/money';
+import { useCustomers } from '@/features/shop/customers';
 import { useClientInventory } from '../hooks/useClientInventory';
 import { CategoryCard } from './inventory/CategoryCard';
 import { SellProductTile } from './sell/SellProductTile';
 import { SellTray } from './sell/SellTray';
-import { SellConfirmModal } from './sell/SellConfirmModal';
+import { SellConfirmModal, type SellConfirmPayload } from './sell/SellConfirmModal';
+
+// Loaded eagerly (not only when the modal opens) so the list is already in the
+// persisted cache when the shop goes offline. Filtering happens client-side in
+// the picker, which keeps offline search identical to online.
+const CUSTOMER_PICKER_LIMIT = 100;
 
 export function ClientSellPage() {
   const { t, dir } = useI18n();
@@ -38,6 +45,10 @@ export function ClientSellPage() {
   // Only stocked items appear — rows carry the inventory id POST /receipts needs.
   const { categories, allItems, isLoading, error } = useClientInventory();
 
+  // Credit sales need someone to owe the money.
+  const { customers } = useCustomers({ page: 1, limit: CUSTOMER_PICKER_LIMIT });
+  const isOnline = useOnlineStatus();
+
   // ── Derived ────────────────────────────────────────────────────────────────
   const selectedCategory = categories.find((c) => c.id === selectedCatId) ?? null;
 
@@ -48,6 +59,12 @@ export function ClientSellPage() {
   const totalPrice = trayItems.reduce(
     (sum, entry) => sum + Number(entry.item.sale_price) * entry.qty,
     0
+  );
+  // The same total, computed exactly in minor units. Credit sales compare the
+  // amount paid against this, and a float sum can land a cent off the displayed
+  // figure — which would let a "paid in full" amount read as exceeding the total.
+  const totalMoney = sumMoney(
+    trayItems.map(({ item, qty }) => multiplyMoney(item.sale_price ?? 0, qty))
   );
 
   const filteredCategories = categories.filter(
@@ -84,11 +101,13 @@ export function ClientSellPage() {
     setQty(inventoryId, Math.min((cart[inventoryId] ?? 0) + 1, stock));
   }
 
-  async function handleConfirm(notes: string, isFree: boolean) {
+  async function handleConfirm({ notes, isFree, customerId, paidAmount }: SellConfirmPayload) {
     setIsSubmitting(true);
     try {
       // Same offline-first path the inventory page uses for stock decreases:
       // one atomic POST /receipts when online, durably queued when offline.
+      // customerId/paidAmount ride inside that same request, so a credit sale
+      // and its debt are created together or not at all.
       const wasOnline = getIsOnline();
       await enqueueStockSave({
         queryClient,
@@ -96,6 +115,8 @@ export function ClientSellPage() {
         items: allItems,
         decreaseNotes: notes,
         isFree,
+        customerId,
+        paidAmount,
         shopId,
       });
       setCart({});
@@ -286,6 +307,9 @@ export function ClientSellPage() {
         items={trayItems}
         totalUnits={totalUnits}
         totalPrice={totalPrice}
+        totalMoney={totalMoney}
+        customers={customers}
+        isOnline={isOnline}
         isSubmitting={isSubmitting}
         labels={{
           title: sel.modal.title,
@@ -298,6 +322,7 @@ export function ClientSellPage() {
           cancelBtn: sel.modal.cancelBtn,
           markFreeLabel: sel.modal.markFreeLabel,
           markFreeHint: sel.modal.markFreeHint,
+          credit: t.debts.sell,
         }}
       />
     </div>
