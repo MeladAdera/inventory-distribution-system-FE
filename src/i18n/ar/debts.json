@@ -1,0 +1,262 @@
+{
+  "currency": "ل.س",
+  "status": {
+    "OPEN": "غير مدفوع",
+    "PARTIAL": "مدفوع جزئياً",
+    "PAID": "مسدَّد",
+    "CANCELLED": "ملغى"
+  },
+  "method": {
+    "CASH": "نقداً",
+    "TRANSFER": "حوالة",
+    "OTHER": "أخرى"
+  },
+  "bucket": {
+    "0-30": "٠–٣٠ يوم",
+    "31-60": "٣١–٦٠ يوم",
+    "60+": "أكثر من ٦٠ يوم"
+  },
+  "customers": {
+    "header": {
+      "eyebrow": "الدفع الآجل",
+      "title": "العملاء",
+      "subtitle": "الأشخاص الذين يشترون بالآجل ويدفعون لاحقاً."
+    },
+    "addBtn": "إضافة عميل",
+    "searchPlaceholder": "ابحث بالاسم أو رقم الهاتف",
+    "filters": {
+      "hasDebt": "عليهم دين",
+      "includeInactive": "إظهار المحذوفين",
+      "clear": "مسح عوامل التصفية"
+    },
+    "table": {
+      "name": "العميل",
+      "phone": "الهاتف",
+      "openDebts": "فواتير غير مسددة",
+      "remaining": "المستحق",
+      "note": "ملاحظة",
+      "actions": "إجراءات",
+      "noPhone": "بلا رقم",
+      "settled": "لا يوجد مستحقات"
+    },
+    "badge": {
+      "inactive": "محذوف"
+    },
+    "empty": {
+      "title": "لا يوجد عملاء بعد",
+      "sub": "أضف عميلاً لتبدأ البيع بالآجل.",
+      "cta": "إضافة عميل"
+    },
+    "emptyFiltered": {
+      "title": "لا يوجد عملاء مطابقون",
+      "sub": "جرّب بحثاً آخر أو امسح عوامل التصفية."
+    },
+    "loadError": "تعذّر تحميل العملاء.",
+    "count": "{n} عميل",
+    "form": {
+      "createTitle": "إضافة عميل",
+      "editTitle": "تعديل العميل",
+      "name": "الاسم",
+      "namePlaceholder": "مثال: علي حسن",
+      "phone": "الهاتف",
+      "phonePlaceholder": "مثال: 0999123456",
+      "phoneHint": "اختياري، لكن بدونه لن تستطيع التمييز بين عميلين بنفس الاسم.",
+      "note": "ملاحظة",
+      "notePlaceholder": "مثال: يشتري أسبوعياً ويدفع آخر الشهر",
+      "submit": "إضافة العميل",
+      "save": "حفظ التعديلات",
+      "cancel": "إلغاء",
+      "errNameRequired": "أدخل الاسم.",
+      "errNameShort": "يجب ألا يقل الاسم عن حرفين.",
+      "errNoteLong": "يجب أن تكون الملاحظة أقل من ٥٠٠ حرف.",
+      "createdToast": "تمت إضافة العميل.",
+      "updatedToast": "تم تحديث بيانات العميل."
+    },
+    "deactivate": {
+      "title": "حذف العميل؟",
+      "description": "سيُخفى من القائمة، وتبقى فواتيره السابقة مسجّلة.",
+      "confirm": "حذف",
+      "toast": "تم حذف العميل."
+    },
+    "detail": {
+      "title": "العميل",
+      "billed": "إجمالي المبيعات",
+      "collected": "المحصَّل",
+      "remaining": "المتبقي",
+      "openCount": "فواتير غير مسددة",
+      "refundDue": "أنت مدين لهذا العميل بمبلغ {amount} — تم إلغاء فاتورة كان قد دفعها.",
+      "debtsTitle": "الفواتير غير المسددة",
+      "noDebts": "لا يوجد مستحقات. الحساب مسدَّد بالكامل.",
+      "receiptLink": "فاتورة #{id}",
+      "collectBtn": "تحصيل دفعة",
+      "editBtn": "تعديل",
+      "close": "إغلاق",
+      "loadError": "تعذّر تحميل بيانات العميل."
+    }
+  },
+  "collect": {
+    "title": "تحصيل دفعة",
+    "intro": "سجّل مبلغاً مستلماً من {name}.",
+    "owedLabel": "المستحق حالياً",
+    "amount": "المبلغ المستلم",
+    "amountPlaceholder": "0.00",
+    "method": "طريقة الدفع",
+    "note": "ملاحظة",
+    "notePlaceholder": "اختياري",
+    "targetLabel": "تُطبَّق على",
+    "targetFifo": "الفواتير الأقدم أولاً",
+    "targetSpecific": "فاتورة محددة",
+    "fifoHint": "تُطبَّق الدفعة على أقدم الفواتير غير المسددة أولاً، وقد تسدّد أكثر من فاتورة دفعةً واحدة.",
+    "debtOption": "فاتورة #{id} — المتبقي {remaining}",
+    "submit": "تسجيل الدفعة",
+    "cancel": "إلغاء",
+    "errRequired": "أدخل المبلغ.",
+    "errInvalid": "أدخل مبلغاً صحيحاً بخانتين عشريتين كحد أقصى.",
+    "errExceeds": "المبلغ أكبر من المستحق البالغ {remaining}.",
+    "resultTitle": "تم تطبيق الدفعة",
+    "resultIntro": "سدّدت هذه الدفعة {n} فاتورة:",
+    "resultSettled": "مسدَّدة",
+    "resultRemaining": "المتبقي {remaining}",
+    "resultDone": "تم",
+    "toast": "تم تسجيل الدفعة."
+  },
+  "ledger": {
+    "header": {
+      "eyebrow": "الدفع الآجل",
+      "title": "الديون",
+      "subtitle": "ما زال مستحقاً، ومنذ متى."
+    },
+    "adminSubtitle": "ما يدين به كل متجر للمستودع.",
+    "filters": {
+      "allStatuses": "كل الحالات",
+      "allBuckets": "كل الأعمار",
+      "allCustomers": "كل العملاء",
+      "allShops": "كل المتاجر",
+      "fromDate": "من",
+      "toDate": "إلى",
+      "clear": "مسح عوامل التصفية"
+    },
+    "table": {
+      "debtor": "المدين",
+      "source": "المصدر",
+      "total": "الإجمالي",
+      "paid": "المدفوع",
+      "remaining": "المتبقي",
+      "status": "الحالة",
+      "age": "العمر",
+      "created": "التاريخ",
+      "detail": "التفاصيل",
+      "fromReceipt": "فاتورة #{id}",
+      "fromOrder": "طلب #{id}",
+      "ageDays": "{n} يوم"
+    },
+    "empty": {
+      "title": "لا توجد ديون",
+      "sub": "لا يوجد أي مستحقات حالياً."
+    },
+    "emptyFiltered": {
+      "title": "لا توجد ديون مطابقة",
+      "sub": "جرّب عامل تصفية آخر."
+    },
+    "loadError": "تعذّر تحميل الديون.",
+    "count": "{n} دين"
+  },
+  "detail": {
+    "title": "تفاصيل الدين",
+    "debtor": "المدين",
+    "creditor": "الدائن",
+    "total": "الإجمالي",
+    "paid": "المدفوع",
+    "remaining": "المتبقي",
+    "created": "تاريخ الإنشاء",
+    "note": "ملاحظة",
+    "historyTitle": "سجل الدفعات",
+    "noPayments": "لم تُسجَّل أي دفعات بعد.",
+    "reversalOf": "عكس الدفعة #{id}",
+    "reversedBadge": "معكوسة",
+    "reverseBtn": "عكس",
+    "payBtn": "تسجيل دفعة",
+    "close": "إغلاق",
+    "loadError": "تعذّر تحميل هذا الدين."
+  },
+  "reverse": {
+    "title": "عكس هذه الدفعة؟",
+    "description": "تبقى الدفعة مسجّلة ويُضاف قيد سالب مقابل لها، فيعود الرصيد المستحق للارتفاع. لا يمكن التراجع عن هذا الإجراء.",
+    "amountLine": "عكس مبلغ {amount} المسجَّل بتاريخ {date}.",
+    "reasonLabel": "السبب",
+    "reasonPlaceholder": "مثال: أُدخلت مرتين بالخطأ",
+    "confirm": "عكس الدفعة",
+    "cancel": "الإبقاء عليها",
+    "toast": "تم عكس الدفعة."
+  },
+  "orderPayment": {
+    "title": "تسجيل دفعة",
+    "intro": "مبلغ مستلم من {shop} مقابل الطلب #{id}.",
+    "owedLabel": "المتبقي على هذا الطلب",
+    "amount": "المبلغ المستلم",
+    "method": "طريقة الدفع",
+    "note": "ملاحظة",
+    "notePlaceholder": "مثال: دُفع عند التسليم",
+    "submit": "تسجيل الدفعة",
+    "cancel": "إلغاء",
+    "toast": "تم تسجيل الدفعة.",
+    "nothingOwed": "هذا الطلب مدفوع بالكامل."
+  },
+  "receivables": {
+    "cards": {
+      "remaining": "المستحق لك",
+      "remainingSub": "من كل الفواتير غير المسددة",
+      "collected": "المحصَّل",
+      "collectedSub": "المدفوع من مبيعات الآجل",
+      "billed": "إجمالي المبيعات الآجلة",
+      "billedSub": "قيمة كل مبيعات الآجل",
+      "openCount": "ديون مفتوحة",
+      "openCountSub": "فواتير لم تُسدَّد بعد",
+      "refundDue": "مبالغ واجبة الإرجاع",
+      "refundDueSub": "من فواتير ملغاة كانت مدفوعة"
+    },
+    "owedByShop": {
+      "title": "ما تدين به للمستودع",
+      "remaining": "المتبقي",
+      "billed": "الإجمالي",
+      "collected": "المدفوع حتى الآن",
+      "openCount": "طلبات غير مسددة",
+      "readOnlyHint": "يسجّل المستودع هذه الدفعات عند استلامه للمبلغ.",
+      "settled": "حسابك مع المستودع مسدَّد بالكامل."
+    },
+    "aging": {
+      "title": "أعمار الديون",
+      "subtitle": "المبالغ المتبقية حسب العمر. اضغط على أي عمود للتصفية.",
+      "amount": "المتبقي",
+      "count": "{n} دين",
+      "empty": "لا يوجد مستحقات حالياً"
+    }
+  },
+  "sell": {
+    "modeLabel": "الدفع",
+    "modePaid": "مدفوع بالكامل",
+    "modePartial": "مدفوع جزئياً",
+    "modeCredit": "بالآجل بالكامل",
+    "customerLabel": "العميل",
+    "customerPlaceholder": "اختر عميلاً",
+    "customerRequired": "اختر عميلاً للبيع بالآجل.",
+    "customerSearch": "ابحث عن عميل",
+    "customerNone": "لا يوجد عملاء — أضف عميلاً أولاً.",
+    "customerOwes": "عليه {amount}",
+    "paidLabel": "المبلغ المدفوع الآن",
+    "remainingLabel": "سيصبح ديناً",
+    "errInvalid": "أدخل مبلغاً صحيحاً بخانتين عشريتين كحد أقصى.",
+    "errExceeds": "لا يمكن أن يتجاوز الإجمالي.",
+    "creditBlocksFree": "لا يمكن اعتبار بيع بالآجل مجانياً.",
+    "offlineHint": "سيُرسَل هذا البيع الآجل عند عودة الاتصال."
+  },
+  "receipt": {
+    "customer": "العميل",
+    "debtTitle": "الدفع الآجل",
+    "total": "الإجمالي",
+    "paid": "المدفوع",
+    "remaining": "المتبقي",
+    "settled": "مدفوعة بالكامل",
+    "freeBlocked": "لا يمكن اعتبار هذه الفاتورة مجانية — تم تحصيل مبالغ عليها."
+  }
+}

@@ -1,0 +1,262 @@
+{
+  "currency": "SYP",
+  "status": {
+    "OPEN": "Unpaid",
+    "PARTIAL": "Partly paid",
+    "PAID": "Settled",
+    "CANCELLED": "Cancelled"
+  },
+  "method": {
+    "CASH": "Cash",
+    "TRANSFER": "Transfer",
+    "OTHER": "Other"
+  },
+  "bucket": {
+    "0-30": "0–30 days",
+    "31-60": "31–60 days",
+    "60+": "Over 60 days"
+  },
+  "customers": {
+    "header": {
+      "eyebrow": "Deferred payment",
+      "title": "Customers",
+      "subtitle": "People who buy on credit and pay you later."
+    },
+    "addBtn": "Add customer",
+    "searchPlaceholder": "Search by name or phone",
+    "filters": {
+      "hasDebt": "Owes money",
+      "includeInactive": "Show removed",
+      "clear": "Clear filters"
+    },
+    "table": {
+      "name": "Customer",
+      "phone": "Phone",
+      "openDebts": "Open sales",
+      "remaining": "Owes",
+      "note": "Note",
+      "actions": "Actions",
+      "noPhone": "No phone",
+      "settled": "Settled up"
+    },
+    "badge": {
+      "inactive": "Removed"
+    },
+    "empty": {
+      "title": "No customers yet",
+      "sub": "Add a customer to start selling on credit.",
+      "cta": "Add customer"
+    },
+    "emptyFiltered": {
+      "title": "No matching customers",
+      "sub": "Try a different search or clear the filters."
+    },
+    "loadError": "Could not load customers.",
+    "count": "{n} customers",
+    "form": {
+      "createTitle": "Add customer",
+      "editTitle": "Edit customer",
+      "name": "Name",
+      "namePlaceholder": "e.g. Ali Hassan",
+      "phone": "Phone",
+      "phonePlaceholder": "e.g. 0999123456",
+      "phoneHint": "Optional, but without it you can't tell two customers with the same name apart.",
+      "note": "Note",
+      "notePlaceholder": "e.g. Buys weekly, pays end of month",
+      "submit": "Add customer",
+      "save": "Save changes",
+      "cancel": "Cancel",
+      "errNameRequired": "Enter a name.",
+      "errNameShort": "Name must be at least 2 characters.",
+      "errNoteLong": "Note must be under 500 characters.",
+      "createdToast": "Customer added.",
+      "updatedToast": "Customer updated."
+    },
+    "deactivate": {
+      "title": "Remove customer?",
+      "description": "They will be hidden from the list. Their past sales stay on record.",
+      "confirm": "Remove",
+      "toast": "Customer removed."
+    },
+    "detail": {
+      "title": "Customer",
+      "billed": "Total billed",
+      "collected": "Collected",
+      "remaining": "Still owed",
+      "openCount": "Open sales",
+      "refundDue": "You owe this customer {amount} back — a sale they had paid for was cancelled.",
+      "debtsTitle": "Unpaid sales",
+      "noDebts": "Nothing owed. All settled up.",
+      "receiptLink": "Receipt #{id}",
+      "collectBtn": "Collect payment",
+      "editBtn": "Edit",
+      "close": "Close",
+      "loadError": "Could not load this customer."
+    }
+  },
+  "collect": {
+    "title": "Collect payment",
+    "intro": "Record money received from {name}.",
+    "owedLabel": "Currently owes",
+    "amount": "Amount received",
+    "amountPlaceholder": "0.00",
+    "method": "Paid by",
+    "note": "Note",
+    "notePlaceholder": "Optional",
+    "targetLabel": "Apply to",
+    "targetFifo": "Oldest unpaid sales first",
+    "targetSpecific": "One specific sale",
+    "fifoHint": "Applied to the oldest unpaid sales first, and can settle more than one at a time.",
+    "debtOption": "Receipt #{id} — {remaining} left",
+    "submit": "Record payment",
+    "cancel": "Cancel",
+    "errRequired": "Enter an amount.",
+    "errInvalid": "Enter a valid amount with at most 2 decimals.",
+    "errExceeds": "That is more than the {remaining} owed.",
+    "resultTitle": "Payment applied",
+    "resultIntro": "This payment settled {n} sale(s):",
+    "resultSettled": "Settled",
+    "resultRemaining": "{remaining} left",
+    "resultDone": "Done",
+    "toast": "Payment recorded."
+  },
+  "ledger": {
+    "header": {
+      "eyebrow": "Deferred payment",
+      "title": "Debts",
+      "subtitle": "What is still owed, and for how long."
+    },
+    "adminSubtitle": "What each shop still owes the warehouse.",
+    "filters": {
+      "allStatuses": "Any status",
+      "allBuckets": "Any age",
+      "allCustomers": "All customers",
+      "allShops": "All shops",
+      "fromDate": "From",
+      "toDate": "To",
+      "clear": "Clear filters"
+    },
+    "table": {
+      "debtor": "Owed by",
+      "source": "From",
+      "total": "Total",
+      "paid": "Paid",
+      "remaining": "Remaining",
+      "status": "Status",
+      "age": "Age",
+      "created": "Created",
+      "detail": "Details",
+      "fromReceipt": "Receipt #{id}",
+      "fromOrder": "Order #{id}",
+      "ageDays": "{n}d"
+    },
+    "empty": {
+      "title": "No debts",
+      "sub": "Nothing is owed right now."
+    },
+    "emptyFiltered": {
+      "title": "No matching debts",
+      "sub": "Try a different filter."
+    },
+    "loadError": "Could not load debts.",
+    "count": "{n} debts"
+  },
+  "detail": {
+    "title": "Debt details",
+    "debtor": "Owed by",
+    "creditor": "Owed to",
+    "total": "Total",
+    "paid": "Paid",
+    "remaining": "Remaining",
+    "created": "Created",
+    "note": "Note",
+    "historyTitle": "Payment history",
+    "noPayments": "No payments recorded yet.",
+    "reversalOf": "Reversal of payment #{id}",
+    "reversedBadge": "Reversed",
+    "reverseBtn": "Reverse",
+    "payBtn": "Record payment",
+    "close": "Close",
+    "loadError": "Could not load this debt."
+  },
+  "reverse": {
+    "title": "Reverse this payment?",
+    "description": "The payment stays on record and a matching negative entry is added, so the balance goes back up. This cannot be undone.",
+    "amountLine": "Reversing {amount} recorded on {date}.",
+    "reasonLabel": "Reason",
+    "reasonPlaceholder": "e.g. Entered twice by mistake",
+    "confirm": "Reverse payment",
+    "cancel": "Keep it",
+    "toast": "Payment reversed."
+  },
+  "orderPayment": {
+    "title": "Record payment",
+    "intro": "Money received from {shop} for order #{id}.",
+    "owedLabel": "Remaining on this order",
+    "amount": "Amount received",
+    "method": "Paid by",
+    "note": "Note",
+    "notePlaceholder": "e.g. Paid at delivery",
+    "submit": "Record payment",
+    "cancel": "Cancel",
+    "toast": "Payment recorded.",
+    "nothingOwed": "This order is paid in full."
+  },
+  "receivables": {
+    "cards": {
+      "remaining": "Still owed to you",
+      "remainingSub": "Across all unpaid sales",
+      "collected": "Collected",
+      "collectedSub": "Paid against credit sales",
+      "billed": "Total billed",
+      "billedSub": "Value of all credit sales",
+      "openCount": "Open debts",
+      "openCountSub": "Sales not yet settled",
+      "refundDue": "Refunds owed",
+      "refundDueSub": "From cancelled sales that were paid"
+    },
+    "owedByShop": {
+      "title": "What you owe the warehouse",
+      "remaining": "Still owed",
+      "billed": "Total billed",
+      "collected": "Paid so far",
+      "openCount": "Open orders",
+      "readOnlyHint": "The warehouse records these payments when it receives the money.",
+      "settled": "You're all settled up with the warehouse."
+    },
+    "aging": {
+      "title": "How old are the debts",
+      "subtitle": "Remaining balance by age. Click a bar to filter.",
+      "amount": "Remaining",
+      "count": "{n} debts",
+      "empty": "Nothing owed right now"
+    }
+  },
+  "sell": {
+    "modeLabel": "Payment",
+    "modePaid": "Paid in full",
+    "modePartial": "Part paid",
+    "modeCredit": "All on credit",
+    "customerLabel": "Customer",
+    "customerPlaceholder": "Choose a customer",
+    "customerRequired": "Pick a customer to sell on credit.",
+    "customerSearch": "Search customers",
+    "customerNone": "No customers yet — add one first.",
+    "customerOwes": "owes {amount}",
+    "paidLabel": "Amount paid now",
+    "remainingLabel": "Will be owed",
+    "errInvalid": "Enter a valid amount with at most 2 decimals.",
+    "errExceeds": "Cannot be more than the total.",
+    "creditBlocksFree": "A credit sale can't also be marked free.",
+    "offlineHint": "This credit sale will be sent when you're back online."
+  },
+  "receipt": {
+    "customer": "Customer",
+    "debtTitle": "Deferred payment",
+    "total": "Total",
+    "paid": "Paid",
+    "remaining": "Remaining",
+    "settled": "Paid in full",
+    "freeBlocked": "This sale can't be marked free — money was already collected against it."
+  }
+}
