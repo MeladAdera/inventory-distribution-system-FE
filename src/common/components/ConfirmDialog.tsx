@@ -9,6 +9,8 @@ interface ConfirmDialogProps {
   title: string;
   description: string;
   confirmLabel?: string;
+  /** Defaults to English so existing callers keep working; pass a translated label. */
+  cancelLabel?: string;
   isLoading?: boolean;
 }
 
@@ -19,6 +21,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel = 'Confirm',
+  cancelLabel = 'Cancel',
   isLoading,
 }: ConfirmDialogProps) {
   return (
@@ -26,7 +29,7 @@ export function ConfirmDialog({
       <p className="mb-6 text-sm text-gray-600">{description}</p>
       <div className="flex justify-end gap-3">
         <Button variant="secondary" onClick={onClose} disabled={isLoading}>
-          Cancel
+          {cancelLabel}
         </Button>
         <Button
           variant="destructive"

@@ -1,4 +1,5 @@
 import {
+  Contact,
   LayoutDashboard,
   LayoutGrid,
   TrendingUp,
@@ -22,6 +23,7 @@ export interface ClientNavItem {
     | 'sell'
     | 'orders'
     | 'receipts'
+    | 'customers'
     | 'employees'
     | 'settings'
     | 'auditLogs';
@@ -37,13 +39,20 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'orders', href: '/client/orders', icon: ClipboardList },
   { id: 'profit', href: '/client/profit', icon: TrendingUp },
   { id: 'receipts', href: '/client/receipts', icon: Receipt },
+  { id: 'customers', href: '/client/customers', icon: Contact },
   { id: 'employees', href: '/client/employees', icon: Users },
   { id: 'auditLogs', href: '/client/audit-logs', icon: ScrollText },
   { id: 'settings', href: '/client/settings', icon: Settings },
 ];
 
 // EMPLOYEE sees dashboard + inventory + sell + receipts; mirrors EMPLOYEE_ALLOWED_ROUTES in middleware.utils.ts
-const EMPLOYEE_NAV_IDS: ClientNavItem['id'][] = ['dashboard', 'inventory', 'sell', 'receipts'];
+const EMPLOYEE_NAV_IDS: ClientNavItem['id'][] = [
+  'dashboard',
+  'inventory',
+  'sell',
+  'receipts',
+  'customers',
+];
 
 export function getClientNavItems(role?: UserRole): ClientNavItem[] {
   if (role === UserRole.EMPLOYEE) {

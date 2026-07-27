@@ -29,6 +29,8 @@ const EMPLOYEE_ALLOWED_ROUTES = [
   ROUTES.CLIENT_CATALOG,
   ROUTES.CLIENT_SELL,
   ROUTES.CLIENT_RECEIPTS,
+  // Employees sell on credit and collect payments, so they manage customers too.
+  ROUTES.CLIENT_CUSTOMERS,
 ];
 
 function matchesRoute(pathname: string, routes: string[]): boolean {
