@@ -134,7 +134,7 @@ export function ClientReceiptsPage() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         locale={locale}
-        labels={r.modal}
+        labels={{ ...r.modal, debt: { ...t.debts.receipt, status: t.debts.status } }}
       />
     </div>
   );

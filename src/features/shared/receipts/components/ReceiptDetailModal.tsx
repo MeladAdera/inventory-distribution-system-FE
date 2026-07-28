@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { Ban, Loader2 } from 'lucide-react';
+import { Ban, Loader2, User } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
 import { ProductThumb } from '@/features/shared/products/components/ProductThumb';
 import { useReceiptDetail } from '@/features/shared/receipts';
 import { useToast } from '@/providers/ToastProvider';
 import { getErrorMessage } from '@/common/utils/error.utils';
+import { formatMoney, isPositiveMoney } from '@/common/utils/money';
+import { DebtStatusBadge } from '@/features/shared/debts/components/DebtStatusBadge';
+import type { DebtStatus } from '@/features/shared/debts/types/debts.types';
 import { CancelReceiptModal } from './CancelReceiptModal';
 
 function formatDate(iso: string, locale: 'ar' | 'en'): string {
@@ -55,6 +58,17 @@ interface ReceiptDetailModalProps {
       confirmBtn: string;
       keepBtn: string;
     };
+    /** Deferred-payment copy — shown only when this sale was made on credit. */
+    debt: {
+      customer: string;
+      debtTitle: string;
+      total: string;
+      paid: string;
+      remaining: string;
+      settled: string;
+      freeBlocked: string;
+      status: Record<DebtStatus, string>;
+    };
   };
 }
 
@@ -70,6 +84,10 @@ export function ReceiptDetailModal({
     useReceiptDetail(open ? receiptId : null);
   const { success: toastSuccess, error: toastError } = useToast();
   const [cancelOpen, setCancelOpen] = useState(false);
+
+  // Money already collected against this sale can't be waived — the backend
+  // returns 400 debt.HAS_PAYMENTS. Block it here instead of surfacing that error.
+  const freeBlocked = Boolean(receipt?.debt && isPositiveMoney(receipt.debt.paid_amount));
 
   async function handleToggleFree() {
     if (!receipt) return;
@@ -115,6 +133,13 @@ export function ReceiptDetailModal({
                 <div>
                   <span className="text-ink-400">{labels.createdBy}: </span>
                   <span className="text-ink-700 font-medium">{createdByName}</span>
+                </div>
+              )}
+              {receipt.customer_name && (
+                <div className="inline-flex items-center gap-1.5">
+                  <User size={12} className="text-ink-400" />
+                  <span className="text-ink-400">{labels.debt.customer}: </span>
+                  <span className="text-ink-700 font-medium">{receipt.customer_name}</span>
                 </div>
               )}
               {receipt.notes && (
@@ -213,6 +238,40 @@ export function ReceiptDetailModal({
                   {receipt.total_price.toFixed(2)}
                 </span>
               </div>
+
+              {/* Deferred payment — null on a normal cash sale, so nothing renders */}
+              {receipt.debt && (
+                <div className="border-t border-border px-4 py-3 bg-paper">
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <span className="text-[12px] font-semibold tracking-wide uppercase text-ink-400">
+                      {labels.debt.debtTitle}
+                    </span>
+                    <DebtStatusBadge
+                      status={receipt.debt.status}
+                      label={labels.debt.status[receipt.debt.status]}
+                      small
+                    />
+                  </div>
+                  <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 text-[13px]">
+                    <span>
+                      <span className="text-ink-400">{labels.debt.paid}: </span>
+                      <span className="font-mono font-medium text-ink-700 tabular-nums">
+                        {formatMoney(receipt.debt.paid_amount)}
+                      </span>
+                    </span>
+                    <span>
+                      <span className="text-ink-400">{labels.debt.remaining}: </span>
+                      {isPositiveMoney(receipt.debt.remaining) ? (
+                        <span className="font-mono font-bold text-amber-700 tabular-nums">
+                          {formatMoney(receipt.debt.remaining)}
+                        </span>
+                      ) : (
+                        <span className="font-medium text-success-700">{labels.debt.settled}</span>
+                      )}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -224,8 +283,9 @@ export function ReceiptDetailModal({
               <>
                 <button
                   onClick={handleToggleFree}
-                  disabled={isSettingFree}
-                  className="h-9 px-4 rounded-lg border border-amber-300 bg-amber-50 text-[13px] font-medium text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50"
+                  disabled={isSettingFree || freeBlocked}
+                  title={freeBlocked ? labels.debt.freeBlocked : undefined}
+                  className="h-9 px-4 rounded-lg border border-amber-300 bg-amber-50 text-[13px] font-medium text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSettingFree ? (
                     <span className="flex items-center gap-2">

@@ -132,7 +132,7 @@ export default function ReceiptsPage() {
         open={!!selectedReceipt}
         onClose={() => setSelectedReceipt(null)}
         locale={locale}
-        labels={r.modal}
+        labels={{ ...r.modal, debt: { ...t.debts.receipt, status: t.debts.status } }}
       />
     </div>
   );
