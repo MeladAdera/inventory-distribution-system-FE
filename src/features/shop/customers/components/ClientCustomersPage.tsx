@@ -8,15 +8,18 @@ import { usePermission } from '@/common/hooks/usePermission';
 import { ConfirmDialog } from '@/common/components';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import { useCustomers } from '../hooks/useCustomers';
+import { useCustomerDetail } from '../hooks/useCustomerDetail';
 import { CustomersTableCard } from './CustomersTableCard';
 import { CustomerFormModal } from './CustomerFormModal';
+import { CustomerDetailModal } from './CustomerDetailModal';
+import { CollectPaymentModal } from './CollectPaymentModal';
 import type { Customer, CreateCustomerInput } from '../types/customers.types';
 
 const LIMIT = 15;
 const SEARCH_DEBOUNCE_MS = 300;
 
 export function ClientCustomersPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const c = t.debts.customers;
   const toast = useToast();
   const { isShopOwner } = usePermission();
@@ -30,6 +33,8 @@ export function ClientCustomersPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Customer | null>(null);
   const [deactivating, setDeactivating] = useState<Customer | null>(null);
+  const [viewingId, setViewingId] = useState<number | null>(null);
+  const [collectOpen, setCollectOpen] = useState(false);
 
   // Typing a search shouldn't fire a request per keystroke.
   useEffect(() => {
@@ -62,6 +67,16 @@ export function ClientCustomersPage() {
     deactivateCustomer,
     isDeactivating,
   } = useCustomers(params);
+
+  // Idle until a row is opened.
+  const {
+    customer: viewedCustomer,
+    summary,
+    openDebts,
+    isLoading: isLoadingDetail,
+    collectPayment,
+    isCollecting,
+  } = useCustomerDetail(viewingId);
 
   const hasFilters = Boolean(debouncedSearch) || hasDebt || includeInactive;
 
@@ -162,7 +177,7 @@ export function ClientCustomersPage() {
           setPage(1);
         }}
         onClearFilters={clearFilters}
-        onView={openEdit}
+        onView={(customer) => setViewingId(customer.id)}
         onEdit={openEdit}
         // Only a SHOP_OWNER may deactivate — omit the action for employees
         // rather than letting them discover the 403.
@@ -205,6 +220,43 @@ export function ClientCustomersPage() {
           </div>
         </div>
       )}
+
+      <CustomerDetailModal
+        open={viewingId !== null}
+        onClose={() => setViewingId(null)}
+        customer={viewedCustomer}
+        summary={summary}
+        openDebts={openDebts}
+        isLoading={isLoadingDetail}
+        onCollect={() => setCollectOpen(true)}
+        onEdit={() => {
+          if (viewedCustomer) openEdit(viewedCustomer);
+        }}
+        locale={locale}
+        currency={t.debts.currency}
+        labels={{
+          ...c.detail,
+          inactiveBadge: c.badge.inactive,
+          statusNames: t.debts.status,
+        }}
+      />
+
+      <CollectPaymentModal
+        open={collectOpen}
+        onClose={() => setCollectOpen(false)}
+        customerName={viewedCustomer?.name ?? ''}
+        totalRemaining={summary.total_remaining}
+        openDebts={openDebts}
+        onCollect={collectPayment}
+        isCollecting={isCollecting}
+        currency={t.debts.currency}
+        labels={{
+          ...t.debts.collect,
+          receiptLabel: c.detail.receiptLink,
+          methodNames: t.debts.method,
+          statusNames: t.debts.status,
+        }}
+      />
 
       <CustomerFormModal
         open={formOpen}

@@ -18,12 +18,19 @@ const sizeClasses = {
   lg: 'max-w-lg',
 };
 
+// Modals stack (a detail modal opening a confirm modal on top). Without a count,
+// closing the topmost one restores body scroll while the one beneath is still
+// open, and the page scrolls behind it.
+let openModalCount = 0;
+
 export function Modal({ open, onClose, title, children, size = 'md' }: ModalProps) {
   useEffect(() => {
     if (!open) return;
+    openModalCount += 1;
     document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = '';
+      openModalCount -= 1;
+      if (openModalCount === 0) document.body.style.overflow = '';
     };
   }, [open]);
 
