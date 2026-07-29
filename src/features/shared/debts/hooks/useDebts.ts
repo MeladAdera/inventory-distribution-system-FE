@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { debtsApi } from '../api/debts.api';
 import type {
@@ -7,6 +8,7 @@ import type {
   DebtListItem,
   DebtListParams,
   DebtPayment,
+  DebtPaymentRow,
   DebtsSummary,
   ReceivablesParams,
 } from '../types/debts.types';
@@ -103,8 +105,21 @@ export function useDebtPayments(debtId: number | null) {
     },
   });
 
+  // Plain array, not paginated — one envelope level only.
+  const raw = (query.data?.data as DebtPayment[]) ?? [];
+
+  // An original payment has no flag saying it was undone; the only evidence is
+  // another row pointing back at it. Resolve that here so the UI can disable
+  // "reverse" up front instead of eating a 400 debt.ALREADY_REVERSED.
+  const payments: DebtPaymentRow[] = useMemo(() => {
+    const reversedIds = new Set(
+      raw.map((p) => p.reverses_payment_id).filter((id): id is number => id != null)
+    );
+    return raw.map((p) => ({ ...p, isReversed: reversedIds.has(p.id) }));
+  }, [raw]);
+
   return {
-    payments: (query.data?.data as DebtPayment[]) ?? [],
+    payments,
     isLoading: query.isLoading,
     error: query.error,
     reversePayment: reverseMutation.mutateAsync,

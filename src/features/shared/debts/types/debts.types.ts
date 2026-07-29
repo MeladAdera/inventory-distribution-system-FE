@@ -79,19 +79,35 @@ export interface DebtListItem extends Debt {
 /**
  * One row of a debt's ledger. Reversals are appended as a NEGATIVE amount rather
  * than deleting the original, so history shows both.
+ *
+ * GET /debts/:id/payments returns these as a plain array (not paginated),
+ * ordered by paid_at ASC then id ASC.
  */
 export interface DebtPayment {
   id: number;
   debt_id: number;
   amount: string;
   method: PaymentMethod;
+  /** True on a reversal row, false on a collection. */
+  is_reversal: boolean;
+  /** The payment this row undoes — set only on reversal rows, null otherwise. */
+  reverses_payment_id: number | null;
   note: string | null;
+  /** When the money moved. This is the ordering key, not created_at. */
+  paid_at: string;
   created_by: number;
   created_at: string;
-  /** Set on the original once it has been undone. */
-  reversed_at?: string | null;
-  /** Set on the reversal row, pointing back at the payment it undoes. */
-  reverses_payment_id?: number | null;
+}
+
+/**
+ * A ledger row with its reversal state resolved.
+ *
+ * The original payment carries no "reversed" flag of its own — the only way to
+ * know is that some other row in the array points back at it. Deriving it once
+ * here keeps that scan out of the components.
+ */
+export interface DebtPaymentRow extends DebtPayment {
+  isReversed: boolean;
 }
 
 /**

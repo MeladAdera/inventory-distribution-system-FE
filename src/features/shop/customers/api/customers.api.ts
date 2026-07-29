@@ -44,8 +44,13 @@ export const customersApi = {
     return response.data;
   },
 
-  debts: async (id: number, config?: AxiosRequestConfig) => {
-    const response = await apiClient.get(`/customers/${id}/debts`, config);
+  /** Paginated, same envelope as GET /debts. */
+  debts: async (
+    id: number,
+    params?: { page?: number; limit?: number },
+    config?: AxiosRequestConfig
+  ) => {
+    const response = await apiClient.get(`/customers/${id}/debts`, { ...config, params });
     return response.data;
   },
 

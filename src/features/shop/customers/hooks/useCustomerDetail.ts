@@ -14,17 +14,10 @@ const EMPTY_SUMMARY: CustomerSummary = {
   refund_due: '0.00',
 };
 
-/**
- * Swagger documents no response schema for these endpoints, so the list shape
- * isn't guaranteed to be the paginated envelope the other lists use. Accept
- * either a bare array or a paginated block rather than silently rendering empty.
- */
-function unwrapList<T>(payload: unknown): T[] {
-  const body = (payload as { data?: unknown })?.data;
-  if (Array.isArray(body)) return body as T[];
-  const nested = (body as { data?: unknown })?.data;
-  return Array.isArray(nested) ? (nested as T[]) : [];
-}
+// A customer's debts are paginated, and the detail view wants all of them at
+// once — both to list the unpaid sales and to populate the "pay one specific
+// sale" picker. The default page size would silently truncate that list.
+const DEBTS_PAGE_SIZE = 100;
 
 /**
  * One customer: their record, their totals, and their unpaid sales — plus
@@ -52,7 +45,7 @@ export function useCustomerDetail(id: number | null) {
 
   const debtsQuery = useQuery({
     queryKey: ['customers', 'debts', id],
-    queryFn: () => customersApi.debts(id as number),
+    queryFn: () => customersApi.debts(id as number, { page: 1, limit: DEBTS_PAGE_SIZE }),
     enabled,
     staleTime: 0,
   });
@@ -72,7 +65,7 @@ export function useCustomerDetail(id: number | null) {
     },
   });
 
-  const debts = unwrapList<DebtListItem>(debtsQuery.data);
+  const debts: DebtListItem[] = debtsQuery.data?.data?.data ?? [];
 
   return {
     customer: (customerQuery.data?.data as Customer) ?? null,
