@@ -147,13 +147,8 @@ export function CustomerDetailModal({
                         {formatDate(d.created_at, locale)}
                       </span>
                     </span>
-                    <span className="text-end shrink-0">
-                      <span className="block font-mono text-[13px] font-bold text-amber-700 tabular-nums">
-                        {formatMoney(d.remaining)}
-                      </span>
-                      <span className="block font-mono text-[11px] text-ink-400 tabular-nums">
-                        / {formatMoney(d.total_amount)}
-                      </span>
+                    <span className="font-mono text-[13px] font-bold text-amber-700 tabular-nums text-end shrink-0">
+                      {formatMoney(d.remaining)}
                     </span>
                     <DebtStatusBadge status={d.status} label={labels.statusNames[d.status]} small />
                   </div>

@@ -7,6 +7,7 @@ import {
   ShoppingCart,
   ClipboardList,
   Users,
+  Wallet,
   Settings,
   ScrollText,
   Receipt,
@@ -24,6 +25,7 @@ export interface ClientNavItem {
     | 'orders'
     | 'receipts'
     | 'customers'
+    | 'debts'
     | 'employees'
     | 'settings'
     | 'auditLogs';
@@ -40,6 +42,9 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'profit', href: '/client/profit', icon: TrendingUp },
   { id: 'receipts', href: '/client/receipts', icon: Receipt },
   { id: 'customers', href: '/client/customers', icon: Contact },
+  // Owner-only: employees never see shop-level debt and cannot reverse payments,
+  // so this id is deliberately absent from EMPLOYEE_NAV_IDS below.
+  { id: 'debts', href: '/client/debts', icon: Wallet },
   { id: 'employees', href: '/client/employees', icon: Users },
   { id: 'auditLogs', href: '/client/audit-logs', icon: ScrollText },
   { id: 'settings', href: '/client/settings', icon: Settings },
