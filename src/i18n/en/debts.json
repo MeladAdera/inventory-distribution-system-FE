@@ -241,6 +241,7 @@
     "customerPlaceholder": "Choose a customer",
     "customerRequired": "Pick a customer to sell on credit.",
     "customerSearch": "Search customers",
+    "customerChange": "Change",
     "customerNone": "No customers yet — add one first.",
     "customerOwes": "owes {amount}",
     "paidLabel": "Amount paid now",

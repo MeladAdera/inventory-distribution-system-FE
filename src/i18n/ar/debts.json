@@ -241,6 +241,7 @@
     "customerPlaceholder": "اختر عميلاً",
     "customerRequired": "اختر عميلاً للبيع بالآجل.",
     "customerSearch": "ابحث عن عميل",
+    "customerChange": "تغيير",
     "customerNone": "لا يوجد عملاء — أضف عميلاً أولاً.",
     "customerOwes": "عليه {amount}",
     "paidLabel": "المبلغ المدفوع الآن",

@@ -51,6 +51,7 @@ interface SellConfirmModalProps {
       customerLabel: string;
       customerRequired: string;
       customerSearch: string;
+      customerChange: string;
       customerNone: string;
       customerOwes: string;
       paidLabel: string;
@@ -277,6 +278,7 @@ export function SellConfirmModal({
             labels={{
               label: c.customerLabel,
               searchPlaceholder: c.customerSearch,
+              change: c.customerChange,
               none: c.customerNone,
               owes: c.customerOwes,
             }}

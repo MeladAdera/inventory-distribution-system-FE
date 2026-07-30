@@ -12,6 +12,7 @@ interface CustomerPickerProps {
   labels: {
     label: string;
     searchPlaceholder: string;
+    change: string;
     none: string;
     owes: string;
   };
@@ -26,9 +27,19 @@ interface CustomerPickerProps {
  *
  * Filtering is client-side over the list the page already loaded, so picking a
  * customer works identically offline.
+ *
+ * Once someone is picked the list folds into a single row naming them, which
+ * frees the height the rest of the form needs and states the choice back
+ * plainly — recording a debt against the wrong person is the costly mistake
+ * here, and a checkmark somewhere in a scrolled list is easy to misread.
  */
 export function CustomerPicker({ customers, selectedId, onSelect, labels }: CustomerPickerProps) {
   const [query, setQuery] = useState('');
+  // Set when the user asks to change an existing choice — the only way back to
+  // the list once it has folded.
+  const [isPicking, setIsPicking] = useState(false);
+
+  const selectedCustomer = customers.find((c) => c.id === selectedId) ?? null;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -38,6 +49,12 @@ export function CustomerPicker({ customers, selectedId, onSelect, labels }: Cust
     );
   }, [customers, query]);
 
+  function handleSelect(id: number) {
+    onSelect(id);
+    setIsPicking(false);
+    setQuery('');
+  }
+
   if (customers.length === 0) {
     return (
       <div>
@@ -45,6 +62,47 @@ export function CustomerPicker({ customers, selectedId, onSelect, labels }: Cust
         <p className="text-[13px] text-ink-400 py-3 px-3 bg-page border border-border rounded-lg">
           {labels.none}
         </p>
+      </div>
+    );
+  }
+
+  if (selectedCustomer && !isPicking) {
+    return (
+      <div>
+        <p className="text-[12px] font-medium text-ink-500 mb-1.5">{labels.label}</p>
+
+        <div className="flex items-center gap-2 px-3 py-2.5 bg-paper border border-amber-500 rounded-lg">
+          <span className="w-4 h-4 rounded-full bg-amber-600 flex items-center justify-center shrink-0">
+            <Check size={11} className="text-white" />
+          </span>
+          <span className="flex-1 min-w-0">
+            <span className="block text-[13px] font-medium text-ink-900 truncate">
+              {selectedCustomer.name}
+            </span>
+            {(selectedCustomer.phone || isPositiveMoney(selectedCustomer.total_remaining)) && (
+              <span className="block text-[11px] text-ink-400">
+                {selectedCustomer.phone && (
+                  <span className="font-mono">{selectedCustomer.phone}</span>
+                )}
+                {selectedCustomer.phone &&
+                  isPositiveMoney(selectedCustomer.total_remaining) &&
+                  ' · '}
+                {isPositiveMoney(selectedCustomer.total_remaining) && (
+                  <span className="font-medium text-amber-700 tabular-nums">
+                    {labels.owes.replace('{amount}', formatMoney(selectedCustomer.total_remaining))}
+                  </span>
+                )}
+              </span>
+            )}
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsPicking(true)}
+            className="shrink-0 px-2 py-1 rounded text-[12px] font-semibold text-amber-700 hover:bg-amber-50 transition-colors"
+          >
+            {labels.change}
+          </button>
+        </div>
       </div>
     );
   }
@@ -79,7 +137,7 @@ export function CustomerPicker({ customers, selectedId, onSelect, labels }: Cust
               type="button"
               role="option"
               aria-selected={selected}
-              onClick={() => onSelect(c.id)}
+              onClick={() => handleSelect(c.id)}
               className={`w-full flex items-center gap-2 px-3 py-2.5 text-start transition-colors ${
                 selected ? 'bg-amber-50' : 'hover:bg-sand-50'
               }`}
