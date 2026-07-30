@@ -1,15 +1,25 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Loader2, AlertTriangle } from 'lucide-react';
+import { Loader2, AlertTriangle, Wallet, HandCoins, FileText, AlertCircle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { usePermission } from '@/common/hooks/usePermission';
+import { formatMoney, isPositiveMoney } from '@/common/utils/money';
+import { KpiCard } from '@/features/admin/dashboard/components/KpiCard';
+import { CardShell } from '@/features/admin/dashboard/components/CardShell';
+import { useAuthStore } from '@/features/auth/store/authStore';
 import {
   useDebts,
+  useReceivables,
+  useReceivablesAging,
+  useShopDebtSummary,
   DebtsTableCard,
   DebtDetailModal,
+  ReceivablesAgingChart,
+  OwedToWarehouseCard,
   AgingBucket,
   DebtStatus,
+  DebtorType,
 } from '@/features/shared/debts';
 import type { DebtListItem } from '@/features/shared/debts';
 
@@ -18,6 +28,7 @@ const LIMIT = 15;
 export function ClientDebtsPage() {
   const { t, locale } = useI18n();
   const l = t.debts.ledger;
+  const rc = t.debts.receivables;
   // Only a SHOP_OWNER reaches this page, and only they may reverse a payment
   // on their own customers' debts.
   const { isShopOwner } = usePermission();
@@ -43,6 +54,20 @@ export function ClientDebtsPage() {
 
   const { debts, total, totalPages, isLoading, error } = useDebts(params);
 
+  // The dashboard describes what customers owe this shop, so it is scoped to
+  // CUSTOMER debts — the shop's own debt to the warehouse is the separate
+  // read-only card below, and the two are never netted together.
+  const receivablesParams = useMemo(() => ({ debtorType: DebtorType.CUSTOMER }), []);
+  const { summary, isLoading: isLoadingSummary } = useReceivables(receivablesParams);
+  const {
+    rows: agingRows,
+    isLoading: isLoadingAging,
+    isFetching: isFetchingAging,
+  } = useReceivablesAging(receivablesParams);
+
+  const shopId = useAuthStore((s) => s.user?.shopId);
+  const { owedByShop } = useShopDebtSummary(shopId);
+
   const hasFilters = Boolean(status || agingBucket || fromDate || toDate);
 
   // Any filter change invalidates the current page number.
@@ -58,6 +83,13 @@ export function ClientDebtsPage() {
     setAgingBucket('');
     setFromDate('');
     setToDate('');
+    setPage(1);
+  }
+
+  // Clicking a bar filters the list to exactly the debts behind it; clicking the
+  // active one again clears the filter.
+  function handleSelectBucket(bucket: AgingBucket) {
+    setAgingBucket((current) => (current === bucket ? '' : bucket));
     setPage(1);
   }
 
@@ -88,6 +120,85 @@ export function ClientDebtsPage() {
         <p className="text-[14px] text-ink-500 mt-1">
           {total > 0 ? l.count.replace('{n}', String(total)) : l.header.subtitle}
         </p>
+      </div>
+
+      {/* KPI row — what customers owe this shop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <KpiCard
+          icon={Wallet}
+          iconBg="bg-amber-100"
+          iconColor="text-amber-700"
+          label={rc.cards.remaining}
+          value={isLoadingSummary ? '—' : formatMoney(summary.total_remaining)}
+          sub={rc.cards.remainingSub}
+        />
+        <KpiCard
+          icon={HandCoins}
+          iconBg="bg-success-100"
+          iconColor="text-success-700"
+          label={rc.cards.collected}
+          value={isLoadingSummary ? '—' : formatMoney(summary.total_collected)}
+          sub={rc.cards.collectedSub}
+        />
+        <KpiCard
+          icon={FileText}
+          iconBg="bg-sand-200"
+          iconColor="text-ink-600"
+          label={rc.cards.openCount}
+          value={isLoadingSummary ? '—' : summary.open_count}
+          sub={rc.cards.openCountSub}
+        />
+        {/* Only worth a tile when there is actually something to refund; otherwise
+            show total billed, which is always meaningful. */}
+        {isPositiveMoney(summary.refund_due) ? (
+          <KpiCard
+            icon={AlertCircle}
+            iconBg="bg-warning-100"
+            iconColor="text-warning-700"
+            label={rc.cards.refundDue}
+            value={formatMoney(summary.refund_due)}
+            sub={rc.cards.refundDueSub}
+          />
+        ) : (
+          <KpiCard
+            icon={FileText}
+            iconBg="bg-sand-200"
+            iconColor="text-ink-600"
+            label={rc.cards.billed}
+            value={isLoadingSummary ? '—' : formatMoney(summary.total_billed)}
+            sub={rc.cards.billedSub}
+          />
+        )}
+      </div>
+
+      {/* Aging — click a bar to filter the list below */}
+      <div className="mb-4">
+        <CardShell title={rc.aging.title} noPadding>
+          <p className="px-5 pt-4 text-[13px] text-ink-400">{rc.aging.subtitle}</p>
+          <ReceivablesAgingChart
+            rows={agingRows}
+            isLoading={isLoadingAging}
+            isFetching={isFetchingAging}
+            activeBucket={agingBucket}
+            onSelectBucket={handleSelectBucket}
+            localeCode={locale === 'ar' ? 'ar-SA' : 'en-US'}
+            labels={{
+              amount: rc.aging.amount,
+              count: rc.aging.count,
+              empty: rc.aging.empty,
+              bucketNames: t.debts.bucket,
+            }}
+          />
+        </CardShell>
+      </div>
+
+      {/* The other side of the ledger — read-only, never netted against the above */}
+      <div className="mb-4">
+        <OwedToWarehouseCard
+          summary={owedByShop}
+          currency={t.debts.currency}
+          labels={rc.owedByShop}
+        />
       </div>
 
       <DebtsTableCard
