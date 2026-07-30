@@ -427,6 +427,7 @@
     "modal": {
       "title": "تأكيد البيع",
       "intro": "سيتم خصم الأصناف التالية من مخزونك:",
+      "itemsToggle": "{count} أصناف",
       "notesLabel": "ملاحظات (اختياري)",
       "notesPlaceholder": "أي ملاحظات على هذه العملية…",
       "confirmBtn": "تأكيد البيع",

@@ -10,6 +10,11 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg';
+  /**
+   * Pinned below the scroll area. Actions passed here stay reachable no matter
+   * how tall the body grows; actions left inside `children` scroll away with it.
+   */
+  footer?: React.ReactNode;
 }
 
 const sizeClasses = {
@@ -23,7 +28,7 @@ const sizeClasses = {
 // open, and the page scrolls behind it.
 let openModalCount = 0;
 
-export function Modal({ open, onClose, title, children, size = 'md' }: ModalProps) {
+export function Modal({ open, onClose, title, children, size = 'md', footer }: ModalProps) {
   useEffect(() => {
     if (!open) return;
     openModalCount += 1;
@@ -37,15 +42,20 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    // Bottom sheet on phones, centred dialog from `sm` up.
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className={cn('relative z-10 w-full rounded-lg bg-white p-6 shadow-xl', sizeClasses[size])}
+        className={cn(
+          'relative z-10 flex w-full flex-col overflow-hidden bg-white shadow-xl',
+          'max-h-[92dvh] rounded-t-2xl sm:max-h-[85dvh] sm:rounded-lg',
+          sizeClasses[size]
+        )}
       >
-        <div className="mb-4 flex items-center justify-between">
+        <div className="flex shrink-0 items-center justify-between px-6 pb-4 pt-6">
           <h2 id="modal-title" className="text-lg font-semibold text-gray-900">
             {title}
           </h2>
@@ -57,7 +67,12 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
             <X className="h-5 w-5" />
           </button>
         </div>
-        {children}
+
+        {/* The one scroll container. Everything tall lives here so the header and
+            footer stay put instead of being pushed off-screen. */}
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6">{children}</div>
+
+        {footer && <div className="shrink-0 border-t border-border px-6 py-4">{footer}</div>}
       </div>
     </div>
   );

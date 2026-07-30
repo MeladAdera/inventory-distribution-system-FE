@@ -427,6 +427,7 @@
     "modal": {
       "title": "Confirm sale",
       "intro": "The following items will be deducted from your stock:",
+      "itemsToggle": "{count} items",
       "notesLabel": "Notes (optional)",
       "notesPlaceholder": "Any notes for this sale…",
       "confirmBtn": "Confirm sale",

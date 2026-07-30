@@ -318,6 +318,7 @@ export function ClientSellPage() {
           totalPrice: sel.tray.totalPrice,
           notesLabel: sel.modal.notesLabel,
           notesPlaceholder: sel.modal.notesPlaceholder,
+          itemsToggle: sel.modal.itemsToggle,
           confirmBtn: sel.modal.confirmBtn,
           cancelBtn: sel.modal.cancelBtn,
           markFreeLabel: sel.modal.markFreeLabel,

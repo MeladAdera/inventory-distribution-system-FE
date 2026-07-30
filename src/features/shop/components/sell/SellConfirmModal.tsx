@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Loader2, Receipt } from 'lucide-react';
+import { ChevronDown, Loader2, Receipt } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
+import { cn } from '@/common/utils/cn';
 import { formatMoney, compareMoney, isValidMoneyInput, subMoney } from '@/common/utils/money';
 import { ProductThumb } from '@/features/shared/products/components/ProductThumb';
 import { CustomerPicker } from '@/features/shop/customers/components/CustomerPicker';
@@ -37,6 +38,7 @@ interface SellConfirmModalProps {
     totalPrice: string;
     notesLabel: string;
     notesPlaceholder: string;
+    itemsToggle: string;
     confirmBtn: string;
     cancelBtn: string;
     markFreeLabel: string;
@@ -79,10 +81,14 @@ export function SellConfirmModal({
   const [mode, setMode] = useState<SellPaymentMode>('PAID');
   const [customerId, setCustomerId] = useState<number | null>(null);
   const [paidInput, setPaidInput] = useState('');
+  // null = follow the default (short lists open, long ones folded away so the
+  // payment controls are on screen without scrolling); a boolean = user's choice.
+  const [itemsOverride, setItemsOverride] = useState<boolean | null>(null);
 
   const c = labels.credit;
   const isCredit = mode !== 'PAID';
   const trimmedPaid = paidInput.trim();
+  const itemsOpen = itemsOverride ?? items.length <= 3;
 
   const amountError =
     mode === 'PARTIAL' && trimmedPaid !== ''
@@ -96,6 +102,15 @@ export function SellConfirmModal({
   const needsCustomer = isCredit && customerId === null;
   const needsAmount = mode === 'PARTIAL' && trimmedPaid === '';
 
+  // What the customer walks out owing, kept pinned in the footer so it stays
+  // visible while they scroll through the picker and the amount field.
+  const owedMoney =
+    mode === 'CREDIT'
+      ? totalMoney
+      : mode === 'PARTIAL' && trimmedPaid !== '' && !amountError
+        ? subMoney(totalMoney, trimmedPaid)
+        : null;
+
   const canSubmit =
     items.length > 0 && !isSubmitting && !amountError && !needsCustomer && !needsAmount;
 
@@ -105,6 +120,7 @@ export function SellConfirmModal({
     setMode('PAID');
     setCustomerId(null);
     setPaidInput('');
+    setItemsOverride(null);
   }
 
   function handleClose() {
@@ -144,37 +160,99 @@ export function SellConfirmModal({
   ];
 
   return (
-    <Modal open={open} onClose={handleClose} title={labels.title} size="md">
-      <p className="text-[14px] text-ink-600 mb-4">{labels.intro}</p>
-
-      <div className="flex flex-col max-h-40 overflow-y-auto mb-4">
-        {items.map(({ item, qty }) => (
-          <div
-            key={item.id}
-            className="flex items-center gap-3 py-2.5 border-b border-border last:border-0"
-          >
-            <ProductThumb id={item.product_id} size={28} />
-            <span className="flex-1 text-[14px] text-ink-800 truncate">{item.product_name}</span>
-            <span className="font-mono text-[13px] font-semibold text-ink-900 shrink-0">
-              ×{qty}
+    <Modal
+      open={open}
+      onClose={handleClose}
+      title={labels.title}
+      size="md"
+      footer={
+        <div className="flex flex-col gap-3">
+          <div className="flex items-baseline justify-between gap-3 text-[13px]">
+            <span className="text-ink-600">
+              {labels.totalPrice}:{' '}
+              <span className="font-mono font-bold text-ink-900 tabular-nums">
+                {formatMoney(totalPrice)}
+              </span>
             </span>
+            {owedMoney && (
+              <span className="text-ink-600">
+                {c.remainingLabel}:{' '}
+                <span className="font-mono font-bold text-amber-700 tabular-nums">
+                  {formatMoney(owedMoney)}
+                </span>
+              </span>
+            )}
           </div>
-        ))}
-      </div>
 
-      <p className="text-[13px] text-ink-600 mb-1">
-        {labels.totalUnits}:{' '}
-        <span className="font-mono font-bold text-ink-900 tabular-nums">{totalUnits}</span>
-      </p>
-      <p className="text-[13px] text-ink-600 mb-4">
-        {labels.totalPrice}:{' '}
-        <span className="font-mono font-bold text-amber-600 tabular-nums">
-          {formatMoney(totalPrice)}
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={handleClose}
+              disabled={isSubmitting}
+              className="px-4 py-2 rounded-lg border border-border text-[14px] font-medium text-ink-700 hover:bg-sand-100 transition-colors disabled:opacity-60"
+            >
+              {labels.cancelBtn}
+            </button>
+            <button
+              onClick={handleConfirm}
+              disabled={!canSubmit}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-600 text-[14px] font-semibold text-white hover:bg-amber-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Receipt size={14} />
+              )}
+              {labels.confirmBtn}
+            </button>
+          </div>
+        </div>
+      }
+    >
+      <p className="text-[14px] text-ink-600 mb-3">{labels.intro}</p>
+
+      {/* ── Items, folded by default on long trays ── */}
+      <button
+        type="button"
+        onClick={() => setItemsOverride(!itemsOpen)}
+        aria-expanded={itemsOpen}
+        className={cn(
+          'w-full flex items-center justify-between gap-2 px-3 h-10 bg-page border border-border text-[13px] font-medium text-ink-700 hover:bg-sand-100 transition-colors',
+          itemsOpen ? 'rounded-t-lg' : 'rounded-lg'
+        )}
+      >
+        <span className="flex min-w-0 items-center gap-2">
+          <ChevronDown
+            size={14}
+            className={cn('shrink-0 text-ink-400 transition-transform', itemsOpen && 'rotate-180')}
+          />
+          <span className="truncate">
+            {labels.itemsToggle.replace('{count}', String(items.length))}
+          </span>
         </span>
-      </p>
+        <span className="shrink-0 font-mono text-ink-900 tabular-nums">
+          {labels.totalUnits}: {totalUnits}
+        </span>
+      </button>
+
+      {itemsOpen && (
+        <div className="flex flex-col px-3 border border-border border-t-0 rounded-b-lg">
+          {items.map(({ item, qty }) => (
+            <div
+              key={item.id}
+              className="flex items-center gap-3 py-2.5 border-b border-border last:border-0"
+            >
+              <ProductThumb id={item.product_id} size={28} />
+              <span className="flex-1 text-[14px] text-ink-800 truncate">{item.product_name}</span>
+              <span className="font-mono text-[13px] font-semibold text-ink-900 shrink-0">
+                ×{qty}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ── Payment mode ── */}
-      <p className="text-[12px] font-medium text-ink-500 mb-1.5">{c.modeLabel}</p>
+      <p className="text-[12px] font-medium text-ink-500 mt-4 mb-1.5">{c.modeLabel}</p>
       <div className="flex gap-1 p-1 bg-page border border-border rounded-lg mb-3">
         {modes.map((m) => (
           <button
@@ -219,28 +297,10 @@ export function SellConfirmModal({
                   amountError ? 'border-danger-700' : 'border-border focus:border-amber-500'
                 }`}
               />
-              {amountError ? (
-                <p className="mt-1 text-[12px] text-danger-700">{amountError}</p>
-              ) : (
-                trimmedPaid !== '' && (
-                  <p className="mt-1 text-[12px] text-ink-500">
-                    {c.remainingLabel}:{' '}
-                    <span className="font-mono font-bold text-amber-700 tabular-nums">
-                      {formatMoney(subMoney(totalMoney, trimmedPaid))}
-                    </span>
-                  </p>
-                )
-              )}
+              {/* The running remainder lives in the pinned footer; only the
+                  error needs to sit next to the field it belongs to. */}
+              {amountError && <p className="mt-1 text-[12px] text-danger-700">{amountError}</p>}
             </div>
-          )}
-
-          {mode === 'CREDIT' && (
-            <p className="text-[12px] text-ink-500">
-              {c.remainingLabel}:{' '}
-              <span className="font-mono font-bold text-amber-700 tabular-nums">
-                {formatMoney(totalMoney)}
-              </span>
-            </p>
           )}
 
           {needsCustomer && customers.length > 0 && (
@@ -278,24 +338,6 @@ export function SellConfirmModal({
           </span>
         </span>
       </label>
-
-      <div className="flex justify-end gap-2 pt-4 border-t border-border mt-4">
-        <button
-          onClick={handleClose}
-          disabled={isSubmitting}
-          className="px-4 py-2 rounded-lg border border-border text-[14px] font-medium text-ink-700 hover:bg-sand-100 transition-colors disabled:opacity-60"
-        >
-          {labels.cancelBtn}
-        </button>
-        <button
-          onClick={handleConfirm}
-          disabled={!canSubmit}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-600 text-[14px] font-semibold text-white hover:bg-amber-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : <Receipt size={14} />}
-          {labels.confirmBtn}
-        </button>
-      </div>
     </Modal>
   );
 }
