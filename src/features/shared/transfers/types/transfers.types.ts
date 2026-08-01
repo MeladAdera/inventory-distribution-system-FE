@@ -1,59 +1,24 @@
-export enum TransferStatus {
-  PENDING = 'PENDING',
-  PROCESSING = 'PROCESSING',
-  SHIPPED = 'SHIPPED',
-  RECEIVED = 'RECEIVED',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-}
+// A "transfer" is an order. The admin portal shipped under the transfer name while
+// the shop portal used order, but both read and write the same `/orders` resource,
+// so these are aliases onto the canonical types — not a second model.
+//
+// Kept as aliases rather than renamed outright so the admin components can migrate
+// in their own commit instead of one sweeping rename.
+export {
+  OrderStatus as TransferStatus,
+  NEXT_STATUS,
+} from '@/features/shared/orders/types/orders.types';
 
-export interface TransferItem {
-  product_id: number;
-  product_name: string;
-  quantity: number;
-  price: number;
-}
+export type {
+  Order as Transfer,
+  OrderItem as TransferItem,
+  OrderListParams as TransferListParams,
+  CreateOrderItem as TransferOrderItem,
+  CreateOrderInput as CreateTransferInput,
+  UpdateOrderStatusInput as UpdateTransferStatusInput,
+} from '@/features/shared/orders/types/orders.types';
 
-export interface Transfer {
-  id: number;
-  from_shop_id: number;
-  to_shop_id: number;
-  to_shop_name?: string;
-  status: TransferStatus;
-  total_items: number;
-  total_price?: number;
-  created_at: string;
-  updated_at: string;
-  items?: TransferItem[];
-}
-
-export interface TransferListParams {
-  page?: number;
-  limit?: number;
-  status?: TransferStatus;
-  shop_id?: number;
-}
-
-export interface TransferOrderItem {
-  productId: number;
-  quantity: number;
-}
-
-export interface CreateTransferInput {
-  items: TransferOrderItem[];
-  shopId?: number;
-}
-
-export interface UpdateTransferStatusInput {
-  status: TransferStatus;
-}
-
-export const NEXT_STATUS: Partial<Record<TransferStatus, TransferStatus>> = {
-  [TransferStatus.PENDING]: TransferStatus.PROCESSING,
-  [TransferStatus.PROCESSING]: TransferStatus.SHIPPED,
-  [TransferStatus.RECEIVED]: TransferStatus.COMPLETED,
-};
-
+/** UI-only: seeds the create-transfer modal from the shortages page. */
 export interface TransferPrefill {
   productId?: number;
   quantity?: number;

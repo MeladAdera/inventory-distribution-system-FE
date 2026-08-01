@@ -1,4 +1,5 @@
 import { apiClient } from '@/common/api';
+import { ordersApi } from '@/features/shared/orders/api/orders.api';
 import { ProductSource } from '@/features/shared/products/types/products.types';
 import { ShopType } from '@/features/admin/shops/types/shops.types';
 import type {
@@ -7,26 +8,17 @@ import type {
   UpdateTransferStatusInput,
 } from '../types/transfers.types';
 
+// There is no /transfers resource — this is the /orders API. The four core calls
+// delegate to ordersApi so the endpoints live in one place; the two lookups below
+// are admin-form helpers that ordersApi has no reason to carry.
 export const transfersApi = {
-  list: async (params?: TransferListParams) => {
-    const response = await apiClient.get('/orders', { params });
-    return response.data;
-  },
+  list: (params?: TransferListParams) => ordersApi.list(params),
 
-  getById: async (id: number) => {
-    const response = await apiClient.get(`/orders/${id}`);
-    return response.data;
-  },
+  getById: (id: number) => ordersApi.getById(id),
 
-  create: async (data: CreateTransferInput) => {
-    const response = await apiClient.post('/orders', data);
-    return response.data;
-  },
+  create: (data: CreateTransferInput) => ordersApi.create(data),
 
-  updateStatus: async (id: number, data: UpdateTransferStatusInput) => {
-    const response = await apiClient.patch(`/orders/${id}/status`, data);
-    return response.data;
-  },
+  updateStatus: (id: number, data: UpdateTransferStatusInput) => ordersApi.updateStatus(id, data),
 
   getShops: async () => {
     const response = await apiClient.get('/shops', {

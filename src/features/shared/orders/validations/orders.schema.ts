@@ -10,6 +10,8 @@ export const createOrderSchema = z.object({
       })
     )
     .min(1, 'At least one item is required'),
+  // Admin only — a shop owner's destination is inferred from their token.
+  shopId: z.number().positive().optional(),
 });
 
 export const updateOrderStatusSchema = z.object({
