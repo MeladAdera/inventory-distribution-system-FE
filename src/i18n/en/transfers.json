@@ -1,8 +1,8 @@
 {
   "page": {
-    "title": "Inventory transfers",
-    "count": "{n} transfers",
-    "newTransfer": " New transfer"
+    "title": "Orders",
+    "count": "{n} orders",
+    "newTransfer": "New order"
   },
   "toolbar": {
     "allShops": "All shops",
@@ -10,7 +10,7 @@
     "export": "Export"
   },
   "table": {
-    "date": "Transfer date",
+    "date": "Order date",
     "shop": "Shop",
     "product": "Product",
     "qty": "Qty",
@@ -20,7 +20,7 @@
     "viewBtn": "View"
   },
   "detail": {
-    "title": "Transfer details",
+    "title": "Order details",
     "shop": "Shop",
     "productsLabel": "Requested products",
     "qty": "Qty",
@@ -44,11 +44,11 @@
     "awaitingReceipt": "Awaiting receipt"
   },
   "emptyState": {
-    "title": "No transfers yet",
-    "sub": "Create a new transfer to move stock to your clients."
+    "title": "No orders yet",
+    "sub": "Create a new order to move stock to your clients."
   },
   "modal": {
-    "title": "New transfer",
+    "title": "New order",
     "shopLabel": "Destination shop",
     "shopPlaceholder": "Select a shop",
     "productLabel": "Product",
@@ -58,7 +58,7 @@
     "availableBanner": "Available in warehouse: {n} units",
     "exceedsBanner": "Quantity exceeds available stock",
     "zeroStockBanner": "Available quantity is 0",
-    "confirm": "Confirm transfer",
+    "confirm": "Confirm order",
     "cancel": "Cancel",
     "errShop": "Please select a destination shop",
     "errProduct": "Please select a product",
@@ -72,9 +72,9 @@
     "showing": "Showing {n} of {total}"
   },
   "toast": {
-    "success": "Transfer created successfully",
+    "success": "Order created successfully",
     "statusUpdated": "Status updated successfully",
-    "error": "Failed to create transfer. One or more products may be out of stock.",
+    "error": "Failed to create order. One or more products may be out of stock.",
     "cancelSuccess": "Order cancelled successfully",
     "cancelError": "Failed to cancel order. Please try again."
   }

@@ -32,7 +32,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     { href: '/profit', icon: TrendingUp, label: s.profit },
     { href: '/categories', icon: Tag, label: s.categories },
     { href: '/shortages', icon: TrendingDown, label: s.shortages },
-    { href: '/transfers', icon: Truck, label: s.transfers },
+    { href: '/orders', icon: Truck, label: s.orders },
     { href: '/audit-logs', icon: ScrollText, label: s.auditLogs },
     { href: '/settings', icon: Settings, label: s.settings },
   ];

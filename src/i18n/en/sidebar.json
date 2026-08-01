@@ -8,7 +8,7 @@
     "inventory": "Inventory",
     "categories": "Categories",
     "clients": "Clients",
-    "transfers": "Transfers",
+    "orders": "Orders",
     "shortages": "Shortages",
     "receipts": "Receipts",
     "auditLogs": "Audit Logs",

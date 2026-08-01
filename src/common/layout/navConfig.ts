@@ -30,8 +30,8 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'categories', href: '/categories', icon: Tag, section: 'main' },
   { id: 'clients', href: '/clients', icon: Users, section: 'main' },
   {
-    id: 'transfers',
-    href: '/transfers',
+    id: 'orders',
+    href: '/orders',
     icon: Truck,
     section: 'main',
     badge: 8,

@@ -11,6 +11,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // The admin order list lived at /transfers until it was renamed to match
+      // the /orders resource it always read. Kept non-permanent so browsers
+      // don't cache a 308 for a path we may reuse.
+      { source: '/transfers', destination: '/orders', permanent: false },
+    ];
+  },
 };
 
 const withSerwist = withSerwistInit({
