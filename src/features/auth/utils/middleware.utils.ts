@@ -5,16 +5,26 @@ import { UserRole } from '@/features/auth/types/enums';
 // Must match the cookie name set by tokenUtils.setTokens
 const AUTH_COOKIE_NAME = 'auth_token';
 
+// Every page under src/app/(admin). Anything shipped there but missing from this
+// list renders its shell to a shop owner instead of redirecting them out — the API
+// still 401s, so nothing leaks, but the wrong portal appears.
 const ADMIN_ROUTES = [
   ROUTES.DASHBOARD,
   ROUTES.PROFIT,
   ROUTES.INVENTORY,
   ROUTES.ORDERS,
+  ROUTES.TRANSFERS,
   ROUTES.PRODUCTS,
+  ROUTES.CATEGORIES,
+  ROUTES.CLIENTS,
   ROUTES.SHOPS,
   ROUTES.USERS,
+  ROUTES.RECEIPTS,
+  ROUTES.SHORTAGES,
+  ROUTES.DEBTS,
   ROUTES.NOTIFICATIONS,
   ROUTES.AUDIT_LOGS,
+  ROUTES.SETTINGS,
 ];
 
 // Signed-in users have no business here — password recovery is for locked-out users,
