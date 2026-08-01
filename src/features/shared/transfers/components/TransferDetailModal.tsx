@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
 import { ProductThumb } from '@/features/shared/products/components/ProductThumb';
 import { ClientAvatar } from '@/features/admin/clients/components/ClientAvatar';
+import { OrderDebtBlock } from '@/features/shared/debts/components/OrderDebtBlock';
 import { cn } from '@/common/utils/cn';
 import { useI18n } from '@/providers/I18nProvider';
 import { TransferStatus, NEXT_STATUS } from '../types/transfers.types';
@@ -170,6 +171,9 @@ export function TransferDetailModal({
           </div>
         )}
       </div>
+
+      {/* What the shop still owes for this order, once it has shipped */}
+      <OrderDebtBlock orderId={transfer.id} orderStatus={transfer.status} />
 
       {/* Footer */}
       <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
