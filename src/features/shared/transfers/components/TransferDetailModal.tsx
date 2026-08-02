@@ -173,7 +173,12 @@ export function TransferDetailModal({
       </div>
 
       {/* What the shop still owes for this order, once it has shipped */}
-      <OrderDebtBlock orderId={transfer.id} orderStatus={transfer.status} />
+      <OrderDebtBlock
+        orderId={transfer.id}
+        orderStatus={transfer.status}
+        canRecordPayment={isAdmin}
+        shopName={shopName}
+      />
 
       {/* Footer */}
       <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">

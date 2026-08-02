@@ -1,10 +1,10 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { OrderStatus } from '@/features/shared/orders/types/orders.types';
 import { debtsApi } from '../api/debts.api';
-import type { Debt } from '../types/debts.types';
+import type { Debt, RecordPaymentInput } from '../types/debts.types';
 
 // A debt is created when an order ships unpaid, so before shipping there is
 // nothing to ask about. Skipping the request here keeps the detail modal from
@@ -52,5 +52,35 @@ export function useOrderDebt(orderId: number | null, orderStatus?: OrderStatus) 
     nothingOwed: query.isSuccess && debt === null,
     isLoading: query.isLoading,
     error: query.error,
+  };
+}
+
+/**
+ * Record money the warehouse received from a shop against one order.
+ *
+ * Admin only — the shop owner cannot pay down their own order debt, because
+ * the warehouse is the party that physically takes the money.
+ *
+ * Unlike collecting from a customer, this settles exactly one debt: there is no
+ * shop-level FIFO endpoint, so payment is always order-scoped.
+ */
+export function useRecordOrderPayment(orderId: number | null) {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (data: RecordPaymentInput) => debtsApi.recordOrderPayment(orderId as number, data),
+    // Money moving changes this order's balance, the shop-wide ledger, and the
+    // receivables totals the KPI row and aging chart read from.
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['debts'], refetchType: 'all' }),
+        queryClient.invalidateQueries({ queryKey: ['analytics'], refetchType: 'all' }),
+      ]);
+    },
+  });
+
+  return {
+    recordPayment: mutation.mutateAsync,
+    isRecording: mutation.isPending,
   };
 }
