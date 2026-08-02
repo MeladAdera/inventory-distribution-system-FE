@@ -92,7 +92,43 @@
       "editBtn": "Edit",
       "close": "Close",
       "loadError": "Could not load this customer."
-    }
+    },
+    "exportBtn": "Export",
+    "exporting": "Preparing…",
+    "exportEmpty": "Nothing to export.",
+    "exportDone": "Exported {n} customers.",
+    "exportFailed": "Could not build the export.",
+    "stats": {
+      "total": "Total customers",
+      "withDebt": "Owe you",
+      "outstanding": "Total outstanding",
+      "openInvoices": "Unpaid invoices"
+    },
+    "views": {
+      "all": "All",
+      "hasDebt": "Owe you",
+      "removed": "Incl. removed"
+    },
+    "sort": {
+      "label": "Sort",
+      "sortedBy": "Sorted by: {name}",
+      "pageOnly": "Sorts the customers on this page.",
+      "debtDesc": "Highest owed",
+      "oldestDebt": "Longest overdue",
+      "newest": "Newest first",
+      "name": "Name (A–Z)"
+    },
+    "since": "Customer since {year}",
+    "due": {
+      "soon": "Due soon",
+      "one": "1 day overdue",
+      "two": "2 days overdue",
+      "few": "{n} days overdue",
+      "many": "{n} days overdue"
+    },
+    "callBtn": "Call",
+    "collectBtn": "Collect payment",
+    "footer": "{shown} of {total} customers"
   },
   "collect": {
     "title": "Collect payment",

@@ -32,6 +32,50 @@ export interface CustomerListParams {
   includeInactive?: boolean;
 }
 
+/**
+ * Which slice of the list the toolbar is showing. `REMOVED` widens the list to
+ * include deactivated customers rather than narrowing it to only those — the
+ * API offers `includeInactive`, not an "inactive only" filter, and faking one
+ * client-side would make the row count disagree with the pagination.
+ */
+export enum CustomerView {
+  ALL = 'ALL',
+  HAS_DEBT = 'HAS_DEBT',
+  REMOVED = 'REMOVED',
+}
+
+/**
+ * Row ordering. Applied client-side over the loaded page — `GET /customers` has
+ * no sort parameter, so this reorders what is on screen, not the whole ledger.
+ */
+export enum CustomerSort {
+  /** Most owed first — who to chase today. */
+  DEBT_DESC = 'DEBT_DESC',
+  /** Longest-unpaid sale first. */
+  OLDEST_DEBT = 'OLDEST_DEBT',
+  NEWEST = 'NEWEST',
+  NAME = 'NAME',
+}
+
+/**
+ * A list row with the aging of its oldest unpaid sale resolved.
+ *
+ * `oldest_debt_age_days` is null when nothing is owed. It is derived from the
+ * debts ledger, not carried on the customer record — see `useCustomerRows`.
+ */
+export interface CustomerRow extends Customer {
+  oldest_debt_age_days: number | null;
+}
+
+/** Shop-wide receivables totals for the header cards. Never page-scoped. */
+export interface CustomerStats {
+  totalCustomers: number;
+  withDebtCount: number;
+  /** Money string — sum still owed across every customer. */
+  totalOutstanding: string;
+  openInvoices: number;
+}
+
 export interface CreateCustomerInput {
   name: string;
   phone?: string;

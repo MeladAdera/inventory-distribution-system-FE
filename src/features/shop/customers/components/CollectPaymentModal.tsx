@@ -21,6 +21,13 @@ interface CollectPaymentModalProps {
   openDebts: DebtListItem[];
   onCollect: (data: CollectPaymentInput) => Promise<{ data: PaymentApplication[] }>;
   isCollecting: boolean;
+  /**
+   * True while the customer's debts are still being fetched. Opening this modal
+   * straight from a list row starts that fetch, so without the guard the form
+   * would flash "owes 0.00" and an empty sale picker before the real numbers
+   * land — and a payment typed into that window would target nothing.
+   */
+  isLoadingDebts?: boolean;
   currency: string;
   labels: {
     title: string;
@@ -61,6 +68,7 @@ export function CollectPaymentModal({
   openDebts,
   onCollect,
   isCollecting,
+  isLoadingDebts = false,
   currency,
   labels,
 }: CollectPaymentModalProps) {
@@ -162,6 +170,17 @@ export function CollectPaymentModal({
           >
             {labels.resultDone}
           </button>
+        </div>
+      </Modal>
+    );
+  }
+
+  // ── Waiting on this customer's open sales ──
+  if (isLoadingDebts) {
+    return (
+      <Modal open={open} onClose={onClose} title={labels.title} size="md">
+        <div className="flex items-center justify-center py-12 text-ink-400">
+          <Loader2 size={20} className="animate-spin" />
         </div>
       </Modal>
     );

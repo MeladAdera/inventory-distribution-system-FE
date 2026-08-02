@@ -9,6 +9,12 @@ import type {
   UpdateCustomerInput,
 } from '../types/customers.types';
 
+// An export is of everything matching the current filters, not of the page the
+// user happens to be on — a 15-row CSV from a 200-customer book is a bug report
+// waiting to happen. Anything beyond this is truncated rather than hanging the
+// browser; at that size the list belongs in a report, not a spreadsheet.
+const EXPORT_LIMIT = 1000;
+
 /**
  * Paginated customers list plus create/update/deactivate.
  *
@@ -51,11 +57,28 @@ export function useCustomers(params?: CustomerListParams) {
     },
   });
 
+  /**
+   * Every customer matching the active filters, for the CSV export.
+   *
+   * `fetchQuery` rather than a second `useQuery`: this must run on click, not
+   * on render, and it reuses the cache if the same wide page was already
+   * fetched. Returns the rows and leaves formatting to the caller.
+   */
+  async function fetchAllForExport(): Promise<Customer[]> {
+    const exportParams = { ...params, page: 1, limit: EXPORT_LIMIT };
+    const result = await queryClient.fetchQuery({
+      queryKey: ['customers', exportParams],
+      queryFn: () => customersApi.list(exportParams),
+    });
+    return result?.data?.data ?? [];
+  }
+
   const customers: Customer[] = listQuery.data?.data?.data ?? [];
   const total: number = listQuery.data?.data?.total ?? 0;
   const totalPages: number = listQuery.data?.data?.totalPages ?? 1;
 
   return {
+    fetchAllForExport,
     customers,
     total,
     totalPages,

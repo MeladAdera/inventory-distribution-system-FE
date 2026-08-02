@@ -10,6 +10,26 @@ export function formatMoney(value: string | number): string {
   return Number.isFinite(n) ? String(Number(n.toFixed(2))) : '';
 }
 
+/**
+ * Format a monetary value with thousands separators and exactly 2 decimals:
+ * 1952.79 → "1,952.79", 145 → "145.00".
+ *
+ * Use this where amounts sit in a column and are meant to be compared at a
+ * glance — a fixed decimal count keeps the digits aligned, and the grouping
+ * makes four- and five-figure balances readable. `formatMoney` stays the
+ * default for inline prose, where trailing zeros only add noise.
+ *
+ * Always Latin digits, even in Arabic: the rest of the app renders money with
+ * `tabular-nums` in a mono face and mixing numeral systems breaks that column.
+ *
+ * Display only. For arithmetic use the minor-unit helpers below.
+ */
+export function formatMoneyGrouped(value: string | number): string {
+  const n = typeof value === 'string' ? Number(value) : value;
+  if (!Number.isFinite(n)) return '';
+  return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 // ── Minor-unit arithmetic ───────────────────────────────────────────────────
 // The API sends and receives every money field as a 2-decimal string ("50.00").
 // Adding those as JS floats eventually yields 0.30000000000000004 and a balance
