@@ -1,20 +1,17 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Loader2, AlertTriangle } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers';
 import { getErrorMessage } from '@/common/utils/error.utils';
-import { ordersApi } from '@/features/shared/orders/api/orders.api';
 import { OrderStatus } from '@/features/shared/orders/types/orders.types';
-import type { Order } from '@/features/shared/orders/types/orders.types';
 import { TypewriterText } from '@/common/components/TypewriterText';
-import { useClientOrders } from '../hooks/useClientOrders';
+import { useClientOrders, useClientOrderDetail } from '../hooks/useClientOrders';
 import { OrdersTableCard } from './orders/OrdersTableCard';
 import { OrderDetailModal } from './orders/OrderDetailModal';
-import type { ClientOrder, ClientStatusFilter } from '../types/clientOrders.types';
+import type { ClientStatusFilter } from '../types/clientOrders.types';
 
 export function ClientOrdersPage() {
   const { t, locale } = useI18n();
@@ -26,24 +23,8 @@ export function ClientOrdersPage() {
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { data: orderDetailData, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ['order-detail', selectedOrderId],
-    queryFn: () => ordersApi.getById(selectedOrderId!),
-    enabled: !!selectedOrderId,
-  });
-
-  const selectedOrder = useMemo((): ClientOrder | null => {
-    const o: Order | undefined = orderDetailData?.data;
-    if (!o) return null;
-    return {
-      id: o.id,
-      status: o.status,
-      total_items: o.total_items,
-      total_price: o.total_price,
-      created_at: o.created_at,
-      items: o.items ?? [],
-    };
-  }, [orderDetailData]);
+  const { order: selectedOrder, isLoading: isLoadingDetail } =
+    useClientOrderDetail(selectedOrderId);
 
   const {
     orders,

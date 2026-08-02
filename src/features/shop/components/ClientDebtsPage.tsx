@@ -10,6 +10,7 @@ import { CardShell } from '@/features/admin/dashboard/components/CardShell';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import {
   useDebts,
+  useOwedOrderDebts,
   useReceivables,
   useReceivablesAging,
   useShopDebtSummary,
@@ -22,6 +23,7 @@ import {
   DebtorType,
 } from '@/features/shared/debts';
 import type { DebtListItem } from '@/features/shared/debts';
+import { OrderLookupModal } from './orders/OrderLookupModal';
 
 const LIMIT = 15;
 
@@ -39,11 +41,16 @@ export function ClientDebtsPage() {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [selected, setSelected] = useState<DebtListItem | null>(null);
+  const [viewingOrderId, setViewingOrderId] = useState<number | null>(null);
 
   const params = useMemo(
     () => ({
       page,
       limit: LIMIT,
+      // This table is the customer side of the ledger, matching the KPI cards
+      // and aging chart above it. Without the scope the shop's own warehouse
+      // debts land here too, listed under the shop's own name.
+      debtorType: DebtorType.CUSTOMER,
       ...(status ? { status } : {}),
       ...(agingBucket ? { agingBucket } : {}),
       ...(fromDate ? { fromDate } : {}),
@@ -67,6 +74,15 @@ export function ClientDebtsPage() {
 
   const shopId = useAuthStore((s) => s.user?.shopId);
   const { owedByShop } = useShopDebtSummary(shopId);
+
+  // The orders behind that balance. A shop that owes nothing has nothing to
+  // break down, so the request never fires.
+  const owesWarehouse = isPositiveMoney(owedByShop.total_remaining);
+  const {
+    orderDebts,
+    unsettled: unsettledOrderDebts,
+    isLoading: isLoadingOrderDebts,
+  } = useOwedOrderDebts(owesWarehouse);
 
   const hasFilters = Boolean(status || agingBucket || fromDate || toDate);
 
@@ -196,8 +212,17 @@ export function ClientDebtsPage() {
       <div className="mb-4">
         <OwedToWarehouseCard
           summary={owedByShop}
+          orderDebts={orderDebts}
+          unsettled={unsettledOrderDebts}
+          isLoadingOrders={isLoadingOrderDebts}
+          onViewOrder={setViewingOrderId}
           currency={t.debts.currency}
-          labels={rc.owedByShop}
+          locale={locale}
+          labels={{
+            ...rc.owedByShop,
+            orderLabel: l.table.fromOrder,
+            statusNames: t.debts.status,
+          }}
         />
       </div>
 
@@ -266,6 +291,9 @@ export function ClientDebtsPage() {
           reverse: t.debts.reverse,
         }}
       />
+
+      {/* Opened from a row of the warehouse breakdown — what the debt was for */}
+      <OrderLookupModal orderId={viewingOrderId} onClose={() => setViewingOrderId(null)} />
     </div>
   );
 }

@@ -222,11 +222,21 @@
     "owedByShop": {
       "title": "What you owe the warehouse",
       "remaining": "Still owed",
-      "billed": "Total billed",
       "collected": "Paid so far",
-      "openCount": "Open orders",
       "readOnlyHint": "The warehouse records these payments when it receives the money.",
-      "settled": "You're all settled up with the warehouse."
+      "settled": "You're all settled up with the warehouse.",
+      "outOf": "of {total} total · spread across {n} unsettled orders",
+      "ordersTitle": "Orders behind this balance",
+      "tabUnsettled": "Unsettled",
+      "tabAll": "All ({n})",
+      "paidOf": "Paid {paid} of {total}",
+      "noPaymentsYet": "no payment recorded yet",
+      "oldest": "oldest outstanding",
+      "ageDays": "{n} days ago",
+      "detailsBtn": "Details",
+      "footerTotal": "Total remaining across {n} orders",
+      "ordersEmpty": "No unpaid orders to show.",
+      "viewOrder": "View order #{id}"
     },
     "aging": {
       "title": "How old are the debts",

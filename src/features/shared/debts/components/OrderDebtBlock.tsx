@@ -35,10 +35,14 @@ function Figure({ label, value, tone }: { label: string; value: string; tone?: s
  * What a shop still owes the warehouse for one order, and — for the admin —
  * the place to record money against it.
  *
- * Unlike the rest of this module — shared by both portals and parameterised by
- * label props — this block has a single caller and a single voice, so it reads
- * the debts namespace directly rather than threading a dozen strings through
- * the order detail modal.
+ * Rendered on both sides: the admin's transfer modal, where `canRecordPayment`
+ * turns on the collect button, and the shop's own order modal, where it stays
+ * read-only because the warehouse is the party that takes the money.
+ *
+ * Unlike the rest of this module — parameterised by label props — this block
+ * says the same thing in the same voice to everyone, so it reads the debts
+ * namespace directly rather than threading a dozen strings through every order
+ * detail modal that wants it.
  */
 export function OrderDebtBlock({
   orderId,

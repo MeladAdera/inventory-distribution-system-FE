@@ -2,7 +2,9 @@
 
 import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { isPositiveMoney } from '@/common/utils/money';
 import { debtsApi } from '../api/debts.api';
+import { DebtorType, DebtStatus } from '../types/debts.types';
 import type {
   Debt,
   DebtListItem,
@@ -38,6 +40,52 @@ export function useDebts(params?: DebtListParams) {
     totalPages: (query.data?.data?.totalPages as number) ?? 1,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
+    error: query.error,
+  };
+}
+
+// Module-level so the query key stays referentially stable across renders.
+// The 100 cap is a simplification: a shop carrying more than 100 unsettled
+// orders at once would need pagination here.
+const OWED_ORDERS_SCOPE: DebtListParams = { debtorType: DebtorType.SHOP, limit: 100 };
+
+/**
+ * The orders behind what a shop owes the warehouse.
+ *
+ * `GET /debts?debtorType=SHOP` is already scoped server-side to debts the
+ * caller's shop is a party to, so a shop owner gets exactly their own
+ * order-debts — the same call the admin ledger makes, seen from the other side.
+ *
+ * Returns both cuts: `unsettled` is what the balance is actually made of, and
+ * `orderDebts` keeps the settled ones alongside them so the card can offer
+ * recent history without a second request. Split here rather than on the server
+ * because `status` takes a single value and "OPEN or PARTIAL" needs two.
+ *
+ * Cancelled debts are dropped from both — an inert row explains nothing.
+ *
+ * Pass `enabled: false` when the shop owes nothing, to skip the request entirely.
+ */
+export function useOwedOrderDebts(enabled = true) {
+  const query = useQuery({
+    queryKey: ['debts', 'list', OWED_ORDERS_SCOPE],
+    queryFn: () => debtsApi.list(OWED_ORDERS_SCOPE),
+    enabled,
+    staleTime: 0,
+  });
+
+  const rows: DebtListItem[] = query.data?.data?.data ?? [];
+
+  const { orderDebts, unsettled } = useMemo(() => {
+    const live = rows
+      .filter((d) => d.status !== DebtStatus.CANCELLED)
+      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+    return { orderDebts: live, unsettled: live.filter((d) => isPositiveMoney(d.remaining)) };
+  }, [rows]);
+
+  return {
+    orderDebts,
+    unsettled,
+    isLoading: query.isLoading,
     error: query.error,
   };
 }

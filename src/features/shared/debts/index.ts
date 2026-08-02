@@ -1,5 +1,11 @@
 export { debtsApi } from './api/debts.api';
-export { useDebts, useDebtsSummary, useDebtDetail, useDebtPayments } from './hooks/useDebts';
+export {
+  useDebts,
+  useOwedOrderDebts,
+  useDebtsSummary,
+  useDebtDetail,
+  useDebtPayments,
+} from './hooks/useDebts';
 export { useOrderDebt, useRecordOrderPayment } from './hooks/useOrderDebt';
 export { useReceivables, useReceivablesAging, useShopDebtSummary } from './hooks/useReceivables';
 export { DebtStatusBadge } from './components/DebtStatusBadge';
