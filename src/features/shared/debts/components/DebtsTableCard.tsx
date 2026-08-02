@@ -33,6 +33,11 @@ interface DebtsTableCardProps {
   onToDateChange: (value: string) => void;
   onClearFilters: () => void;
   onView: (debt: DebtListItem) => void;
+  /**
+   * Extra toolbar controls, rendered before the clear button. The admin ledger
+   * adds a shop filter here; the shop portal has nothing to add.
+   */
+  extraFilters?: React.ReactNode;
   locale: 'ar' | 'en';
   labels: {
     filters: {
@@ -84,6 +89,7 @@ export function DebtsTableCard({
   onToDateChange,
   onClearFilters,
   onView,
+  extraFilters,
   locale,
   labels,
 }: DebtsTableCardProps) {
@@ -129,6 +135,8 @@ export function DebtsTableCard({
           placeholder={labels.filters.toDate}
           locale={locale}
         />
+
+        {extraFilters}
 
         {hasFilters && (
           <button

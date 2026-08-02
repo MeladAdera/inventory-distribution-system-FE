@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
-import { formatMoney } from '@/common/utils/money';
+import { formatMoney, isPositiveMoney } from '@/common/utils/money';
 import { useDebtDetail, useDebtPayments } from '../hooks/useDebts';
 import { DebtStatusBadge } from './DebtStatusBadge';
 import { PaymentHistoryList } from './PaymentHistoryList';
@@ -27,6 +27,12 @@ interface DebtDetailModalProps {
   /** False for roles that may not reverse (employees), hiding the action outright. */
   canReverse: boolean;
   onReversed?: () => void;
+  /**
+   * Opens the record-payment flow. Passed only by the admin ledger — a shop
+   * owner may not pay down their own order debt, so the shop portal omits it
+   * and the footer stays read-only.
+   */
+  onRecordPayment?: (debt: DebtListItem) => void;
   locale: 'ar' | 'en';
   currency: string;
   labels: {
@@ -43,6 +49,7 @@ interface DebtDetailModalProps {
     reversalOf: string;
     reversedBadge: string;
     reverseBtn: string;
+    payBtn: string;
     close: string;
     statusNames: Record<DebtStatus, string>;
     methodNames: Record<PaymentMethod, string>;
@@ -73,6 +80,7 @@ export function DebtDetailModal({
   debt,
   canReverse,
   onReversed,
+  onRecordPayment,
   locale,
   currency,
   labels,
@@ -167,13 +175,26 @@ export function DebtDetailModal({
           </div>
         )}
 
-        <div className="flex justify-end pt-4 border-t border-border mt-4">
+        <div className="flex justify-end gap-2 pt-4 border-t border-border mt-4">
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-lg border border-border text-[14px] font-medium text-ink-700 hover:bg-sand-100 transition-colors"
           >
             {labels.close}
           </button>
+          {/* Nothing to collect on a settled debt, and a cancelled one is inert. */}
+          {onRecordPayment &&
+            debt &&
+            shown &&
+            isPositiveMoney(shown.remaining) &&
+            shown.status !== DebtStatus.CANCELLED && (
+              <button
+                onClick={() => onRecordPayment(debt)}
+                className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-[14px] font-semibold text-white transition-colors"
+              >
+                {labels.payBtn}
+              </button>
+            )}
         </div>
       </Modal>
 

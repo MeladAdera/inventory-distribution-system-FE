@@ -10,6 +10,7 @@ import {
   Receipt,
   Settings,
   Warehouse,
+  Wallet,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -46,6 +47,7 @@ export const NAV_ITEMS: NavItem[] = [
     badgeVariant: 'danger',
   },
   { id: 'receipts', href: '/receipts', icon: Receipt, section: 'main' },
+  { id: 'debts', href: '/debts', icon: Wallet, section: 'main' },
   { id: 'auditLogs', href: '/audit-logs', icon: ScrollText, section: 'main' },
   { id: 'settings', href: '/settings', icon: Settings, section: 'manage' },
 ];

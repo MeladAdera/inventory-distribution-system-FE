@@ -11,6 +11,7 @@
     "orders": "Orders",
     "shortages": "Shortages",
     "receipts": "Receipts",
+    "debts": "Debts",
     "auditLogs": "Audit Logs",
     "settings": "Settings"
   },
