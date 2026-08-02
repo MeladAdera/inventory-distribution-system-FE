@@ -12,6 +12,13 @@ const NAV_ITEMS = [
   { id: 'clients', href: '/clients', icon: Users },
 ] as const;
 
+/**
+ * What the bottom bar already covers. The More sheet renders the rest of the
+ * sidebar by subtracting these, so the two together always span every admin
+ * page — the nav drawer that would otherwise fill the gap is tablet-only.
+ */
+export const BOTTOM_NAV_IDS: readonly string[] = NAV_ITEMS.map((i) => i.id);
+
 interface BottomNavProps {
   onMoreClick?: () => void;
 }

@@ -2,11 +2,12 @@
 
 import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
-import { Truck, Settings, LogOut, Tag, TrendingDown, TrendingUp, ScrollText } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { NavDrawer } from './NavDrawer';
-import { BottomNav } from './BottomNav';
+import { BottomNav, BOTTOM_NAV_IDS } from './BottomNav';
+import { NAV_ITEMS } from './navConfig';
 import { BottomSheet } from './BottomSheet';
 import { useI18n } from '@/providers/I18nProvider';
 import { useAuth } from '@/features/auth';
@@ -23,19 +24,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
 
   const s = t.bottomnav.sheet as Record<string, string>;
+  const nav = t.sidebar.nav as Record<string, string>;
   const roles = t.sidebar.user.roles as Record<string, string>;
   const displayName = user?.name ?? '';
   const roleLabel = user?.role ? (roles[user.role] ?? user.role) : '';
   const initials = getInitials(displayName);
 
-  const sheetNavItems = [
-    { href: '/profit', icon: TrendingUp, label: s.profit },
-    { href: '/categories', icon: Tag, label: s.categories },
-    { href: '/shortages', icon: TrendingDown, label: s.shortages },
-    { href: '/orders', icon: Truck, label: s.orders },
-    { href: '/audit-logs', icon: ScrollText, label: s.auditLogs },
-    { href: '/settings', icon: Settings, label: s.settings },
-  ];
+  // Derived from the sidebar rather than hand-listed: this sheet and the bottom
+  // bar are the whole of phone navigation, so a page missing from both is
+  // reachable on desktop and simply gone on a phone. Subtracting keeps them in
+  // step whenever a page is added to navConfig.
+  const sheetNavItems = NAV_ITEMS.filter((i) => !BOTTOM_NAV_IDS.includes(i.id));
 
   return (
     <div className="flex h-screen overflow-hidden bg-page">
@@ -62,7 +61,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       >
         {/* Nav items */}
         <div className="-mx-5 -mt-4">
-          {sheetNavItems.map(({ href, icon: Icon, label }) => (
+          {sheetNavItems.map(({ id, href, icon: Icon }) => (
             <Link
               key={href}
               href={href}
@@ -70,7 +69,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               className="flex items-center gap-3 px-5 py-3.5 text-[15px] font-medium text-ink-800 hover:bg-sand-100 transition-colors"
             >
               <Icon size={19} className="text-ink-500 shrink-0" />
-              {label}
+              {nav[id] ?? id}
             </Link>
           ))}
         </div>
