@@ -132,6 +132,34 @@
     "toast": {
       "createSuccess": "Receipt saved successfully",
       "createError": "Failed to save receipt. Please try again."
+    },
+    "eyebrow": "Know what was used and when",
+    "newBtn": "New receipt",
+    "searchPlaceholder": "Search by receipt number or note",
+    "export": {
+      "btn": "Export CSV",
+      "empty": "Nothing to export.",
+      "done": "Exported {n} receipts."
+    },
+    "stats": {
+      "total": "Total receipts",
+      "thisWeek": "This week",
+      "itemsConsumed": "Items consumed",
+      "lastReceipt": "Last receipt"
+    },
+    "views": {
+      "all": "All",
+      "thisWeek": "This week",
+      "withNotes": "With notes"
+    },
+    "groups": {
+      "thisWeek": "This week",
+      "earlier": "Earlier"
+    },
+    "footer": "Showing {shown} of {total} receipts",
+    "emptyFiltered": {
+      "title": "No matching receipts",
+      "sub": "Try a different search, or clear the filters."
     }
   },
   "inventory": {
@@ -249,7 +277,7 @@
   "orders": {
     "title": "My orders",
     "count": "orders",
-    "newOrderBtn": "+ Order products",
+    "newOrderBtn": "Order products",
     "filter": {
       "all": "All statuses",
       "pending": "Pending",
@@ -306,7 +334,33 @@
       "Every order, every detail, right here",
       "Review and follow up on your requests",
       "Your full order history at a glance"
-    ]
+    ],
+    "eyebrow": "All your orders in one place",
+    "searchPlaceholder": "Search by order number",
+    "clearFilters": "Clear filters",
+    "awaitingHint": "Confirm receipt to update your stock",
+    "export": {
+      "btn": "Export CSV",
+      "empty": "Nothing to export.",
+      "done": "Exported {n} orders."
+    },
+    "stats": {
+      "total": "Total orders",
+      "inProgress": "In progress",
+      "awaiting": "Awaiting your confirmation",
+      "lastOrder": "Last order"
+    },
+    "views": {
+      "all": "All",
+      "inProgress": "In progress",
+      "done": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "footer": "Showing {shown} of {total} orders",
+    "emptyFiltered": {
+      "title": "No matching orders",
+      "sub": "Try a different order number, or clear the filters."
+    }
   },
   "order": {
     "title": "New product order",
