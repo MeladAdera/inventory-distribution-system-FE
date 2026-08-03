@@ -8,10 +8,13 @@ import { useToast } from '@/providers';
 import { StatCard, StatCardGrid } from '@/common/components';
 import { downloadCsv, dateStampedName } from '@/common/utils/csv.utils';
 import { isThisWeek } from '@/common/utils/date.utils';
-import { useReceipts, ReceiptDetailModal } from '@/features/shared/receipts';
-import { useReceiptStats } from '../hooks/useReceiptStats';
+import {
+  useReceipts,
+  useReceiptStats,
+  ReceiptDetailModal,
+  ReceiptView,
+} from '@/features/shared/receipts';
 import { ReceiptsTableCard } from './receipts/ReceiptsTableCard';
-import { ReceiptView } from '../types/clientReceipts.types';
 import type { ReceiptListItem } from '@/features/shared/receipts';
 
 const LIMIT = 15;

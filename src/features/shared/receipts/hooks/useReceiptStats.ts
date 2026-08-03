@@ -2,24 +2,36 @@
 
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { receiptsApi } from '@/features/shared/receipts';
-import type { ReceiptListItem } from '@/features/shared/receipts';
 import { startOfWeek } from '@/common/utils/date.utils';
-import type { ReceiptStats } from '../types/clientReceipts.types';
+import { receiptsApi } from '../api/receipts.api';
+import type { ReceiptListItem, ReceiptStats } from '../types/receipts.types';
 
 /**
- * The headline cards are shop-wide, so they can't be read off the page the user
- * happens to be on. `GET /receipts` reports no aggregates, so they are derived
- * from a single wide fetch instead of four separate counting requests.
+ * The headline cards are portal-wide, so they can't be read off the page the
+ * user happens to be on. `GET /receipts` reports no aggregates, so they are
+ * derived from a single wide fetch instead of several counting requests.
  *
  * The cap bounds that fetch. `total` is still exact — it comes from the response
  * envelope, not the rows — so only the summed figures can understate, and only
- * for a shop that has raised more than this many receipts.
+ * once there are more receipts than this in scope.
  */
 const STATS_WINDOW = 500;
 
-const EMPTY: ReceiptStats = { total: 0, thisWeek: 0, itemsConsumed: 0, lastReceiptAt: null };
+const EMPTY: ReceiptStats = {
+  total: 0,
+  thisWeek: 0,
+  itemsConsumed: 0,
+  activeShops: 0,
+  lastReceiptAt: null,
+};
 
+/**
+ * Totals for a receipts page.
+ *
+ * Scope comes from the caller's role, not from an argument: `/receipts` already
+ * returns a shop owner only their own shop and an admin every shop, so the same
+ * hook backs both portals.
+ */
 export function useReceiptStats() {
   const query = useQuery({
     queryKey: ['receipts', { scope: 'stats', limit: STATS_WINDOW }],
@@ -41,6 +53,7 @@ export function useReceiptStats() {
       total,
       thisWeek: live.filter((r) => new Date(r.created_at).getTime() >= weekStart).length,
       itemsConsumed: live.reduce((sum, r) => sum + r.total_items, 0),
+      activeShops: new Set(live.map((r) => r.shop_id)).size,
       // The list arrives newest-first; scan anyway rather than trusting order.
       lastReceiptAt: rows.reduce(
         (newest, r) => (newest === null || r.created_at > newest ? r.created_at : newest),

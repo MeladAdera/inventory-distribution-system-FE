@@ -4,7 +4,7 @@ import { Eye, ReceiptText, Search, X } from 'lucide-react';
 import { DateRangeChip, FilterChips } from '@/common/components';
 import { cn } from '@/common/utils/cn';
 import { isThisWeek } from '@/common/utils/date.utils';
-import { ReceiptView } from '../../types/clientReceipts.types';
+import { ReceiptView } from '@/features/shared/receipts';
 import type { ReceiptListItem } from '@/features/shared/receipts';
 
 function formatDate(iso: string, locale: 'ar' | 'en'): string {

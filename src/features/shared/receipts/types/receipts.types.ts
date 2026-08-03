@@ -91,3 +91,34 @@ export interface ReceiptListParams {
   fromDate?: string;
   toDate?: string;
 }
+
+/**
+ * Which slice of the loaded page a receipts toolbar is showing.
+ *
+ * All three are applied client-side. `GET /receipts` filters by shop and date
+ * range only, so those narrow on the server and these narrow what is on screen —
+ * both portals report the two counts side by side so the gap is never hidden.
+ */
+export enum ReceiptView {
+  ALL = 'ALL',
+  THIS_WEEK = 'THIS_WEEK',
+  WITH_NOTES = 'WITH_NOTES',
+}
+
+/**
+ * Headline figures for a receipts page. Never page-scoped, and always scoped to
+ * what the caller may see: a shop owner's `/receipts` is their own shop, an
+ * admin's is every shop.
+ */
+export interface ReceiptStats {
+  /** Every receipt on record, cancelled ones included. */
+  total: number;
+  /** Receipts raised since the start of this week, cancellations excluded. */
+  thisWeek: number;
+  /** Line items consumed, cancellations excluded — they put the stock back. */
+  itemsConsumed: number;
+  /** Distinct shops that have raised a receipt. Always 1 for a shop owner. */
+  activeShops: number;
+  /** ISO timestamp of the newest receipt, or null when there are none. */
+  lastReceiptAt: string | null;
+}
