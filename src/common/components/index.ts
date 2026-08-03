@@ -11,9 +11,14 @@ export { ConfirmDialog } from './ConfirmDialog';
 export { Pagination } from './Pagination';
 export { PasswordInput } from './PasswordInput';
 export { DatePickerButton } from './DatePickerButton';
+export { DateRangeChip } from './DateRangeChip';
 export { GlobalSearch } from './GlobalSearch';
 export { Reveal } from './Reveal';
 export { CountUp } from './CountUp';
+export { StatCard, StatCardGrid } from './StatCard';
+export type { StatTone } from './StatCard';
+export { FilterChips } from './FilterChips';
+export type { FilterChipOption } from './FilterChips';
 
 // Layout Components
 export {

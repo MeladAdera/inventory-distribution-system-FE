@@ -12,6 +12,7 @@ import {
   ArrowDownWideNarrow,
   Check,
 } from 'lucide-react';
+import { FilterChips } from '@/common/components';
 import { cn } from '@/common/utils/cn';
 import { formatMoneyGrouped, isPositiveMoney } from '@/common/utils/money';
 import { CustomerSort, CustomerView } from '../types/customers.types';
@@ -171,38 +172,6 @@ function OwedCell({
   );
 }
 
-/** Segmented view switcher — one slice of the list at a time. */
-function ViewChips({
-  view,
-  onChange,
-  labels,
-}: {
-  view: CustomerView;
-  onChange: (v: CustomerView) => void;
-  labels: CustomersTableLabels;
-}) {
-  return (
-    <div className="flex gap-1 p-1 bg-page border border-border rounded-lg shrink-0">
-      {VIEW_ORDER.map((option) => (
-        <button
-          key={option.value}
-          type="button"
-          onClick={() => onChange(option.value)}
-          aria-pressed={view === option.value}
-          className={cn(
-            'h-7 px-3 rounded-md text-[12px] font-semibold whitespace-nowrap transition-colors',
-            view === option.value
-              ? 'bg-amber-600 text-white'
-              : 'text-ink-600 hover:bg-sand-100 cursor-pointer'
-          )}
-        >
-          {labels.views[option.key]}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 function SortMenu({
   sort,
   onChange,
@@ -319,7 +288,12 @@ export function CustomersTableCard({
         </div>
 
         <div className="order-3 sm:order-2">
-          <ViewChips view={view} onChange={onViewChange} labels={labels} />
+          <FilterChips
+            value={view}
+            onChange={onViewChange}
+            options={VIEW_ORDER.map((o) => ({ value: o.value, label: labels.views[o.key] }))}
+            className="shrink-0"
+          />
         </div>
 
         {/* Sorting only reorders what's on screen, so it stays out of the way
