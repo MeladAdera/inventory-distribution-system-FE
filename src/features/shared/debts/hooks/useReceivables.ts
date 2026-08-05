@@ -29,6 +29,7 @@ const EMPTY_AGING: AgingRow[] = [
 const EMPTY_SHOP_SUMMARY: Omit<ShopDebtSummary, 'shop_id'> = {
   owed_by_shop: EMPTY_SUMMARY,
   owed_to_shop: EMPTY_SUMMARY,
+  owed_to_suppliers: EMPTY_SUMMARY,
 };
 
 /**
@@ -71,8 +72,48 @@ export function useReceivablesAging(params?: ReceivablesParams) {
 }
 
 /**
- * One shop's two-sided ledger. `owed_by_shop` (to the warehouse) and
- * `owed_to_shop` (from its customers) are reported separately and must never be
+ * Payables totals — what the caller's shop owes its own suppliers. The mirror of
+ * `useReceivables`, off a separate endpoint: supplier bills never appear in the
+ * receivables queries, so the two can't be derived from one another.
+ */
+export function usePayables(params?: ReceivablesParams) {
+  const query = useQuery({
+    queryKey: ['analytics', 'payables', params],
+    queryFn: () => debtsApi.payables(params),
+    staleTime: 0,
+    placeholderData: keepPreviousData,
+  });
+
+  return {
+    summary: (query.data?.data as DebtsSummary) ?? EMPTY_SUMMARY,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    error: query.error,
+  };
+}
+
+/** Supplier bills grouped by age. Same 3 buckets as receivables aging. */
+export function usePayablesAging(params?: ReceivablesParams) {
+  const query = useQuery({
+    queryKey: ['analytics', 'payables-aging', params],
+    queryFn: () => debtsApi.payablesAging(params),
+    staleTime: 0,
+    placeholderData: keepPreviousData,
+  });
+
+  const rows = (query.data?.data as AgingRow[]) ?? [];
+
+  return {
+    rows: rows.length > 0 ? rows : EMPTY_AGING,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    error: query.error,
+  };
+}
+
+/**
+ * One shop's three-sided ledger: what it owes the warehouse, what its customers
+ * owe it, and what it owes its own suppliers. Reported separately and never
  * netted against each other — they answer different questions.
  */
 export function useShopDebtSummary(shopId: number | null | undefined) {
@@ -88,6 +129,7 @@ export function useShopDebtSummary(shopId: number | null | undefined) {
   return {
     owedByShop: data?.owed_by_shop ?? EMPTY_SHOP_SUMMARY.owed_by_shop,
     owedToShop: data?.owed_to_shop ?? EMPTY_SHOP_SUMMARY.owed_to_shop,
+    owedToSuppliers: data?.owed_to_suppliers ?? EMPTY_SHOP_SUMMARY.owed_to_suppliers,
     isLoading: query.isLoading,
     error: query.error,
   };

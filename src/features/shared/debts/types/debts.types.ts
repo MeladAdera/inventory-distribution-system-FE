@@ -137,13 +137,21 @@ export interface DebtsSummary {
 }
 
 /**
- * A shop both owes the warehouse and is owed by its customers. The two sides are
- * reported separately and must never be netted against each other.
+ * A shop's ledger has three sides, reported separately and never netted against
+ * each other — they answer different questions and are owed to different people.
+ *
+ * `owed_by_shop` and `owed_to_suppliers` are both money going out, but they are
+ * still not additive: one is owed to the warehouse for orders, the other to
+ * local suppliers the shop found itself.
  */
 export interface ShopDebtSummary {
   shop_id: number;
+  /** To the warehouse, for orders. */
   owed_by_shop: DebtsSummary;
+  /** From this shop's credit customers. */
   owed_to_shop: DebtsSummary;
+  /** To this shop's own suppliers, for bills. */
+  owed_to_suppliers: DebtsSummary;
 }
 
 /** Always exactly 3 rows, even at count 0 — safe to map straight onto a 3-bar chart. */

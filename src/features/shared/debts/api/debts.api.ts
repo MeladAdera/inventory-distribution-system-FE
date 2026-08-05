@@ -94,4 +94,21 @@ export const debtsApi = {
     const response = await apiClient.get('/analytics/receivables/aging', { ...config, params });
     return response.data;
   },
+
+  /**
+   * The payables mirror of `receivables` — what the caller's shop owes its own
+   * suppliers. A separate endpoint rather than a filter, because `/debts` and
+   * `/analytics/receivables` are hardcoded server-side to creditor SHOP and never
+   * return supplier bills.
+   */
+  payables: async (params?: ReceivablesParams, config?: AxiosRequestConfig) => {
+    const response = await apiClient.get('/analytics/payables', { ...config, params });
+    return response.data;
+  },
+
+  /** Same 3 buckets as receivables aging, so the same chart renders both. */
+  payablesAging: async (params?: ReceivablesParams, config?: AxiosRequestConfig) => {
+    const response = await apiClient.get('/analytics/payables/aging', { ...config, params });
+    return response.data;
+  },
 };

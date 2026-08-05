@@ -130,6 +130,94 @@
     "collectBtn": "Collect payment",
     "footer": "{shown} of {total} customers"
   },
+  "suppliers": {
+    "header": {
+      "eyebrow": "Deferred payment",
+      "title": "Suppliers"
+    },
+    "addBtn": "Add supplier",
+    "searchPlaceholder": "Search by name or phone",
+    "filters": {
+      "hasDebt": "You owe them",
+      "includeInactive": "Show removed",
+      "clear": "Clear filters"
+    },
+    "table": {
+      "name": "Supplier",
+      "phone": "Phone",
+      "openBills": "Open bills",
+      "remaining": "You owe",
+      "note": "Note",
+      "actions": "Actions",
+      "noPhone": "No phone",
+      "settled": "Settled up"
+    },
+    "badge": {
+      "inactive": "Removed"
+    },
+    "empty": {
+      "title": "No suppliers yet",
+      "sub": "Add a supplier to start recording the bills you pay later.",
+      "cta": "Add supplier"
+    },
+    "emptyFiltered": {
+      "title": "No matching suppliers",
+      "sub": "Try a different search or clear the filters."
+    },
+    "loadError": "Could not load suppliers.",
+    "form": {
+      "createTitle": "Add supplier",
+      "editTitle": "Edit supplier",
+      "name": "Name",
+      "namePlaceholder": "e.g. Damascus Wholesale",
+      "phone": "Phone",
+      "phonePlaceholder": "e.g. 0999123456",
+      "phoneHint": "Optional, but without it you can't tell two suppliers with the same name apart.",
+      "note": "Note",
+      "notePlaceholder": "e.g. Delivers Tuesdays, settle end of month",
+      "submit": "Add supplier",
+      "save": "Save changes",
+      "cancel": "Cancel",
+      "errNameRequired": "Enter a name.",
+      "errNameShort": "Name must be at least 2 characters.",
+      "errNoteLong": "Note must be under 500 characters.",
+      "createdToast": "Supplier added.",
+      "updatedToast": "Supplier updated."
+    },
+    "deactivate": {
+      "title": "Remove supplier?",
+      "description": "They will be hidden from the list. Their past bills stay on record.",
+      "confirm": "Remove",
+      "toast": "Supplier removed."
+    },
+    "exportBtn": "Export",
+    "exporting": "Preparing…",
+    "exportEmpty": "Nothing to export.",
+    "exportDone": "Exported {n} suppliers.",
+    "exportFailed": "Could not build the export.",
+    "stats": {
+      "total": "Total suppliers",
+      "withDebt": "You owe",
+      "owed": "Total payable",
+      "openBills": "Unpaid bills"
+    },
+    "views": {
+      "all": "All",
+      "hasDebt": "You owe them",
+      "removed": "Incl. removed"
+    },
+    "sort": {
+      "label": "Sort",
+      "sortedBy": "Sorted by: {name}",
+      "pageOnly": "Sorts the suppliers on this page.",
+      "debtDesc": "Highest owed",
+      "newest": "Newest first",
+      "name": "Name (A–Z)"
+    },
+    "since": "Supplier since {year}",
+    "callBtn": "Call",
+    "footer": "{shown} of {total} suppliers"
+  },
   "collect": {
     "title": "Collect payment",
     "intro": "Record money received from {name}.",

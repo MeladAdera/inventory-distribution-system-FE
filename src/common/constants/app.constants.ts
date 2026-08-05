@@ -35,6 +35,7 @@ export const ROUTES = {
   RECEIPTS: '/receipts',
   SHORTAGES: '/shortages',
   DEBTS: '/debts',
+  SUPPLIERS: '/suppliers',
   AUDIT_LOGS: '/audit-logs',
   NOTIFICATIONS: '/notifications',
   SETTINGS: '/settings',
@@ -46,6 +47,7 @@ export const ROUTES = {
   CLIENT_PROFIT: '/client/profit',
   CLIENT_RECEIPTS: '/client/receipts',
   CLIENT_CUSTOMERS: '/client/customers',
+  CLIENT_SUPPLIERS: '/client/suppliers',
   CLIENT_DEBTS: '/client/debts',
 };
 

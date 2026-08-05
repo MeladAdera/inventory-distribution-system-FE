@@ -22,6 +22,9 @@ const ADMIN_ROUTES = [
   ROUTES.RECEIPTS,
   ROUTES.SHORTAGES,
   ROUTES.DEBTS,
+  // The warehouse's own suppliers. Same page as CLIENT_SUPPLIERS, mounted in the
+  // other portal — a shop owner reaching for this one is sent to their own.
+  ROUTES.SUPPLIERS,
   ROUTES.NOTIFICATIONS,
   ROUTES.AUDIT_LOGS,
   ROUTES.SETTINGS,

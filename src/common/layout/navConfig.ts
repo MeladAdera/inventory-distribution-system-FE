@@ -11,6 +11,7 @@ import {
   Settings,
   Warehouse,
   Wallet,
+  Building2,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -48,6 +49,10 @@ export const NAV_ITEMS: NavItem[] = [
   },
   { id: 'receipts', href: '/receipts', icon: Receipt, section: 'main' },
   { id: 'debts', href: '/debts', icon: Wallet, section: 'main' },
+  // Sits next to debts: the two are the same ledger seen from opposite ends —
+  // what the shops owe the warehouse, and what the warehouse owes its own
+  // suppliers. Same page the shop portal mounts at /client/suppliers.
+  { id: 'suppliers', href: '/suppliers', icon: Building2, section: 'main' },
   { id: 'auditLogs', href: '/audit-logs', icon: ScrollText, section: 'main' },
   { id: 'settings', href: '/settings', icon: Settings, section: 'manage' },
 ];

@@ -11,6 +11,7 @@ import {
   Settings,
   ScrollText,
   Receipt,
+  Building2,
   type LucideIcon,
 } from 'lucide-react';
 import { UserRole } from '@/features/auth/types/enums';
@@ -25,6 +26,7 @@ export interface ClientNavItem {
     | 'orders'
     | 'receipts'
     | 'customers'
+    | 'suppliers'
     | 'debts'
     | 'employees'
     | 'settings'
@@ -42,6 +44,10 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'profit', href: '/client/profit', icon: TrendingUp },
   { id: 'receipts', href: '/client/receipts', icon: Receipt },
   { id: 'customers', href: '/client/customers', icon: Contact },
+  // Owner-only, like debts: every /suppliers route is 403 for an EMPLOYEE, so
+  // this id stays out of EMPLOYEE_NAV_IDS below rather than letting them find
+  // the error. The middleware allowlist enforces the same thing on the route.
+  { id: 'suppliers', href: '/client/suppliers', icon: Building2 },
   // Owner-only: employees never see shop-level debt and cannot reverse payments,
   // so this id is deliberately absent from EMPLOYEE_NAV_IDS below.
   { id: 'debts', href: '/client/debts', icon: Wallet },

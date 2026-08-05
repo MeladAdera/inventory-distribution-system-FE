@@ -7,7 +7,13 @@ export {
   useDebtPayments,
 } from './hooks/useDebts';
 export { useOrderDebt, useRecordOrderPayment } from './hooks/useOrderDebt';
-export { useReceivables, useReceivablesAging, useShopDebtSummary } from './hooks/useReceivables';
+export {
+  useReceivables,
+  useReceivablesAging,
+  usePayables,
+  usePayablesAging,
+  useShopDebtSummary,
+} from './hooks/useReceivables';
 export { DebtStatusBadge } from './components/DebtStatusBadge';
 export { DebtsTableCard } from './components/DebtsTableCard';
 export { DebtDetailModal } from './components/DebtDetailModal';
