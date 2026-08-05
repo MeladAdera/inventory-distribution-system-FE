@@ -25,6 +25,7 @@ export { OrderDebtBlock } from './components/OrderDebtBlock';
 export { RecordOrderPaymentModal } from './components/RecordOrderPaymentModal';
 export {
   DebtorType,
+  CreditorType,
   DebtStatus,
   PaymentMethod,
   AgingBucket,

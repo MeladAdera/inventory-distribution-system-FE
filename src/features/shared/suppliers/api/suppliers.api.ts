@@ -1,6 +1,8 @@
 import type { AxiosRequestConfig } from 'axios';
 import { apiClient } from '@/common/api/client';
 import type {
+  BillListParams,
+  CreateBillInput,
   CreateSupplierInput,
   SupplierListParams,
   UpdateSupplierInput,
@@ -34,6 +36,28 @@ export const suppliersApi = {
   /** Soft delete. 400 supplier.HAS_OPEN_DEBT if the shop still owes them. */
   deactivate: async (id: number, config?: AxiosRequestConfig) => {
     const response = await apiClient.delete(`/suppliers/${id}`, config);
+    return response.data;
+  },
+
+  /**
+   * Record a bill against this supplier.
+   *
+   * 409 supplier.INVOICE_TAKEN if `invoiceNo` was already used for this same
+   * supplier, and 400 supplier.PAID_EXCEEDS_TOTAL if more was paid than billed.
+   */
+  recordBill: async (id: number, data: CreateBillInput, config?: AxiosRequestConfig) => {
+    const response = await apiClient.post(`/suppliers/${id}/debts`, data, config);
+    return response.data;
+  },
+
+  /** This supplier's bills. Paginated, same envelope as GET /debts. */
+  bills: async (id: number, params?: BillListParams, config?: AxiosRequestConfig) => {
+    const response = await apiClient.get(`/suppliers/${id}/debts`, { ...config, params });
+    return response.data;
+  },
+
+  summary: async (id: number, config?: AxiosRequestConfig) => {
+    const response = await apiClient.get(`/suppliers/${id}/summary`, config);
     return response.data;
   },
 };

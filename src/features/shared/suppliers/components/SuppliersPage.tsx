@@ -10,11 +10,14 @@ import { downloadCsv, dateStampedName } from '@/common/utils/csv.utils';
 import { useSuppliers } from '../hooks/useSuppliers';
 import { useSupplierStats } from '../hooks/useSupplierStats';
 import { useSupplierRows } from '../hooks/useSupplierRows';
+import { useSupplierDetail } from '../hooks/useSupplierDetail';
 import { SuppliersTableCard } from './SuppliersTableCard';
 import { SupplierStatsCards } from './SupplierStatsCards';
 import { SupplierFormModal } from './SupplierFormModal';
+import { SupplierDetailModal } from './SupplierDetailModal';
+import { RecordBillModal } from './RecordBillModal';
 import { SupplierSort, SupplierView } from '../types/suppliers.types';
-import type { Supplier, CreateSupplierInput } from '../types/suppliers.types';
+import type { Supplier, CreateSupplierInput, CreateBillInput } from '../types/suppliers.types';
 
 const LIMIT = 15;
 const SEARCH_DEBOUNCE_MS = 300;
@@ -34,7 +37,7 @@ const SEARCH_DEBOUNCE_MS = 300;
  * away and neither nav offers it.
  */
 export function SuppliersPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const s = t.debts.suppliers;
   const toast = useToast();
 
@@ -48,6 +51,13 @@ export function SuppliersPage() {
   const [editing, setEditing] = useState<Supplier | null>(null);
   const [deactivating, setDeactivating] = useState<Supplier | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+
+  // `active` is whichever supplier's detail data is loaded; the two booleans say
+  // what is actually on screen. Kept apart so "record bill" can be reached
+  // straight from a list row without the detail modal opening behind it.
+  const [active, setActive] = useState<Supplier | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [billOpen, setBillOpen] = useState(false);
 
   // Typing a search shouldn't fire a request per keystroke.
   useEffect(() => {
@@ -85,6 +95,16 @@ export function SuppliersPage() {
   const { stats, isLoading: isLoadingStats } = useSupplierStats();
   const { rows } = useSupplierRows(suppliers, sort);
 
+  // Idle until a row is opened.
+  const {
+    supplier: viewedSupplier,
+    summary,
+    bills,
+    isLoading: isLoadingDetail,
+    recordBill,
+    isRecordingBill,
+  } = useSupplierDetail(active?.id ?? null);
+
   const hasFilters = Boolean(debouncedSearch) || view !== SupplierView.ALL;
 
   function clearFilters() {
@@ -109,6 +129,29 @@ export function SuppliersPage() {
     setFormOpen(true);
   }
 
+  function openDetail(supplier: Supplier) {
+    setActive(supplier);
+    setDetailOpen(true);
+  }
+
+  function openBill(supplier: Supplier) {
+    setActive(supplier);
+    setBillOpen(true);
+  }
+
+  // The detail queries stay mounted while either modal is open; drop the active
+  // supplier only once nothing is left showing, so closing the bill form doesn't
+  // blank the detail view sitting behind it.
+  function closeDetail() {
+    setDetailOpen(false);
+    if (!billOpen) setActive(null);
+  }
+
+  function closeBill() {
+    setBillOpen(false);
+    if (!detailOpen) setActive(null);
+  }
+
   // Throws on failure so the modal can render the server message inline
   // (e.g. 409 supplier.PHONE_TAKEN) instead of closing over a lost error.
   async function handleSubmit(data: CreateSupplierInput) {
@@ -119,6 +162,14 @@ export function SuppliersPage() {
       await createSupplier(data);
       toast.success(s.form.createdToast);
     }
+  }
+
+  // Throws on failure so the modal can render the server message inline
+  // (e.g. 409 supplier.INVOICE_TAKEN) instead of closing over a lost error.
+  async function handleRecordBill(data: CreateBillInput) {
+    const result = await recordBill(data);
+    toast.success(s.bill.recordedToast);
+    return result;
   }
 
   async function handleDeactivate() {
@@ -233,7 +284,9 @@ export function SuppliersPage() {
         onViewChange={changeView}
         onSortChange={setSort}
         onClearFilters={clearFilters}
+        onView={openDetail}
         onEdit={openEdit}
+        onRecordBill={openBill}
         onDeactivate={setDeactivating}
         onAdd={openCreate}
         currency={t.debts.currency}
@@ -243,6 +296,7 @@ export function SuppliersPage() {
           sort: s.sort,
           since: s.since,
           callBtn: s.callBtn,
+          recordBillBtn: s.bill.recordBtn,
           footer: s.footer,
           clearFilters: s.filters.clear,
           table: s.table,
@@ -287,6 +341,37 @@ export function SuppliersPage() {
       >
         <Plus size={22} />
       </button>
+
+      <SupplierDetailModal
+        open={detailOpen}
+        onClose={closeDetail}
+        supplier={viewedSupplier}
+        summary={summary}
+        bills={bills}
+        isLoading={isLoadingDetail}
+        onRecordBill={() => setBillOpen(true)}
+        onEdit={() => {
+          if (viewedSupplier) openEdit(viewedSupplier);
+        }}
+        locale={locale}
+        currency={t.debts.currency}
+        labels={{
+          ...s.detail,
+          inactiveBadge: s.badge.inactive,
+          recordBillBtn: s.bill.recordBtn,
+          statusNames: t.debts.status,
+        }}
+      />
+
+      <RecordBillModal
+        open={billOpen}
+        onClose={closeBill}
+        supplierName={viewedSupplier?.name ?? active?.name ?? ''}
+        onRecord={handleRecordBill}
+        isRecording={isRecordingBill}
+        currency={t.debts.currency}
+        labels={s.bill}
+      />
 
       <SupplierFormModal
         open={formOpen}

@@ -11,7 +11,12 @@
 // That is why this sits in features/shared rather than features/shop — both
 // portals mount the very same page, at /suppliers and /client/suppliers.
 
-import type { DebtsSummary } from '@/features/shared/debts/types/debts.types';
+import type {
+  CreditorType,
+  DebtorType,
+  DebtStatus,
+  DebtsSummary,
+} from '@/features/shared/debts/types/debts.types';
 
 export interface Supplier {
   id: number;
@@ -75,6 +80,65 @@ export interface SupplierStats {
   /** Money string — sum still owed across every supplier. */
   totalOwed: string;
   openBills: number;
+}
+
+/**
+ * A bill — one delivery the shop owes a supplier for.
+ *
+ * The same underlying debt record as a receivable, seen from the other side:
+ * `creditor_type` is what separates them, and it is why these never surface in
+ * `GET /debts`. Money is ALWAYS a string; see the note in debts.types.ts.
+ */
+export interface SupplierBill {
+  id: number;
+  creditor_type: CreditorType;
+  debtor_type: DebtorType;
+  debtor_shop_id: number;
+  supplier_id: number;
+  /** Optional at creation, but unique per supplier once set. */
+  invoice_no: string | null;
+  total_amount: string;
+  paid_amount: string;
+  /** total_amount - paid_amount, computed server-side. */
+  remaining: string;
+  status: DebtStatus;
+  /** Reserved for a future version — nothing sets it yet. Ignore it. */
+  due_date: string | null;
+  note: string | null;
+  created_by: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Body for POST /suppliers/:id/debts.
+ *
+ * `paidAmount` defaults to 0 server-side — the opposite of a customer receipt,
+ * which defaults to paid in full. That asymmetry is correct: buying on credit is
+ * the normal case for a delivery, where selling on credit is the exception.
+ */
+export interface CreateBillInput {
+  totalAmount: string;
+  /** What was handed over on delivery. Omitted means the whole bill is on credit. */
+  paidAmount?: string;
+  /**
+   * Deliberately optional, matching the API.
+   *
+   * The duplicate-bill guard (409 `supplier.INVOICE_TAKEN`) engages only when a
+   * number is given — which is the point: shops buying from a local supplier
+   * often have no paper invoice at the moment the delivery arrives, and a
+   * required field would block recording a debt they have genuinely incurred.
+   * Protection is deferred to when the data exists rather than traded away.
+   */
+  invoiceNo?: string;
+  note?: string;
+}
+
+export interface BillListParams {
+  page?: number;
+  limit?: number;
+  /** Matches invoice number or note. */
+  search?: string;
 }
 
 export interface CreateSupplierInput {

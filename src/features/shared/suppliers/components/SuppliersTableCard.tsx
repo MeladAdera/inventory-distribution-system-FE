@@ -1,7 +1,17 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Truck, Pencil, Trash2, Search, X, Phone, ArrowDownWideNarrow, Check } from 'lucide-react';
+import {
+  Truck,
+  Pencil,
+  Trash2,
+  Search,
+  X,
+  Phone,
+  ArrowDownWideNarrow,
+  Check,
+  FilePlus2,
+} from 'lucide-react';
 import { FilterChips } from '@/common/components';
 import { cn } from '@/common/utils/cn';
 import { formatMoneyGrouped, isPositiveMoney } from '@/common/utils/money';
@@ -22,6 +32,7 @@ export interface SuppliersTableLabels {
   };
   since: string;
   callBtn: string;
+  recordBillBtn: string;
   footer: string;
   clearFilters: string;
   table: {
@@ -50,7 +61,9 @@ interface SuppliersTableCardProps {
   onViewChange: (view: SupplierView) => void;
   onSortChange: (sort: SupplierSort) => void;
   onClearFilters: () => void;
+  onView: (supplier: Supplier) => void;
   onEdit: (supplier: Supplier) => void;
+  onRecordBill: (supplier: Supplier) => void;
   onDeactivate: (supplier: Supplier) => void;
   onAdd: () => void;
   currency: string;
@@ -199,7 +212,9 @@ export function SuppliersTableCard({
   onViewChange,
   onSortChange,
   onClearFilters,
+  onView,
   onEdit,
+  onRecordBill,
   onDeactivate,
   onAdd,
   currency,
@@ -284,7 +299,7 @@ export function SuppliersTableCard({
               <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400 text-end">
                 {labels.table.remaining}
               </span>
-              <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400 w-20 text-center">
+              <span className="text-[11px] font-semibold tracking-wider uppercase text-ink-400 w-28 text-center">
                 {labels.table.actions}
               </span>
             </div>
@@ -292,7 +307,7 @@ export function SuppliersTableCard({
             {rows.map((s) => (
               <div
                 key={s.id}
-                onClick={() => onEdit(s)}
+                onClick={() => onView(s)}
                 className="grid grid-cols-[1.8fr_1.1fr_0.9fr_1.1fr_auto] items-center gap-4 px-6 py-3.5 border-b border-border last:border-b-0 hover:bg-page transition-colors cursor-pointer"
               >
                 <span className="flex items-center gap-3 min-w-0">
@@ -333,9 +348,17 @@ export function SuppliersTableCard({
                 <OwedCell supplier={s} currency={currency} labels={labels} align="end" />
 
                 <div
-                  className="w-20 flex justify-center gap-0.5"
+                  className="w-28 flex justify-center gap-0.5"
                   onClick={(e) => e.stopPropagation()}
                 >
+                  <button
+                    onClick={() => onRecordBill(s)}
+                    aria-label={`${labels.recordBillBtn} — ${s.name}`}
+                    title={labels.recordBillBtn}
+                    className="p-2 rounded-lg text-ink-500 hover:bg-amber-100 hover:text-amber-700 transition-colors cursor-pointer"
+                  >
+                    <FilePlus2 size={15} />
+                  </button>
                   <button
                     onClick={() => onEdit(s)}
                     aria-label={`${labels.table.actions} — ${s.name}`}
@@ -360,7 +383,7 @@ export function SuppliersTableCard({
           {/* Mobile cards */}
           <div className="sm:hidden flex flex-col divide-y divide-border">
             {rows.map((s) => (
-              <div key={s.id} onClick={() => onEdit(s)} className="px-4 py-3.5">
+              <div key={s.id} onClick={() => onView(s)} className="px-4 py-3.5">
                 <div className="flex items-start justify-between gap-3">
                   <span className="flex items-center gap-2.5 min-w-0">
                     <SupplierAvatar name={s.name} muted={!s.is_active} size="sm" />
@@ -410,6 +433,16 @@ export function SuppliersTableCard({
                     </a>
                   )}
 
+                  {/* One primary action per card: recording the next delivery is
+                      what a supplier row is actually for, so the housekeeping
+                      stays as icons beside it. */}
+                  <button
+                    onClick={() => onRecordBill(s)}
+                    className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-amber-100 text-[13px] font-semibold text-amber-700 active:bg-amber-500/30 transition-colors shrink-0"
+                  >
+                    <FilePlus2 size={14} />
+                    {labels.recordBillBtn}
+                  </button>
                   <button
                     onClick={() => onEdit(s)}
                     aria-label={`${labels.table.actions} — ${s.name}`}

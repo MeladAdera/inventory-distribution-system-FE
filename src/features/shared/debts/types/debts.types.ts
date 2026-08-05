@@ -15,6 +15,22 @@ export enum DebtorType {
 }
 
 /**
+ * Who is owed the money — the axis that separates receivables from payables.
+ *
+ * This is what `GET /debts` and `/analytics/receivables` are pinned to server-side:
+ * they only ever return `SHOP`, so supplier bills never appear there and have
+ * their own endpoints. It also decides what may be cancelled — `POST
+ * /debts/:id/cancel` accepts payables only, and rejects a receivable with
+ * `debt.NOT_CANCELLABLE_BY_ID`.
+ */
+export enum CreditorType {
+  /** A shop is owed — by the warehouse's shops, or by its own customers. */
+  SHOP = 'SHOP',
+  /** A supplier is owed, by the shop that bought from them. */
+  SUPPLIER = 'SUPPLIER',
+}
+
+/**
  * Always derived server-side from paid_amount vs total_amount — never set directly.
  * It can move backwards: reversing a payment takes PAID → PARTIAL, or PARTIAL → OPEN.
  */
