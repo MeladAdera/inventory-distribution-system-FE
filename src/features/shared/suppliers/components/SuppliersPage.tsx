@@ -27,6 +27,9 @@ import type {
 } from '../types/suppliers.types';
 
 const LIMIT = 15;
+// Smaller than the suppliers table: the bills list lives inside a modal, under
+// the totals block, so a page has to fit without pushing the actions off screen.
+const BILLS_LIMIT = 8;
 const SEARCH_DEBOUNCE_MS = 300;
 
 /**
@@ -69,6 +72,12 @@ export function SuppliersPage() {
   // One bill's ledger, opened from the supplier's account behind it.
   const [openedBill, setOpenedBill] = useState<SupplierBill | null>(null);
 
+  // Paging and search over the open supplier's bills. Scoped to the modal, so
+  // they reset whenever a different supplier is opened.
+  const [billsPage, setBillsPage] = useState(1);
+  const [billsSearch, setBillsSearch] = useState('');
+  const [debouncedBillsSearch, setDebouncedBillsSearch] = useState('');
+
   // Typing a search shouldn't fire a request per keystroke.
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -77,6 +86,23 @@ export function SuppliersPage() {
     }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [search]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedBillsSearch(billsSearch);
+      setBillsPage(1);
+    }, SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [billsSearch]);
+
+  const billParams = useMemo(
+    () => ({
+      page: billsPage,
+      limit: BILLS_LIMIT,
+      ...(debouncedBillsSearch ? { search: debouncedBillsSearch } : {}),
+    }),
+    [billsPage, debouncedBillsSearch]
+  );
 
   const params = useMemo(
     () => ({
@@ -110,13 +136,23 @@ export function SuppliersPage() {
     supplier: viewedSupplier,
     summary,
     bills,
+    billsTotal,
+    billsTotalPages,
+    isFetchingBills,
     openBills,
+    isLoadingOpenBills,
     isLoading: isLoadingDetail,
     recordBill,
     isRecordingBill,
     payBills,
     isPaying,
-  } = useSupplierDetail(active?.id ?? null);
+    // The open-bill list is only needed to populate the payment picker, so it
+    // stays unfetched until the pay form is actually reached.
+  } = useSupplierDetail(active?.id ?? null, {
+    withBills: detailOpen,
+    billParams,
+    withOpenBills: payOpen,
+  });
 
   const hasFilters = Boolean(debouncedSearch) || view !== SupplierView.ALL;
 
@@ -144,6 +180,11 @@ export function SuppliersPage() {
 
   function openDetail(supplier: Supplier) {
     setActive(supplier);
+    // A search left over from the last supplier would hide this one's bills
+    // behind a filter they never typed.
+    setBillsPage(1);
+    setBillsSearch('');
+    setDebouncedBillsSearch('');
     setDetailOpen(true);
   }
 
@@ -373,6 +414,13 @@ export function SuppliersPage() {
         supplier={viewedSupplier}
         summary={summary}
         bills={bills}
+        billsTotal={billsTotal}
+        billsTotalPages={billsTotalPages}
+        billsPage={billsPage}
+        onBillsPageChange={setBillsPage}
+        billsSearch={billsSearch}
+        onBillsSearchChange={setBillsSearch}
+        isFetchingBills={isFetchingBills}
         isLoading={isLoadingDetail}
         onRecordBill={() => setBillOpen(true)}
         onPay={() => setPayOpen(true)}
@@ -409,7 +457,7 @@ export function SuppliersPage() {
         openBills={openBills}
         onPay={payBills}
         isPaying={isPaying}
-        isLoadingBills={isLoadingDetail}
+        isLoadingBills={isLoadingOpenBills}
         currency={t.debts.currency}
         labels={{
           ...s.pay,

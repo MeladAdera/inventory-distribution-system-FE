@@ -1,6 +1,6 @@
 'use client';
 
-import { Loader2, Phone, AlertTriangle, FilePlus2, Pencil, HandCoins } from 'lucide-react';
+import { Loader2, Phone, AlertTriangle, FilePlus2, Pencil, HandCoins, Search } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
 import { formatMoney, isPositiveMoney } from '@/common/utils/money';
 import { DebtStatusBadge } from '@/features/shared/debts';
@@ -20,8 +20,17 @@ interface SupplierDetailModalProps {
   onClose: () => void;
   supplier: Supplier | null;
   summary: SupplierSummary;
-  /** Every bill, settled ones included — this is the account history. */
+  /** One page of the account history, settled bills included. */
   bills: SupplierBill[];
+  /** Bills matching the current search, across all pages. */
+  billsTotal: number;
+  billsTotalPages: number;
+  billsPage: number;
+  onBillsPageChange: (page: number) => void;
+  billsSearch: string;
+  onBillsSearchChange: (value: string) => void;
+  /** True while a page or search request is in flight, but old rows still show. */
+  isFetchingBills: boolean;
   isLoading: boolean;
   onRecordBill: () => void;
   onPay: () => void;
@@ -39,6 +48,9 @@ interface SupplierDetailModalProps {
     refundDue: string;
     billsTitle: string;
     noBills: string;
+    noMatchingBills: string;
+    searchPlaceholder: string;
+    billsCount: string;
     noInvoiceNo: string;
     billRef: string;
     recordBillBtn: string;
@@ -71,6 +83,13 @@ export function SupplierDetailModal({
   supplier,
   summary,
   bills,
+  billsTotal,
+  billsTotalPages,
+  billsPage,
+  onBillsPageChange,
+  billsSearch,
+  onBillsSearchChange,
+  isFetchingBills,
   isLoading,
   onRecordBill,
   onPay,
@@ -140,15 +159,41 @@ export function SupplierDetailModal({
               relationship, and "what did we buy from them" is the question the
               invoice numbers are here to answer. */}
           <div>
-            <p className="text-[12px] font-semibold tracking-wider uppercase text-ink-400 mb-2">
-              {labels.billsTitle}
-            </p>
+            <div className="flex items-center justify-between gap-3 mb-2">
+              <p className="text-[12px] font-semibold tracking-wider uppercase text-ink-400">
+                {labels.billsTitle}
+              </p>
+
+              {/* Only worth offering once there is more history than fits on a
+                  page — a search box over four bills is furniture. It stays put
+                  after that even if a search empties the list, or there would be
+                  no way to undo the search. */}
+              {(billsSearch !== '' || billsTotalPages > 1) && (
+                <div className="relative w-44 shrink-0">
+                  <Search
+                    size={13}
+                    className="absolute inset-s-2.5 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none"
+                  />
+                  <input
+                    value={billsSearch}
+                    onChange={(e) => onBillsSearchChange(e.target.value)}
+                    placeholder={labels.searchPlaceholder}
+                    className="w-full h-8 ps-8 pe-2 border border-border rounded-lg text-[12px] text-ink-800 placeholder:text-ink-400 bg-paper outline-none focus:border-amber-500"
+                  />
+                </div>
+              )}
+            </div>
+
             {bills.length === 0 ? (
               <p className="text-[13px] text-ink-500 py-6 text-center bg-page border border-border rounded-xl">
-                {labels.noBills}
+                {billsSearch ? labels.noMatchingBills : labels.noBills}
               </p>
             ) : (
-              <div className="border border-border rounded-xl divide-y divide-border max-h-64 overflow-y-auto">
+              <div
+                className={`border border-border rounded-xl divide-y divide-border max-h-64 overflow-y-auto transition-opacity ${
+                  isFetchingBills ? 'opacity-50' : ''
+                }`}
+              >
                 {bills.map((b) => (
                   <button
                     key={b.id}
@@ -187,6 +232,35 @@ export function SupplierDetailModal({
                     <DebtStatusBadge status={b.status} label={labels.statusNames[b.status]} small />
                   </button>
                 ))}
+              </div>
+            )}
+
+            {billsTotalPages > 1 && (
+              <div className="flex items-center justify-between gap-3 mt-2">
+                <p className="text-[12px] text-ink-400">
+                  {labels.billsCount
+                    .replace('{shown}', String(bills.length))
+                    .replace('{total}', String(billsTotal))}
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => onBillsPageChange(billsPage - 1)}
+                    disabled={billsPage <= 1}
+                    className="h-8 px-3 rounded-lg border border-border text-[13px] font-medium text-ink-700 hover:bg-sand-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    ‹
+                  </button>
+                  <span className="text-[12px] text-ink-500 tabular-nums px-1">
+                    {billsPage} / {billsTotalPages}
+                  </span>
+                  <button
+                    onClick={() => onBillsPageChange(billsPage + 1)}
+                    disabled={billsPage >= billsTotalPages}
+                    className="h-8 px-3 rounded-lg border border-border text-[13px] font-medium text-ink-700 hover:bg-sand-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    ›
+                  </button>
+                </div>
               </div>
             )}
           </div>
