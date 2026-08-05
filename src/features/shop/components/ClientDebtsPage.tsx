@@ -16,7 +16,7 @@ import {
   useShopDebtSummary,
   DebtsTableCard,
   DebtDetailModal,
-  ReceivablesAgingChart,
+  DebtAgingChart,
   OwedToWarehouseCard,
   AgingBucket,
   DebtStatus,
@@ -191,7 +191,7 @@ export function ClientDebtsPage() {
       <div className="mb-4">
         <CardShell title={rc.aging.title} noPadding>
           <p className="px-5 pt-4 text-[13px] text-ink-400">{rc.aging.subtitle}</p>
-          <ReceivablesAgingChart
+          <DebtAgingChart
             rows={agingRows}
             isLoading={isLoadingAging}
             isFetching={isFetchingAging}

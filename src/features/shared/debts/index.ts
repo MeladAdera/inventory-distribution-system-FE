@@ -19,7 +19,7 @@ export { DebtsTableCard } from './components/DebtsTableCard';
 export { DebtDetailModal } from './components/DebtDetailModal';
 export { PaymentHistoryList } from './components/PaymentHistoryList';
 export { ReversePaymentModal } from './components/ReversePaymentModal';
-export { ReceivablesAgingChart } from './components/ReceivablesAgingChart';
+export { DebtAgingChart } from './components/DebtAgingChart';
 export { OwedToWarehouseCard } from './components/OwedToWarehouseCard';
 export { OrderDebtBlock } from './components/OrderDebtBlock';
 export { RecordOrderPaymentModal } from './components/RecordOrderPaymentModal';

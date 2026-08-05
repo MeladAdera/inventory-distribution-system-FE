@@ -201,6 +201,14 @@
       "owed": "Total payable",
       "openBills": "Unpaid bills"
     },
+    "refundDue": "Suppliers owe you {amount} back, from bills you'd paid that were later cancelled. Arrange it with them directly.",
+    "aging": {
+      "title": "How long you've owed it",
+      "subtitle": "Unpaid bills grouped by how old they are.",
+      "amount": "Owed",
+      "count": "{n} bills",
+      "empty": "Nothing owed to suppliers right now."
+    },
     "views": {
       "all": "All",
       "hasDebt": "You owe them",

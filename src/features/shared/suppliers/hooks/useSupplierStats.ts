@@ -20,6 +20,7 @@ const EMPTY: SupplierStats = {
   withDebtCount: 0,
   totalOwed: '0.00',
   openBills: 0,
+  refundDue: '0.00',
 };
 
 /**
@@ -49,6 +50,7 @@ export function useSupplierStats() {
     withDebtCount: (withDebtQuery.data?.data?.total as number) ?? EMPTY.withDebtCount,
     totalOwed: summary.total_remaining,
     openBills: summary.open_count,
+    refundDue: summary.refund_due,
   };
 
   return {

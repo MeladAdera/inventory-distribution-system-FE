@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Loader2, AlertTriangle, Download, Plus } from 'lucide-react';
+import { Loader2, AlertTriangle, Download, Plus, RotateCcw } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers';
 import { ConfirmDialog } from '@/common/components';
+import { isPositiveMoney, formatMoney } from '@/common/utils/money';
+import { CardShell } from '@/features/admin/dashboard/components/CardShell';
+import { DebtAgingChart, usePayablesAging } from '@/features/shared/debts';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import { downloadCsv, dateStampedName } from '@/common/utils/csv.utils';
 import { useSuppliers } from '../hooks/useSuppliers';
@@ -129,6 +132,14 @@ export function SuppliersPage() {
   } = useSuppliers(params);
 
   const { stats, isLoading: isLoadingStats } = useSupplierStats();
+
+  // Shop-wide, like the stat cards above it — the aging of what is owed doesn't
+  // change because the table below was filtered.
+  const {
+    rows: agingRows,
+    isLoading: isLoadingAging,
+    isFetching: isFetchingAging,
+  } = usePayablesAging();
   const { rows } = useSupplierRows(suppliers, sort);
 
   // Idle until a row is opened.
@@ -335,6 +346,39 @@ export function SuppliersPage() {
           onWithDebtClick={() => changeView(SupplierView.HAS_DEBT)}
           labels={s.stats}
         />
+      </div>
+
+      {/* Money the SUPPLIERS owe back, from bills that were cancelled after the
+          shop had paid against them. v1 reports it and has no endpoint to settle
+          it, so this stays a flagged line rather than an action. */}
+      {isPositiveMoney(stats.refundDue) && (
+        <div className="flex items-start gap-2 px-3.5 py-2.5 mb-5 rounded-lg bg-warning-100 text-warning-700">
+          <RotateCcw size={15} className="mt-0.5 shrink-0" />
+          <p className="text-[13px]">
+            {s.refundDue.replace('{amount}', `${formatMoney(stats.refundDue)} ${t.debts.currency}`)}
+          </p>
+        </div>
+      )}
+
+      {/* How long the money has been owed. Read-only: the table below lists
+          suppliers, and `GET /suppliers` has no aging filter to click through
+          to — unlike the receivables ledger, which lists the debts themselves. */}
+      <div className="mb-5">
+        <CardShell title={s.aging.title} noPadding>
+          <p className="px-5 pt-4 text-[13px] text-ink-400">{s.aging.subtitle}</p>
+          <DebtAgingChart
+            rows={agingRows}
+            isLoading={isLoadingAging}
+            isFetching={isFetchingAging}
+            localeCode={locale === 'ar' ? 'ar-SA' : 'en-US'}
+            labels={{
+              amount: s.aging.amount,
+              count: s.aging.count,
+              empty: s.aging.empty,
+              bucketNames: t.debts.bucket,
+            }}
+          />
+        </CardShell>
       </div>
 
       <SuppliersTableCard

@@ -80,6 +80,12 @@ export interface SupplierStats {
   /** Money string — sum still owed across every supplier. */
   totalOwed: string;
   openBills: number;
+  /**
+   * Money paid against bills that were later cancelled — now owed back BY the
+   * suppliers. v1 only reports it; there is no endpoint to process a refund, so
+   * surface it as a flagged line, never a button.
+   */
+  refundDue: string;
 }
 
 /**

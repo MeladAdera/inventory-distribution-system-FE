@@ -29,11 +29,22 @@ const BUCKET_FILL: Record<AgingBucket, string> = {
   [AgingBucket.OVERDUE]: '#B45309', // amber-700
 };
 
-interface ReceivablesAgingChartProps {
+/**
+ * Money grouped by how long it has been outstanding.
+ *
+ * Serves both directions: what customers and shops owe (receivables) and what a
+ * shop owes its own suppliers (payables). The two use the same three buckets and
+ * the same `AgingRow` shape, so only the rows passed in differ.
+ */
+interface DebtAgingChartProps {
   rows: AgingRow[];
   isLoading: boolean;
   isFetching: boolean;
-  /** Highlights the bucket currently filtering the list below. */
+  /**
+   * Highlights the bucket currently filtering the list below. Omitted where the
+   * chart is read-only — the payables view lists suppliers, not bills, and
+   * `GET /suppliers` takes no aging filter to click through to.
+   */
   activeBucket?: AgingBucket | '';
   onSelectBucket?: (bucket: AgingBucket) => void;
   localeCode: string;
@@ -45,7 +56,7 @@ interface ReceivablesAgingChartProps {
   };
 }
 
-export function ReceivablesAgingChart({
+export function DebtAgingChart({
   rows,
   isLoading,
   isFetching,
@@ -53,7 +64,7 @@ export function ReceivablesAgingChart({
   onSelectBucket,
   localeCode,
   labels,
-}: ReceivablesAgingChartProps) {
+}: DebtAgingChartProps) {
   if (isLoading) {
     return (
       <div className="h-56 flex items-end justify-around gap-6 pb-6 px-5">
