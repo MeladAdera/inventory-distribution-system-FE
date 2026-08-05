@@ -208,5 +208,16 @@ export interface ReversePaymentInput {
   reason?: string;
 }
 
+/**
+ * Body for POST /debts/:id/cancel.
+ *
+ * Payables only — cancelling a receivable is rejected with
+ * `debt.NOT_CANCELLABLE_BY_ID`, so guard on `creditor_type` before offering it.
+ */
+export interface CancelDebtInput {
+  reason?: string;
+}
+
 export const PAYMENT_NOTE_MAX_LENGTH = 500;
 export const REVERSE_REASON_MAX_LENGTH = 500;
+export const CANCEL_REASON_MAX_LENGTH = 500;

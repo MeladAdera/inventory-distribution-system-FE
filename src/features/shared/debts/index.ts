@@ -31,6 +31,7 @@ export {
   AgingBucket,
   PAYMENT_NOTE_MAX_LENGTH,
   REVERSE_REASON_MAX_LENGTH,
+  CANCEL_REASON_MAX_LENGTH,
 } from './types/debts.types';
 export type {
   Debt,
@@ -45,4 +46,5 @@ export type {
   ShopDebtSummary,
   RecordPaymentInput,
   ReversePaymentInput,
+  CancelDebtInput,
 } from './types/debts.types';

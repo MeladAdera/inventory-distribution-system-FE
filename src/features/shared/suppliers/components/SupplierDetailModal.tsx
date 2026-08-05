@@ -26,6 +26,8 @@ interface SupplierDetailModalProps {
   onRecordBill: () => void;
   onPay: () => void;
   onEdit: () => void;
+  /** Opens one bill's ledger, where a payment can be undone or the bill voided. */
+  onOpenBill: (bill: SupplierBill) => void;
   locale: 'ar' | 'en';
   currency: string;
   labels: {
@@ -73,6 +75,7 @@ export function SupplierDetailModal({
   onRecordBill,
   onPay,
   onEdit,
+  onOpenBill,
   locale,
   currency,
   labels,
@@ -147,7 +150,12 @@ export function SupplierDetailModal({
             ) : (
               <div className="border border-border rounded-xl divide-y divide-border max-h-64 overflow-y-auto">
                 {bills.map((b) => (
-                  <div key={b.id} className="flex items-center gap-3 px-4 py-3">
+                  <button
+                    key={b.id}
+                    type="button"
+                    onClick={() => onOpenBill(b)}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-start hover:bg-page transition-colors cursor-pointer"
+                  >
                     <span className="flex-1 min-w-0">
                       <span className="block text-[13px] font-medium text-ink-900 truncate">
                         {b.invoice_no ? (
@@ -177,7 +185,7 @@ export function SupplierDetailModal({
                       </span>
                     </span>
                     <DebtStatusBadge status={b.status} label={labels.statusNames[b.status]} small />
-                  </div>
+                  </button>
                 ))}
               </div>
             )}

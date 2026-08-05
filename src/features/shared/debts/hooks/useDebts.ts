@@ -147,6 +147,9 @@ export function useDebtPayments(debtId: number | null) {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['debts'], refetchType: 'all' }),
         queryClient.invalidateQueries({ queryKey: ['customers'], refetchType: 'all' }),
+        // Payables run through this same ledger, so undoing a supplier payment
+        // has to move the supplier balances too.
+        queryClient.invalidateQueries({ queryKey: ['suppliers'], refetchType: 'all' }),
         queryClient.invalidateQueries({ queryKey: ['receipts'], refetchType: 'all' }),
         queryClient.invalidateQueries({ queryKey: ['analytics'], refetchType: 'all' }),
       ]);

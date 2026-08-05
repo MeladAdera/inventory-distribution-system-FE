@@ -277,6 +277,30 @@
       "resultSettled": "Settled in full",
       "resultRemaining": "{remaining} still owed",
       "resultDone": "Done"
+    },
+    "billDetail": {
+      "title": "Bill",
+      "invoiceNo": "Invoice number",
+      "total": "Total",
+      "paid": "Paid",
+      "remaining": "Still owed",
+      "created": "Recorded",
+      "note": "Note",
+      "cancelBtn": "Cancel this bill",
+      "cancelledNote": "This bill was cancelled. It no longer counts towards what you owe.",
+      "close": "Close",
+      "cancelBill": {
+        "title": "Cancel this bill?",
+        "description": "The bill is voided and stops counting towards what you owe. Its payment history stays on record.",
+        "billLine": "{invoice} — {amount} total.",
+        "billLineNoInvoice": "Bill #{id} — {amount} total.",
+        "refundWarning": "You've already paid {amount} against this bill. Cancelling means the supplier owes that back — you'll need to arrange it with them directly.",
+        "reasonLabel": "Why are you cancelling it?",
+        "reasonPlaceholder": "e.g. Entered by mistake",
+        "errReasonRequired": "Give a reason — it's the only record of why.",
+        "confirm": "Cancel bill",
+        "cancel": "Keep it"
+      }
     }
   },
   "collect": {

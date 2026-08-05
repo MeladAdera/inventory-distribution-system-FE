@@ -17,8 +17,14 @@ import { SupplierFormModal } from './SupplierFormModal';
 import { SupplierDetailModal } from './SupplierDetailModal';
 import { RecordBillModal } from './RecordBillModal';
 import { PaySupplierModal } from './PaySupplierModal';
+import { BillDetailModal } from './BillDetailModal';
 import { SupplierSort, SupplierView } from '../types/suppliers.types';
-import type { Supplier, CreateSupplierInput, CreateBillInput } from '../types/suppliers.types';
+import type {
+  Supplier,
+  SupplierBill,
+  CreateSupplierInput,
+  CreateBillInput,
+} from '../types/suppliers.types';
 
 const LIMIT = 15;
 const SEARCH_DEBOUNCE_MS = 300;
@@ -60,6 +66,8 @@ export function SuppliersPage() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [billOpen, setBillOpen] = useState(false);
   const [payOpen, setPayOpen] = useState(false);
+  // One bill's ledger, opened from the supplier's account behind it.
+  const [openedBill, setOpenedBill] = useState<SupplierBill | null>(null);
 
   // Typing a search shouldn't fire a request per keystroke.
   useEffect(() => {
@@ -368,6 +376,7 @@ export function SuppliersPage() {
         isLoading={isLoadingDetail}
         onRecordBill={() => setBillOpen(true)}
         onPay={() => setPayOpen(true)}
+        onOpenBill={setOpenedBill}
         onEdit={() => {
           if (viewedSupplier) openEdit(viewedSupplier);
         }}
@@ -406,6 +415,29 @@ export function SuppliersPage() {
           ...s.pay,
           billRef: s.detail.billRef,
           statusNames: t.debts.status,
+        }}
+      />
+
+      {/* Sits above the supplier's account rather than replacing it: closing one
+          bill should land back on the list of them, not on the suppliers table. */}
+      <BillDetailModal
+        open={openedBill !== null}
+        onClose={() => setOpenedBill(null)}
+        bill={openedBill}
+        locale={locale}
+        currency={t.debts.currency}
+        labels={{
+          ...s.billDetail,
+          billRef: s.detail.billRef,
+          noInvoiceNo: s.detail.noInvoiceNo,
+          historyTitle: t.debts.detail.historyTitle,
+          noPayments: t.debts.detail.noPayments,
+          reversalOf: t.debts.detail.reversalOf,
+          reversedBadge: t.debts.detail.reversedBadge,
+          reverseBtn: t.debts.detail.reverseBtn,
+          statusNames: t.debts.status,
+          methodNames: t.debts.method,
+          reverse: t.debts.reverse,
         }}
       />
 

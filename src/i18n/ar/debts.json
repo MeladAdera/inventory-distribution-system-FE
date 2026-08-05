@@ -277,6 +277,30 @@
       "resultSettled": "سُدّدت بالكامل",
       "resultRemaining": "تبقّى {remaining}",
       "resultDone": "تم"
+    },
+    "billDetail": {
+      "title": "الفاتورة",
+      "invoiceNo": "رقم الفاتورة",
+      "total": "الإجمالي",
+      "paid": "المدفوع",
+      "remaining": "المتبقّي",
+      "created": "تاريخ التسجيل",
+      "note": "ملاحظة",
+      "cancelBtn": "إلغاء هذه الفاتورة",
+      "cancelledNote": "أُلغيت هذه الفاتورة، ولم تعد تُحتسب ضمن ما عليك.",
+      "close": "إغلاق",
+      "cancelBill": {
+        "title": "إلغاء هذه الفاتورة؟",
+        "description": "ستُلغى الفاتورة ولن تُحتسب ضمن ما عليك. يبقى سجل الدفعات محفوظاً.",
+        "billLine": "{invoice} — الإجمالي {amount}.",
+        "billLineNoInvoice": "فاتورة #{id} — الإجمالي {amount}.",
+        "refundWarning": "دفعت {amount} على هذه الفاتورة. إلغاؤها يعني أنّ المورّد مدين لك بهذا المبلغ — عليك ترتيب استرداده معه مباشرة.",
+        "reasonLabel": "ما سبب الإلغاء؟",
+        "reasonPlaceholder": "مثال: سُجّلت بالخطأ",
+        "errReasonRequired": "اذكر السبب — فهو السجل الوحيد لما حدث.",
+        "confirm": "إلغاء الفاتورة",
+        "cancel": "الإبقاء عليها"
+      }
     }
   },
   "collect": {

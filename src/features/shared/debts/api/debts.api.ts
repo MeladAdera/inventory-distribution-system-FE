@@ -1,6 +1,7 @@
 import type { AxiosRequestConfig } from 'axios';
 import { apiClient } from '@/common/api/client';
 import type {
+  CancelDebtInput,
   DebtListParams,
   ReceivablesParams,
   RecordPaymentInput,
@@ -56,6 +57,19 @@ export const debtsApi = {
       data,
       config
     );
+    return response.data;
+  },
+
+  /**
+   * Void a whole bill. PAYABLES ONLY — a receivable is rejected with 400
+   * `debt.NOT_CANCELLABLE_BY_ID`, so check `creditor_type` before offering it.
+   *
+   * Cancelling one that had been partly paid leaves the supplier owing a refund,
+   * which v1 reports under `refund_due` but never settles. 400
+   * `debt.ALREADY_CANCELLED` on a second attempt.
+   */
+  cancel: async (id: number, data: CancelDebtInput, config?: AxiosRequestConfig) => {
+    const response = await apiClient.post(`/debts/${id}/cancel`, data, config);
     return response.data;
   },
 
