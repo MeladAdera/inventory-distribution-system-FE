@@ -10,6 +10,7 @@ export { SupplierAvatar } from './components/SupplierAvatar';
 export { SupplierFormModal } from './components/SupplierFormModal';
 export { SupplierDetailModal } from './components/SupplierDetailModal';
 export { RecordBillModal } from './components/RecordBillModal';
+export { PaySupplierModal } from './components/PaySupplierModal';
 export { buildSupplierSchema, type SupplierFormData } from './validations/suppliers.schema';
 export type {
   Supplier,
@@ -19,6 +20,7 @@ export type {
   SupplierStats,
   BillListParams,
   CreateBillInput,
+  PaySupplierInput,
   CreateSupplierInput,
   UpdateSupplierInput,
 } from './types/suppliers.types';

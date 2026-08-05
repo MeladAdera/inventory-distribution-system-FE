@@ -1,6 +1,6 @@
 'use client';
 
-import { Loader2, Phone, AlertTriangle, FilePlus2, Pencil } from 'lucide-react';
+import { Loader2, Phone, AlertTriangle, FilePlus2, Pencil, HandCoins } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
 import { formatMoney, isPositiveMoney } from '@/common/utils/money';
 import { DebtStatusBadge } from '@/features/shared/debts';
@@ -24,6 +24,7 @@ interface SupplierDetailModalProps {
   bills: SupplierBill[];
   isLoading: boolean;
   onRecordBill: () => void;
+  onPay: () => void;
   onEdit: () => void;
   locale: 'ar' | 'en';
   currency: string;
@@ -39,6 +40,7 @@ interface SupplierDetailModalProps {
     noInvoiceNo: string;
     billRef: string;
     recordBillBtn: string;
+    payBtn: string;
     editBtn: string;
     close: string;
     inactiveBadge: string;
@@ -69,6 +71,7 @@ export function SupplierDetailModal({
   bills,
   isLoading,
   onRecordBill,
+  onPay,
   onEdit,
   locale,
   currency,
@@ -184,13 +187,23 @@ export function SupplierDetailModal({
 
       <div className="flex items-center justify-between gap-2 pt-4 border-t border-border mt-4">
         <div className="flex items-center gap-2">
-          {/* Always available, unlike the customer modal's collect button: a new
-              delivery can arrive whether or not anything is currently owed. */}
+          {/* Paying leads when there is a balance; otherwise recording the next
+              delivery does. Both stay reachable — only the emphasis moves. */}
+          <button
+            onClick={onPay}
+            disabled={!owesMoney}
+            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-amber-600 text-[13px] font-semibold text-white hover:bg-amber-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <HandCoins size={15} />
+            {labels.payBtn}
+          </button>
+          {/* Always available, unlike the pay button: a new delivery can arrive
+              whether or not anything is currently owed. */}
           <button
             onClick={onRecordBill}
-            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-amber-600 text-[13px] font-semibold text-white hover:bg-amber-700 transition-colors"
+            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg border border-border text-[13px] font-medium text-ink-700 hover:bg-sand-100 transition-colors"
           >
-            <FilePlus2 size={15} />
+            <FilePlus2 size={14} />
             {labels.recordBillBtn}
           </button>
           <button

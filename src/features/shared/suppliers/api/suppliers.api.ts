@@ -4,6 +4,7 @@ import type {
   BillListParams,
   CreateBillInput,
   CreateSupplierInput,
+  PaySupplierInput,
   SupplierListParams,
   UpdateSupplierInput,
 } from '../types/suppliers.types';
@@ -58,6 +59,18 @@ export const suppliersApi = {
 
   summary: async (id: number, config?: AxiosRequestConfig) => {
     const response = await apiClient.get(`/suppliers/${id}/summary`, config);
+    return response.data;
+  },
+
+  /**
+   * Pay this supplier — one bill if `debtId` is given, oldest-first otherwise.
+   *
+   * Returns an ARRAY either way, one entry per bill the money touched; the
+   * targeted form just returns a single-element one. 404
+   * debt.NO_OPEN_SUPPLIER_DEBTS when there is nothing left to pay.
+   */
+  payBills: async (id: number, data: PaySupplierInput, config?: AxiosRequestConfig) => {
+    const response = await apiClient.post(`/suppliers/${id}/payments`, data, config);
     return response.data;
   },
 };

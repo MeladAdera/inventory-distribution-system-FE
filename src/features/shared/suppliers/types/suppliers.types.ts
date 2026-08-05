@@ -141,6 +141,23 @@ export interface BillListParams {
   search?: string;
 }
 
+/**
+ * Body for POST /suppliers/:id/payments.
+ *
+ * Without `debtId` the amount is applied to this supplier's oldest bills first
+ * (FIFO) and may settle several at once. With it, only that one bill is touched.
+ *
+ * Deliberately narrower than the customer equivalent, which also carries
+ * `method` and `note`: `CreateSupplierPaymentDto` documents only these two
+ * fields, and NestJS rejects unrecognised ones outright. Worth revisiting with
+ * the backend — how a supplier was paid is worth recording.
+ */
+export interface PaySupplierInput {
+  amount: string;
+  /** Omit for FIFO across every open bill. */
+  debtId?: number;
+}
+
 export interface CreateSupplierInput {
   name: string;
   phone?: string;

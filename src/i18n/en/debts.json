@@ -252,6 +252,31 @@
       "errInvalid": "Enter a valid amount.",
       "errPaidExceeds": "You can't pay more than the total.",
       "recordedToast": "Bill recorded."
+    },
+    "pay": {
+      "payBtn": "Pay",
+      "title": "Pay supplier",
+      "intro": "Money you're handing over to {name}.",
+      "owedLabel": "You owe",
+      "amount": "Amount",
+      "amountPlaceholder": "0.00",
+      "payAllBtn": "Pay it all",
+      "targetLabel": "Put it towards",
+      "targetFifo": "Oldest bills first",
+      "targetSpecific": "One bill",
+      "fifoHint": "The money clears your oldest bills first, and may settle more than one.",
+      "billOption": "{invoice} — {remaining} left",
+      "billOptionNoInvoice": "Bill #{id} — {remaining} left",
+      "noOpenBills": "You don't owe {name} anything right now.",
+      "submit": "Record payment",
+      "cancel": "Cancel",
+      "errInvalid": "Enter a valid amount.",
+      "errExceeds": "That's more than you owe ({remaining}).",
+      "resultTitle": "Payment recorded",
+      "resultIntro": "Cleared against {n} bill(s).",
+      "resultSettled": "Settled in full",
+      "resultRemaining": "{remaining} still owed",
+      "resultDone": "Done"
     }
   },
   "collect": {

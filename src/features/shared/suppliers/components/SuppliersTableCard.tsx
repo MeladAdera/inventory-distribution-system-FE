@@ -11,6 +11,7 @@ import {
   ArrowDownWideNarrow,
   Check,
   FilePlus2,
+  HandCoins,
 } from 'lucide-react';
 import { FilterChips } from '@/common/components';
 import { cn } from '@/common/utils/cn';
@@ -33,6 +34,7 @@ export interface SuppliersTableLabels {
   since: string;
   callBtn: string;
   recordBillBtn: string;
+  payBtn: string;
   footer: string;
   clearFilters: string;
   table: {
@@ -64,6 +66,7 @@ interface SuppliersTableCardProps {
   onView: (supplier: Supplier) => void;
   onEdit: (supplier: Supplier) => void;
   onRecordBill: (supplier: Supplier) => void;
+  onPay: (supplier: Supplier) => void;
   onDeactivate: (supplier: Supplier) => void;
   onAdd: () => void;
   currency: string;
@@ -215,6 +218,7 @@ export function SuppliersTableCard({
   onView,
   onEdit,
   onRecordBill,
+  onPay,
   onDeactivate,
   onAdd,
   currency,
@@ -304,164 +308,189 @@ export function SuppliersTableCard({
               </span>
             </div>
 
-            {rows.map((s) => (
-              <div
-                key={s.id}
-                onClick={() => onView(s)}
-                className="grid grid-cols-[1.8fr_1.1fr_0.9fr_1.1fr_auto] items-center gap-4 px-6 py-3.5 border-b border-border last:border-b-0 hover:bg-page transition-colors cursor-pointer"
-              >
-                <span className="flex items-center gap-3 min-w-0">
-                  <SupplierAvatar name={s.name} muted={!s.is_active} />
-                  <span className="min-w-0">
-                    <span className="flex items-center gap-2 min-w-0">
-                      <span className="text-[14px] font-medium text-ink-900 truncate">
-                        {s.name}
-                      </span>
-                      {!s.is_active && (
-                        <span className="shrink-0 px-1.5 py-0.5 rounded text-[11px] font-medium bg-sand-200 text-ink-500">
-                          {labels.badge.inactive}
-                        </span>
-                      )}
-                    </span>
-                    <span className="block text-[11px] text-ink-400 truncate">
-                      {labels.since.replace('{year}', joinedYear(s.created_at))}
-                    </span>
-                  </span>
-                </span>
-
-                {/* `<bdi>` and not dir="ltr" on the cell: a leading `+` has to
-                    render on the left of the digits, but `dir` also flips the
-                    cell's text-align, which in Arabic parks the number at the
-                    far edge of the column, away from its own header. */}
-                <span className="font-mono text-[13px] text-ink-600 truncate">
-                  {s.phone ? (
-                    <bdi>{s.phone}</bdi>
-                  ) : (
-                    <span className="font-sans text-ink-400">{labels.table.noPhone}</span>
-                  )}
-                </span>
-
-                <span className="text-[13px] text-ink-600 tabular-nums">
-                  {s.open_debts_count || <span className="text-ink-300">—</span>}
-                </span>
-
-                <OwedCell supplier={s} currency={currency} labels={labels} align="end" />
-
+            {rows.map((s) => {
+              const owes = isPositiveMoney(s.total_remaining);
+              return (
                 <div
-                  className="w-28 flex justify-center gap-0.5"
-                  onClick={(e) => e.stopPropagation()}
+                  key={s.id}
+                  onClick={() => onView(s)}
+                  className="grid grid-cols-[1.8fr_1.1fr_0.9fr_1.1fr_auto] items-center gap-4 px-6 py-3.5 border-b border-border last:border-b-0 hover:bg-page transition-colors cursor-pointer"
                 >
-                  <button
-                    onClick={() => onRecordBill(s)}
-                    aria-label={`${labels.recordBillBtn} — ${s.name}`}
-                    title={labels.recordBillBtn}
-                    className="p-2 rounded-lg text-ink-500 hover:bg-amber-100 hover:text-amber-700 transition-colors cursor-pointer"
-                  >
-                    <FilePlus2 size={15} />
-                  </button>
-                  <button
-                    onClick={() => onEdit(s)}
-                    aria-label={`${labels.table.actions} — ${s.name}`}
-                    className="p-2 rounded-lg text-ink-500 hover:bg-sand-100 hover:text-ink-800 transition-colors cursor-pointer"
-                  >
-                    <Pencil size={15} />
-                  </button>
-                  {s.is_active && (
-                    <button
-                      onClick={() => onDeactivate(s)}
-                      aria-label={`${labels.badge.inactive} — ${s.name}`}
-                      className="p-2 rounded-lg text-ink-500 hover:bg-danger-100 hover:text-danger-700 transition-colors cursor-pointer"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Mobile cards */}
-          <div className="sm:hidden flex flex-col divide-y divide-border">
-            {rows.map((s) => (
-              <div key={s.id} onClick={() => onView(s)} className="px-4 py-3.5">
-                <div className="flex items-start justify-between gap-3">
-                  <span className="flex items-center gap-2.5 min-w-0">
-                    <SupplierAvatar name={s.name} muted={!s.is_active} size="sm" />
+                  <span className="flex items-center gap-3 min-w-0">
+                    <SupplierAvatar name={s.name} muted={!s.is_active} />
                     <span className="min-w-0">
                       <span className="flex items-center gap-2 min-w-0">
-                        <span className="text-[14px] font-semibold text-ink-900 truncate">
+                        <span className="text-[14px] font-medium text-ink-900 truncate">
                           {s.name}
                         </span>
                         {!s.is_active && (
-                          <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-medium bg-sand-200 text-ink-500">
+                          <span className="shrink-0 px-1.5 py-0.5 rounded text-[11px] font-medium bg-sand-200 text-ink-500">
                             {labels.badge.inactive}
                           </span>
                         )}
                       </span>
-                      <span className="block font-mono text-[12px] text-ink-500 truncate">
-                        {s.phone ? (
-                          <bdi>{s.phone}</bdi>
-                        ) : (
-                          <span className="font-sans">{labels.table.noPhone}</span>
-                        )}
+                      <span className="block text-[11px] text-ink-400 truncate">
+                        {labels.since.replace('{year}', joinedYear(s.created_at))}
                       </span>
                     </span>
                   </span>
-                  <span className="shrink-0">
-                    <OwedCell supplier={s} currency={currency} labels={labels} align="end" />
-                  </span>
-                </div>
 
-                <div
-                  className="flex items-center gap-2 mt-3 pt-3 border-t border-border"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <span className="flex-1 min-w-0 text-[12px] text-ink-500 truncate">
-                    {/* Mid-sentence on a card, unlike the desktop column header.
-                        Arabic is unaffected — it has no case. */}
-                    {s.open_debts_count} {labels.table.openBills.toLowerCase()}
+                  {/* `<bdi>` and not dir="ltr" on the cell: a leading `+` has to
+                    render on the left of the digits, but `dir` also flips the
+                    cell's text-align, which in Arabic parks the number at the
+                    far edge of the column, away from its own header. */}
+                  <span className="font-mono text-[13px] text-ink-600 truncate">
+                    {s.phone ? (
+                      <bdi>{s.phone}</bdi>
+                    ) : (
+                      <span className="font-sans text-ink-400">{labels.table.noPhone}</span>
+                    )}
                   </span>
 
-                  {s.phone && (
-                    <a
-                      href={`tel:${s.phone}`}
-                      aria-label={`${labels.callBtn} — ${s.name}`}
-                      className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border text-[13px] font-medium text-ink-700 active:bg-sand-100 transition-colors shrink-0"
-                    >
-                      <Phone size={14} />
-                      {labels.callBtn}
-                    </a>
-                  )}
+                  <span className="text-[13px] text-ink-600 tabular-nums">
+                    {s.open_debts_count || <span className="text-ink-300">—</span>}
+                  </span>
 
-                  {/* One primary action per card: recording the next delivery is
-                      what a supplier row is actually for, so the housekeeping
-                      stays as icons beside it. */}
-                  <button
-                    onClick={() => onRecordBill(s)}
-                    className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-amber-100 text-[13px] font-semibold text-amber-700 active:bg-amber-500/30 transition-colors shrink-0"
+                  <OwedCell supplier={s} currency={currency} labels={labels} align="end" />
+
+                  <div
+                    className="w-36 flex justify-center gap-0.5"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <FilePlus2 size={14} />
-                    {labels.recordBillBtn}
-                  </button>
-                  <button
-                    onClick={() => onEdit(s)}
-                    aria-label={`${labels.table.actions} — ${s.name}`}
-                    className="p-2 rounded-lg text-ink-500 active:bg-sand-100 transition-colors shrink-0"
-                  >
-                    <Pencil size={16} />
-                  </button>
-                  {s.is_active && (
                     <button
-                      onClick={() => onDeactivate(s)}
-                      aria-label={`${labels.badge.inactive} — ${s.name}`}
-                      className="p-2 rounded-lg text-ink-500 active:bg-danger-100 active:text-danger-700 transition-colors shrink-0"
+                      onClick={() => onPay(s)}
+                      disabled={!owes}
+                      aria-label={`${labels.payBtn} — ${s.name}`}
+                      title={labels.payBtn}
+                      className="p-2 rounded-lg text-ink-500 hover:bg-amber-100 hover:text-amber-700 transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-ink-500"
                     >
-                      <Trash2 size={16} />
+                      <HandCoins size={15} />
                     </button>
-                  )}
+                    <button
+                      onClick={() => onRecordBill(s)}
+                      aria-label={`${labels.recordBillBtn} — ${s.name}`}
+                      title={labels.recordBillBtn}
+                      className="p-2 rounded-lg text-ink-500 hover:bg-amber-100 hover:text-amber-700 transition-colors cursor-pointer"
+                    >
+                      <FilePlus2 size={15} />
+                    </button>
+                    <button
+                      onClick={() => onEdit(s)}
+                      aria-label={`${labels.table.actions} — ${s.name}`}
+                      className="p-2 rounded-lg text-ink-500 hover:bg-sand-100 hover:text-ink-800 transition-colors cursor-pointer"
+                    >
+                      <Pencil size={15} />
+                    </button>
+                    {s.is_active && (
+                      <button
+                        onClick={() => onDeactivate(s)}
+                        aria-label={`${labels.badge.inactive} — ${s.name}`}
+                        className="p-2 rounded-lg text-ink-500 hover:bg-danger-100 hover:text-danger-700 transition-colors cursor-pointer"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+          </div>
+
+          {/* Mobile cards */}
+          <div className="sm:hidden flex flex-col divide-y divide-border">
+            {rows.map((s) => {
+              const owes = isPositiveMoney(s.total_remaining);
+              return (
+                <div key={s.id} onClick={() => onView(s)} className="px-4 py-3.5">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="flex items-center gap-2.5 min-w-0">
+                      <SupplierAvatar name={s.name} muted={!s.is_active} size="sm" />
+                      <span className="min-w-0">
+                        <span className="flex items-center gap-2 min-w-0">
+                          <span className="text-[14px] font-semibold text-ink-900 truncate">
+                            {s.name}
+                          </span>
+                          {!s.is_active && (
+                            <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-medium bg-sand-200 text-ink-500">
+                              {labels.badge.inactive}
+                            </span>
+                          )}
+                        </span>
+                        <span className="block font-mono text-[12px] text-ink-500 truncate">
+                          {s.phone ? (
+                            <bdi>{s.phone}</bdi>
+                          ) : (
+                            <span className="font-sans">{labels.table.noPhone}</span>
+                          )}
+                        </span>
+                      </span>
+                    </span>
+                    <span className="shrink-0">
+                      <OwedCell supplier={s} currency={currency} labels={labels} align="end" />
+                    </span>
+                  </div>
+
+                  <div
+                    className="flex items-center gap-2 mt-3 pt-3 border-t border-border"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <span className="flex-1 min-w-0 text-[12px] text-ink-500 truncate">
+                      {/* Mid-sentence on a card, unlike the desktop column header.
+                        Arabic is unaffected — it has no case. */}
+                      {s.open_debts_count} {labels.table.openBills.toLowerCase()}
+                    </span>
+
+                    {s.phone && (
+                      <a
+                        href={`tel:${s.phone}`}
+                        aria-label={`${labels.callBtn} — ${s.name}`}
+                        className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border text-[13px] font-medium text-ink-700 active:bg-sand-100 transition-colors shrink-0"
+                      >
+                        <Phone size={14} />
+                        {labels.callBtn}
+                      </a>
+                    )}
+
+                    {/* One primary action per card: settle up when there is a
+                      balance, otherwise record the next delivery. The other
+                      stays reachable by opening the row. */}
+                    {owes ? (
+                      <button
+                        onClick={() => onPay(s)}
+                        className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-amber-100 text-[13px] font-semibold text-amber-700 active:bg-amber-500/30 transition-colors shrink-0"
+                      >
+                        <HandCoins size={14} />
+                        {labels.payBtn}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => onRecordBill(s)}
+                        className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-amber-100 text-[13px] font-semibold text-amber-700 active:bg-amber-500/30 transition-colors shrink-0"
+                      >
+                        <FilePlus2 size={14} />
+                        {labels.recordBillBtn}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => onEdit(s)}
+                      aria-label={`${labels.table.actions} — ${s.name}`}
+                      className="p-2 rounded-lg text-ink-500 active:bg-sand-100 transition-colors shrink-0"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    {s.is_active && (
+                      <button
+                        onClick={() => onDeactivate(s)}
+                        aria-label={`${labels.badge.inactive} — ${s.name}`}
+                        className="p-2 rounded-lg text-ink-500 active:bg-danger-100 active:text-danger-700 transition-colors shrink-0"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* Footer: what's on screen, and how it's ordered. */}

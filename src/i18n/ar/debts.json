@@ -252,6 +252,31 @@
       "errInvalid": "أدخل مبلغاً صحيحاً.",
       "errPaidExceeds": "لا يمكنك دفع أكثر من الإجمالي.",
       "recordedToast": "تم تسجيل الفاتورة."
+    },
+    "pay": {
+      "payBtn": "دفع",
+      "title": "دفع للمورّد",
+      "intro": "مبلغ تسلّمه إلى {name}.",
+      "owedLabel": "عليك",
+      "amount": "المبلغ",
+      "amountPlaceholder": "0.00",
+      "payAllBtn": "دفع الكل",
+      "targetLabel": "يُحتسب على",
+      "targetFifo": "الأقدم أولاً",
+      "targetSpecific": "فاتورة محدّدة",
+      "fifoHint": "يُسدّد المبلغ أقدم فواتيرك أولاً، وقد يغطّي أكثر من فاتورة.",
+      "billOption": "{invoice} — تبقّى {remaining}",
+      "billOptionNoInvoice": "فاتورة #{id} — تبقّى {remaining}",
+      "noOpenBills": "لا يوجد عليك شيء لـ {name} حالياً.",
+      "submit": "تسجيل الدفعة",
+      "cancel": "إلغاء",
+      "errInvalid": "أدخل مبلغاً صحيحاً.",
+      "errExceeds": "المبلغ أكبر ممّا عليك ({remaining}).",
+      "resultTitle": "تم تسجيل الدفعة",
+      "resultIntro": "سُدّدت على {n} فاتورة.",
+      "resultSettled": "سُدّدت بالكامل",
+      "resultRemaining": "تبقّى {remaining}",
+      "resultDone": "تم"
     }
   },
   "collect": {

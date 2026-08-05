@@ -16,6 +16,7 @@ import { SupplierStatsCards } from './SupplierStatsCards';
 import { SupplierFormModal } from './SupplierFormModal';
 import { SupplierDetailModal } from './SupplierDetailModal';
 import { RecordBillModal } from './RecordBillModal';
+import { PaySupplierModal } from './PaySupplierModal';
 import { SupplierSort, SupplierView } from '../types/suppliers.types';
 import type { Supplier, CreateSupplierInput, CreateBillInput } from '../types/suppliers.types';
 
@@ -58,6 +59,7 @@ export function SuppliersPage() {
   const [active, setActive] = useState<Supplier | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [billOpen, setBillOpen] = useState(false);
+  const [payOpen, setPayOpen] = useState(false);
 
   // Typing a search shouldn't fire a request per keystroke.
   useEffect(() => {
@@ -100,9 +102,12 @@ export function SuppliersPage() {
     supplier: viewedSupplier,
     summary,
     bills,
+    openBills,
     isLoading: isLoadingDetail,
     recordBill,
     isRecordingBill,
+    payBills,
+    isPaying,
   } = useSupplierDetail(active?.id ?? null);
 
   const hasFilters = Boolean(debouncedSearch) || view !== SupplierView.ALL;
@@ -139,17 +144,27 @@ export function SuppliersPage() {
     setBillOpen(true);
   }
 
-  // The detail queries stay mounted while either modal is open; drop the active
-  // supplier only once nothing is left showing, so closing the bill form doesn't
-  // blank the detail view sitting behind it.
+  function openPay(supplier: Supplier) {
+    setActive(supplier);
+    setPayOpen(true);
+  }
+
+  // The detail queries stay mounted while any of these is open; drop the active
+  // supplier only once nothing is left showing, so closing the bill or payment
+  // form doesn't blank the detail view sitting behind it.
   function closeDetail() {
     setDetailOpen(false);
-    if (!billOpen) setActive(null);
+    if (!billOpen && !payOpen) setActive(null);
   }
 
   function closeBill() {
     setBillOpen(false);
-    if (!detailOpen) setActive(null);
+    if (!detailOpen && !payOpen) setActive(null);
+  }
+
+  function closePay() {
+    setPayOpen(false);
+    if (!detailOpen && !billOpen) setActive(null);
   }
 
   // Throws on failure so the modal can render the server message inline
@@ -287,6 +302,7 @@ export function SuppliersPage() {
         onView={openDetail}
         onEdit={openEdit}
         onRecordBill={openBill}
+        onPay={openPay}
         onDeactivate={setDeactivating}
         onAdd={openCreate}
         currency={t.debts.currency}
@@ -297,6 +313,7 @@ export function SuppliersPage() {
           since: s.since,
           callBtn: s.callBtn,
           recordBillBtn: s.bill.recordBtn,
+          payBtn: s.pay.payBtn,
           footer: s.footer,
           clearFilters: s.filters.clear,
           table: s.table,
@@ -350,6 +367,7 @@ export function SuppliersPage() {
         bills={bills}
         isLoading={isLoadingDetail}
         onRecordBill={() => setBillOpen(true)}
+        onPay={() => setPayOpen(true)}
         onEdit={() => {
           if (viewedSupplier) openEdit(viewedSupplier);
         }}
@@ -359,6 +377,7 @@ export function SuppliersPage() {
           ...s.detail,
           inactiveBadge: s.badge.inactive,
           recordBillBtn: s.bill.recordBtn,
+          payBtn: s.pay.payBtn,
           statusNames: t.debts.status,
         }}
       />
@@ -371,6 +390,23 @@ export function SuppliersPage() {
         isRecording={isRecordingBill}
         currency={t.debts.currency}
         labels={s.bill}
+      />
+
+      <PaySupplierModal
+        open={payOpen}
+        onClose={closePay}
+        supplierName={viewedSupplier?.name ?? active?.name ?? ''}
+        totalRemaining={summary.total_remaining}
+        openBills={openBills}
+        onPay={payBills}
+        isPaying={isPaying}
+        isLoadingBills={isLoadingDetail}
+        currency={t.debts.currency}
+        labels={{
+          ...s.pay,
+          billRef: s.detail.billRef,
+          statusNames: t.debts.status,
+        }}
       />
 
       <SupplierFormModal

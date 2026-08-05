@@ -3,9 +3,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { isPositiveMoney } from '@/common/utils/money';
 import { DebtStatus } from '@/features/shared/debts';
+import type { PaymentApplication } from '@/features/shared/debts';
 import { suppliersApi } from '../api/suppliers.api';
 import type {
   CreateBillInput,
+  PaySupplierInput,
   Supplier,
   SupplierBill,
   SupplierSummary,
@@ -68,6 +70,19 @@ export function useSupplierDetail(id: number | null) {
     },
   });
 
+  const payMutation = useMutation({
+    mutationFn: (data: PaySupplierInput) =>
+      suppliersApi.payBills(id as number, data) as Promise<{ data: PaymentApplication[] }>,
+    // A payment can settle several bills at once and moves this supplier's
+    // balance, the list row behind the modal, and the shop-wide payables totals.
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['suppliers'], refetchType: 'all' }),
+        queryClient.invalidateQueries({ queryKey: ['analytics'], refetchType: 'all' }),
+      ]);
+    },
+  });
+
   const bills: SupplierBill[] = billsQuery.data?.data?.data ?? [];
 
   return {
@@ -86,5 +101,7 @@ export function useSupplierDetail(id: number | null) {
     error: supplierQuery.error ?? summaryQuery.error ?? billsQuery.error,
     recordBill: recordBillMutation.mutateAsync,
     isRecordingBill: recordBillMutation.isPending,
+    payBills: payMutation.mutateAsync,
+    isPaying: payMutation.isPending,
   };
 }
