@@ -23,6 +23,8 @@ import {
   DebtorType,
 } from '@/features/shared/debts';
 import type { DebtListItem } from '@/features/shared/debts';
+import { OwedToSuppliersCard } from '@/features/shared/suppliers';
+import { ROUTES } from '@/common/constants/app.constants';
 import { OrderLookupModal } from './orders/OrderLookupModal';
 
 const LIMIT = 15;
@@ -73,7 +75,7 @@ export function ClientDebtsPage() {
   } = useReceivablesAging(receivablesParams);
 
   const shopId = useAuthStore((s) => s.user?.shopId);
-  const { owedByShop } = useShopDebtSummary(shopId);
+  const { owedByShop, owedToSuppliers } = useShopDebtSummary(shopId);
 
   // The orders behind that balance. A shop that owes nothing has nothing to
   // break down, so the request never fires.
@@ -208,7 +210,19 @@ export function ClientDebtsPage() {
         </CardShell>
       </div>
 
-      {/* The other side of the ledger — read-only, never netted against the above */}
+      {/* The two money-out sides of the ledger. Both sit apart from the
+          receivables above, and neither is ever netted against it or each
+          other — one is owed to the warehouse for orders, the other to the
+          shop's own suppliers for deliveries. */}
+      <div className="mb-4">
+        <OwedToSuppliersCard
+          summary={owedToSuppliers}
+          href={ROUTES.CLIENT_SUPPLIERS}
+          currency={t.debts.currency}
+          labels={t.debts.suppliers.owedCard}
+        />
+      </div>
+
       <div className="mb-4">
         <OwedToWarehouseCard
           summary={owedByShop}

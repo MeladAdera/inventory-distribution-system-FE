@@ -12,6 +12,7 @@ export { SupplierFormModal } from './components/SupplierFormModal';
 export { SupplierDetailModal } from './components/SupplierDetailModal';
 export { RecordBillModal } from './components/RecordBillModal';
 export { PaySupplierModal } from './components/PaySupplierModal';
+export { OwedToSuppliersCard } from './components/OwedToSuppliersCard';
 export { BillDetailModal } from './components/BillDetailModal';
 export { CancelBillModal } from './components/CancelBillModal';
 export { buildSupplierSchema, type SupplierFormData } from './validations/suppliers.schema';

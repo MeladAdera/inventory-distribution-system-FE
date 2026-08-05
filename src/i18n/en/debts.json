@@ -312,6 +312,15 @@
         "confirm": "Cancel bill",
         "cancel": "Keep it"
       }
+    },
+    "owedCard": {
+      "title": "What you owe your suppliers",
+      "remaining": "Still owed across all unpaid bills",
+      "paid": "Paid so far",
+      "openBills": "Open bills",
+      "settled": "You're all settled up with your suppliers.",
+      "hint": "Separate from what you owe the warehouse — these are the suppliers you buy from directly.",
+      "manageBtn": "Suppliers"
     }
   },
   "collect": {
