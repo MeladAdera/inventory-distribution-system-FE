@@ -104,9 +104,6 @@ export function ClientAuditLogsPage() {
         labels={{
           filter: al.filter,
           table: al.table,
-          types: al.types,
-          actions: al.actions,
-          entity: al.entity,
           empty: al.empty,
         }}
       />
@@ -145,9 +142,6 @@ export function ClientAuditLogsPage() {
         onClose={() => setModalOpen(false)}
         locale={locale}
         labels={al.modal}
-        typeLabels={al.types}
-        actionLabels={al.actions}
-        entityLabels={al.entity}
       />
     </div>
   );

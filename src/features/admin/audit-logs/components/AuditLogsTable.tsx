@@ -15,8 +15,6 @@ interface AuditLogsTableLabels {
     receiptId: string;
     detail: string;
   };
-  types: Record<string, string>;
-  actions: Record<string, string>;
   empty: string;
 }
 
@@ -63,14 +61,12 @@ export function AuditLogsTable({ data, isLoading, onView, labels }: AuditLogsTab
     {
       key: 'type',
       header: labels.table.type,
-      render: (log) => (
-        <AuditLogTypeBadge type={log.type} label={labels.types[log.type] ?? log.type} />
-      ),
+      render: (log) => <AuditLogTypeBadge type={log.type} label={log.type_label ?? log.type} />,
     },
     {
       key: 'action',
       header: labels.table.action,
-      render: (log) => labels.actions[log.action] ?? log.action,
+      render: (log) => log.action_label ?? log.action,
     },
     {
       key: 'quantity',

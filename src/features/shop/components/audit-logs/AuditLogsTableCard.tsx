@@ -33,9 +33,6 @@ interface AuditLogsTableCardLabels {
     qty: string;
     receiptId: string;
   };
-  types: Record<string, string>;
-  actions: Record<string, string>;
-  entity: Record<string, string>;
   empty: { title: string; sub: string };
 }
 
@@ -188,11 +185,9 @@ export function AuditLogsTableCard({
                   {log.user_name}
                 </span>
 
-                <AuditLogTypeBadge type={log.type} label={labels.types[log.type] ?? log.type} />
+                <AuditLogTypeBadge type={log.type} label={log.type_label ?? log.type} />
 
-                <span className="text-[13px] text-ink-600">
-                  {labels.actions[log.action] ?? log.action}
-                </span>
+                <span className="text-[13px] text-ink-600">{log.action_label ?? log.action}</span>
 
                 <span className="text-[13px] text-ink-500 tabular-nums">
                   {log.quantity != null
@@ -223,7 +218,7 @@ export function AuditLogsTableCard({
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-[13px] font-semibold text-ink-800">{log.user_name}</span>
-                    <AuditLogTypeBadge type={log.type} label={labels.types[log.type] ?? log.type} />
+                    <AuditLogTypeBadge type={log.type} label={log.type_label ?? log.type} />
                   </div>
                   <button
                     onClick={() => onView(log)}
@@ -234,7 +229,7 @@ export function AuditLogsTableCard({
                 </div>
 
                 <p className="text-[13px] text-ink-600">
-                  {labels.actions[log.action] ?? log.action}
+                  {log.action_label ?? log.action}
                   {log.quantity != null && (
                     <span className="ml-2 text-ink-400 tabular-nums">
                       ({log.quantity > 0 ? `+${log.quantity}` : String(log.quantity)})

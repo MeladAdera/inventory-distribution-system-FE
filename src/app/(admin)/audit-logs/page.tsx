@@ -171,8 +171,6 @@ export default function AuditLogsPage() {
         onView={setSelectedLog}
         labels={{
           table: al.table,
-          types: al.types,
-          actions: al.actions,
           empty: al.empty,
         }}
       />
@@ -186,9 +184,6 @@ export default function AuditLogsPage() {
         open={!!selectedLog}
         onClose={() => setSelectedLog(null)}
         labels={al.modal}
-        typeLabels={al.types}
-        actionLabels={al.actions}
-        entityLabels={al.entity}
       />
     </div>
   );

@@ -534,23 +534,6 @@
       "qty": "الكمية",
       "receiptId": "رقم الإيصال"
     },
-    "types": {
-      "INVENTORY": "مخزون",
-      "ORDER": "طلب"
-    },
-    "actions": {
-      "STOCK_IN": "إضافة مخزون",
-      "ADJUSTMENT": "تعديل",
-      "TRANSFER_OUT": "تحويل صادر",
-      "TRANSFER_IN": "تحويل وارد",
-      "STATUS_CHANGED": "تغيير الحالة",
-      "MARKED_FREE": "تحديد كمجاني",
-      "UNMARKED_FREE": "إلغاء تحديد المجاني"
-    },
-    "entity": {
-      "inventory": "مخزون",
-      "order": "طلب"
-    },
     "empty": {
       "title": "لا يوجد نشاط بعد",
       "sub": "ستظهر هنا الإجراءات التي تتم في متجرك."

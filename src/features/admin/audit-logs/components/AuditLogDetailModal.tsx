@@ -28,9 +28,6 @@ interface AuditLogDetailModalProps {
   open: boolean;
   onClose: () => void;
   labels: AuditLogDetailModalLabels;
-  typeLabels: Record<string, string>;
-  actionLabels: Record<string, string>;
-  entityLabels: Record<string, string>;
 }
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -44,15 +41,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   );
 }
 
-export function AuditLogDetailModal({
-  logId,
-  open,
-  onClose,
-  labels,
-  typeLabels,
-  actionLabels,
-  entityLabels,
-}: AuditLogDetailModalProps) {
+export function AuditLogDetailModal({ logId, open, onClose, labels }: AuditLogDetailModalProps) {
   const { log, isLoading } = useAuditLogDetail(logId);
   const { locale } = useI18n();
 
@@ -86,13 +75,13 @@ export function AuditLogDetailModal({
           <Row label={labels.user}>{log.user_name}</Row>
 
           <Row label={labels.type}>
-            <AuditLogTypeBadge type={log.type} label={typeLabels[log.type] ?? log.type} />
+            <AuditLogTypeBadge type={log.type} label={log.type_label ?? log.type} />
           </Row>
 
-          <Row label={labels.action}>{actionLabels[log.action] ?? log.action}</Row>
+          <Row label={labels.action}>{log.action_label ?? log.action}</Row>
 
           <Row label={labels.entity}>
-            {entityLabels[log.entity_type] ?? log.entity_type} #{log.entity_id}
+            {log.entity_type_label ?? log.entity_type} #{log.entity_id}
           </Row>
 
           {log.receipt_id != null && (
@@ -117,7 +106,15 @@ export function AuditLogDetailModal({
             </Row>
           )}
 
-          {log.notes && <Row label={labels.notes}>{log.notes}</Row>}
+          {/* Notes can be in either language regardless of the active locale — let the
+              browser resolve the direction per value instead of inheriting the page's. */}
+          {log.notes && (
+            <Row label={labels.notes}>
+              <span dir="auto" className="block">
+                {log.notes}
+              </span>
+            </Row>
+          )}
         </div>
       ) : null}
 

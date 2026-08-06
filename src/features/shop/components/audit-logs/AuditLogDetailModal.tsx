@@ -36,9 +36,6 @@ interface AuditLogDetailModalProps {
   onClose: () => void;
   locale: 'ar' | 'en';
   labels: AuditLogDetailModalLabels;
-  typeLabels: Record<string, string>;
-  actionLabels: Record<string, string>;
-  entityLabels: Record<string, string>;
 }
 
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
@@ -58,9 +55,6 @@ export function AuditLogDetailModal({
   onClose,
   locale,
   labels,
-  typeLabels,
-  actionLabels,
-  entityLabels,
 }: AuditLogDetailModalProps) {
   const { log, isLoading } = useAuditLogDetail(logId);
 
@@ -99,13 +93,13 @@ export function AuditLogDetailModal({
               <DetailRow label={labels.user}>{log.user_name}</DetailRow>
 
               <DetailRow label={labels.type}>
-                <AuditLogTypeBadge type={log.type} label={typeLabels[log.type] ?? log.type} />
+                <AuditLogTypeBadge type={log.type} label={log.type_label ?? log.type} />
               </DetailRow>
 
-              <DetailRow label={labels.action}>{actionLabels[log.action] ?? log.action}</DetailRow>
+              <DetailRow label={labels.action}>{log.action_label ?? log.action}</DetailRow>
 
               <DetailRow label={labels.entity}>
-                {entityLabels[log.entity_type] ?? log.entity_type} #{log.entity_id}
+                {log.entity_type_label ?? log.entity_type} #{log.entity_id}
               </DetailRow>
 
               {log.receipt_id != null && (
@@ -130,7 +124,15 @@ export function AuditLogDetailModal({
                 </DetailRow>
               )}
 
-              {log.notes && <DetailRow label={labels.notes}>{log.notes}</DetailRow>}
+              {/* Notes can be in either language regardless of the active locale — let the
+                  browser resolve the direction per value instead of inheriting the page's. */}
+              {log.notes && (
+                <DetailRow label={labels.notes}>
+                  <span dir="auto" className="block">
+                    {log.notes}
+                  </span>
+                </DetailRow>
+              )}
             </>
           ) : null}
         </div>

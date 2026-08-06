@@ -35,11 +35,8 @@ function getActivityText(log: AuditLog, t: AppTranslations): string {
     return `${log.notes}${qty}`;
   }
   const qty = log.quantity != null ? ` · ${log.quantity} ${units}` : '';
-  const action =
-    (t.auditLogs.actions as Record<string, string>)[log.action ?? ''] ??
-    (log.action ?? 'activity').replace(/_/g, ' ').toLowerCase();
-  const entity =
-    (t.auditLogs.entity as Record<string, string>)[log.entity_type ?? ''] ?? log.entity_type;
+  const action = log.action_label ?? (log.action ?? 'activity').replace(/_/g, ' ').toLowerCase();
+  const entity = log.entity_type_label ?? log.entity_type;
   return `${action} — ${entity} #${log.entity_id}${qty}`;
 }
 
@@ -91,7 +88,10 @@ export function RecentActivityFeed() {
               <Icon size={15} className={cn(color)} aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <p className="text-[13px] text-ink-800 leading-snug">{text}</p>
+              {/* Built from `notes` when there is one, which can be in either language. */}
+              <p dir="auto" className="text-[13px] text-ink-800 leading-snug">
+                {text}
+              </p>
               <time className="mt-0.5 text-[11px] text-ink-400 font-mono block">{time}</time>
             </div>
           </li>
