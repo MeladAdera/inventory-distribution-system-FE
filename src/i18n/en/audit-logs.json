@@ -24,23 +24,6 @@
     "receiptId": "Receipt ID",
     "detail": "Detail"
   },
-  "types": {
-    "INVENTORY": "Inventory",
-    "ORDER": "Order"
-  },
-  "actions": {
-    "STOCK_IN": "Stock in",
-    "ADJUSTMENT": "Adjustment",
-    "TRANSFER_OUT": "Transfer out",
-    "TRANSFER_IN": "Transfer in",
-    "STATUS_CHANGED": "Status changed",
-    "MARKED_FREE": "Marked free",
-    "UNMARKED_FREE": "Unmarked free"
-  },
-  "entity": {
-    "inventory": "Inventory",
-    "order": "Order"
-  },
   "units": "units",
   "empty": "No audit logs found.",
   "modal": {

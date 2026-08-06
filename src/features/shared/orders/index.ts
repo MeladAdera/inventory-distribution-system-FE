@@ -1,8 +1,8 @@
 // API
 export { ordersApi } from './api/orders.api';
 
-// Hooks
-export { useOrders } from './hooks/useOrders';
+// Hooks — the live list/mutate hook is useTransfers in @/features/shared/transfers,
+// which reads the same /orders resource.
 
 // Types
 export type {
@@ -13,7 +13,7 @@ export type {
   UpdateOrderStatusInput,
   OrderListParams,
 } from './types/orders.types';
-export { OrderStatus } from './types/orders.types';
+export { OrderStatus, NEXT_STATUS } from './types/orders.types';
 
 // Validations
 export { createOrderSchema, updateOrderStatusSchema } from './validations/orders.schema';

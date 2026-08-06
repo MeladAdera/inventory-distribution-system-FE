@@ -3,7 +3,7 @@
     "dashboard": "Home",
     "products": "Products",
     "clients": "Clients",
-    "transfers": "Transfers",
+    "orders": "Orders",
     "shortages": "Shortages",
     "more": "More"
   },
@@ -11,7 +11,7 @@
     "profit": "Profit",
     "categories": "Categories",
     "shortages": "Shortages",
-    "transfers": "Stock Transfer",
+    "orders": "Orders",
     "settings": "Settings",
     "auditLogs": "Audit Logs",
     "clientPortal": "Client Portal",

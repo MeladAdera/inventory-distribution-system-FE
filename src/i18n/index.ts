@@ -19,6 +19,7 @@ import receiptsEn from './en/receipts.json';
 import notificationsEn from './en/notifications.json';
 import offlineEn from './en/offline.json';
 import landingEn from './en/landing.json';
+import debtsEn from './en/debts.json';
 import sidebarAr from './ar/sidebar.json';
 import inventoryAr from './ar/inventory.json';
 import receiptsAr from './ar/receipts.json';
@@ -40,6 +41,7 @@ import shopsAr from './ar/shops.json';
 import notificationsAr from './ar/notifications.json';
 import offlineAr from './ar/offline.json';
 import landingAr from './ar/landing.json';
+import debtsAr from './ar/debts.json';
 
 export type Locale = 'ar' | 'en';
 
@@ -66,6 +68,7 @@ export const translations = {
     inventory: inventoryEn,
     offline: offlineEn,
     landing: landingEn,
+    debts: debtsEn,
   },
   ar: {
     sidebar: sidebarAr,
@@ -89,6 +92,7 @@ export const translations = {
     inventory: inventoryAr,
     offline: offlineAr,
     landing: landingAr,
+    debts: debtsAr,
   },
 } as const;
 

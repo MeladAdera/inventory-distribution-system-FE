@@ -1,9 +1,10 @@
 # Inventory Cost Basis & Selling Price
 
 **Status**: ✅ Complete — backend live, FE integrated
-**Type**: Shared inventory enhancement (Client portal · shop owner)
+**Type**: Shared inventory enhancement (Client portal · shop owner, and admin stock-add flows)
 **Created**: 2026-07-10
-**Route**: `/client/inventory`
+**Last Updated**: 2026-07-25 — unit-cost capture added to the admin Stock In / Restock modals
+**Routes**: `/client/inventory` · `/inventory` (admin)
 **Assignee**: Melad Adera
 
 ---
@@ -58,6 +59,22 @@ The response returns the authoritative recomputed `avg_cost`; the FE reconciles 
 - **Bulk stock-in** (`InventorySaveModal`) is the cost-bearing path. It's a multi-product increase, so each increased line has its **own** unit-cost input, **prefilled with the row's current avg** (only when a real basis > 0 exists — avoids sending an accidental `0`). A display-only preview shows `avg 8 → 8.4`, and a non-blocking warning appears when the entered cost deviates > 50 % from the current avg (likely fat-finger).
 - **Create product** (`ProductFormModal`) sets initial stock with **no** cost input — a brand-new row hits the seed rule and is valued at the `cost_price` entered on that form.
 - **Offline**: each increase captures `unitCost` at enqueue time in the sync queue (`StockSyncItem`), so replay is deterministic. After increases sync, the inventory cache is invalidated so `avg_cost` reconciles.
+- **Admin stock-add flows** (`/inventory`): both `StockInModal` (new product into the warehouse) and `InventoryRestockModal` (add to an existing row) carry the same unit-cost input. Without it, every warehouse stock-add hit the inherit rule and the warehouse's own cost basis never moved off its seed value — the top of the cost chain was frozen while the shop end of it was accurate.
+
+#### `inventoryCost.ts` — shared cost helpers (admin)
+
+`src/features/admin/inventory/utils/inventoryCost.ts` holds the pure helpers both admin modals use, so the two dialogs can't drift on the tri-state rule:
+
+```ts
+COST_DEVIATION_WARN = 0.5                       // warn above 50 % deviation from the current avg
+parseCost(raw): number                          // '' / invalid → NaN  (NaN = omit the key = inherit)
+defaultCostInput(item): string                  // prefill with the row's avg, but only when avg > 0
+blendedAvg(oldQty, oldAvg, addQty, addCost)     // display-only preview; backend owns the real value
+```
+
+Both modals then render the same three-part control: the cost input, an `Avg cost: 8 → 8.4` preview line, and a non-blocking `AlertTriangle` warning when the entered cost deviates more than 50 % from the current average (a likely fat-finger, e.g. `80` for `8`). `parseCost` returning `NaN` is what makes the input's empty state mean *inherit* rather than *free* — `onConfirm` passes `undefined`, so the key is omitted from the request body.
+
+`defaultCostInput` deliberately leaves the field **empty** when the row has no real basis (`avg_cost` absent or `0`), so a blind confirm can never send `unitCost: 0` and value the stock at free. In `StockInModal` the input only renders once a product is selected, and both the cost and the qty reset on product change / modal open.
 
 ---
 
@@ -111,7 +128,11 @@ Because profit reports read only the receipt/order snapshots, analytics needed *
 | ui | `src/features/shop/components/inventory/SetPriceModal.tsx` | **new** — selling-price editor with live margin |
 | ui | `src/features/shop/components/inventory/ProductCard.tsx` | price display + edit affordance |
 | ui | `src/features/shop/components/ClientInventoryPage.tsx` | wires cost + price modals, invalidation, 403 handling |
-| ui | `src/features/shared/products/components/ProductFormModal.tsx` | price field create-only |
+| ui | `src/features/shared/products/components/ProductFormModal.tsx` | price field create-only for shop users; the warehouse admin keeps it on edit (see [catalog-vs-orderable.md](catalog-vs-orderable.md)) |
+| util | `src/features/admin/inventory/utils/inventoryCost.ts` | **new** — `parseCost`, `defaultCostInput`, `blendedAvg`, `COST_DEVIATION_WARN` |
+| ui | `src/features/admin/inventory/components/StockInModal.tsx` | unit-cost input + avg preview + deviation warning |
+| ui | `src/features/admin/inventory/components/InventoryRestockModal.tsx` | unit-cost input + avg preview + deviation warning |
+| ui | `src/features/admin/inventory/InventoryPage.tsx` | threads `unitCost` through `handleStockIn` / `handleRestock` |
 
 ---
 
@@ -139,6 +160,14 @@ Because profit reports read only the receipt/order snapshots, analytics needed *
 ```
 
 Arabic equivalents added in `src/i18n/ar/client.json`.
+
+Admin equivalents under `t.inventory.restock` and `t.inventory.stockIn` (`src/i18n/{en,ar}/inventory.json`):
+
+```jsonc
+"unitCostLabel": "Unit cost",
+"avgCostLabel": "Avg cost",
+"costWarning": "This price is very different from the current average cost. Please double-check it."
+```
 
 ---
 

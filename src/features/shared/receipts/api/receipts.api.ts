@@ -1,6 +1,10 @@
 import type { AxiosRequestConfig } from 'axios';
 import { apiClient } from '@/common/api';
-import type { CreateReceiptInput, ReceiptListParams } from '../types/receipts.types';
+import type {
+  CancelReceiptInput,
+  CreateReceiptInput,
+  ReceiptListParams,
+} from '../types/receipts.types';
 
 export const receiptsApi = {
   list: async (params?: ReceiptListParams) => {
@@ -20,6 +24,12 @@ export const receiptsApi = {
 
   setFree: async (id: number, isFree: boolean, config?: AxiosRequestConfig) => {
     const response = await apiClient.patch(`/receipts/${id}/free`, { isFree }, config);
+    return response.data;
+  },
+
+  cancel: async (id: number, reason?: string, config?: AxiosRequestConfig) => {
+    const body: CancelReceiptInput = reason ? { reason } : {};
+    const response = await apiClient.patch(`/receipts/${id}/cancel`, body, config);
     return response.data;
   },
 };

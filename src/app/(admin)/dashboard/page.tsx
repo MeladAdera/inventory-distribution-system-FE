@@ -84,7 +84,7 @@ export default function DashboardPage() {
       trend: undefined,
       sub: d.kpi.stockValueSub,
       clickable: true,
-      onClick: () => router.push('/transfers'),
+      onClick: () => router.push('/orders'),
     },
     {
       icon: TrendingDown,
@@ -106,7 +106,7 @@ export default function DashboardPage() {
       trend: undefined,
       sub: d.kpi.todayUsageSub,
       clickable: true,
-      onClick: () => router.push('/transfers'),
+      onClick: () => router.push('/orders'),
     },
     {
       icon: CheckCircle2,
@@ -136,7 +136,7 @@ export default function DashboardPage() {
         </div>
 
         <button
-          onClick={() => router.push('/transfers')}
+          onClick={() => router.push('/orders')}
           className="inline-flex items-center gap-2 h-10 px-4 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors"
         >
           <Plus size={16} />

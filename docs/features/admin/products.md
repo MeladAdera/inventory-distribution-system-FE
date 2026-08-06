@@ -2,7 +2,7 @@
 
 **Status**: API Integrated — Known gaps documented below  
 **Created Date**: 2026-06-11  
-**Last Updated**: 2026-06-20  
+**Last Updated**: 2026-07-25  
 **Assignee**: Melad Adera  
 **Tickets**: FIGMA-003, TICKET-029, TICKET-030, TICKET-031, TICKET-032
 
@@ -20,6 +20,17 @@ The Products admin page (`/products`) is the primary interface for warehouse man
 - Category filter via `GET /products?category_name=` — dropdown populated from live categories
 - Source column (WAREHOUSE / LOCAL) displayed in the table row — set automatically by the backend
 - Bilingual (AR/EN) with full RTL/LTR layout support
+
+### Since this doc was written
+
+The page is now a **pure catalog** screen — stock-in moved to the Inventory page (`StockInModal`),
+which is also where cost is captured. Two later changes have their own write-ups:
+
+| Change | Doc |
+|---|---|
+| `is_orderable` — availability filter in the toolbar, "Catalog only" pill on rows, the orderable checkbox in the form modal (`showOrderableFlag`), price editable on edit for admins, and the `productFormAddSchema` split | [catalog-vs-orderable.md](../catalog-vs-orderable.md) |
+| Category Lucide icon as the product placeholder (`ProductThumb categoryIcon={product.category_icon}`) instead of the generic `Package` box | [category-icons.md](../category-icons.md) |
+| Per-shop `avg_cost` / `sale_price` replacing product-level cost and price for shop users | [inventory-costing-and-pricing.md](../inventory-costing-and-pricing.md) |
 
 ---
 

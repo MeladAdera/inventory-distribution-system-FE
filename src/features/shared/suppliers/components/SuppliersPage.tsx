@@ -1,0 +1,556 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import { Loader2, AlertTriangle, Download, Plus, RotateCcw } from 'lucide-react';
+import { useI18n } from '@/providers/I18nProvider';
+import { useToast } from '@/providers';
+import { ConfirmDialog } from '@/common/components';
+import { isPositiveMoney, formatMoney } from '@/common/utils/money';
+import { CardShell } from '@/features/admin/dashboard/components/CardShell';
+import { DebtAgingChart, usePayablesAging } from '@/features/shared/debts';
+import { getErrorMessage } from '@/common/utils/error.utils';
+import { downloadCsv, dateStampedName } from '@/common/utils/csv.utils';
+import { useSuppliers } from '../hooks/useSuppliers';
+import { useSupplierStats } from '../hooks/useSupplierStats';
+import { useSupplierRows } from '../hooks/useSupplierRows';
+import { useSupplierDetail } from '../hooks/useSupplierDetail';
+import { SuppliersTableCard } from './SuppliersTableCard';
+import { SupplierStatsCards } from './SupplierStatsCards';
+import { SupplierFormModal } from './SupplierFormModal';
+import { SupplierDetailModal } from './SupplierDetailModal';
+import { RecordBillModal } from './RecordBillModal';
+import { PaySupplierModal } from './PaySupplierModal';
+import { BillDetailModal } from './BillDetailModal';
+import { SupplierSort, SupplierView } from '../types/suppliers.types';
+import type {
+  Supplier,
+  SupplierBill,
+  CreateSupplierInput,
+  CreateBillInput,
+} from '../types/suppliers.types';
+
+const LIMIT = 15;
+// Smaller than the suppliers table: the bills list lives inside a modal, under
+// the totals block, so a page has to fit without pushing the actions off screen.
+const BILLS_LIMIT = 8;
+const SEARCH_DEBOUNCE_MS = 300;
+
+/**
+ * Suppliers — who this shop buys from, and what it still owes each of them.
+ *
+ * Rendered unchanged by BOTH portals: `/suppliers` for a warehouse admin and
+ * `/client/suppliers` for a shop owner. There is nothing to branch on, because
+ * the API resolves the shop from the caller either way — the warehouse buys from
+ * its own distribution centers exactly as a shop buys from its local suppliers.
+ * Only the surrounding layout differs, and that is the route's job, not this
+ * component's.
+ *
+ * No role gate on the page itself: every `/suppliers` endpoint is ADMIN or OWNER
+ * only, and an EMPLOYEE never reaches either route — the middleware turns them
+ * away and neither nav offers it.
+ */
+export function SuppliersPage() {
+  const { t, locale } = useI18n();
+  const s = t.debts.suppliers;
+  const toast = useToast();
+
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [view, setView] = useState<SupplierView>(SupplierView.ALL);
+  const [sort, setSort] = useState<SupplierSort>(SupplierSort.DEBT_DESC);
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<Supplier | null>(null);
+  const [deactivating, setDeactivating] = useState<Supplier | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  // `active` is whichever supplier's detail data is loaded; the two booleans say
+  // what is actually on screen. Kept apart so "record bill" can be reached
+  // straight from a list row without the detail modal opening behind it.
+  const [active, setActive] = useState<Supplier | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [billOpen, setBillOpen] = useState(false);
+  const [payOpen, setPayOpen] = useState(false);
+  // One bill's ledger, opened from the supplier's account behind it.
+  const [openedBill, setOpenedBill] = useState<SupplierBill | null>(null);
+
+  // Paging and search over the open supplier's bills. Scoped to the modal, so
+  // they reset whenever a different supplier is opened.
+  const [billsPage, setBillsPage] = useState(1);
+  const [billsSearch, setBillsSearch] = useState('');
+  const [debouncedBillsSearch, setDebouncedBillsSearch] = useState('');
+
+  // Typing a search shouldn't fire a request per keystroke.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedBillsSearch(billsSearch);
+      setBillsPage(1);
+    }, SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [billsSearch]);
+
+  const billParams = useMemo(
+    () => ({
+      page: billsPage,
+      limit: BILLS_LIMIT,
+      ...(debouncedBillsSearch ? { search: debouncedBillsSearch } : {}),
+    }),
+    [billsPage, debouncedBillsSearch]
+  );
+
+  const params = useMemo(
+    () => ({
+      page,
+      limit: LIMIT,
+      ...(debouncedSearch ? { search: debouncedSearch } : {}),
+      ...(view === SupplierView.HAS_DEBT ? { hasDebt: true } : {}),
+      ...(view === SupplierView.REMOVED ? { includeInactive: true } : {}),
+    }),
+    [page, debouncedSearch, view]
+  );
+
+  const {
+    suppliers,
+    total,
+    totalPages,
+    isLoading,
+    error,
+    createSupplier,
+    updateSupplier,
+    deactivateSupplier,
+    isDeactivating,
+    fetchAllForExport,
+  } = useSuppliers(params);
+
+  const { stats, isLoading: isLoadingStats } = useSupplierStats();
+
+  // Shop-wide, like the stat cards above it — the aging of what is owed doesn't
+  // change because the table below was filtered.
+  const {
+    rows: agingRows,
+    isLoading: isLoadingAging,
+    isFetching: isFetchingAging,
+  } = usePayablesAging();
+  const { rows } = useSupplierRows(suppliers, sort);
+
+  // Idle until a row is opened.
+  const {
+    supplier: viewedSupplier,
+    summary,
+    bills,
+    billsTotal,
+    billsTotalPages,
+    isFetchingBills,
+    openBills,
+    isLoadingOpenBills,
+    isLoading: isLoadingDetail,
+    recordBill,
+    isRecordingBill,
+    payBills,
+    isPaying,
+    // The open-bill list is only needed to populate the payment picker, so it
+    // stays unfetched until the pay form is actually reached.
+  } = useSupplierDetail(active?.id ?? null, {
+    withBills: detailOpen,
+    billParams,
+    withOpenBills: payOpen,
+  });
+
+  const hasFilters = Boolean(debouncedSearch) || view !== SupplierView.ALL;
+
+  function clearFilters() {
+    setSearch('');
+    setDebouncedSearch('');
+    setView(SupplierView.ALL);
+    setPage(1);
+  }
+
+  function changeView(next: SupplierView) {
+    setView(next);
+    setPage(1);
+  }
+
+  function openCreate() {
+    setEditing(null);
+    setFormOpen(true);
+  }
+
+  function openEdit(supplier: Supplier) {
+    setEditing(supplier);
+    setFormOpen(true);
+  }
+
+  function openDetail(supplier: Supplier) {
+    setActive(supplier);
+    // A search left over from the last supplier would hide this one's bills
+    // behind a filter they never typed.
+    setBillsPage(1);
+    setBillsSearch('');
+    setDebouncedBillsSearch('');
+    setDetailOpen(true);
+  }
+
+  function openBill(supplier: Supplier) {
+    setActive(supplier);
+    setBillOpen(true);
+  }
+
+  function openPay(supplier: Supplier) {
+    setActive(supplier);
+    setPayOpen(true);
+  }
+
+  // The detail queries stay mounted while any of these is open; drop the active
+  // supplier only once nothing is left showing, so closing the bill or payment
+  // form doesn't blank the detail view sitting behind it.
+  function closeDetail() {
+    setDetailOpen(false);
+    if (!billOpen && !payOpen) setActive(null);
+  }
+
+  function closeBill() {
+    setBillOpen(false);
+    if (!detailOpen && !payOpen) setActive(null);
+  }
+
+  function closePay() {
+    setPayOpen(false);
+    if (!detailOpen && !billOpen) setActive(null);
+  }
+
+  // Throws on failure so the modal can render the server message inline
+  // (e.g. 409 supplier.PHONE_TAKEN) instead of closing over a lost error.
+  async function handleSubmit(data: CreateSupplierInput) {
+    if (editing) {
+      await updateSupplier({ id: editing.id, data });
+      toast.success(s.form.updatedToast);
+    } else {
+      await createSupplier(data);
+      toast.success(s.form.createdToast);
+    }
+  }
+
+  // Throws on failure so the modal can render the server message inline
+  // (e.g. 409 supplier.INVOICE_TAKEN) instead of closing over a lost error.
+  async function handleRecordBill(data: CreateBillInput) {
+    const result = await recordBill(data);
+    toast.success(s.bill.recordedToast);
+    return result;
+  }
+
+  async function handleDeactivate() {
+    if (!deactivating) return;
+    try {
+      await deactivateSupplier(deactivating.id);
+      toast.success(s.deactivate.toast);
+      setDeactivating(null);
+    } catch (err) {
+      // 400 supplier.HAS_OPEN_DEBT — "settle the balance first".
+      toast.error(getErrorMessage(err));
+      setDeactivating(null);
+    }
+  }
+
+  /** Exports every supplier matching the current filters, not just this page. */
+  async function handleExport() {
+    setIsExporting(true);
+    try {
+      const all = await fetchAllForExport();
+      if (all.length === 0) {
+        toast.error(s.exportEmpty);
+        return;
+      }
+      downloadCsv(
+        dateStampedName('suppliers'),
+        [
+          s.table.name,
+          s.table.phone,
+          s.table.openBills,
+          `${s.table.remaining} (${t.debts.currency})`,
+        ],
+        // Raw money strings, not the grouped display form: a spreadsheet reads
+        // "1952.79" as a number it can total, and "1,952.79" as text it can't.
+        all.map((row) => [row.name, row.phone ?? '', row.open_debts_count, row.total_remaining])
+      );
+      toast.success(s.exportDone.replace('{n}', String(all.length)));
+    } catch {
+      toast.error(s.exportFailed);
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
+  if (isLoading && suppliers.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-64 gap-2 text-ink-500">
+        <Loader2 size={18} className="animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 gap-3">
+        <AlertTriangle size={28} className="text-danger-700" />
+        <p className="text-[14px] text-ink-600">{s.loadError}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-330 mx-auto pb-20 sm:pb-6">
+      <div className="flex items-end justify-between gap-4 mb-5">
+        <div>
+          <p className="text-[12px] font-semibold tracking-wider uppercase text-amber-700">
+            {s.header.eyebrow}
+          </p>
+          <h1 className="text-[26px] font-semibold text-ink-900">{s.header.title}</h1>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={handleExport}
+            disabled={isExporting}
+            className="flex items-center gap-2 px-3 sm:px-4 h-10 rounded-lg border border-border bg-paper text-[14px] font-medium text-ink-700 hover:bg-sand-100 transition-colors disabled:opacity-60 cursor-pointer"
+          >
+            {isExporting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+            <span className="hidden sm:inline">{isExporting ? s.exporting : s.exportBtn}</span>
+          </button>
+
+          {/* On a phone the add button lives in the FAB below, where a thumb can
+              reach it — no need for it twice. */}
+          <button
+            onClick={openCreate}
+            className="hidden sm:flex items-center gap-2 px-4 h-10 rounded-lg bg-amber-600 text-white text-[14px] font-semibold hover:bg-amber-700 transition-colors cursor-pointer"
+          >
+            <Plus size={16} />
+            {s.addBtn}
+          </button>
+        </div>
+      </div>
+
+      <div className="mb-5">
+        <SupplierStatsCards
+          stats={stats}
+          isLoading={isLoadingStats}
+          currency={t.debts.currency}
+          onWithDebtClick={() => changeView(SupplierView.HAS_DEBT)}
+          labels={s.stats}
+        />
+      </div>
+
+      {/* Money the SUPPLIERS owe back, from bills that were cancelled after the
+          shop had paid against them. v1 reports it and has no endpoint to settle
+          it, so this stays a flagged line rather than an action. */}
+      {isPositiveMoney(stats.refundDue) && (
+        <div className="flex items-start gap-2 px-3.5 py-2.5 mb-5 rounded-lg bg-warning-100 text-warning-700">
+          <RotateCcw size={15} className="mt-0.5 shrink-0" />
+          <p className="text-[13px]">
+            {s.refundDue.replace('{amount}', `${formatMoney(stats.refundDue)} ${t.debts.currency}`)}
+          </p>
+        </div>
+      )}
+
+      {/* How long the money has been owed. Read-only: the table below lists
+          suppliers, and `GET /suppliers` has no aging filter to click through
+          to — unlike the receivables ledger, which lists the debts themselves. */}
+      <div className="mb-5">
+        <CardShell title={s.aging.title} noPadding>
+          <p className="px-5 pt-4 text-[13px] text-ink-400">{s.aging.subtitle}</p>
+          <DebtAgingChart
+            rows={agingRows}
+            isLoading={isLoadingAging}
+            isFetching={isFetchingAging}
+            localeCode={locale === 'ar' ? 'ar-SA' : 'en-US'}
+            labels={{
+              amount: s.aging.amount,
+              count: s.aging.count,
+              empty: s.aging.empty,
+              bucketNames: t.debts.bucket,
+            }}
+          />
+        </CardShell>
+      </div>
+
+      <SuppliersTableCard
+        rows={rows}
+        total={total}
+        search={search}
+        view={view}
+        sort={sort}
+        hasFilters={hasFilters}
+        onSearchChange={setSearch}
+        onViewChange={changeView}
+        onSortChange={setSort}
+        onClearFilters={clearFilters}
+        onView={openDetail}
+        onEdit={openEdit}
+        onRecordBill={openBill}
+        onPay={openPay}
+        onDeactivate={setDeactivating}
+        onAdd={openCreate}
+        currency={t.debts.currency}
+        labels={{
+          searchPlaceholder: s.searchPlaceholder,
+          views: s.views,
+          sort: s.sort,
+          since: s.since,
+          callBtn: s.callBtn,
+          recordBillBtn: s.bill.recordBtn,
+          payBtn: s.pay.payBtn,
+          footer: s.footer,
+          clearFilters: s.filters.clear,
+          table: s.table,
+          badge: s.badge,
+          empty: s.empty,
+          emptyFiltered: s.emptyFiltered,
+        }}
+      />
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4 px-1">
+          <p className="text-[13px] text-ink-400">
+            {(page - 1) * LIMIT + 1}–{Math.min(page * LIMIT, total)} / {total}
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPage((p) => p - 1)}
+              disabled={page <= 1}
+              className="h-9 px-4 rounded-lg border border-border text-[13px] font-medium text-ink-700 hover:bg-sand-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              ‹
+            </button>
+            <span className="h-9 px-3 flex items-center text-[13px] text-ink-600 tabular-nums">
+              {page} / {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={page >= totalPages}
+              className="h-9 px-4 rounded-lg border border-border text-[13px] font-medium text-ink-700 hover:bg-sand-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              ›
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile add button. Sits clear of the fixed bottom nav (h-14). */}
+      <button
+        onClick={openCreate}
+        aria-label={s.addBtn}
+        className="sm:hidden fixed bottom-18 inset-e-4 z-30 w-14 h-14 rounded-2xl bg-amber-600 text-white shadow-lg flex items-center justify-center active:bg-amber-700 transition-colors"
+      >
+        <Plus size={22} />
+      </button>
+
+      <SupplierDetailModal
+        open={detailOpen}
+        onClose={closeDetail}
+        supplier={viewedSupplier}
+        summary={summary}
+        bills={bills}
+        billsTotal={billsTotal}
+        billsTotalPages={billsTotalPages}
+        billsPage={billsPage}
+        onBillsPageChange={setBillsPage}
+        billsSearch={billsSearch}
+        onBillsSearchChange={setBillsSearch}
+        isFetchingBills={isFetchingBills}
+        isLoading={isLoadingDetail}
+        onRecordBill={() => setBillOpen(true)}
+        onPay={() => setPayOpen(true)}
+        onOpenBill={setOpenedBill}
+        onEdit={() => {
+          if (viewedSupplier) openEdit(viewedSupplier);
+        }}
+        locale={locale}
+        currency={t.debts.currency}
+        labels={{
+          ...s.detail,
+          inactiveBadge: s.badge.inactive,
+          recordBillBtn: s.bill.recordBtn,
+          payBtn: s.pay.payBtn,
+          statusNames: t.debts.status,
+        }}
+      />
+
+      <RecordBillModal
+        open={billOpen}
+        onClose={closeBill}
+        supplierName={viewedSupplier?.name ?? active?.name ?? ''}
+        onRecord={handleRecordBill}
+        isRecording={isRecordingBill}
+        currency={t.debts.currency}
+        labels={s.bill}
+      />
+
+      <PaySupplierModal
+        open={payOpen}
+        onClose={closePay}
+        supplierName={viewedSupplier?.name ?? active?.name ?? ''}
+        totalRemaining={summary.total_remaining}
+        openBills={openBills}
+        onPay={payBills}
+        isPaying={isPaying}
+        isLoadingBills={isLoadingOpenBills}
+        currency={t.debts.currency}
+        labels={{
+          ...s.pay,
+          billRef: s.detail.billRef,
+          statusNames: t.debts.status,
+        }}
+      />
+
+      {/* Sits above the supplier's account rather than replacing it: closing one
+          bill should land back on the list of them, not on the suppliers table. */}
+      <BillDetailModal
+        open={openedBill !== null}
+        onClose={() => setOpenedBill(null)}
+        bill={openedBill}
+        locale={locale}
+        currency={t.debts.currency}
+        labels={{
+          ...s.billDetail,
+          billRef: s.detail.billRef,
+          noInvoiceNo: s.detail.noInvoiceNo,
+          historyTitle: t.debts.detail.historyTitle,
+          noPayments: t.debts.detail.noPayments,
+          reversalOf: t.debts.detail.reversalOf,
+          reversedBadge: t.debts.detail.reversedBadge,
+          reverseBtn: t.debts.detail.reverseBtn,
+          statusNames: t.debts.status,
+          methodNames: t.debts.method,
+          reverse: t.debts.reverse,
+        }}
+      />
+
+      <SupplierFormModal
+        open={formOpen}
+        supplier={editing}
+        onClose={() => setFormOpen(false)}
+        onSubmit={handleSubmit}
+        labels={s.form}
+      />
+
+      <ConfirmDialog
+        open={deactivating !== null}
+        onClose={() => setDeactivating(null)}
+        onConfirm={handleDeactivate}
+        title={s.deactivate.title}
+        description={s.deactivate.description}
+        confirmLabel={s.deactivate.confirm}
+        cancelLabel={s.form.cancel}
+        isLoading={isDeactivating}
+      />
+    </div>
+  );
+}

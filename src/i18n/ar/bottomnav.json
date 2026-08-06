@@ -3,7 +3,7 @@
     "dashboard": "الرئيسية",
     "products": "المنتجات",
     "clients": "العملاء",
-    "transfers": "النقل",
+    "orders": "الطلبات",
     "shortages": "النقص",
     "more": "المزيد"
   },
@@ -11,7 +11,7 @@
     "profit": "الأرباح",
     "categories": "الفئات",
     "shortages": "النقص",
-    "transfers": "نقل المخزون",
+    "orders": "الطلبات",
     "settings": "الإعدادات",
     "auditLogs": "سجل التدقيق",
     "clientPortal": "بوابة العميل",

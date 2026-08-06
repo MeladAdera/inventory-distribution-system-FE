@@ -1,20 +1,18 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Loader2, AlertTriangle } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { Plus, Loader2, AlertTriangle, Download } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers';
+import { StatCard, StatCardGrid } from '@/common/components';
 import { getErrorMessage } from '@/common/utils/error.utils';
-import { ordersApi } from '@/features/shared/orders/api/orders.api';
+import { downloadCsv, dateStampedName } from '@/common/utils/csv.utils';
 import { OrderStatus } from '@/features/shared/orders/types/orders.types';
-import type { Order } from '@/features/shared/orders/types/orders.types';
-import { TypewriterText } from '@/common/components/TypewriterText';
-import { useClientOrders } from '../hooks/useClientOrders';
+import { useClientOrders, useClientOrderDetail } from '../hooks/useClientOrders';
 import { OrdersTableCard } from './orders/OrdersTableCard';
 import { OrderDetailModal } from './orders/OrderDetailModal';
-import type { ClientOrder, ClientStatusFilter } from '../types/clientOrders.types';
+import { OrderView, ORDER_VIEW_STATUSES } from '../types/clientOrders.types';
 
 export function ClientOrdersPage() {
   const { t, locale } = useI18n();
@@ -22,31 +20,17 @@ export function ClientOrdersPage() {
   const toast = useToast();
   const ords = t.client.orders;
 
-  const [statusFilter, setStatusFilter] = useState<ClientStatusFilter>('ALL');
+  const [view, setView] = useState<OrderView>(OrderView.ALL);
+  const [search, setSearch] = useState('');
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { data: orderDetailData, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ['order-detail', selectedOrderId],
-    queryFn: () => ordersApi.getById(selectedOrderId!),
-    enabled: !!selectedOrderId,
-  });
-
-  const selectedOrder = useMemo((): ClientOrder | null => {
-    const o: Order | undefined = orderDetailData?.data;
-    if (!o) return null;
-    return {
-      id: o.id,
-      status: o.status,
-      total_items: o.total_items,
-      total_price: o.total_price,
-      created_at: o.created_at,
-      items: o.items ?? [],
-    };
-  }, [orderDetailData]);
+  const { order: selectedOrder, isLoading: isLoadingDetail } =
+    useClientOrderDetail(selectedOrderId);
 
   const {
     orders,
+    stats,
     total,
     isLoading,
     error,
@@ -64,6 +48,23 @@ export function ClientOrdersPage() {
     [OrderStatus.COMPLETED]: ords.status.completed,
     [OrderStatus.CANCELLED]: ords.status.cancelled,
   };
+
+  // Every order is already loaded in one request, so both filters run over the
+  // whole history rather than over a page of it.
+  const visibleOrders = useMemo(() => {
+    const query = search.trim().replace('#', '');
+    return orders.filter((order) => {
+      if (view !== OrderView.ALL && !ORDER_VIEW_STATUSES[view].includes(order.status)) return false;
+      return query === '' || String(order.id).includes(query);
+    });
+  }, [orders, view, search]);
+
+  const hasFilters = search.trim() !== '' || view !== OrderView.ALL;
+
+  function clearFilters() {
+    setSearch('');
+    setView(OrderView.ALL);
+  }
 
   async function handleConfirmReceived(orderId: number) {
     try {
@@ -85,6 +86,34 @@ export function ClientOrdersPage() {
     }
   }
 
+  /** Exports the rows currently in view — what the toolbar says is on screen. */
+  function handleExport() {
+    if (visibleOrders.length === 0) {
+      toast.error(ords.export.empty);
+      return;
+    }
+    downloadCsv(
+      dateStampedName('orders'),
+      [ords.table.orderNo, ords.table.date, ords.table.items, ords.table.total, ords.table.status],
+      visibleOrders.map((order) => [
+        order.id,
+        order.created_at,
+        order.total_items,
+        order.total_price != null ? order.total_price.toFixed(2) : '',
+        statusLabels[order.status],
+      ])
+    );
+    toast.success(ords.export.done.replace('{n}', String(visibleOrders.length)));
+  }
+
+  const lastOrderLabel = stats.lastOrderAt
+    ? new Intl.DateTimeFormat(locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      }).format(new Date(stats.lastOrderAt))
+    : '—';
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64 gap-2 text-ink-500">
@@ -97,7 +126,7 @@ export function ClientOrdersPage() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-3">
-        <AlertTriangle size={28} className="text-danger-500" />
+        <AlertTriangle size={28} className="text-danger-700" />
         <p className="text-[14px] text-ink-600">{ords.errorMsg}</p>
       </div>
     );
@@ -106,29 +135,61 @@ export function ClientOrdersPage() {
   return (
     <div className="max-w-330 mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-5.5">
-        <div>
-          <h1 className="text-[26px] font-semibold text-ink-900">
-            <TypewriterText phrases={ords.taglines} />
-          </h1>
-          <p className="text-[14px] text-ink-500 mt-1">
-            {total} {ords.count}
+      <div className="flex items-end justify-between gap-4 mb-5">
+        <div className="min-w-0">
+          <p className="text-[12px] font-semibold tracking-wider uppercase text-amber-700 truncate">
+            {ords.eyebrow}
           </p>
+          <h1 className="text-[26px] font-semibold text-ink-900">{ords.title}</h1>
         </div>
-        <button
-          onClick={() => router.push('/client/order')}
-          className="flex items-center gap-2 px-4 h-10 rounded-lg bg-amber-600 text-white text-[14px] font-semibold hover:bg-amber-700 transition-colors shrink-0"
-        >
-          <Plus size={15} />
-          {ords.newOrderBtn}
-        </button>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-2 px-3 sm:px-4 h-10 rounded-lg border border-border bg-paper text-[14px] font-medium text-ink-700 hover:bg-sand-100 transition-colors cursor-pointer"
+          >
+            <Download size={16} />
+            <span className="hidden sm:inline">{ords.export.btn}</span>
+          </button>
+          <button
+            onClick={() => router.push('/client/order')}
+            className="flex items-center gap-2 px-3 sm:px-4 h-10 rounded-lg bg-amber-600 text-white text-[14px] font-semibold hover:bg-amber-700 transition-colors cursor-pointer"
+          >
+            <Plus size={16} />
+            <span className="hidden sm:inline">{ords.newOrderBtn}</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="mb-5">
+        <StatCardGrid>
+          <StatCard label={ords.stats.total} value={String(total || stats.total)} />
+          <StatCard
+            label={ords.stats.inProgress}
+            value={String(stats.inProgress)}
+            tone={stats.inProgress > 0 ? 'amber' : 'neutral'}
+            onClick={() => setView(OrderView.IN_PROGRESS)}
+          />
+          <StatCard
+            label={ords.stats.awaiting}
+            value={String(stats.awaitingConfirmation)}
+            tone={stats.awaitingConfirmation > 0 ? 'success' : 'neutral'}
+            onClick={() => setView(OrderView.IN_PROGRESS)}
+          />
+          <StatCard label={ords.stats.lastOrder} value={lastOrderLabel} variant="text" />
+        </StatCardGrid>
       </div>
 
       <OrdersTableCard
-        orders={orders}
-        statusFilter={statusFilter}
-        onFilterChange={setStatusFilter}
+        orders={visibleOrders}
+        total={total || orders.length}
+        search={search}
+        view={view}
+        hasFilters={hasFilters}
         statusLabels={statusLabels}
+        onSearchChange={setSearch}
+        onViewChange={setView}
+        onClearFilters={clearFilters}
         onView={(order) => {
           setSelectedOrderId(order.id);
           setModalOpen(true);
@@ -136,9 +197,14 @@ export function ClientOrdersPage() {
         onNewOrder={() => router.push('/client/order')}
         locale={locale}
         labels={{
-          filter: ords.filter,
+          searchPlaceholder: ords.searchPlaceholder,
+          views: ords.views,
+          footer: ords.footer,
+          clearFilters: ords.clearFilters,
+          awaitingHint: ords.awaitingHint,
           table: ords.table,
           empty: ords.empty,
+          emptyFiltered: ords.emptyFiltered,
         }}
       />
 

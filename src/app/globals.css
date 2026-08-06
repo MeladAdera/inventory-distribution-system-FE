@@ -2,31 +2,31 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-sand-100: #F5EFE4;
-  --color-sand-200: #ECE3D2;
-  --color-ink-200: #C8D0DA;
-  --color-ink-400: #7A8899;
-  --color-ink-500: #5C6B7A;
-  --color-ink-600: #3F4D60;
-  --color-ink-700: #2C3E52;
-  --color-ink-800: #1C2D3E;
-  --color-ink-900: #0E1B2C;
-  --color-page: #FBF8F3;
-  --color-paper: #FFFFFF;
-  --color-border: #E8E2D6;
-  --color-danger-100: #FEE2E2;
-  --color-danger-700: #A8312B;
-  --color-amber-50:   #FFFBEB;
-  --color-amber-100:  #FEF3C7;
-  --color-amber-500:  #F59E0B;
-  --color-amber-600:  #D97706;
-  --color-amber-700:  #B45309;
-  --color-warning-100: #FEF9C3;
-  --color-warning-700: #92400E;
-  --color-info-100:    #DBEAFE;
-  --color-info-700:    #1D4ED8;
-  --color-success-100: #DCFCE7;
-  --color-success-700: #15803D;
+  --color-sand-100: #f5efe4;
+  --color-sand-200: #ece3d2;
+  --color-ink-200: #c8d0da;
+  --color-ink-400: #7a8899;
+  --color-ink-500: #5c6b7a;
+  --color-ink-600: #3f4d60;
+  --color-ink-700: #2c3e52;
+  --color-ink-800: #1c2d3e;
+  --color-ink-900: #0e1b2c;
+  --color-page: #fbf8f3;
+  --color-paper: #ffffff;
+  --color-border: #e8e2d6;
+  --color-danger-100: #fee2e2;
+  --color-danger-700: #a8312b;
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-warning-100: #fef9c3;
+  --color-warning-700: #92400e;
+  --color-info-100: #dbeafe;
+  --color-info-700: #1d4ed8;
+  --color-success-100: #dcfce7;
+  --color-success-700: #15803d;
   --font-serif: 'IBM Plex Serif', Georgia, serif;
 }
 
@@ -43,13 +43,13 @@
     --accent: 217.2 91.2% 59.8%;
     --shadow-xs: 0 1px 2px rgba(14, 27, 44, 0.04);
     --shadow-sm: 0 1px 4px rgba(14, 27, 44, 0.08);
-    --shadow-md: 0 4px 16px rgba(14, 27, 44, 0.10);
+    --shadow-md: 0 4px 16px rgba(14, 27, 44, 0.1);
     --shadow-lg: 0 8px 32px rgba(14, 27, 44, 0.16);
   }
 
   body {
-    background-color: #FBF8F3;
-    color: #0E1B2C;
+    background-color: #fbf8f3;
+    color: #0e1b2c;
   }
 }
 
@@ -60,24 +60,51 @@
 }
 
 @keyframes popIn {
-  from { opacity: 0; transform: scale(0.95) translateY(-4px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 @keyframes sheetUp {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
-.animate-pop-in   { animation: popIn   0.16s ease-out forwards; }
-.animate-sheet-up { animation: sheetUp 0.3s  cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+.animate-pop-in {
+  animation: popIn 0.16s ease-out forwards;
+}
+.animate-sheet-up {
+  animation: sheetUp 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
 
 @keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #F5EFE4 25%, #ECE3D2 50%, #F5EFE4 75%);
+  background: linear-gradient(90deg, #f5efe4 25%, #ece3d2 50%, #f5efe4 75%);
   background-size: 400% 100%;
   animation: shimmer 1.4s ease infinite;
+}
+
+/* For short rows that scroll sideways on a phone — a filter strip, a tab bar.
+   The bar itself would be taller than the content it sits under. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

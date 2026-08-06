@@ -23,7 +23,12 @@ src/features/auth/
 │   └── auth.api.ts              # All auth HTTP calls
 ├── hooks/
 │   ├── useAuth.ts               # Access auth state + logout
-│   └── useLogin.ts              # Login form + submission logic
+│   ├── useLogin.ts              # Login form + submission logic
+│   └── useForgotPassword.ts     # 3-step password recovery machine (request → reset → done)
+├── components/
+│   ├── RequestCodeForm.tsx      # Forgot password step 1 — email
+│   ├── ResetPasswordForm.tsx    # Forgot password step 2 — code + new password
+│   └── ResetSuccess.tsx         # Forgot password step 3 — success card
 ├── store/
 │   └── authStore.ts             # Zustand global auth state
 ├── types/
@@ -45,8 +50,10 @@ src/common/components/
 └── PasswordInput.tsx            # Password field with show/hide eye toggle
 
 src/app/(auth)/
-└── login/
-    └── page.tsx                 # Login page
+├── login/
+│   └── page.tsx                 # Login page
+└── forgot-password/
+    └── page.tsx                 # Password recovery page (all 3 steps on one route)
 ```
 
 ### Data Flow
@@ -117,6 +124,10 @@ src/middleware.ts
 
 **Protected routes**: `/dashboard`, `/inventory`, `/orders`, `/products`, `/shops`, `/users`, `/notifications`, `/audit-logs`
 
+**Public-only routes** (`PUBLIC_ONLY_ROUTES`): `/login`, `/forgot-password` — an authenticated user hitting either is redirected to their portal. Password *recovery* is for locked-out users; a signed-in user changes their password from settings instead.
+
+**Employee-allowed client routes** (`EMPLOYEE_ALLOWED_ROUTES`): `/client/dashboard`, `/client/inventory`, `/client/catalog`, `/client/sell`, `/client/receipts` — everything else under `/client/*` redirects an `EMPLOYEE` to the dashboard. The list is mirrored by `EMPLOYEE_NAV_IDS` in `clientNavConfig.ts`, so nav and middleware can't drift.
+
 **Why cookies and not localStorage**: The middleware runs on the server edge — it has no access to the browser's localStorage. Cookies are sent with every HTTP request automatically, so the middleware can read them. `tokenUtils.setTokens()` writes the `auth_token` cookie at login; `tokenUtils.clearTokens()` expires it at logout.
 
 ---
@@ -174,6 +185,24 @@ authApi.changePassword({ currentPassword, newPassword })  →  POST /auth/change
 ```
 
 Any authenticated user can change their own password. Because success revokes every refresh token, the UI logs the user out and sends them to `/login` rather than letting them hit a surprise forced logout when the access token expires. Full write-up: [change-password.md](./change-password.md).
+
+### Forgot Password (locked-out recovery)
+
+```
+Login page → "Forgot password?" → /forgot-password
+      ↓
+step 'request'  authApi.forgotPassword({ email })            → POST /auth/forgot-password
+                always 200 + generic message (3 req / 15 min)
+      ↓         never branch on account existence — always advance
+step 'reset'    authApi.resetPassword({ email, code, newPassword })  → POST /auth/reset-password
+                6-digit code, valid 10 min (5 req / min)
+      ↓         success revokes ALL sessions
+step 'done'     success card → link to /login
+```
+
+Two API calls, two Zod schemas, one route. `useForgotPassword()` owns the step machine, both RHF
+forms and the error mapping (`429` → rate-limited copy, no `response` → network copy, else the
+envelope's localized message). Full write-up: [forgot-password.md](./forgot-password.md).
 
 ### State Management
 
@@ -344,6 +373,7 @@ Drop-in replacement for `<input type="password">`. Renders a toggle button (Eye 
 - `ErrorAlert` (server error, shown above fields)
 - Email `FormField` with `<input type="email">`
 - Password `FormField` with `<PasswordInput>` (eye toggle)
+- **"Forgot password?"** link (end-aligned, below the password field) → `ROUTES.FORGOT_PASSWORD`
 - Submit button: disabled + spinner + "Signing in…" while loading
 
 ---
@@ -368,6 +398,8 @@ None.
 
 - **Route Protection** (TICKET-012) ✅ — `src/middleware.ts` protects all dashboard routes using the `auth_token` cookie
 - **Token Refresh Sync** (TICKET-013) ✅ — Axios interceptor now calls `useAuthStore.getState().setTokens()` and `tokenUtils.setTokens()` after a successful refresh; failure path clears all three stores before redirecting
+- **[Forgot / Reset Password](./forgot-password.md)** ✅ — public recovery flow at `/forgot-password` for users who can't sign in
+- **[Change Password](./change-password.md)** ✅ — the signed-in equivalent, on both settings pages
 - **Role-Based Access** (upcoming) — depends on `user.role` from this feature
 - All other features — all authenticated API calls rely on the token written by `useLogin`
 

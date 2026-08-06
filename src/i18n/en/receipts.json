@@ -2,7 +2,8 @@
   "page": {
     "title": "Receipts",
     "subtitle": "All stock consumption records across every shop.",
-    "loadError": "Failed to load receipts. Please try again."
+    "loadError": "Failed to load receipts. Please try again.",
+    "eyebrow": "Every shop, every consumption"
   },
   "filter": {
     "allShops": "All shops",
@@ -17,7 +18,9 @@
     "createdBy": "Created by",
     "items": "Items",
     "notes": "Notes",
-    "detail": "Detail"
+    "detail": "Detail",
+    "itemsUnit": "items",
+    "noNotes": "—"
   },
   "empty": "No receipts found.",
   "modal": {
@@ -38,6 +41,42 @@
     "undoFreeBtn": "Undo free",
     "freeSuccess": "Receipt marked as free",
     "unfreeSuccess": "Free status undone",
-    "freeError": "Failed to update receipt. Please try again."
+    "freeError": "Failed to update receipt. Please try again.",
+    "cancelledBadge": "Cancelled",
+    "cancelledOn": "Cancelled on",
+    "cancelReasonLabel": "Reason",
+    "cancelBtn": "Cancel receipt",
+    "cancelSuccess": "Receipt cancelled — stock returned",
+    "cancelModal": {
+      "title": "Cancel receipt",
+      "warning": "The items go back into stock and this receipt stops counting toward sales and profit. This cannot be undone.",
+      "reasonLabel": "Reason (optional)",
+      "reasonPlaceholder": "e.g. Customer changed their mind",
+      "confirmBtn": "Cancel receipt",
+      "keepBtn": "Keep it"
+    }
+  },
+  "searchPlaceholder": "Search by receipt number, shop, user or note",
+  "export": {
+    "btn": "Export CSV",
+    "empty": "Nothing to export.",
+    "done": "Exported {n} receipts."
+  },
+  "stats": {
+    "total": "Total receipts",
+    "thisWeek": "This week",
+    "itemsConsumed": "Items consumed",
+    "activeShops": "Shops with activity",
+    "lastReceipt": "Last receipt"
+  },
+  "views": {
+    "all": "All",
+    "thisWeek": "This week",
+    "withNotes": "With notes"
+  },
+  "footer": "Showing {shown} of {total} receipts",
+  "emptyFiltered": {
+    "title": "No matching receipts",
+    "sub": "Try a different search, or clear the filters."
   }
 }

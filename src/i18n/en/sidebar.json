@@ -8,9 +8,11 @@
     "inventory": "Inventory",
     "categories": "Categories",
     "clients": "Clients",
-    "transfers": "Transfers",
+    "orders": "Orders",
     "shortages": "Shortages",
     "receipts": "Receipts",
+    "debts": "Debts",
+    "suppliers": "Suppliers",
     "auditLogs": "Audit Logs",
     "settings": "Settings"
   },

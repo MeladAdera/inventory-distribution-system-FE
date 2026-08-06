@@ -12,10 +12,12 @@ const OFFLINE_QUERY_KEYS = [
   'client-inventory',
   'client-inventory-products',
   'client-inventory-categories',
+  // Selling on credit offline needs the customer picker to have names to show.
+  'customers',
 ];
 
 // Bump to invalidate all persisted caches after a breaking data-shape change.
-const PERSIST_BUSTER = 'v1';
+const PERSIST_BUSTER = 'v2';
 
 export function QueryProvider({ children }: { children: ReactNode }) {
   const [queryClient] = useState(

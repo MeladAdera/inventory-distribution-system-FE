@@ -19,6 +19,12 @@ audit-logs/
 
 - `AuditLog` — a single log entry; `quantity` and `amount` are `null` when not applicable
 - `type` / `action` / `entity_type` are plain `string` — vocabulary is owned by the backend
+- `type_label` / `action_label` / `entity_type_label` — the same three fields already
+  translated into the request language. **Render these; do not keep a code→label map in
+  i18n.** The raw codes stay for filtering, badge colours and icons.
+- `notes` is mixed-language: system-written notes are translated, user-typed notes come back
+  verbatim, and pre-localization rows stay English. Render it with `dir="auto"`, and read ids
+  from `entity_id` / `receipt_id` / `quantity` / `amount` — never by parsing the string.
 
 ## API Methods
 

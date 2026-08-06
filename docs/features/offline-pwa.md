@@ -137,6 +137,11 @@ Adding the optional `config?: AxiosRequestConfig` parameter to `inventoryApi.sto
 ### Connectivity (`useOnlineStatus.ts`)
 `navigator.onLine` alone is unreliable (reports "online" on a dead network). Combined with a probe: any HTTP response from `GET /inventory?limit=1` (even 401) proves reachability; only a thrown fetch means offline. Polled every 20s + on browser `online`/`offline` events. No dedicated `/health` endpoint exists yet — flagged as a backend follow-up.
 
+The probe is a raw `fetch`, so it bypasses the Axios interceptor and must attach the token itself: it now sends `Authorization: Bearer <tokenUtils.getAccessToken()>` instead of `credentials: 'include'`. The cookie form was a leftover from the cookie-auth plan — the backend authenticates on the `Authorization` header, so every probe was an unauthenticated request. It still *worked* as a reachability check (401 counts as reachable), but it burned a request per 20s that could never succeed and polluted the server logs with 401s.
+
+### Cached-but-revalidated inventory (`staleTime: 0`)
+The three `client-inventory*` queries set `staleTime: 0`, overriding the app-wide 5-minute default. They're the keys persisted to IndexedDB (`OFFLINE_QUERY_KEYS`) *and* the ones shared between a shop owner and their employees. With the default staleTime, a restored persisted snapshot reads as "fresh" on mount, so an edit made in another session wouldn't appear until some local mutation happened to invalidate the cache. `staleTime: 0` still paints the persisted data instantly (offline-first is unaffected) but always revalidates against the server in the background.
+
 ### Multi-tab safety
 `engine.flush()` wraps the flush pass in `navigator.locks.request(lockName, { ifAvailable: true }, ...)` — if another tab already holds the lock, this tab's flush attempt is a no-op rather than a duplicate send.
 

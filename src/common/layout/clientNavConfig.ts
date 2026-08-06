@@ -1,4 +1,5 @@
 import {
+  Contact,
   LayoutDashboard,
   LayoutGrid,
   TrendingUp,
@@ -6,9 +7,11 @@ import {
   ShoppingCart,
   ClipboardList,
   Users,
+  Wallet,
   Settings,
   ScrollText,
   Receipt,
+  Building2,
   type LucideIcon,
 } from 'lucide-react';
 import { UserRole } from '@/features/auth/types/enums';
@@ -22,6 +25,9 @@ export interface ClientNavItem {
     | 'sell'
     | 'orders'
     | 'receipts'
+    | 'customers'
+    | 'suppliers'
+    | 'debts'
     | 'employees'
     | 'settings'
     | 'auditLogs';
@@ -37,13 +43,27 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'orders', href: '/client/orders', icon: ClipboardList },
   { id: 'profit', href: '/client/profit', icon: TrendingUp },
   { id: 'receipts', href: '/client/receipts', icon: Receipt },
+  { id: 'customers', href: '/client/customers', icon: Contact },
+  // Owner-only, like debts: every /suppliers route is 403 for an EMPLOYEE, so
+  // this id stays out of EMPLOYEE_NAV_IDS below rather than letting them find
+  // the error. The middleware allowlist enforces the same thing on the route.
+  { id: 'suppliers', href: '/client/suppliers', icon: Building2 },
+  // Owner-only: employees never see shop-level debt and cannot reverse payments,
+  // so this id is deliberately absent from EMPLOYEE_NAV_IDS below.
+  { id: 'debts', href: '/client/debts', icon: Wallet },
   { id: 'employees', href: '/client/employees', icon: Users },
   { id: 'auditLogs', href: '/client/audit-logs', icon: ScrollText },
   { id: 'settings', href: '/client/settings', icon: Settings },
 ];
 
 // EMPLOYEE sees dashboard + inventory + sell + receipts; mirrors EMPLOYEE_ALLOWED_ROUTES in middleware.utils.ts
-const EMPLOYEE_NAV_IDS: ClientNavItem['id'][] = ['dashboard', 'inventory', 'sell', 'receipts'];
+const EMPLOYEE_NAV_IDS: ClientNavItem['id'][] = [
+  'dashboard',
+  'inventory',
+  'sell',
+  'receipts',
+  'customers',
+];
 
 export function getClientNavItems(role?: UserRole): ClientNavItem[] {
   if (role === UserRole.EMPLOYEE) {

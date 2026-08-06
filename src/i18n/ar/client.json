@@ -16,6 +16,9 @@
     "settings": "الإعدادات",
     "more": "المزيد",
     "receipts": "الإيصالات",
+    "customers": "العملاء",
+    "suppliers": "المورّدون",
+    "debts": "الديون",
     "auditLogs": "سجل النشاط",
     "notifications": "الإشعارات"
   },
@@ -112,11 +115,52 @@
       "undoFreeBtn": "التراجع عن المجاني",
       "freeSuccess": "تم تحديد الإيصال كمجاني",
       "unfreeSuccess": "تم التراجع عن حالة المجاني",
-      "freeError": "فشل تحديث الإيصال. يرجى المحاولة مجدداً."
+      "freeError": "فشل تحديث الإيصال. يرجى المحاولة مجدداً.",
+      "cancelledBadge": "ملغى",
+      "cancelledOn": "أُلغي في",
+      "cancelReasonLabel": "السبب",
+      "cancelBtn": "إلغاء الإيصال",
+      "cancelSuccess": "تم إلغاء الإيصال — أُعيدت الكميات إلى المخزون",
+      "cancelModal": {
+        "title": "إلغاء الإيصال",
+        "warning": "ستعود الأصناف إلى مخزونك ولن يُحتسب هذا الإيصال ضمن مبيعاتك وأرباحك. لا يمكن التراجع عن هذا الإجراء.",
+        "reasonLabel": "السبب (اختياري)",
+        "reasonPlaceholder": "مثال: غيّر الزبون رأيه",
+        "confirmBtn": "إلغاء الإيصال",
+        "keepBtn": "الاحتفاظ به"
+      }
     },
     "toast": {
       "createSuccess": "تم حفظ الإيصال بنجاح",
       "createError": "فشل حفظ الإيصال. يرجى المحاولة مجدداً."
+    },
+    "eyebrow": "اعرف ما استُهلك ومتى",
+    "newBtn": "إيصال جديد",
+    "searchPlaceholder": "ابحث برقم الإيصال أو الملاحظة",
+    "export": {
+      "btn": "تصدير CSV",
+      "empty": "لا يوجد ما يُصدَّر.",
+      "done": "تم تصدير {n} إيصالاً."
+    },
+    "stats": {
+      "total": "إجمالي الإيصالات",
+      "thisWeek": "هذا الأسبوع",
+      "itemsConsumed": "أصناف مستهلكة",
+      "lastReceipt": "آخر إيصال"
+    },
+    "views": {
+      "all": "الكل",
+      "thisWeek": "هذا الأسبوع",
+      "withNotes": "بملاحظات"
+    },
+    "groups": {
+      "thisWeek": "هذا الأسبوع",
+      "earlier": "أقدم"
+    },
+    "footer": "عرض {shown} من {total} إيصال",
+    "emptyFiltered": {
+      "title": "لا توجد إيصالات مطابقة",
+      "sub": "جرّب بحثاً آخر أو امسح عوامل التصفية."
     }
   },
   "inventory": {
@@ -234,7 +278,7 @@
   "orders": {
     "title": "طلباتي",
     "count": "طلب",
-    "newOrderBtn": "+ طلب منتجات",
+    "newOrderBtn": "طلب منتجات",
     "filter": {
       "all": "كل الحالات",
       "pending": "في الانتظار",
@@ -291,7 +335,33 @@
       "كل طلب وكل تفاصيله هنا",
       "راجع طلباتك وتابع حالتها",
       "سجل طلباتك الكامل بنظرة واحدة"
-    ]
+    ],
+    "eyebrow": "كل طلباتك في مكان واحد",
+    "searchPlaceholder": "ابحث برقم الطلب",
+    "clearFilters": "مسح عوامل التصفية",
+    "awaitingHint": "أكّد الاستلام ليُحدَّث مخزونك",
+    "export": {
+      "btn": "تصدير CSV",
+      "empty": "لا يوجد ما يُصدَّر.",
+      "done": "تم تصدير {n} طلباً."
+    },
+    "stats": {
+      "total": "إجمالي الطلبات",
+      "inProgress": "قيد التنفيذ",
+      "awaiting": "بانتظار تأكيدك",
+      "lastOrder": "آخر طلب"
+    },
+    "views": {
+      "all": "الكل",
+      "inProgress": "قيد التنفيذ",
+      "done": "مستلمة",
+      "cancelled": "ملغاة"
+    },
+    "footer": "عرض {shown} من {total} طلب",
+    "emptyFiltered": {
+      "title": "لا توجد طلبات مطابقة",
+      "sub": "جرّب رقم طلب آخر أو امسح عوامل التصفية."
+    }
   },
   "order": {
     "title": "طلب منتجات جديد",
@@ -407,11 +477,13 @@
       "title": "المنتجات المحددة",
       "totalUnits": "إجمالي المحدد",
       "unitsUnit": "قطعة",
+      "totalPrice": "السعر الإجمالي",
       "continueBtn": "متابعة"
     },
     "modal": {
       "title": "تأكيد البيع",
       "intro": "سيتم خصم الأصناف التالية من مخزونك:",
+      "itemsToggle": "{count} أصناف",
       "notesLabel": "ملاحظات (اختياري)",
       "notesPlaceholder": "أي ملاحظات على هذه العملية…",
       "confirmBtn": "تأكيد البيع",
@@ -461,23 +533,6 @@
       "entity": "العنصر",
       "qty": "الكمية",
       "receiptId": "رقم الإيصال"
-    },
-    "types": {
-      "INVENTORY": "مخزون",
-      "ORDER": "طلب"
-    },
-    "actions": {
-      "STOCK_IN": "إضافة مخزون",
-      "ADJUSTMENT": "تعديل",
-      "TRANSFER_OUT": "تحويل صادر",
-      "TRANSFER_IN": "تحويل وارد",
-      "STATUS_CHANGED": "تغيير الحالة",
-      "MARKED_FREE": "تحديد كمجاني",
-      "UNMARKED_FREE": "إلغاء تحديد المجاني"
-    },
-    "entity": {
-      "inventory": "مخزون",
-      "order": "طلب"
     },
     "empty": {
       "title": "لا يوجد نشاط بعد",

@@ -8,9 +8,11 @@
     "inventory": "المخزون",
     "categories": "الفئات",
     "clients": "العملاء",
-    "transfers": "نقل المخزون",
+    "orders": "الطلبات",
     "shortages": "نقص المخزون",
     "receipts": "الإيصالات",
+    "debts": "الديون",
+    "suppliers": "المورّدون",
     "auditLogs": "سجل التدقيق",
     "settings": "الإعدادات"
   },

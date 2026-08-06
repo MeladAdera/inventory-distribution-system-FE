@@ -24,23 +24,6 @@
     "receiptId": "رقم الإيصال",
     "detail": "تفاصيل"
   },
-  "types": {
-    "INVENTORY": "مخزون",
-    "ORDER": "طلب"
-  },
-  "actions": {
-    "STOCK_IN": "إضافة مخزون",
-    "ADJUSTMENT": "تعديل",
-    "TRANSFER_OUT": "تحويل صادر",
-    "TRANSFER_IN": "تحويل وارد",
-    "STATUS_CHANGED": "تغيير الحالة",
-    "MARKED_FREE": "تحديد كمجاني",
-    "UNMARKED_FREE": "إلغاء تحديد المجاني"
-  },
-  "entity": {
-    "inventory": "مخزون",
-    "order": "طلب"
-  },
   "units": "وحدة",
   "empty": "لا توجد سجلات تدقيق.",
   "modal": {

@@ -16,6 +16,9 @@
     "settings": "Settings",
     "more": "More",
     "receipts": "Receipts",
+    "customers": "Customers",
+    "suppliers": "Suppliers",
+    "debts": "Debts",
     "auditLogs": "Activity log",
     "notifications": "Notifications"
   },
@@ -112,11 +115,52 @@
       "undoFreeBtn": "Undo free",
       "freeSuccess": "Receipt marked as free",
       "unfreeSuccess": "Free status undone",
-      "freeError": "Failed to update receipt. Please try again."
+      "freeError": "Failed to update receipt. Please try again.",
+      "cancelledBadge": "Cancelled",
+      "cancelledOn": "Cancelled on",
+      "cancelReasonLabel": "Reason",
+      "cancelBtn": "Cancel receipt",
+      "cancelSuccess": "Receipt cancelled — stock returned",
+      "cancelModal": {
+        "title": "Cancel receipt",
+        "warning": "The items go back into your stock and this receipt stops counting toward your sales and profit. This cannot be undone.",
+        "reasonLabel": "Reason (optional)",
+        "reasonPlaceholder": "e.g. Customer changed their mind",
+        "confirmBtn": "Cancel receipt",
+        "keepBtn": "Keep it"
+      }
     },
     "toast": {
       "createSuccess": "Receipt saved successfully",
       "createError": "Failed to save receipt. Please try again."
+    },
+    "eyebrow": "Know what was used and when",
+    "newBtn": "New receipt",
+    "searchPlaceholder": "Search by receipt number or note",
+    "export": {
+      "btn": "Export CSV",
+      "empty": "Nothing to export.",
+      "done": "Exported {n} receipts."
+    },
+    "stats": {
+      "total": "Total receipts",
+      "thisWeek": "This week",
+      "itemsConsumed": "Items consumed",
+      "lastReceipt": "Last receipt"
+    },
+    "views": {
+      "all": "All",
+      "thisWeek": "This week",
+      "withNotes": "With notes"
+    },
+    "groups": {
+      "thisWeek": "This week",
+      "earlier": "Earlier"
+    },
+    "footer": "Showing {shown} of {total} receipts",
+    "emptyFiltered": {
+      "title": "No matching receipts",
+      "sub": "Try a different search, or clear the filters."
     }
   },
   "inventory": {
@@ -234,7 +278,7 @@
   "orders": {
     "title": "My orders",
     "count": "orders",
-    "newOrderBtn": "+ Order products",
+    "newOrderBtn": "Order products",
     "filter": {
       "all": "All statuses",
       "pending": "Pending",
@@ -291,7 +335,33 @@
       "Every order, every detail, right here",
       "Review and follow up on your requests",
       "Your full order history at a glance"
-    ]
+    ],
+    "eyebrow": "All your orders in one place",
+    "searchPlaceholder": "Search by order number",
+    "clearFilters": "Clear filters",
+    "awaitingHint": "Confirm receipt to update your stock",
+    "export": {
+      "btn": "Export CSV",
+      "empty": "Nothing to export.",
+      "done": "Exported {n} orders."
+    },
+    "stats": {
+      "total": "Total orders",
+      "inProgress": "In progress",
+      "awaiting": "Awaiting your confirmation",
+      "lastOrder": "Last order"
+    },
+    "views": {
+      "all": "All",
+      "inProgress": "In progress",
+      "done": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "footer": "Showing {shown} of {total} orders",
+    "emptyFiltered": {
+      "title": "No matching orders",
+      "sub": "Try a different order number, or clear the filters."
+    }
   },
   "order": {
     "title": "New product order",
@@ -407,11 +477,13 @@
       "title": "Selected products",
       "totalUnits": "Total selected",
       "unitsUnit": "units",
+      "totalPrice": "Total price",
       "continueBtn": "Continue"
     },
     "modal": {
       "title": "Confirm sale",
       "intro": "The following items will be deducted from your stock:",
+      "itemsToggle": "{count} items",
       "notesLabel": "Notes (optional)",
       "notesPlaceholder": "Any notes for this sale…",
       "confirmBtn": "Confirm sale",
@@ -461,23 +533,6 @@
       "entity": "Entity",
       "qty": "Qty",
       "receiptId": "Receipt ID"
-    },
-    "types": {
-      "INVENTORY": "Inventory",
-      "ORDER": "Order"
-    },
-    "actions": {
-      "STOCK_IN": "Stock in",
-      "ADJUSTMENT": "Adjustment",
-      "TRANSFER_OUT": "Transfer out",
-      "TRANSFER_IN": "Transfer in",
-      "STATUS_CHANGED": "Status changed",
-      "MARKED_FREE": "Marked free",
-      "UNMARKED_FREE": "Unmarked free"
-    },
-    "entity": {
-      "inventory": "Inventory",
-      "order": "Order"
     },
     "empty": {
       "title": "No activity yet",

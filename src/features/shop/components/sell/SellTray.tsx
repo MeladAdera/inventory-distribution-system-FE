@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Minus, Plus, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
+import { formatMoney } from '@/common/utils/money';
 import { Button } from '@/common/components/ui/button';
 import type { EnrichedInventoryItem } from '../../types/clientInventory.types';
 
@@ -14,6 +15,7 @@ export interface SellTrayItem {
 interface SellTrayProps {
   items: SellTrayItem[];
   totalUnits: number;
+  totalPrice: number;
   onInc: (inventoryId: number) => void;
   onDec: (inventoryId: number) => void;
   onRemove: (inventoryId: number) => void;
@@ -22,6 +24,7 @@ interface SellTrayProps {
     title: string;
     totalUnits: string;
     unitsUnit: string;
+    totalPrice: string;
     continueBtn: string;
   };
 }
@@ -29,6 +32,7 @@ interface SellTrayProps {
 export function SellTray({
   items,
   totalUnits,
+  totalPrice,
   onInc,
   onDec,
   onRemove,
@@ -111,11 +115,19 @@ export function SellTray({
 
         {/* Footer — total + continue */}
         <div className="flex items-center justify-between gap-3 py-2.5 border-t border-border">
-          <span className="text-[13px] text-ink-600">
-            {labels.totalUnits}:{' '}
-            <span className="font-mono font-bold text-ink-900 tabular-nums">{totalUnits}</span>{' '}
-            {labels.unitsUnit}
-          </span>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[13px] text-ink-600">
+              {labels.totalUnits}:{' '}
+              <span className="font-mono font-bold text-ink-900 tabular-nums">{totalUnits}</span>{' '}
+              {labels.unitsUnit}
+            </span>
+            <span className="text-[13px] text-ink-600">
+              {labels.totalPrice}:{' '}
+              <span className="font-mono font-bold text-amber-600 tabular-nums">
+                {formatMoney(totalPrice)}
+              </span>
+            </span>
+          </div>
           <Button onClick={onContinue} className="px-6">
             {labels.continueBtn}
           </Button>

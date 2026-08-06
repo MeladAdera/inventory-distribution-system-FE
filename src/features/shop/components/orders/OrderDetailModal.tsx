@@ -2,6 +2,7 @@ import { Loader2 } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
 import { ProductThumb } from '@/features/shared/products/components/ProductThumb';
 import { OrderStatus } from '@/features/shared/orders/types/orders.types';
+import { OrderDebtBlock } from '@/features/shared/debts/components/OrderDebtBlock';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import type { ClientOrder } from '../../types/clientOrders.types';
 import { cn } from '@/common/utils/cn';
@@ -20,10 +21,15 @@ interface OrderDetailModalProps {
   onClose: () => void;
   locale: 'ar' | 'en';
   isLoadingDetail: boolean;
-  onConfirmReceived: (orderId: number) => void;
-  onCancelOrder: (orderId: number) => void;
-  isConfirming: boolean;
-  isCancelling: boolean;
+  /**
+   * Omit both handlers to open the order as a pure record — that is how the
+   * debts page uses it, where the point is to explain a balance, not to move
+   * the order along.
+   */
+  onConfirmReceived?: (orderId: number) => void;
+  onCancelOrder?: (orderId: number) => void;
+  isConfirming?: boolean;
+  isCancelling?: boolean;
   labels: {
     title: string;
     productsLabel: string;
@@ -113,6 +119,10 @@ export function OrderDetailModal({
         )}
       </div>
 
+      {/* What is still owed on this order. Read-only here: the warehouse is the
+          party that takes the money, so only an admin can record a payment. */}
+      <OrderDebtBlock orderId={order.id} orderStatus={order.status} canRecordPayment={false} />
+
       {/* Shipped hint */}
       {order.status === OrderStatus.SHIPPED && (
         <p className="text-[13px] text-info-700 bg-info-100 rounded-lg px-3 py-2 mb-4">
@@ -122,7 +132,7 @@ export function OrderDetailModal({
 
       {/* Footer */}
       <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
-        {order.status === OrderStatus.SHIPPED && (
+        {onConfirmReceived && order.status === OrderStatus.SHIPPED && (
           <button
             onClick={() => onConfirmReceived(order.id)}
             disabled={isConfirming}
@@ -133,7 +143,7 @@ export function OrderDetailModal({
           </button>
         )}
 
-        {order.status === OrderStatus.PENDING && (
+        {onCancelOrder && order.status === OrderStatus.PENDING && (
           <button
             onClick={() => onCancelOrder(order.id)}
             disabled={isCancelling}

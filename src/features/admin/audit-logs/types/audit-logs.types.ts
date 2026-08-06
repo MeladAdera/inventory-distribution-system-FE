@@ -29,8 +29,19 @@ export interface AuditLog {
   // Line revenue (quantity × price) for MARKED_FREE / UNMARKED_FREE rows, where quantity is always null.
   // Comes back as a numeric string (e.g. "24.99"), same as ReceiptItem.price — coerce with Number() before formatting.
   amount: number | string | null;
+  // Mixed-language by design: system-written notes come back translated, user-typed
+  // notes come back verbatim in whatever language they were typed, and rows written
+  // before the backend's localization work stay English. Always render with dir="auto",
+  // and never parse ids out of it — use entity_id / receipt_id / quantity / amount.
   notes: string | null;
   created_at: string;
+  // Display text for type / action / entity_type in the requested language. The backend
+  // owns the vocabulary, so render these instead of a client-side code→label map. The raw
+  // codes above are still what we filter, colour and pick icons by. An unrecognised code
+  // falls back to the code itself, so these are only null when the code is.
+  type_label: string | null;
+  action_label: string | null;
+  entity_type_label: string | null;
 }
 
 export interface AuditLogDetail extends AuditLog {
