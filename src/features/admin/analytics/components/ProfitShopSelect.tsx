@@ -2,7 +2,6 @@
 
 import { cn } from '@/common/utils/cn';
 import { useShops, ShopType } from '@/features/admin/shops';
-import type { Shop } from '@/features/admin/shops';
 
 interface ProfitShopSelectProps {
   value: number | undefined;
@@ -16,8 +15,7 @@ interface ProfitShopSelectProps {
  * so the shops list is never fetched by shop owners.
  */
 export function ProfitShopSelect({ value, warehouseLabel, onChange }: ProfitShopSelectProps) {
-  const { shops, isLoading } = useShops({ type: ShopType.SHOP, limit: 999 });
-  const shopList: Shop[] = shops?.data ?? [];
+  const { selectableShops, isLoading } = useShops({ type: ShopType.SHOP, limit: 999 });
 
   return (
     <select
@@ -30,7 +28,7 @@ export function ProfitShopSelect({ value, warehouseLabel, onChange }: ProfitShop
       )}
     >
       <option value="">{warehouseLabel}</option>
-      {shopList.map((s) => (
+      {selectableShops.map((s) => (
         <option key={s.id} value={s.id}>
           {s.name}
         </option>
