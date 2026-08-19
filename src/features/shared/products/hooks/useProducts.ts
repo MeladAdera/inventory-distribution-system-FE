@@ -19,12 +19,22 @@ export function useProduct(id: number | null) {
   });
 }
 
-export function useProducts(params?: ProductListParams) {
+interface UseProductsOptions {
+  /**
+   * Skip the list request. For callers that want only the mutations — a page
+   * that edits a product it reached some other way shouldn't have to fetch a
+   * catalog page it never renders.
+   */
+  enabled?: boolean;
+}
+
+export function useProducts(params?: ProductListParams, options?: UseProductsOptions) {
   const queryClient = useQueryClient();
 
   const listQuery = useQuery<ApiResponse<PaginatedResponse<Product>>>({
     queryKey: ['products', params],
     queryFn: () => productsApi.list(params),
+    enabled: options?.enabled ?? true,
   });
 
   const createMutation = useMutation({

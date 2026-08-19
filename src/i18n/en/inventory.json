@@ -59,7 +59,7 @@
     "title": "Stock in",
     "subtitle": "Add stock for any catalog product — including ones not stocked yet.",
     "productLabel": "Product",
-    "productPlaceholder": "Choose a product…",
+    "changeProduct": "Change",
     "newBadge": "No stock yet — this adds its first inventory record.",
     "currentStock": "Current stock",
     "qtyLabel": "Quantity to add",

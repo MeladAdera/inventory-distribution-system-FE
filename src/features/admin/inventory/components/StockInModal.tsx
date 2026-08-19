@@ -7,6 +7,8 @@ import { Button } from '@/common/components/ui/button';
 import { Input } from '@/common/components/ui/input';
 import { Card, CardContent } from '@/common/components/ui/card';
 import { formatMoney } from '@/common/utils/money';
+import { ProductPicker } from '@/features/shared/products/components/ProductPicker';
+import { ProductSource } from '@/features/shared/products/types/products.types';
 import type { Product } from '@/features/shared/products/types/products.types';
 import type { InventoryItem } from '@/features/shared/inventory/types/inventory.types';
 import {
@@ -18,8 +20,6 @@ import {
 
 interface Props {
   open: boolean;
-  /** Full warehouse catalog — including products with no inventory row yet. */
-  products: Product[];
   /** Existing inventory rows, to show current stock for the picked product. */
   items: InventoryItem[];
   onClose: () => void;
@@ -31,11 +31,25 @@ interface Props {
   ) => Promise<void>;
 }
 
-export function StockInModal({ open, products, items, onClose, onConfirm }: Props) {
+/**
+ * Add stock for any catalog product, including one with no inventory row yet.
+ *
+ * The product is found by searching rather than chosen from a list. A `<select>`
+ * needs the entire catalog in memory to offer one product out of it, which meant
+ * the page fetching up to 999 rows on every visit whether or not this modal was
+ * ever opened; `ProductPicker` asks the server for the handful that match what
+ * was typed.
+ *
+ * Scoped to `WAREHOUSE` products: this stocks the warehouse's own shelves, and a
+ * shop's local product is not something it can hold.
+ */
+export function StockInModal({ open, items, onClose, onConfirm }: Props) {
   const { t } = useI18n();
   const si = t.inventory.stockIn;
 
-  const [productId, setProductId] = useState<number | ''>('');
+  // The whole product, not just its id — the picker hands it over, and holding
+  // it means the orderable check needs no catalog to look the product up in.
+  const [selected, setSelected] = useState<Product | null>(null);
   const [qty, setQty] = useState(1);
   const [costInput, setCostInput] = useState('');
   const [makeOrderable, setMakeOrderable] = useState(true);
@@ -43,7 +57,7 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
 
   useEffect(() => {
     if (open) {
-      setProductId('');
+      setSelected(null);
       setQty(1);
       setCostInput('');
       setMakeOrderable(true);
@@ -57,12 +71,11 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
 
   if (!open) return null;
 
-  const selectedRow = productId === '' ? undefined : rowByProduct.get(productId);
-  const selectedProduct = productId === '' ? undefined : products.find((p) => p.id === productId);
-  const isNew = productId !== '' && !selectedRow;
+  const selectedRow = selected === null ? undefined : rowByProduct.get(selected.id);
+  const isNew = selected !== null && !selectedRow;
   // Only a catalog-only product needs this decision — an already-orderable
   // product just gets more stock, nothing to ask.
-  const showOrderableToggle = selectedProduct !== undefined && !selectedProduct.is_orderable;
+  const showOrderableToggle = selected !== null && !selected.is_orderable;
 
   const oldQty = selectedRow?.current_quantity ?? 0;
   const oldAvg = Number(selectedRow?.avg_cost);
@@ -73,19 +86,25 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
   const deviates =
     hasCost && hasOldAvg && Math.abs(addCost - oldAvg) / oldAvg > COST_DEVIATION_WARN;
 
-  function handleProductChange(id: number | '') {
-    setProductId(id);
-    setCostInput(defaultCostInput(id === '' ? undefined : rowByProduct.get(id)));
+  function handlePick(product: Product) {
+    setSelected(product);
+    setCostInput(defaultCostInput(rowByProduct.get(product.id)));
+    setMakeOrderable(true);
+  }
+
+  function handleClearProduct() {
+    setSelected(null);
+    setCostInput('');
     setMakeOrderable(true);
   }
 
   async function handleConfirm() {
-    if (productId === '' || qty < 1) return;
+    if (selected === null || qty < 1) return;
     setLoading(true);
     try {
       const cost = parseCost(costInput);
       await onConfirm(
-        productId,
+        selected.id,
         qty,
         Number.isNaN(cost) ? undefined : cost,
         showOrderableToggle ? makeOrderable : undefined
@@ -120,23 +139,26 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
             </Button>
           </div>
 
-          {/* Product picker */}
+          {/* Product picker — searched, then shown as a chosen row so the rest
+              of the form has something to sit under. */}
           <div>
             <label className="block text-sm font-medium text-ink-700 mb-2">{si.productLabel}</label>
-            <select
-              value={productId}
-              onChange={(e) =>
-                handleProductChange(e.target.value === '' ? '' : Number(e.target.value))
-              }
-              className="w-full h-10 border border-border rounded-lg bg-paper text-[13px] text-ink-800 px-3 focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-50 cursor-pointer"
-            >
-              <option value="">{si.productPlaceholder}</option>
-              {products.map((prod) => (
-                <option key={prod.id} value={prod.id}>
-                  {prod.name}
-                </option>
-              ))}
-            </select>
+            {selected === null ? (
+              <ProductPicker onPick={handlePick} source={ProductSource.WAREHOUSE} autoFocus />
+            ) : (
+              <div className="flex items-center justify-between gap-2 rounded-lg border border-border bg-paper px-3 py-2">
+                <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-ink-900">
+                  {selected.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleClearProduct}
+                  className="shrink-0 rounded-md px-2 py-1 text-[12px] font-medium text-amber-700 transition-colors hover:bg-amber-50"
+                >
+                  {si.changeProduct}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Selected product stock info */}
@@ -186,7 +208,7 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
           </div>
 
           {/* Unit cost + blended-average preview */}
-          {productId !== '' && (
+          {selected !== null && (
             <div>
               <label className="block text-sm font-medium text-ink-700 mb-2">
                 {si.unitCostLabel}
@@ -242,7 +264,7 @@ export function StockInModal({ open, products, items, onClose, onConfirm }: Prop
               variant="default"
               size="md"
               onClick={handleConfirm}
-              disabled={productId === '' || loading}
+              disabled={selected === null || loading}
               className="flex-1 gap-1.5"
             >
               <PackagePlus size={14} />

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Search, Loader2, Plus, Check } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useProducts } from '../hooks/useProducts';
-import type { Product } from '../types/products.types';
+import type { Product, ProductSource } from '../types/products.types';
 
 const SEARCH_DEBOUNCE_MS = 300;
 /** Enough to scan without turning the panel into its own paginated list. */
@@ -16,6 +16,15 @@ interface ProductPickerProps {
   onCreateNew?: (searchTerm: string) => void;
   /** Products already chosen — shown ticked, and picking one again is a merge, not a duplicate. */
   takenIds?: Set<number>;
+  /**
+   * Narrow the search to one side of the catalog.
+   *
+   * Omit to offer everything the caller may reference — for a shop that is its
+   * own products plus the warehouse's. The warehouse stocking its OWN shelves
+   * passes `WAREHOUSE`, because a shop's local product is not something it can
+   * hold.
+   */
+  source?: ProductSource;
   /** Blocks picking once the caller is at its ceiling (a bill takes at most 200 lines). */
   disabled?: boolean;
   autoFocus?: boolean;
@@ -29,15 +38,15 @@ interface ProductPickerProps {
  * absolutely positioned panel gets clipped by the dialog's overflow — pushing
  * the page down instead is both simpler and immune to it.
  *
- * The search is server-side (`GET /products?search=`) because a shop's catalog
- * is not a list you can hold in a `<select>`, which is what the older stock-in
- * modal does. The endpoint already returns exactly the set a bill line may
- * reference: the shop's own products plus the shared warehouse catalog.
+ * The search is server-side (`GET /products?search=`) because a catalog is not
+ * a list you can hold in a `<select>` — rendering every product as an option
+ * means fetching the whole book to let someone pick one thing out of it.
  */
 export function ProductPicker({
   onPick,
   onCreateNew,
   takenIds,
+  source,
   disabled = false,
   autoFocus = false,
 }: ProductPickerProps) {
@@ -52,12 +61,13 @@ export function ProductPicker({
     return () => clearTimeout(id);
   }, [term]);
 
-  // Only active products can go on a bill line — an inactive one is a 404 from
-  // the server's point of view, so it should never be offered.
+  // Only active products can be picked — an inactive one is a 404 from the
+  // server's point of view, so it should never be offered.
   const { products, isLoading } = useProducts({
     search: debounced || undefined,
     limit: RESULT_LIMIT,
     is_active: true,
+    source,
   });
 
   // While a new search is in flight the previous results are still on screen;

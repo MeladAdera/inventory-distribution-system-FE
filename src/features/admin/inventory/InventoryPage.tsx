@@ -7,7 +7,6 @@ import { useToast } from '@/providers/ToastProvider';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/ui/card';
 import { useProducts } from '@/features/shared/products/hooks/useProducts';
-import { ProductSource } from '@/features/shared/products/types/products.types';
 import { useAdminInventory } from './hooks/useAdminInventory';
 import { InventoryStatsCards } from './components/InventoryStatsCards';
 import { StockHealthChart } from './components/StockHealthChart';
@@ -24,12 +23,10 @@ export function InventoryPage() {
 
   const { items, stats, isLoading, stockIn } = useAdminInventory();
 
-  // Full warehouse catalog for the stock-in picker — includes products that
-  // have no inventory row yet (first-time stock-in creates one).
-  const { products: catalogProducts, updateProduct } = useProducts({
-    source: ProductSource.WAREHOUSE,
-    limit: 999,
-  });
+  // Mutation only. The stock-in modal searches the catalog server-side through
+  // ProductPicker, so nothing here renders a product list — fetching one would
+  // be a request whose result is thrown away.
+  const { updateProduct } = useProducts(undefined, { enabled: false });
 
   const [lowStockFilter, setLowStockFilter] = useState(false);
   const [restockItem, setRestockItem] = useState<InventoryItem | null>(null);
@@ -130,7 +127,6 @@ export function InventoryPage() {
       {/* ── First-time stock-in (any catalog product) ── */}
       <StockInModal
         open={stockInOpen}
-        products={catalogProducts}
         items={items}
         onClose={() => setStockInOpen(false)}
         onConfirm={handleStockIn}
