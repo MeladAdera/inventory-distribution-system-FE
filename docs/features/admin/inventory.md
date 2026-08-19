@@ -33,6 +33,17 @@ Both stock-add modals then grew two things, documented in full elsewhere:
 | **Unit cost capture** — cost input, `Avg cost: 8 → 8.4` preview, >50 % deviation warning, empty = inherit (`inventoryCost.ts` helpers); `unitCost` threads through `handleStockIn` / `handleRestock` into `POST /inventory/stock-in` | [inventory-costing-and-pricing.md](../inventory-costing-and-pricing.md) |
 | **"Also make this product orderable by shops"** — shown only when the picked product is catalog-only; on confirm, fires `PATCH /products/:id { is_orderable: true }` after the stock-in | [catalog-vs-orderable.md](../catalog-vs-orderable.md) |
 
+**2026-08-19 — `StockInModal` picks products by search, not by dropdown.** It used a `<select>`,
+which needs every option in memory, so this page fetched up to 999 warehouse products on **every
+visit** whether or not the modal was ever opened — and silently truncated past that ceiling. It
+now uses `ProductPicker` (server-side `GET /products?search=`, scoped to `source: WAREHOUSE`), and
+the page fetches no catalog at all: `useProducts(undefined, { enabled: false })` keeps only the
+`updateProduct` mutation the orderable toggle needs.
+
+Incidental fix: that toggle depended on the product being inside the fetched page, so past 999
+products it silently never appeared. The modal now holds the picked `Product` itself rather than an
+id to look up. See [supplier-invoice-items.md](../supplier-invoice-items.md) for `ProductPicker`.
+
 ---
 
 ## 🏗️ Architecture

@@ -113,6 +113,7 @@ Check `docs/api/` folder:
 | Category Icons on Products | [category-icons.md](features/category-icons.md) | ✅ Complete — category Lucide icon replaces the generic placeholder |
 | Receipt Cancellation | [receipt-cancellation.md](features/receipt-cancellation.md) | ✅ Complete — restock + reason trail, admin & client |
 | Profit Dashboard | [profit-dashboard.md](features/profit-dashboard.md) | ✅ Complete — profit analytics + product cost |
+| Supplier Invoice Items (Buy → Stock) | [supplier-invoice-items.md](features/supplier-invoice-items.md) | ✅ Phase 1 complete — bills stock inventory in one transaction; margin review pending |
 
 ### Client Portal Features
 | Feature | Document | Status |
