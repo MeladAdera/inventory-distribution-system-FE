@@ -117,6 +117,55 @@ export interface SupplierBill {
 }
 
 /**
+ * One line of goods on a bill — what arrived, and what it cost to buy.
+ *
+ * `unitCost` is a STRING like every other money field. The server compares in
+ * exact minor units, and a float would lose cents once quantities get large.
+ * It must be greater than zero: free stock owes the supplier nothing, so it
+ * belongs on `POST /inventory/stock-in` with `unitCost: 0`, not on a bill.
+ */
+export interface BillItemInput {
+  /**
+   * Must already exist and be active — either this shop's own product or one
+   * from the WAREHOUSE catalog. A line cannot create a product, because a
+   * product needs a category and a SELLING price, and nothing on an invoice
+   * line can derive what you sell for from what you paid.
+   */
+  productId: number;
+  quantity: number;
+  unitCost: string;
+}
+
+/**
+ * A line as the server returns it, after the goods have been stocked.
+ *
+ * `avg_cost` and `sale_price` are the pair worth surfacing together: the first
+ * is what a unit now costs the shop, the second what it sells for. Nothing
+ * moves the selling price when cost moves, so a delivery at a higher price
+ * silently eats the margin unless someone is shown both.
+ *
+ * Read live on `GET /suppliers/:id/debts/:debtId/items` — an invoice reopened
+ * next month shows today's cost basis, not the one this delivery produced.
+ */
+export interface BillItem {
+  id: number;
+  debt_id: number;
+  product_id: number;
+  /** The inventory row this line stocked — the target for PATCH /inventory/:id/price. */
+  inventory_id: number;
+  product_name: string;
+  quantity: number;
+  /** 4dp, unlike every other money field on this feature. */
+  unit_cost: string;
+  /** quantity × unit_cost, 2dp, computed by the DB rather than sent. */
+  line_total: string;
+  /** Cost basis AFTER this purchase was blended in. 4dp. */
+  avg_cost: string;
+  /** The shop's current selling price. Untouched by the purchase. */
+  sale_price: string;
+}
+
+/**
  * Body for POST /suppliers/:id/debts.
  *
  * `paidAmount` defaults to 0 server-side — the opposite of a customer receipt,
@@ -138,6 +187,26 @@ export interface CreateBillInput {
    */
   invoiceNo?: string;
   note?: string;
+  /**
+   * The goods this bill paid for. Omit entirely for a bill with nothing to
+   * stock — rent, a delivery charge, a service — which is why this is optional
+   * rather than an empty array.
+   *
+   * When present, every line is stocked into the shop's inventory at its
+   * invoice unit cost IN THE SAME TRANSACTION as the bill. There is no partial
+   * outcome: one rejected line rejects the whole request, and nothing is
+   * written. `Σ (quantity × unitCost)` must equal `totalAmount` exactly.
+   */
+  items?: BillItemInput[];
+}
+
+/**
+ * What POST /suppliers/:id/debts returns — the bill, plus the lines it stocked.
+ *
+ * `items` is always an array, empty for a money-only bill.
+ */
+export interface BillWithItems extends SupplierBill {
+  items: BillItem[];
 }
 
 export interface BillListParams {
@@ -176,3 +245,6 @@ export type UpdateSupplierInput = Partial<CreateSupplierInput>;
 export type SupplierSummary = DebtsSummary;
 
 export const SUPPLIER_NOTE_MAX_LENGTH = 500;
+
+/** Server-side ceiling on how many lines one bill may carry. */
+export const BILL_ITEMS_MAX = 200;

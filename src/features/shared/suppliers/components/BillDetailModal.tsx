@@ -13,6 +13,7 @@ import {
 } from '@/features/shared/debts';
 import type { DebtPaymentRow } from '@/features/shared/debts';
 import { useSupplierBill } from '../hooks/useSupplierBill';
+import { useBillItems } from '../hooks/useBillItems';
 import { CancelBillModal } from './CancelBillModal';
 import type { SupplierBill } from '../types/suppliers.types';
 
@@ -42,7 +43,15 @@ interface BillDetailModalProps {
     note: string;
     cancelBtn: string;
     cancelledNote: string;
+    cancelBlocked: string;
     close: string;
+    goods: {
+      title: string;
+      product: string;
+      quantity: string;
+      unitCost: string;
+      lineTotal: string;
+    };
     historyTitle: string;
     noPayments: string;
     reversalOf: string;
@@ -109,14 +118,34 @@ export function BillDetailModal({
     isCancelling,
   } = useSupplierBill(billId);
 
+  const {
+    items,
+    hasItems,
+    isLoading: isLoadingItems,
+  } = useBillItems(bill?.supplier_id ?? null, billId);
+
   const [reversing, setReversing] = useState<DebtPaymentRow | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
 
   // Only PENDING or PARTIAL bills may be voided. A settled one is history, and a
   // cancelled one would come back 400 debt.ALREADY_CANCELLED — so rather than
   // explain either, the action simply isn't offered.
+  //
+  // A bill that moved goods can't be voided at all: the stock is on the shelf,
+  // and undoing the money while leaving it there would desync the two. `hasItems`
+  // is null until the lines have loaded, and the button waits for an explicit
+  // `false` rather than appearing and then disappearing.
   const canCancel =
-    bill !== null && bill.status !== DebtStatus.PAID && bill.status !== DebtStatus.CANCELLED;
+    bill !== null &&
+    bill.status !== DebtStatus.PAID &&
+    bill.status !== DebtStatus.CANCELLED &&
+    hasItems === false;
+
+  const cancelBlocked =
+    bill !== null &&
+    bill.status !== DebtStatus.PAID &&
+    bill.status !== DebtStatus.CANCELLED &&
+    hasItems === true;
 
   async function handleReverse(reason?: string) {
     if (!reversing) return;
@@ -194,6 +223,52 @@ export function BillDetailModal({
               </p>
             )}
 
+            {/* The goods this bill put on the shelf. Absent entirely for a
+                money-only bill — rent and delivery charges stock nothing. */}
+            {!isLoadingItems && items.length > 0 && (
+              <div>
+                <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-400">
+                  {labels.goods.title}
+                </h3>
+                <div className="overflow-hidden rounded-xl border border-border">
+                  <table className="w-full text-[13px]">
+                    <thead>
+                      <tr className="bg-page text-[11px] uppercase tracking-wider text-ink-400">
+                        <th className="px-3 py-2 text-start font-semibold">
+                          {labels.goods.product}
+                        </th>
+                        <th className="px-3 py-2 text-end font-semibold">
+                          {labels.goods.quantity}
+                        </th>
+                        <th className="px-3 py-2 text-end font-semibold">
+                          {labels.goods.unitCost}
+                        </th>
+                        <th className="px-3 py-2 text-end font-semibold">
+                          {labels.goods.lineTotal}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {items.map((item) => (
+                        <tr key={item.id} className="border-t border-border">
+                          <td className="px-3 py-2 text-ink-900">{item.product_name}</td>
+                          <td className="px-3 py-2 text-end font-mono tabular-nums text-ink-700">
+                            {item.quantity}
+                          </td>
+                          <td className="px-3 py-2 text-end font-mono tabular-nums text-ink-700">
+                            {formatMoney(item.unit_cost)}
+                          </td>
+                          <td className="px-3 py-2 text-end font-mono font-semibold tabular-nums text-ink-900">
+                            {formatMoney(item.line_total)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
             {isLoadingPayments ? (
               <div className="flex items-center justify-center py-8 text-ink-500">
                 <Loader2 size={16} className="animate-spin" />
@@ -216,7 +291,7 @@ export function BillDetailModal({
           </div>
         )}
 
-        <div className="flex items-center justify-between gap-2 pt-4 border-t border-border mt-4">
+        <div className="flex items-center justify-between gap-3 pt-4 border-t border-border mt-4">
           {canCancel ? (
             <button
               onClick={() => setCancelOpen(true)}
@@ -225,6 +300,10 @@ export function BillDetailModal({
               <Ban size={14} />
               {labels.cancelBtn}
             </button>
+          ) : cancelBlocked ? (
+            // Said instead of shown-then-refused: there is no "cancel and
+            // restock" path, so the way back is an inventory adjustment.
+            <p className="flex-1 text-[12px] leading-snug text-ink-500">{labels.cancelBlocked}</p>
           ) : (
             <span />
           )}

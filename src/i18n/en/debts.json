@@ -246,6 +246,11 @@
       "recordBtn": "Record bill",
       "title": "Record a bill",
       "intro": "A delivery from {name} that you'll pay for later.",
+      "modeMoney": "Bill only",
+      "modeGoods": "Bill + goods",
+      "modeMoneyHint": "For rent, delivery charges, or anything else with nothing to put on the shelf.",
+      "modeGoodsHint": "Adds the products to your stock at the price you paid, as part of the same bill.",
+      "goodsTitle": "What arrived",
       "invoiceNo": "Invoice or bill number",
       "invoiceNoPlaceholder": "e.g. INV-882",
       "invoiceNoHint": "Optional — if you enter one, we'll stop you recording the same bill twice.",
@@ -256,13 +261,27 @@
       "paidNowHint": "Leave empty if you paid nothing yet.",
       "remainingLabel": "You'll owe",
       "onCreditNote": "The whole bill is on credit — that's fine, you can pay it any time.",
+      "taxHint": "VAT or a delivery charge on top? Fold it into the unit prices, or record it as a separate bill with no goods.",
       "note": "Note",
       "notePlaceholder": "e.g. Delivery 12 Aug",
       "submit": "Record bill",
       "cancel": "Cancel",
       "errInvalid": "Enter a valid amount.",
       "errPaidExceeds": "You can't pay more than the total.",
-      "recordedToast": "Bill recorded."
+      "recordedToast": "Bill recorded.",
+      "items": {
+        "quantity": "Qty",
+        "unitCost": "Unit cost",
+        "lineTotal": "Line total",
+        "remove": "Remove line",
+        "errQuantity": "Enter a quantity of at least 1.",
+        "errCost": "Enter a unit cost greater than 0.",
+        "empty": "Nothing added yet — search above to add the first product.",
+        "computedTotal": "Invoice total",
+        "computedTotalHint": "Added up from the lines above.",
+        "lineCount": "{n} products",
+        "full": "That's the most products one bill can carry (200)."
+      }
     },
     "pay": {
       "payBtn": "Pay",
@@ -297,8 +316,16 @@
       "remaining": "Still owed",
       "created": "Recorded",
       "note": "Note",
+      "goods": {
+        "title": "Goods on this bill",
+        "product": "Product",
+        "quantity": "Qty",
+        "unitCost": "Unit cost",
+        "lineTotal": "Total"
+      },
       "cancelBtn": "Cancel this bill",
       "cancelledNote": "This bill was cancelled. It no longer counts towards what you owe.",
+      "cancelBlocked": "This bill added products to your stock, so it can't be cancelled. Remove the stock with an inventory adjustment first.",
       "close": "Close",
       "cancelBill": {
         "title": "Cancel this bill?",

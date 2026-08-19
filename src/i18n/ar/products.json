@@ -68,6 +68,33 @@
     "errCostPrice": "سعر الشراء لا يمكن أن يكون سالباً",
     "errCategory": "الفئة مطلوبة"
   },
+  "picker": {
+    "placeholder": "ابحث عن منتج بالاسم أو الباركود",
+    "noResults": "لا يوجد منتج يطابق «{term}».",
+    "createNew": "منتج جديد",
+    "createNamed": "منتج جديد «{term}»"
+  },
+  "quickCreate": {
+    "title": "منتج جديد",
+    "intro": "أضفه إلى الكتالوغ لينتقل مباشرة إلى الفاتورة.",
+    "name": "اسم المنتج",
+    "namePlaceholder": "مثال: بسكوتة 5000",
+    "category": "الفئة",
+    "categoryPlaceholder": "اختر فئة",
+    "buyPrice": "سعر الشراء",
+    "buyPriceHint": "كم كلّفتك الوحدة الواحدة.",
+    "sellPrice": "سعر البيع",
+    "sellPriceHint": "لا شيء يحسبه بدلاً عنك.",
+    "barcode": "الباركود",
+    "barcodePlaceholder": "اختياري",
+    "marginLabel": "الربح لكل وحدة",
+    "marginNegative": "ستخسر لكل وحدة",
+    "stockHint": "الفاتورة تضيف الكمية بنفسها — لا داعي لإدخالها هنا.",
+    "submit": "إنشاء وإضافة",
+    "cancel": "إلغاء",
+    "errNameShort": "استخدم 3 أحرف على الأقل.",
+    "errInvalid": "أدخل مبلغاً صحيحاً."
+  },
   "detail": {
     "title": "تفاصيل المنتج",
     "price": "سعر البيع",

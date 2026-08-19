@@ -29,3 +29,5 @@ export { ProductsTableCard } from './components/ProductsTableCard';
 export { ProductFormModal } from './components/ProductFormModal';
 export { ProductDetailModal } from './components/ProductDetailModal';
 export { DeleteConfirmModal } from './components/DeleteConfirmModal';
+export { ProductPicker } from './components/ProductPicker';
+export { QuickProductModal } from './components/QuickProductModal';

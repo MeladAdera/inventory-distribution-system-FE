@@ -9,7 +9,7 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   /**
    * Pinned below the scroll area. Actions passed here stay reachable no matter
    * how tall the body grows; actions left inside `children` scroll away with it.
@@ -21,6 +21,10 @@ const sizeClasses = {
   sm: 'max-w-sm',
   md: 'max-w-md',
   lg: 'max-w-lg',
+  // For forms built around a table of rows — a line-items editor needs room for
+  // a name, a quantity, a price and a total side by side before it starts to
+  // wrap. Still a centred dialog from `sm` up, still a bottom sheet on phones.
+  xl: 'max-w-3xl',
 };
 
 // Modals stack (a detail modal opening a confirm modal on top). Without a count,

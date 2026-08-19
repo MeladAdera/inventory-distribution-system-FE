@@ -41,13 +41,34 @@ export const suppliersApi = {
   },
 
   /**
-   * Record a bill against this supplier.
+   * Record a bill against this supplier, optionally stocking the goods on it.
    *
    * 409 supplier.INVOICE_TAKEN if `invoiceNo` was already used for this same
    * supplier, and 400 supplier.PAID_EXCEEDS_TOTAL if more was paid than billed.
+   *
+   * With `items` there are more ways to be turned away, every one of them
+   * rejecting the WHOLE request — no debt, no stock, no partial state, so the
+   * same payload is safe to retry once corrected:
+   *   400 the lines don't sum to `totalAmount` (the message names both figures)
+   *   400 the same product appears on more than one line
+   *   400 a line's unit price is not greater than zero (names the product)
+   *   403 a line's product belongs to another shop
+   *   404 a line's product doesn't exist (names the id)
    */
   recordBill: async (id: number, data: CreateBillInput, config?: AxiosRequestConfig) => {
     const response = await apiClient.post(`/suppliers/${id}/debts`, data, config);
+    return response.data;
+  },
+
+  /**
+   * The goods on one bill. Empty for a money-only bill.
+   *
+   * `avg_cost` and `sale_price` are read live rather than frozen at purchase
+   * time, so this answers "what is this product costing me now?" rather than
+   * "what did this delivery do to the average back then?".
+   */
+  billItems: async (id: number, debtId: number, config?: AxiosRequestConfig) => {
+    const response = await apiClient.get(`/suppliers/${id}/debts/${debtId}/items`, config);
     return response.data;
   },
 

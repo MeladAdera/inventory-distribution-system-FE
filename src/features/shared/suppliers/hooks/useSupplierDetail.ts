@@ -7,6 +7,7 @@ import type { PaymentApplication } from '@/features/shared/debts';
 import { suppliersApi } from '../api/suppliers.api';
 import type {
   BillListParams,
+  BillWithItems,
   CreateBillInput,
   PaySupplierInput,
   Supplier,
@@ -96,13 +97,20 @@ export function useSupplierDetail(id: number | null, options: SupplierDetailOpti
 
   const recordBillMutation = useMutation({
     mutationFn: (data: CreateBillInput) =>
-      suppliersApi.recordBill(id as number, data) as Promise<{ data: SupplierBill }>,
+      suppliersApi.recordBill(id as number, data) as Promise<{ data: BillWithItems }>,
     // A new bill changes this supplier's balance, the list row behind the modal,
     // and the shop-wide payables totals in the header cards.
+    //
+    // With `items` it also moves stock, in the same transaction: quantities go
+    // up and `avg_cost` is re-blended on every line. Inventory and the products
+    // catalog have to be invalidated too, or the inventory page keeps showing
+    // pre-delivery quantities until something else happens to refetch it.
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['suppliers'], refetchType: 'all' }),
         queryClient.invalidateQueries({ queryKey: ['analytics'], refetchType: 'all' }),
+        queryClient.invalidateQueries({ queryKey: ['inventory'], refetchType: 'all' }),
+        queryClient.invalidateQueries({ queryKey: ['products'], refetchType: 'all' }),
       ]);
     },
   });

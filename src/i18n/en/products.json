@@ -68,6 +68,33 @@
     "errCostPrice": "Buying price cannot be negative",
     "errCategory": "Category is required"
   },
+  "picker": {
+    "placeholder": "Search products by name or barcode",
+    "noResults": "No product matches “{term}”.",
+    "createNew": "New product",
+    "createNamed": "New product “{term}”"
+  },
+  "quickCreate": {
+    "title": "New product",
+    "intro": "Add it to your catalog and it goes straight onto the bill.",
+    "name": "Product name",
+    "namePlaceholder": "e.g. Biscuits 5000",
+    "category": "Category",
+    "categoryPlaceholder": "Choose a category",
+    "buyPrice": "You pay",
+    "buyPriceHint": "What one unit cost you.",
+    "sellPrice": "You sell at",
+    "sellPriceHint": "Nothing works this out for you.",
+    "barcode": "Barcode",
+    "barcodePlaceholder": "Optional",
+    "marginLabel": "Profit per unit",
+    "marginNegative": "You'd lose per unit",
+    "stockHint": "The bill adds the stock itself — no quantity needed here.",
+    "submit": "Create and add",
+    "cancel": "Cancel",
+    "errNameShort": "Use at least 3 characters.",
+    "errInvalid": "Enter a valid amount."
+  },
   "detail": {
     "title": "Product details",
     "price": "Selling price",
