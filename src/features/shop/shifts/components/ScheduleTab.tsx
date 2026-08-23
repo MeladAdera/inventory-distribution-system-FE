@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { NARROW_QUERY, useMediaQuery } from '@/common/hooks/useMediaQuery';
 import { CalendarClock, Download } from 'lucide-react';
 import { Button } from '@/common/components/ui/button';
 import { ConfirmDialog, Modal } from '@/common/components';
@@ -72,11 +73,13 @@ export function ScheduleTab() {
   } = useShiftTemplates();
   const { userNames } = useShopPeople();
 
-  // A phone cannot hold seven columns, so it starts on one day. Only the
-  // initial view is chosen — switching afterwards is the owner's call.
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth < 768) setView('day');
-  }, []);
+  // Seven columns do not fit a phone at any zoom, so the week board is not
+  // merely a poor default there — it is unavailable, and asking for it falls
+  // back to the day. Driven by a live media query rather than a one-shot width
+  // check on mount, which never noticed a rotation and rendered a frame of the
+  // wrong layout first.
+  const isNarrow = useMediaQuery(NARROW_QUERY);
+  const effectiveView: ScheduleView = isNarrow && view === 'week' ? 'day' : view;
 
   const slotCounts = useMemo(
     () =>
@@ -242,8 +245,9 @@ export function ScheduleTab() {
           setWeekStart(toISODate(startOfWeek(new Date())));
           setActiveWeekday(new Date().getDay() as Weekday);
         }}
-        view={view}
+        view={effectiveView}
         onViewChange={setView}
+        hideWeek={isNarrow}
         timezone={week.timezone}
         labels={s.toolbar}
       />
@@ -258,7 +262,7 @@ export function ScheduleTab() {
           <ScheduleStats stats={week.stats} locale={locale} labels={s.stats} />
 
           <ScheduleBoard
-            view={view}
+            view={effectiveView}
             dates={week.dates}
             entriesByWeekday={week.entriesByWeekday}
             days={week.days}

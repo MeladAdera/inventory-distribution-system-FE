@@ -14,6 +14,8 @@ interface WeekToolbarProps {
   onToday: () => void;
   view: ScheduleView;
   onViewChange: (view: ScheduleView) => void;
+  /** Hides the week option where seven columns cannot fit at all. */
+  hideWeek?: boolean;
   timezone: string | null;
   labels: {
     today: string;
@@ -29,6 +31,7 @@ export function WeekToolbar({
   onToday,
   view,
   onViewChange,
+  hideWeek = false,
   timezone,
   labels,
 }: WeekToolbarProps) {
@@ -67,7 +70,7 @@ export function WeekToolbar({
       </div>
 
       <div className="flex rounded-lg border border-border p-0.5">
-        {SCHEDULE_VIEWS.map((id) => (
+        {SCHEDULE_VIEWS.filter((id) => !(hideWeek && id === 'week')).map((id) => (
           <button
             key={id}
             type="button"

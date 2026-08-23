@@ -60,7 +60,9 @@ function WeekView(props: ScheduleBoardProps) {
 
   return (
     <div className="overflow-x-auto rounded-xl border border-border bg-paper p-2">
-      <div className="grid min-w-200 grid-cols-7 gap-2">
+      {/* ~160px a column. At the old 800px each day got 114px, which left a
+          shift name about six characters before the ellipsis. */}
+      <div className="grid min-w-280 grid-cols-7 gap-2">
         {WEEKDAYS.map((weekday) => {
           const day = days.find((d) => d.weekday === weekday);
           const closed = day?.is_closed ?? true;

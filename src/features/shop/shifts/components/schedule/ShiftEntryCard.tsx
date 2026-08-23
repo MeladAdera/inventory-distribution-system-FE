@@ -65,7 +65,9 @@ export function ShiftEntryCard({
   return (
     <div
       className={cn(
-        'rounded-lg border border-s-[3px] border-border bg-paper p-2.5 transition-colors',
+        // overflow-hidden is load-bearing: without it the figures below spill
+        // out of a narrow column and render loose in the gutter between days.
+        'overflow-hidden rounded-lg border border-s-[3px] border-border bg-paper p-2.5 transition-colors',
         ACCENT[accent],
         session && 'cursor-pointer hover:bg-subtle'
       )}
@@ -80,7 +82,7 @@ export function ShiftEntryCard({
 
       {/* Times and duration are one LTR run: in Arabic the range would
           otherwise reverse and name the wrong start. */}
-      <p dir="ltr" className="mt-1 whitespace-nowrap text-[12px] tabular-nums text-ink-600">
+      <p dir="ltr" className="mt-1 truncate text-[12px] tabular-nums text-ink-600">
         {entry.startTime} – {entry.endTime ?? '…'}
         {entry.durationMinutes !== null && (
           <span className="ms-1.5 text-ink-400">· {formatDuration(entry.durationMinutes)}</span>
@@ -111,16 +113,18 @@ export function ShiftEntryCard({
         </div>
       )}
 
-      {/* What it took, once the drawer has been counted. */}
+      {/* What it took, once the drawer has been counted. Wraps rather than
+          compressing: three figures forced onto one line is what pushed the
+          variance outside the card in a narrow day column. */}
       {session && session.status === 'CLOSED' && (
-        <div className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-[12px]">
-          <span className="text-ink-400">
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-0.5 border-t border-border pt-2 text-[12px]">
+          <span className="truncate text-ink-400">
             {labels.invoices.replace('{count}', String(session.receipt_count))}
           </span>
-          <span dir="ltr" className="tabular-nums text-ink-700">
+          <span dir="ltr" className="ms-auto truncate tabular-nums text-ink-700">
             {formatMoneyGrouped(session.sales_total)} {currency}
           </span>
-          <VarianceValue value={session.cash_difference} className="text-[12px]" />
+          <VarianceValue value={session.cash_difference} className="shrink-0 text-[12px]" />
         </div>
       )}
 
