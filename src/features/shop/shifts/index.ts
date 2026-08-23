@@ -6,6 +6,9 @@ export { useShiftSessions, useShiftSessionDetail } from './hooks/useShiftSession
 export { useShiftReport } from './hooks/useShiftReport';
 export { MyShiftPage } from './components/MyShiftPage';
 export { ShiftsPage } from './components/ShiftsPage';
+export { HistoryTab } from './components/HistoryTab';
+export { ReportTab } from './components/ReportTab';
+export { useShopPeople } from './hooks/useShopPeople';
 export { SellShiftGate } from './components/SellShiftGate';
 export { ShiftChip } from './components/ShiftChip';
 export { ShiftStatusCard } from './components/my-shift/ShiftStatusCard';

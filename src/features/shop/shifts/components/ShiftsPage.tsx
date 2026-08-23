@@ -15,6 +15,8 @@ import { OpeningHoursCard } from './schedule/OpeningHoursCard';
 import { WeekGrid } from './schedule/WeekGrid';
 import { SlotEditorModal } from './schedule/SlotEditorModal';
 import { AssignModal } from './schedule/AssignModal';
+import { HistoryTab } from './HistoryTab';
+import { ReportTab } from './ReportTab';
 
 type Tab = 'schedule' | 'history' | 'report';
 
@@ -162,7 +164,14 @@ export function ShiftsPage() {
         ))}
       </div>
 
-      {isLoading ? (
+      {/* Each tab carries its own loading and error state. The schedule's
+          queries must not gate History or Report — a failed templates fetch
+          would otherwise blank out two tabs that never needed it. */}
+      {tab === 'history' ? (
+        <HistoryTab />
+      ) : tab === 'report' ? (
+        <ReportTab />
+      ) : isLoading ? (
         <div className="flex h-64 items-center justify-center gap-2 text-ink-500">
           <Loader2 size={18} className="animate-spin" />
           <span className="text-[14px]">{s.page.loading}</span>
@@ -172,7 +181,7 @@ export function ShiftsPage() {
           <AlertTriangle size={28} className="text-danger-700" />
           <p className="text-[14px] text-ink-600">{s.page.errorMsg}</p>
         </div>
-      ) : tab === 'schedule' ? (
+      ) : (
         <div className="flex flex-col gap-5">
           <OpeningHoursCard
             days={days}
@@ -204,11 +213,6 @@ export function ShiftsPage() {
             onRemove={setRemoving}
             labels={s.grid}
           />
-        </div>
-      ) : (
-        // History and Report land in the next phase.
-        <div className="flex h-48 items-center justify-center text-[14px] text-ink-400">
-          {s.page.tabs[tab]}
         </div>
       )}
 
