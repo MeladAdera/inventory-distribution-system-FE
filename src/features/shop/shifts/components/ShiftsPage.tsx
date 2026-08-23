@@ -221,7 +221,7 @@ export function ShiftsPage() {
         locale={locale}
         onSubmit={handleSubmitSlot}
         isSubmitting={isCreating || isUpdating}
-        labels={{ ...s.slotEditor, endOfDay: s.hours.endOfDay }}
+        labels={s.slotEditor}
       />
 
       {assigning && (

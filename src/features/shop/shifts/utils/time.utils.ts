@@ -70,6 +70,52 @@ export function buildTimeOptions(): string[] {
   return options;
 }
 
+const ARABIC_INDIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+const EXTENDED_ARABIC_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+
+/** Arabic-Indic and extended Arabic digits → Latin, so an AR keyboard types fine. */
+function toLatinDigits(value: string): string {
+  return value.replace(/[٠-٩۰-۹]/g, (d) => {
+    const arabic = ARABIC_INDIC_DIGITS.indexOf(d);
+    return String(arabic >= 0 ? arabic : EXTENDED_ARABIC_DIGITS.indexOf(d));
+  });
+}
+
+/**
+ * Read a time a person typed, in whatever shape they typed it.
+ *
+ * `"8"`, `"8:5"`, `"830"`, `"08.30"`, `"٠٨:٣٠"` and `"08:00:00"` all resolve;
+ * anything that cannot be read returns null so the caller can keep the previous
+ * value rather than silently writing a wrong one.
+ *
+ * Hour 24 is accepted only as exactly `24:00` — it means end of day, and
+ * `24:30` is not a time.
+ */
+export function parseTimeInput(raw: string): string | null {
+  const value = toLatinDigits(raw).trim();
+  if (!value) return null;
+
+  let hours: number;
+  let minutes: number;
+
+  const withMinutes = /^(\d{1,2})[:.\s]?(\d{2})(?::\d{2})?$/.exec(value);
+  const hourOnly = /^(\d{1,2})[:.]?$/.exec(value);
+
+  if (withMinutes) {
+    hours = Number(withMinutes[1]);
+    minutes = Number(withMinutes[2]);
+  } else if (hourOnly) {
+    hours = Number(hourOnly[1]);
+    minutes = 0;
+  } else {
+    return null;
+  }
+
+  if (minutes > 59 || hours > 24) return null;
+  if (hours === 24 && minutes !== 0) return null;
+  return minutesToTime(hours * 60 + minutes);
+}
+
 export interface SlotWindow {
   startTime: string;
   endTime: string;

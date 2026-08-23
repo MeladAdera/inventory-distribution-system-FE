@@ -12,7 +12,7 @@ import {
   type Weekday,
 } from '../../types/shifts.types';
 import { timeToMinutes, toPickerValue, weekdayNames } from '../../utils/time.utils';
-import { TimeSelect } from './TimeSelect';
+import { TimeField } from './TimeField';
 
 /** How many equal shifts the split helper offers. */
 const SPLIT_CHOICES = [2, 3, 4] as const;
@@ -117,12 +117,14 @@ export function OpeningHoursCard({
 
           return (
             <li key={day.weekday} className="py-3">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="w-24 shrink-0 text-[14px] font-medium text-ink-800">
+              {/* Phone: day + closed on one line, the two times on the next.
+                  From sm up the whole row sits on a single line. */}
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <span className="text-[14px] font-medium text-ink-800 sm:w-24 sm:shrink-0">
                   {names[day.weekday]}
                 </span>
 
-                <label className="flex shrink-0 cursor-pointer items-center gap-2 text-[13px] text-ink-500">
+                <label className="ms-auto flex shrink-0 cursor-pointer items-center gap-2 text-[13px] text-ink-500 sm:ms-0">
                   <input
                     type="checkbox"
                     className="h-4 w-4 accent-amber-600"
@@ -134,33 +136,31 @@ export function OpeningHoursCard({
 
                 <div
                   className={cn(
-                    'flex flex-1 items-center gap-2 transition-opacity',
+                    'flex w-full items-center gap-2 transition-opacity sm:w-auto sm:flex-1',
                     closed && 'pointer-events-none opacity-40'
                   )}
                 >
-                  <div className="min-w-28 flex-1">
-                    <TimeSelect
+                  <div className="min-w-0 flex-1">
+                    <TimeField
                       value={day.openTime}
                       onChange={(v) => patch(day.weekday, { openTime: v })}
                       disabled={closed}
-                      endOfDayLabel={labels.endOfDay}
                       ariaLabel={`${names[day.weekday]} — ${labels.opensLabel}`}
                     />
                   </div>
                   <span className="text-ink-400">–</span>
-                  <div className="min-w-28 flex-1">
-                    <TimeSelect
+                  <div className="min-w-0 flex-1">
+                    <TimeField
                       value={day.closeTime}
                       onChange={(v) => patch(day.weekday, { closeTime: v })}
                       disabled={closed}
-                      endOfDayLabel={labels.endOfDay}
                       ariaLabel={`${names[day.weekday]} — ${labels.closesLabel}`}
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 ps-27">
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 sm:ps-27">
                 {overnight && (
                   <span className="flex items-center gap-1 text-[12px] text-ink-400">
                     <Moon size={12} />
@@ -199,7 +199,11 @@ export function OpeningHoursCard({
         })}
       </ul>
 
-      <div className="mt-4 flex items-center justify-end gap-3">
+      {/* The select used to label this option; with a free-text field the
+          convention needs saying somewhere, or 24:00 reads as a typo. */}
+      <p className="mt-3 text-[12px] text-ink-400">24:00 — {labels.endOfDay}</p>
+
+      <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
         {isDirty && <span className="text-[12px] text-amber-700">{labels.unsaved}</span>}
         <Button onClick={() => onSave(draft)} disabled={isSaving || !isDirty}>
           {isSaving && <Loader2 size={15} className="animate-spin" />}

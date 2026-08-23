@@ -13,7 +13,7 @@ import {
   weekdayNames,
   windowMinutes,
 } from '../../utils/time.utils';
-import { TimeSelect } from './TimeSelect';
+import { TimeField } from './TimeField';
 
 interface SlotEditorModalProps {
   open: boolean;
@@ -41,7 +41,6 @@ interface SlotEditorModalProps {
     cancel: string;
     errName: string;
     errSameTime: string;
-    endOfDay: string;
   };
 }
 
@@ -141,23 +140,13 @@ export function SlotEditorModal({
         <div className="flex-1">
           <label className="block text-[13px] font-medium text-ink-700">{labels.start}</label>
           <div className="mt-1.5">
-            <TimeSelect
-              value={startTime}
-              onChange={setStartTime}
-              endOfDayLabel={labels.endOfDay}
-              ariaLabel={labels.start}
-            />
+            <TimeField value={startTime} onChange={setStartTime} ariaLabel={labels.start} />
           </div>
         </div>
         <div className="flex-1">
           <label className="block text-[13px] font-medium text-ink-700">{labels.end}</label>
           <div className="mt-1.5">
-            <TimeSelect
-              value={endTime}
-              onChange={setEndTime}
-              endOfDayLabel={labels.endOfDay}
-              ariaLabel={labels.end}
-            />
+            <TimeField value={endTime} onChange={setEndTime} ariaLabel={labels.end} />
           </div>
         </div>
       </div>

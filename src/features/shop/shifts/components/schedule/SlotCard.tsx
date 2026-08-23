@@ -42,12 +42,14 @@ export function SlotCard({ template, onEdit, onAssign, onRemove, labels }: SlotC
         </div>
       </div>
 
-      <p className="mt-0.5 text-[12px] tabular-nums text-ink-500">
+      {/* Kept on one line: at column width this used to break after the dash,
+          leaving a stray "12:00" on its own row. */}
+      <p className="mt-0.5 whitespace-nowrap text-[12px] tabular-nums text-ink-500" dir="ltr">
         {toPickerValue(template.start_time)} – {toPickerValue(template.end_time)}
+        {/* Server-computed. Never derived here: a 22:00 → 02:00 slot is 240
+            minutes, and subtracting the two would give −1200. */}
+        <span className="ms-1.5 text-ink-400">{formatDuration(template.duration_minutes)}</span>
       </p>
-      {/* Server-computed. Never derived here: a 22:00 → 02:00 slot is 240
-          minutes, and subtracting the two would give −1200. */}
-      <p className="text-[11px] text-ink-400">{formatDuration(template.duration_minutes)}</p>
 
       <button
         type="button"
@@ -56,9 +58,9 @@ export function SlotCard({ template, onEdit, onAssign, onRemove, labels }: SlotC
         className="mt-2 flex w-full items-center gap-1 rounded-md px-1 py-1 transition-colors hover:bg-sand-100"
       >
         {template.assignees.length === 0 ? (
-          <span className="flex items-center gap-1 text-[11px] text-ink-400">
-            <UserPlus size={12} />
-            {labels.unassigned}
+          <span className="flex min-w-0 items-center gap-1 text-[11px] text-ink-400">
+            <UserPlus size={12} className="shrink-0" />
+            <span className="truncate">{labels.unassigned}</span>
           </span>
         ) : (
           <>
