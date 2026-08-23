@@ -44,6 +44,10 @@ const EMPLOYEE_ALLOWED_ROUTES = [
   ROUTES.CLIENT_RECEIPTS,
   // Employees sell on credit and collect payments, so they manage customers too.
   ROUTES.CLIENT_CUSTOMERS,
+  // Employees are who most shifts belong to — starting and ending one is the
+  // whole point of the feature for this role. The owner-only /client/shifts
+  // planning page is deliberately NOT here.
+  ROUTES.CLIENT_MY_SHIFT,
 ];
 
 function matchesRoute(pathname: string, routes: string[]): boolean {

@@ -44,6 +44,7 @@ export const ROUTES = {
   CLIENT_INVENTORY: '/client/inventory',
   CLIENT_CATALOG: '/client/catalog',
   CLIENT_SELL: '/client/sell',
+  CLIENT_MY_SHIFT: '/client/my-shift',
   CLIENT_PROFIT: '/client/profit',
   CLIENT_RECEIPTS: '/client/receipts',
   CLIENT_CUSTOMERS: '/client/customers',

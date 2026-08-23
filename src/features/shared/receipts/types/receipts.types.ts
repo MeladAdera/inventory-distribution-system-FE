@@ -80,6 +80,16 @@ export interface CreateReceiptInput {
    * connection fails in exactly the same way.
    */
   clientReceiptId: string;
+  /**
+   * The drawer this sale belongs to. OMIT IT on a normal sale — the server
+   * attaches the shop's open shift itself, which is always the right answer at
+   * the moment of sale.
+   *
+   * Send it only when replaying a sale made earlier: by the time an offline
+   * queue drains, the shift it was rung up on may have closed and another
+   * opened. A replayed sale MAY name a closed shift; that is the point.
+   */
+  shiftSessionId?: number;
   notes?: string;
   /**
    * Who owes the balance. Required whenever `paidAmount` is less than the total —

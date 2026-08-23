@@ -20,6 +20,7 @@ import notificationsEn from './en/notifications.json';
 import offlineEn from './en/offline.json';
 import landingEn from './en/landing.json';
 import debtsEn from './en/debts.json';
+import shiftsEn from './en/shifts.json';
 import sidebarAr from './ar/sidebar.json';
 import inventoryAr from './ar/inventory.json';
 import receiptsAr from './ar/receipts.json';
@@ -42,6 +43,7 @@ import notificationsAr from './ar/notifications.json';
 import offlineAr from './ar/offline.json';
 import landingAr from './ar/landing.json';
 import debtsAr from './ar/debts.json';
+import shiftsAr from './ar/shifts.json';
 
 export type Locale = 'ar' | 'en';
 
@@ -69,6 +71,7 @@ export const translations = {
     offline: offlineEn,
     landing: landingEn,
     debts: debtsEn,
+    shifts: shiftsEn,
   },
   ar: {
     sidebar: sidebarAr,
@@ -93,6 +96,7 @@ export const translations = {
     offline: offlineAr,
     landing: landingAr,
     debts: debtsAr,
+    shifts: shiftsAr,
   },
 } as const;
 

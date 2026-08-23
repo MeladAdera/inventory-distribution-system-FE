@@ -1,0 +1,83 @@
+{
+  "myShift": {
+    "title": "My shift",
+    "subtitle": "Open the till at the start of your shift, and count the drawer at the end.",
+    "loading": "Checking the shift…",
+    "errorMsg": "Could not check whether a shift is open.",
+    "offlineTitle": "You're offline",
+    "offlineBody": "Starting and ending a shift needs a connection, because the drawer is counted on the server. You can keep selling — the sales will sync when you're back.",
+    "none": {
+      "title": "No shift is open",
+      "body": "Start your shift to open the till and put today's takings in your drawer.",
+      "cta": "Start my shift"
+    },
+    "mine": {
+      "title": "You're on shift",
+      "startedAt": "Started",
+      "elapsed": "Elapsed",
+      "float": "Opening float",
+      "slot": "Shift",
+      "noSlot": "Outside any shift",
+      "offSchedule": "Outside a scheduled shift",
+      "cta": "End my shift"
+    },
+    "other": {
+      "title": "{name}'s shift is still open",
+      "body": "Only one shift can be open at a time. Count the drawer and close it, then start yours.",
+      "cta": "Count the drawer and close it"
+    }
+  },
+  "start": {
+    "title": "Start my shift",
+    "intro": "Count what's already in the drawer before you sell anything.",
+    "float": "Opening float",
+    "floatPlaceholder": "0.00",
+    "floatHint": "Carried over from the last shift's count. Change it if the drawer says otherwise.",
+    "floatHintNoSuggestion": "Count the cash in the drawer now and type the total.",
+    "submit": "Start shift",
+    "cancel": "Cancel",
+    "errRequired": "Enter what's in the drawer.",
+    "errInvalid": "Enter an amount like 50.00.",
+    "toastSuccess": "Your shift has started."
+  },
+  "close": {
+    "title": "End my shift",
+    "titleOther": "Close {name}'s shift",
+    "intro": "Count every note and coin in the drawer, then type the total.",
+    "counted": "Counted cash",
+    "countedPlaceholder": "0.00",
+    "countedHint": "Count first, then type. The difference is shown once the shift is closed.",
+    "notes": "Note",
+    "notesPlaceholder": "Anything worth explaining — five short, paid a delivery, and so on",
+    "submit": "Close shift",
+    "cancel": "Cancel",
+    "errRequired": "Enter the counted amount.",
+    "errInvalid": "Enter an amount like 165.00.",
+    "toastSuccess": "The shift is closed."
+  },
+  "result": {
+    "title": "Shift closed",
+    "balanced": "The drawer balances.",
+    "short": "The drawer is short.",
+    "over": "The drawer is over.",
+    "openingFloat": "Opening float",
+    "cashSales": "Cash sales",
+    "cashCollections": "Debt collected",
+    "cashPayouts": "Cash paid out",
+    "expected": "Expected in the drawer",
+    "counted": "You counted",
+    "difference": "Difference",
+    "done": "Done"
+  },
+  "gate": {
+    "title": "Start your shift to sell",
+    "body": "Sales need a shift open so the money lands in someone's drawer.",
+    "cta": "Start my shift"
+  },
+  "chip": {
+    "onShift": "On shift",
+    "otherOnShift": "{name} on shift",
+    "noShift": "No shift open",
+    "since": "since {time}"
+  }
+}

@@ -14,6 +14,8 @@ import { enqueueStockSave } from '@/features/shared/inventory/offline/stockSyncE
 import { getIsOnline, useOnlineStatus } from '@/common/offline/connectivity/useOnlineStatus';
 import { multiplyMoney, sumMoney } from '@/common/utils/money';
 import { useCustomers } from '@/features/shop/customers';
+import { useOpenShift } from '@/features/shop/shifts/hooks/useOpenShift';
+import { SellShiftGate } from '@/features/shop/shifts/components/SellShiftGate';
 import { useClientInventory } from '../hooks/useClientInventory';
 import { CategoryCard } from './inventory/CategoryCard';
 import { SellProductTile } from './sell/SellProductTile';
@@ -48,6 +50,9 @@ export function ClientSellPage() {
   // Credit sales need someone to owe the money.
   const { customers } = useCustomers({ page: 1, limit: CUSTOMER_PICKER_LIMIT });
   const isOnline = useOnlineStatus();
+
+  // The till is gated on a shift being open, and each sale is filed against it.
+  const { openShift, shouldBlockSelling } = useOpenShift();
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const selectedCategory = categories.find((c) => c.id === selectedCatId) ?? null;
@@ -118,6 +123,10 @@ export function ClientSellPage() {
         customerId,
         paidAmount,
         shopId,
+        // Snapshotted now, not resolved at replay time: by the time the queue
+        // drains, this shift may have closed and another opened, and the money
+        // would land in the wrong drawer.
+        shiftSessionId: openShift?.id,
       });
       setCart({});
       setModalOpen(false);
@@ -150,6 +159,12 @@ export function ClientSellPage() {
         <p className="text-[14px] text-ink-600">{sel.errorMsg}</p>
       </div>
     );
+  }
+
+  // Replaces the till, rather than disabling it: a greyed-out grid invites
+  // hunting for what is broken, where this names the missing step.
+  if (shouldBlockSelling) {
+    return <SellShiftGate labels={t.shifts.gate} />;
   }
 
   return (

@@ -47,6 +47,13 @@ export interface StockSaveOp {
   // Optional only because entries persisted before this shipped predate it; those
   // are given one lazily on their next attempt.
   clientReceiptId?: string;
+  // The drawer this sale belongs to, captured when the user confirmed rather
+  // than resolved when the request finally goes out. A queue can drain hours
+  // later, by which time this shift may have closed and another opened —
+  // letting the server attach "the open shift" then would credit the takings to
+  // whoever happens to be working, not whoever actually made the sale.
+  // Undefined when no shift was open; the key is omitted from the request.
+  shiftSessionId?: number;
   decreaseNotes?: string;
   increaseNotes?: string;
   // Chosen at confirm time; applied via a follow-up PATCH once the receipt exists.
@@ -132,6 +139,7 @@ async function processStockSave(
             quantity: Math.abs(d.delta),
           })),
           clientReceiptId: next.clientReceiptId,
+          ...(next.shiftSessionId !== undefined ? { shiftSessionId: next.shiftSessionId } : {}),
           ...(next.decreaseNotes ? { notes: next.decreaseNotes } : {}),
           ...(next.customerId !== undefined ? { customerId: next.customerId } : {}),
           ...(next.paidAmount !== undefined ? { paidAmount: next.paidAmount } : {}),
@@ -246,6 +254,8 @@ interface EnqueueParams {
   customerId?: number;
   paidAmount?: string;
   shopId?: number;
+  // The open shift at confirm time, or undefined when none was open.
+  shiftSessionId?: number;
 }
 
 function buildStockSaveOp(params: EnqueueParams): StockSaveOp {
@@ -279,6 +289,7 @@ function buildStockSaveOp(params: EnqueueParams): StockSaveOp {
     // Anywhere later — inside the flush loop, say — would mint a fresh key per
     // attempt and defeat the point.
     clientReceiptId: crypto.randomUUID(),
+    shiftSessionId: params.shiftSessionId,
     decreaseNotes: params.decreaseNotes?.trim() || undefined,
     increaseNotes: params.increaseNotes?.trim() || undefined,
     isFree: params.isFree,

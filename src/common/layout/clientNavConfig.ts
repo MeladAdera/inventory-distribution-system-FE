@@ -6,6 +6,7 @@ import {
   Package,
   ShoppingCart,
   ClipboardList,
+  Clock,
   Users,
   Wallet,
   Settings,
@@ -23,6 +24,7 @@ export interface ClientNavItem {
     | 'inventory'
     | 'order'
     | 'sell'
+    | 'myShift'
     | 'orders'
     | 'receipts'
     | 'customers'
@@ -40,6 +42,9 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'inventory', href: '/client/inventory', icon: Package },
   { id: 'order', href: '/client/order', icon: ShoppingCart },
   { id: 'sell', href: '/client/sell', icon: LayoutGrid },
+  // Sits next to the till on purpose: the shift gates selling, so the two are
+  // reached together. Open to employees, unlike the owner-only planning page.
+  { id: 'myShift', href: '/client/my-shift', icon: Clock },
   { id: 'orders', href: '/client/orders', icon: ClipboardList },
   { id: 'profit', href: '/client/profit', icon: TrendingUp },
   { id: 'receipts', href: '/client/receipts', icon: Receipt },
@@ -56,11 +61,13 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   { id: 'settings', href: '/client/settings', icon: Settings },
 ];
 
-// EMPLOYEE sees dashboard + inventory + sell + receipts; mirrors EMPLOYEE_ALLOWED_ROUTES in middleware.utils.ts
+// EMPLOYEE sees dashboard + inventory + sell + my shift + receipts; mirrors
+// EMPLOYEE_ALLOWED_ROUTES in middleware.utils.ts
 const EMPLOYEE_NAV_IDS: ClientNavItem['id'][] = [
   'dashboard',
   'inventory',
   'sell',
+  'myShift',
   'receipts',
   'customers',
 ];

@@ -9,6 +9,7 @@ import { getInitials, formatRelativeTime } from '@/common/utils/string.utils';
 import { useI18n } from '@/providers/I18nProvider';
 import { useAuth } from '@/features/auth';
 import { useNotifications, NotificationType } from '@/features/shared/notifications';
+import { ShiftChip } from '@/features/shop/shifts/components/ShiftChip';
 
 const NOTIF_ICON: Record<NotificationType, typeof AlertTriangle> = {
   [NotificationType.LOW_STOCK]: AlertTriangle,
@@ -93,6 +94,9 @@ export function ClientTopBar({ onMenuClick }: ClientTopBarProps) {
 
       {/* Right cluster */}
       <div className="flex items-center gap-2">
+        {/* Shift status — always visible, so "am I clocked in?" is never a guess */}
+        <ShiftChip />
+
         {/* Language toggle */}
         <button
           onClick={() => setLocale(locale === 'ar' ? 'en' : 'ar')}

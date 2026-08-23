@@ -33,6 +33,7 @@ import {
   enqueueStockSave,
   useStockSyncQueue,
 } from '@/features/shared/inventory/offline/stockSyncEngine';
+import { useOpenShift } from '@/features/shop/shifts/hooks/useOpenShift';
 import { useClientInventory } from '../hooks/useClientInventory';
 import { CategoryCard } from './inventory/CategoryCard';
 import { ProductCard } from './inventory/ProductCard';
@@ -80,6 +81,10 @@ export function ClientInventoryPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const { categories: invCategories, allItems, isLoading, error } = useClientInventory();
+
+  // Only for stamping the drawer onto a stock decrease — this page is not gated
+  // on a shift, since counting stock is not selling.
+  const { openShift } = useOpenShift();
 
   const { itemStatus } = useStockSyncQueue();
 
@@ -207,6 +212,10 @@ export function ClientInventoryPage() {
         increaseNotes,
         isFree,
         shopId,
+        // A stock decrease raises a receipt like any sale, so it belongs to the
+        // drawer that was open when it was made — snapshotted here for the same
+        // reason as on the sell page.
+        shiftSessionId: openShift?.id,
       });
       setChanges({});
       setModalOpen(false);
