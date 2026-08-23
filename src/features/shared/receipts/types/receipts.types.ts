@@ -41,6 +41,10 @@ export interface Receipt {
   created_at: string;
   total_price: number;
   items: ReceiptItem[];
+  /** The drawer this sale belongs to. Null when it was rung up with no shift open. */
+  shift_session_id: number | null;
+  /** Echo of the idempotency key the client sent. Null for receipts predating it. */
+  client_receipt_id: string | null;
 }
 
 export interface ReceiptListItem {
@@ -63,6 +67,19 @@ export interface CreateReceiptItem {
 
 export interface CreateReceiptInput {
   items: CreateReceiptItem[];
+  /**
+   * A UUID minted once per sale and reused on every retry of that same sale.
+   * Sending it twice returns the original receipt instead of writing a second one.
+   *
+   * Required rather than optional on purpose. POST /receipts commits the receipt,
+   * its items, the stock movement and any debt in one transaction — so a lost
+   * response (slow connection, timeout, offline replay) leaves a retry that rings
+   * the whole sale up again. The duplicate is complete and self-consistent, which
+   * is what makes it dangerous: nothing looks broken, the shop is just short of
+   * stock. This is not an offline-only concern; a normal online sale on a bad
+   * connection fails in exactly the same way.
+   */
+  clientReceiptId: string;
   notes?: string;
   /**
    * Who owes the balance. Required whenever `paidAmount` is less than the total —

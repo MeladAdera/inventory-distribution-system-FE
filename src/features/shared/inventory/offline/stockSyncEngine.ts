@@ -38,6 +38,15 @@ export interface StockSyncItem {
 
 export interface StockSaveOp {
   shopId?: number;
+  // Idempotency key for the decrease receipt: minted once when the Save is enqueued
+  // and reused on every retry of that entry. Without it, a response lost after the
+  // server already committed makes the retry below ring the entire sale up a second
+  // time — a complete, consistent duplicate that silently double-decrements stock.
+  // The queue's own retry policy (see throwIfRetryable) is exactly what turns that
+  // window into a real duplicate, so this key is what makes replaying safe at all.
+  // Optional only because entries persisted before this shipped predate it; those
+  // are given one lazily on their next attempt.
+  clientReceiptId?: string;
   decreaseNotes?: string;
   increaseNotes?: string;
   // Chosen at confirm time; applied via a follow-up PATCH once the receipt exists.
@@ -108,6 +117,13 @@ async function processStockSave(
 
   // 1) Decreases — one atomic consumption receipt.
   if (next.decreases.length > 0 && next.decreaseStatus !== 'done') {
+    // Entries queued before idempotency shipped carry no key. Mint one and persist it
+    // BEFORE the request goes out: a key first written after a lost response would be
+    // a different key on the retry, which is no protection at all.
+    if (!next.clientReceiptId) {
+      next.clientReceiptId = crypto.randomUUID();
+      await ctx.commit(next);
+    }
     try {
       const created = await receiptsApi.create(
         {
@@ -115,6 +131,7 @@ async function processStockSave(
             inventoryId: d.inventoryId,
             quantity: Math.abs(d.delta),
           })),
+          clientReceiptId: next.clientReceiptId,
           ...(next.decreaseNotes ? { notes: next.decreaseNotes } : {}),
           ...(next.customerId !== undefined ? { customerId: next.customerId } : {}),
           ...(next.paidAmount !== undefined ? { paidAmount: next.paidAmount } : {}),
@@ -258,6 +275,10 @@ function buildStockSaveOp(params: EnqueueParams): StockSaveOp {
 
   return {
     shopId: params.shopId,
+    // Minted here, at the one moment that maps 1:1 to "the user confirmed a sale".
+    // Anywhere later — inside the flush loop, say — would mint a fresh key per
+    // attempt and defeat the point.
+    clientReceiptId: crypto.randomUUID(),
     decreaseNotes: params.decreaseNotes?.trim() || undefined,
     increaseNotes: params.increaseNotes?.trim() || undefined,
     isFree: params.isFree,
