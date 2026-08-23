@@ -164,8 +164,14 @@ export function OpeningHoursCard({
                 {overnight && (
                   <span className="flex items-center gap-1 text-[12px] text-ink-400">
                     <Moon size={12} />
-                    {/* Not an error: 18:00 → 02:00 is a legitimate late-night day. */}
-                    {day.openTime} → {day.closeTime}
+                    {/* Not an error: 18:00 → 02:00 is a legitimate late-night day.
+                        dir=ltr is load-bearing — two LTR times either side of a
+                        neutral arrow get reordered by the bidi algorithm in an
+                        RTL paragraph, so in Arabic this read back to front and
+                        named the wrong opening time. */}
+                    <span dir="ltr">
+                      {day.openTime} → {day.closeTime}
+                    </span>
                   </span>
                 )}
 

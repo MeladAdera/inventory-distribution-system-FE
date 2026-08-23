@@ -95,7 +95,12 @@ export function WeekGrid({
                       {shortNames[weekday]}
                     </span>
                   </p>
-                  <p className="whitespace-nowrap text-[12px] tabular-nums text-ink-400 md:text-[11px]">
+                  {/* dir=ltr only on the range: an RTL paragraph reorders the two
+                      times around the neutral dash and shows closing first. */}
+                  <p
+                    className="whitespace-nowrap text-[12px] tabular-nums text-ink-400 md:text-[11px]"
+                    dir={closed ? undefined : 'ltr'}
+                  >
                     {closed ? labels.closedDay : hours}
                   </p>
                 </div>
