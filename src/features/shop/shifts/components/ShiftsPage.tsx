@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { AlertTriangle, Loader2 } from 'lucide-react';
-import { cn } from '@/common/utils/cn';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers';
 import { ConfirmDialog } from '@/common/components';
@@ -17,8 +16,8 @@ import { SlotEditorModal } from './schedule/SlotEditorModal';
 import { AssignModal } from './schedule/AssignModal';
 import { HistoryTab } from './HistoryTab';
 import { ReportTab } from './ReportTab';
-
-type Tab = 'schedule' | 'history' | 'report';
+import { PageHeader } from './ui/PageHeader';
+import { ShiftTabs, useShiftTab } from './ui/ShiftTabs';
 
 /**
  * The owner's shift planning page. Employees never reach it — every endpoint
@@ -30,7 +29,8 @@ export function ShiftsPage() {
   const s = t.shifts;
   const toast = useToast();
 
-  const [tab, setTab] = useState<Tab>('schedule');
+  // Tab state lives in `?tab=` so it survives a reload and the back button.
+  const [tab, setTab] = useShiftTab();
   const [splittingWeekday, setSplittingWeekday] = useState<Weekday | null>(null);
 
   // `editing` carries the slot being changed; `creatingOn` the day a new one
@@ -137,31 +137,12 @@ export function ShiftsPage() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
-  const tabs: Tab[] = ['schedule', 'history', 'report'];
-
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-6">
-      <header className="mb-5">
-        <h1 className="text-[20px] font-semibold text-ink-900">{s.page.title}</h1>
-        <p className="mt-1 text-[13px] text-ink-500">{s.page.subtitle}</p>
-      </header>
+      <PageHeader title={s.page.title} description={s.page.subtitle} />
 
-      <div className="mb-5 flex gap-1 border-b border-border">
-        {tabs.map((id) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setTab(id)}
-            className={cn(
-              '-mb-px border-b-2 px-3 py-2 text-[14px] font-medium transition-colors',
-              tab === id
-                ? 'border-amber-600 text-amber-700'
-                : 'border-transparent text-ink-500 hover:text-ink-800'
-            )}
-          >
-            {s.page.tabs[id]}
-          </button>
-        ))}
+      <div className="mb-5 mt-5">
+        <ShiftTabs tab={tab} onChange={setTab} labels={s.page.tabs} />
       </div>
 
       {/* Each tab carries its own loading and error state. The schedule's
