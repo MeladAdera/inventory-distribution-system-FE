@@ -79,5 +79,82 @@
     "otherOnShift": "{name} on shift",
     "noShift": "No shift open",
     "since": "since {time}"
+  },
+  "page": {
+    "title": "Shifts",
+    "subtitle": "Set when the shop trades, then split each day into the shifts your team works.",
+    "tabs": {
+      "schedule": "Schedule",
+      "history": "History",
+      "report": "Report"
+    },
+    "loading": "Loading the schedule…",
+    "errorMsg": "Could not load the schedule."
+  },
+  "hours": {
+    "title": "Opening hours",
+    "subtitle": "When the shop trades. Every shift has to sit inside these hours.",
+    "closedLabel": "Closed",
+    "opensLabel": "Opens",
+    "closesLabel": "Closes",
+    "endOfDay": "End of day",
+    "timezone": "Timezone",
+    "save": "Save hours",
+    "unsaved": "You have unsaved changes.",
+    "toastSaved": "Opening hours saved.",
+    "splitLabel": "Split into",
+    "splitUnit": "shifts",
+    "splitHint": "Fills the day with equal shifts you can rename and adjust.",
+    "splitBusy": "Creating shifts…",
+    "toastSplit": "Added {count} shifts to {day}."
+  },
+  "grid": {
+    "title": "Weekly shifts",
+    "subtitle": "Up to four shifts a day. Times are judged against that day's opening hours when you save.",
+    "addSlot": "Add shift",
+    "full": "Four shifts is the maximum for one day.",
+    "closedDay": "Shop closed",
+    "noSlots": "No shifts yet",
+    "assignedTo": "On rota",
+    "unassigned": "Nobody on rota",
+    "edit": "Edit",
+    "remove": "Remove",
+    "assign": "Rota",
+    "more": "+{count} more"
+  },
+  "slotEditor": {
+    "createTitle": "Add a shift",
+    "editTitle": "Edit shift",
+    "name": "Name",
+    "namePlaceholder": "Morning",
+    "start": "Starts",
+    "end": "Ends",
+    "boundsHint": "The shop trades {open} to {close} on {day}.",
+    "duration": "Length",
+    "pastMidnight": "Runs past midnight",
+    "submit": "Save shift",
+    "cancel": "Cancel",
+    "errName": "Give the shift a name.",
+    "errSameTime": "A shift cannot start and end at the same time.",
+    "toastCreated": "Shift added.",
+    "toastUpdated": "Shift updated."
+  },
+  "assign": {
+    "title": "Who works {name}?",
+    "intro": "Anyone on this rota is expected on this shift. Several people is normal — whoever covers that week.",
+    "loading": "Loading employees…",
+    "empty": "This shop has no employees yet.",
+    "selectedCount": "{count} on rota",
+    "clearAll": "Clear rota",
+    "submit": "Save rota",
+    "cancel": "Cancel",
+    "toastSaved": "Rota saved."
+  },
+  "removeSlot": {
+    "title": "Remove this shift?",
+    "body": "{name} leaves the weekly grid and its rota is cleared. Shifts already worked keep their name.",
+    "confirm": "Remove",
+    "cancel": "Cancel",
+    "toastRemoved": "Shift removed."
   }
 }

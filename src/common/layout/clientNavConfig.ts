@@ -6,6 +6,7 @@ import {
   Package,
   ShoppingCart,
   ClipboardList,
+  CalendarClock,
   Clock,
   Users,
   Wallet,
@@ -25,6 +26,7 @@ export interface ClientNavItem {
     | 'order'
     | 'sell'
     | 'myShift'
+    | 'shifts'
     | 'orders'
     | 'receipts'
     | 'customers'
@@ -57,6 +59,9 @@ export const CLIENT_NAV_ITEMS: ClientNavItem[] = [
   // so this id is deliberately absent from EMPLOYEE_NAV_IDS below.
   { id: 'debts', href: '/client/debts', icon: Wallet },
   { id: 'employees', href: '/client/employees', icon: Users },
+  // Owner-only planning: every endpoint behind it is 403 for an EMPLOYEE, so the
+  // id stays out of EMPLOYEE_NAV_IDS. Employees get 'myShift' instead.
+  { id: 'shifts', href: '/client/shifts', icon: CalendarClock },
   { id: 'auditLogs', href: '/client/audit-logs', icon: ScrollText },
   { id: 'settings', href: '/client/settings', icon: Settings },
 ];
