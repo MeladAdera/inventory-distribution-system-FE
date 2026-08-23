@@ -89,7 +89,9 @@
       "report": "Report"
     },
     "loading": "Loading the schedule…",
-    "errorMsg": "Could not load the schedule."
+    "errorMsg": "Could not load the schedule.",
+    "retry": "Try again",
+    "errorDetail": "The connection to the server dropped while fetching shift data."
   },
   "hours": {
     "title": "Opening hours",
@@ -236,5 +238,50 @@
       "shortShifts": "Short"
     },
     "shortShiftsHint": "Shifts that came up short at the count."
+  },
+  "toolbar": {
+    "today": "Today",
+    "prevWeek": "Previous week",
+    "nextWeek": "Next week",
+    "reset": "Reset",
+    "views": {
+      "day": "Day",
+      "week": "Week",
+      "list": "List"
+    },
+    "allEmployees": "All employees",
+    "allShifts": "All shifts",
+    "allStates": "All states"
+  },
+  "stats": {
+    "scheduled": "Shifts scheduled this week",
+    "coveredHours": "Hours covered",
+    "hoursUnit": "hours",
+    "unstaffed": "Shifts with nobody on rota",
+    "unstaffedContext": "Assign someone before the day comes.",
+    "closedDays": "Closed days",
+    "noClosedDays": "Open all week"
+  },
+  "states": {
+    "completed": "Completed",
+    "open": "Open now",
+    "upcoming": "Upcoming",
+    "missed": "Missed",
+    "cancelled": "Cancelled"
+  },
+  "entry": {
+    "offSchedule": "Outside any shift",
+    "unnamed": "Untitled shift",
+    "running": "running",
+    "invoices": "{count} invoices",
+    "addForDay": "+ Add a shift to this day",
+    "empty": "No shifts yet"
+  },
+  "export": {
+    "label": "Export",
+    "filename": "shifts"
+  },
+  "create": {
+    "label": "+ New shift"
   }
 }

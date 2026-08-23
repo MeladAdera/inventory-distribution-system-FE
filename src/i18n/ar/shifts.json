@@ -89,7 +89,9 @@
       "report": "التقرير"
     },
     "loading": "جارٍ تحميل الجدول…",
-    "errorMsg": "تعذّر تحميل الجدول."
+    "errorMsg": "تعذّر تحميل الجدول.",
+    "retry": "إعادة المحاولة",
+    "errorDetail": "انقطع الاتصال بالخادم أثناء جلب بيانات الورديات."
   },
   "hours": {
     "title": "أوقات العمل",
@@ -236,5 +238,50 @@
       "shortShifts": "عجز"
     },
     "shortShiftsHint": "الورديات التي ظهر فيها عجز عند العدّ."
+  },
+  "toolbar": {
+    "today": "اليوم",
+    "prevWeek": "الأسبوع السابق",
+    "nextWeek": "الأسبوع التالي",
+    "reset": "إعادة تعيين",
+    "views": {
+      "day": "يوم",
+      "week": "أسبوع",
+      "list": "قائمة"
+    },
+    "allEmployees": "كل الموظفين",
+    "allShifts": "كل الورديات",
+    "allStates": "كل الحالات"
+  },
+  "stats": {
+    "scheduled": "ورديات مجدولة هذا الأسبوع",
+    "coveredHours": "ساعات مغطاة",
+    "hoursUnit": "ساعة",
+    "unstaffed": "ورديات بلا موظف",
+    "unstaffedContext": "عيّن موظفًا قبل حلول اليوم.",
+    "closedDays": "أيام مغلقة",
+    "noClosedDays": "مفتوح طوال الأسبوع"
+  },
+  "states": {
+    "completed": "مكتملة",
+    "open": "مفتوحة الآن",
+    "upcoming": "قادمة",
+    "missed": "مفقودة",
+    "cancelled": "ملغاة"
+  },
+  "entry": {
+    "offSchedule": "خارج أي وردية",
+    "unnamed": "وردية بلا اسم",
+    "running": "جارية",
+    "invoices": "{count} فواتير",
+    "addForDay": "+ أضف وردية لهذا اليوم",
+    "empty": "لا توجد ورديات بعد"
+  },
+  "export": {
+    "label": "تصدير",
+    "filename": "الورديات"
+  },
+  "create": {
+    "label": "+ إنشاء وردية"
   }
 }

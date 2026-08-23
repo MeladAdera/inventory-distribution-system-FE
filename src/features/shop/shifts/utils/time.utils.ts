@@ -157,6 +157,66 @@ export function splitWindow(open: string, close: string, count: number): SlotWin
   return slots;
 }
 
+// ── Week arithmetic ─────────────────────────────────────────────────────────
+//
+// All of it works on LOCAL date parts, never UTC. `business_date` is a plain
+// `YYYY-MM-DD` with no zone attached, so pushing it through UTC would shift the
+// day for anyone east or west of Greenwich and file a shift under the wrong
+// date — the exact bug the API warns about from the other direction.
+
+/** `YYYY-MM-DD` from a Date's local parts. */
+export function toISODate(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+/** Parses `YYYY-MM-DD` into a local midnight Date, not a UTC one. */
+export function fromISODate(iso: string): Date {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+export function addDays(date: Date, days: number): Date {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+/**
+ * The Sunday that opens this date's week — Sunday because weekday 0 is Sunday
+ * throughout the API, matching `getDay()`.
+ */
+export function startOfWeek(date: Date): Date {
+  return addDays(date, -date.getDay());
+}
+
+/** The seven `YYYY-MM-DD` dates of the week containing `weekStartISO`. */
+export function weekDates(weekStartISO: string): string[] {
+  const start = fromISODate(weekStartISO);
+  return Array.from({ length: 7 }, (_, i) => toISODate(addDays(start, i)));
+}
+
+/**
+ * `23 – 29 أغسطس 2026`, collapsing the month and year when the week does not
+ * straddle them so the label stays short.
+ */
+export function formatWeekRange(weekStartISO: string, locale: string): string {
+  const start = fromISODate(weekStartISO);
+  const end = addDays(start, 6);
+  const sameMonth =
+    start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
+
+  const dayOnly = new Intl.DateTimeFormat(locale, { day: 'numeric' });
+  const full = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+  const dayMonth = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long' });
+
+  return sameMonth
+    ? `${dayOnly.format(start)} – ${full.format(end)}`
+    : `${dayMonth.format(start)} – ${full.format(end)}`;
+}
+
 /**
  * Localised weekday names indexed 0–6, Sunday first — the API's own ordering,
  * which matches JavaScript `getDay()`. 2024-01-07 was a Sunday; the offsets run
