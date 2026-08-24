@@ -5,7 +5,7 @@ import { cn } from '@/common/utils/cn';
 import { formatMoneyGrouped } from '@/common/utils/money';
 import type { ShiftReport } from '../../types/shifts.types';
 import { weekdayNames } from '../../utils/time.utils';
-import { CashDifference } from '../history/CashDifference';
+import { VarianceValue } from '../ui/VarianceValue';
 
 interface ShiftReportTablesProps {
   report: ShiftReport;
@@ -83,7 +83,7 @@ export function ShiftReportTables({ report, locale, currency, labels }: ShiftRep
                 </span>
               </Num>
               <Td align="end">
-                <CashDifference value={row.cash_difference} />
+                <VarianceValue value={row.cash_difference} />
               </Td>
               <Num>
                 <span className={cn(row.short_shifts > 0 && 'font-medium text-danger-700')}>
@@ -130,7 +130,7 @@ export function ShiftReportTables({ report, locale, currency, labels }: ShiftRep
                 </span>
               </Num>
               <Td align="end">
-                <CashDifference value={row.cash_difference} />
+                <VarianceValue value={row.cash_difference} />
               </Td>
             </tr>
           ))}

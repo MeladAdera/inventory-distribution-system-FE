@@ -191,7 +191,30 @@
     "noSlot": "خارج أي وردية",
     "closedBy": "أغلقها {name}",
     "stillOpen": "ما زالت مفتوحة",
-    "notCounted": "—"
+    "notCounted": "—",
+    "presets": {
+      "today": "اليوم",
+      "yesterday": "أمس",
+      "week": "هذا الأسبوع",
+      "month": "هذا الشهر",
+      "custom": "مخصص"
+    },
+    "varianceOnly": "فرق ≠ 0",
+    "filterBtn": "تصفية",
+    "showResults": "عرض {count} نتيجة",
+    "pageOnlyNote": "الترتيب وفلتر الفرق يطبَّقان على هذه الصفحة فقط.",
+    "summary": {
+      "count": "{count} ورديات",
+      "newestFirst": "الأحدث أولاً",
+      "totalSales": "المبيعات",
+      "netVariance": "صافي الفرق"
+    },
+    "details": "التفاصيل",
+    "duration": "المدة",
+    "attention": {
+      "surplus": "زيادة كبيرة في النقد — تحتاج مراجعة.",
+      "shortfall": "عجز كبير — يحتاج مراجعة."
+    }
   },
   "detail": {
     "title": "وردية يوم {date}",
@@ -216,7 +239,11 @@
     "free": "مجانية",
     "onCredit": "بالأجل",
     "cancelledHint": "الفاتورة الملغاة بعد الإغلاق تبقى ظاهرة هنا، بينما تبقى أرقام النقد كما عُدّت تلك الليلة.",
-    "done": "إغلاق"
+    "done": "إغلاق",
+    "viewReceipts": "عرض الفواتير",
+    "timeline": "النشاط",
+    "creditGapNote": "المبيعات أعلى مما وصل الدرج لأن جزءًا منها كان بالأجل — الفارق متوقَّع وليس نقصًا في النقد.",
+    "duration": "المدة"
   },
   "report": {
     "title": "إجماليات الورديات",

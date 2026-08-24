@@ -30,7 +30,7 @@ import { ScheduleStats } from './schedule/ScheduleStats';
 import { ScheduleBoard } from './schedule/ScheduleBoard';
 import { SlotEditorModal } from './schedule/SlotEditorModal';
 import { AssignModal } from './schedule/AssignModal';
-import { SessionDetailModal } from './history/SessionDetailModal';
+import { ShiftDrawer } from './history/ShiftDrawer';
 import { ErrorState, KpiSkeleton, TableSkeleton } from './ui/DataStates';
 
 /**
@@ -354,17 +354,30 @@ export function ScheduleTab() {
         isLoading={isDeleting}
       />
 
-      {/* A worked shift on the board opens the same detail the history uses. */}
-      <SessionDetailModal
+      {/* A worked shift on the board opens the same drawer the history uses —
+          one detail surface, so the two cannot drift apart. */}
+      <ShiftDrawer
         sessionId={sessionId}
         onClose={() => setSessionId(null)}
-        locale={locale}
         currency={t.debts.currency}
         userNames={userNames}
-        labels={s.detail}
+        formatDay={(date) =>
+          new Intl.DateTimeFormat(locale, {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'short',
+          }).format(fromISODate(date))
+        }
+        formatTime={(iso) =>
+          new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(
+            new Date(iso)
+          )
+        }
+        labels={{ ...s.detail, duration: s.history.duration }}
         noSlotLabel={s.history.noSlot}
         stillOpenLabel={s.history.stillOpen}
         notCountedLabel={s.history.notCounted}
+        statusLabels={{ completed: s.states.completed, open: s.states.open }}
       />
     </div>
   );

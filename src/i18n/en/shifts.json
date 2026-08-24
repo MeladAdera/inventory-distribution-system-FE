@@ -191,7 +191,30 @@
     "noSlot": "Outside any shift",
     "closedBy": "closed by {name}",
     "stillOpen": "Still open",
-    "notCounted": "—"
+    "notCounted": "—",
+    "presets": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "week": "This week",
+      "month": "This month",
+      "custom": "Custom"
+    },
+    "varianceOnly": "Difference ≠ 0",
+    "filterBtn": "Filters",
+    "showResults": "Show {count} results",
+    "pageOnlyNote": "Sorting and the difference filter apply to this page only.",
+    "summary": {
+      "count": "{count} shifts",
+      "newestFirst": "Newest first",
+      "totalSales": "Sold",
+      "netVariance": "Net difference"
+    },
+    "details": "Details",
+    "duration": "Length",
+    "attention": {
+      "surplus": "Large cash surplus — worth a look.",
+      "shortfall": "Large shortfall — worth a look."
+    }
   },
   "detail": {
     "title": "Shift on {date}",
@@ -216,7 +239,11 @@
     "free": "Free",
     "onCredit": "On credit",
     "cancelledHint": "A receipt cancelled after the close still shows here, while the cash figures stay as they were counted on the night.",
-    "done": "Close"
+    "done": "Close",
+    "viewReceipts": "View invoices",
+    "timeline": "Activity",
+    "creditGapNote": "Sold more than reached the drawer because some of it went on credit — the gap is expected, not missing cash.",
+    "duration": "Length"
   },
   "report": {
     "title": "Shift totals",

@@ -7,6 +7,7 @@ export { Badge } from './Badge';
 export { DataTable } from './DataTable';
 export type { Column } from './DataTable';
 export { Modal } from './Modal';
+export { Drawer } from './Drawer';
 export { ConfirmDialog } from './ConfirmDialog';
 export { Pagination } from './Pagination';
 export { PasswordInput } from './PasswordInput';
