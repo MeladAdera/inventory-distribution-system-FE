@@ -134,15 +134,23 @@ export function SessionsTable({
                         <span className="text-ink-faint">{labels.noSlot}</span>
                       )}
                     </td>
-                    <td className="px-4 py-2.5 tabular-nums text-ink-600" dir="ltr">
-                      {formatTime(row.opened_at)}
-                      {row.closed_at ? `–${formatTime(row.closed_at)}` : ''}
+                    {/* dir="ltr" goes on the SPAN, never on the td. On the td it
+                        also flips what text-start/text-end mean for that cell,
+                        so the value aligned to one edge while its header — still
+                        in the page's direction — aligned to the other. */}
+                    <td className="px-4 py-2.5 tabular-nums text-ink-600">
+                      <span dir="ltr">
+                        {formatTime(row.opened_at)}
+                        {row.closed_at ? `–${formatTime(row.closed_at)}` : ''}
+                      </span>
                     </td>
                     <td className="px-4 py-2.5 text-end tabular-nums text-ink-700">
                       {row.receipt_count}
                     </td>
-                    <td className="px-4 py-2.5 text-end tabular-nums text-ink-700" dir="ltr">
-                      {formatMoneyGrouped(row.sales_total)} {currency}
+                    <td className="px-4 py-2.5 text-end tabular-nums text-ink-700">
+                      <span dir="ltr" className="whitespace-nowrap">
+                        {formatMoneyGrouped(row.sales_total)} {currency}
+                      </span>
                     </td>
                     <td className="px-4 py-2.5 text-end">
                       <VarianceValue value={row.cash_difference} placeholder={labels.notCounted} />

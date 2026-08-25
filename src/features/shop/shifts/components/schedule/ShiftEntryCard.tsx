@@ -82,8 +82,13 @@ export function ShiftEntryCard({
 
       {/* Times and duration are one LTR run: in Arabic the range would
           otherwise reverse and name the wrong start. */}
-      <p dir="ltr" className="mt-1 truncate text-[12px] tabular-nums text-ink-600">
-        {entry.startTime} – {entry.endTime ?? '…'}
+      {/* The paragraph stays in the page's direction so it aligns under the name
+          above it; only the time range itself is forced LTR, or the two ends of
+          the range swap in Arabic. */}
+      <p className="mt-1 truncate text-[12px] tabular-nums text-ink-600">
+        <span dir="ltr">
+          {entry.startTime} – {entry.endTime ?? '…'}
+        </span>
         {entry.durationMinutes !== null && (
           <span className="ms-1.5 text-ink-400">· {formatDuration(entry.durationMinutes)}</span>
         )}
