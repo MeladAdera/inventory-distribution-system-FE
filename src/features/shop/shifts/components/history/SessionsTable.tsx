@@ -24,6 +24,11 @@ export function needsAttention(row: ShiftSessionRow): 'surplus' | 'shortfall' | 
   return diff > 0 ? 'surplus' : 'shortfall';
 }
 
+/** "Sold (ل.س)" — the unit belongs in the header, not in every cell. */
+function withUnit(label: string, currency: string): string {
+  return `${label} (${currency})`;
+}
+
 export interface SessionsTableLabels {
   cols: {
     employee: string;
@@ -95,11 +100,15 @@ export function SessionsTable({
               <Th col="receipts" align="end" {...sortProps}>
                 {labels.cols.receipts}
               </Th>
+              {/* The unit is stated once here rather than repeated in every
+                  row. That keeps the cells pure digits — no Arabic inside an
+                  LTR run, no dir needed on the cell, and a narrower column
+                  whose numbers are far easier to scan down. */}
               <Th col="sales" align="end" {...sortProps}>
-                {labels.cols.sold}
+                {withUnit(labels.cols.sold, currency)}
               </Th>
               <Th col="variance" align="end" {...sortProps}>
-                {labels.cols.difference}
+                {withUnit(labels.cols.difference, currency)}
               </Th>
               <th className="px-4 py-2 text-start font-medium">{labels.cols.status}</th>
               <th className="w-8" />
@@ -148,9 +157,7 @@ export function SessionsTable({
                       {row.receipt_count}
                     </td>
                     <td className="px-4 py-2.5 text-end tabular-nums text-ink-700">
-                      <span dir="ltr" className="whitespace-nowrap">
-                        {formatMoneyGrouped(row.sales_total)} {currency}
-                      </span>
+                      {formatMoneyGrouped(row.sales_total)}
                     </td>
                     <td className="px-4 py-2.5 text-end">
                       <VarianceValue value={row.cash_difference} placeholder={labels.notCounted} />
@@ -221,12 +228,12 @@ export function SessionsTable({
                     <Metric label={labels.cols.receipts}>
                       <span className="tabular-nums text-ink-800">{row.receipt_count}</span>
                     </Metric>
-                    <Metric label={labels.cols.sold}>
+                    <Metric label={withUnit(labels.cols.sold, currency)}>
                       <span dir="ltr" className="tabular-nums text-ink-800">
                         {formatMoneyGrouped(row.sales_total)}
                       </span>
                     </Metric>
-                    <Metric label={labels.cols.difference}>
+                    <Metric label={withUnit(labels.cols.difference, currency)}>
                       <VarianceValue
                         value={row.cash_difference}
                         placeholder={labels.notCounted}

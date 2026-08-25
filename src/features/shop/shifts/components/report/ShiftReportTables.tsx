@@ -43,6 +43,11 @@ interface ShiftReportTablesProps {
  * drawer — the note above the tables says so, because the alternative is an
  * owner reading it as a discrepancy.
  */
+/** "Sold (ل.س)" — stated once in the header, never repeated down the column. */
+function withUnit(label: string, currency: string): string {
+  return `${label} (${currency})`;
+}
+
 export function ShiftReportTables({
   report,
   totals,
@@ -66,8 +71,8 @@ export function ShiftReportTables({
               <Th>{labels.cols.employee}</Th>
               <Th align="end">{labels.cols.shifts}</Th>
               <Th align="end">{labels.cols.receipts}</Th>
-              <Th align="end">{labels.cols.sold}</Th>
-              <Th align="end">{labels.cols.difference}</Th>
+              <Th align="end">{withUnit(labels.cols.sold, currency)}</Th>
+              <Th align="end">{withUnit(labels.cols.difference, currency)}</Th>
               <Th align="end" title={labels.shortShiftsHint}>
                 {labels.cols.shortShifts}
               </Th>
@@ -81,11 +86,7 @@ export function ShiftReportTables({
               </Td>
               <Num>{row.shifts}</Num>
               <Num>{row.receipt_count}</Num>
-              <Num>
-                <span dir="ltr">
-                  {formatMoneyGrouped(row.sales_total)} {currency}
-                </span>
-              </Num>
+              <Num>{formatMoneyGrouped(row.sales_total)}</Num>
               <Td align="end">
                 <VarianceValue value={row.cash_difference} />
               </Td>
@@ -102,11 +103,7 @@ export function ShiftReportTables({
             </Td>
             <Num>{totals.shifts}</Num>
             <Num>{totals.receipts}</Num>
-            <Num>
-              <span dir="ltr">
-                {formatMoneyGrouped(totals.sales)} {currency}
-              </span>
-            </Num>
+            <Num>{formatMoneyGrouped(totals.sales)}</Num>
             <Td align="end">
               <VarianceValue value={totals.variance} />
             </Td>
@@ -123,8 +120,8 @@ export function ShiftReportTables({
               <Th>{labels.cols.weekday}</Th>
               <Th align="end">{labels.cols.shifts}</Th>
               <Th align="end">{labels.cols.receipts}</Th>
-              <Th align="end">{labels.cols.sold}</Th>
-              <Th align="end">{labels.cols.difference}</Th>
+              <Th align="end">{withUnit(labels.cols.sold, currency)}</Th>
+              <Th align="end">{withUnit(labels.cols.difference, currency)}</Th>
             </>
           }
         >
@@ -144,11 +141,7 @@ export function ShiftReportTables({
               </Td>
               <Num>{row.shifts}</Num>
               <Num>{row.receipt_count}</Num>
-              <Num>
-                <span dir="ltr">
-                  {formatMoneyGrouped(row.sales_total)} {currency}
-                </span>
-              </Num>
+              <Num>{formatMoneyGrouped(row.sales_total)}</Num>
               <Td align="end">
                 <VarianceValue value={row.cash_difference} />
               </Td>
