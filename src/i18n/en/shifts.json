@@ -264,7 +264,26 @@
       "difference": "Difference",
       "shortShifts": "Short"
     },
-    "shortShiftsHint": "Shifts that came up short at the count."
+    "shortShiftsHint": "Shifts that came up short at the count.",
+    "kpis": {
+      "totalSales": "Total sales",
+      "employees": "Employees",
+      "shifts": "Shifts",
+      "receipts": "Invoices",
+      "netVariance": "Net cash difference",
+      "vsPrevious": "{delta} vs the previous period",
+      "noComparison": "Pick a date range to compare periods"
+    },
+    "charts": {
+      "salesByDay": "Sales by day",
+      "varianceByEmployee": "Cash differences by employee",
+      "varianceLegend": "Bars run from zero: a shortfall one way, a surplus the other.",
+      "insufficient": "Not enough data yet to draw this.",
+      "amount": "Amount",
+      "shiftsCount": "Shifts"
+    },
+    "totals": "Total",
+    "exportCsv": "Export CSV"
   },
   "toolbar": {
     "today": "Today",

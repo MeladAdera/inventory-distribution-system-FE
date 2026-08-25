@@ -1,19 +1,22 @@
 'use client';
 
-import { Info } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { formatMoneyGrouped } from '@/common/utils/money';
 import type { ShiftReport } from '../../types/shifts.types';
+import type { ReportTotals } from '../../hooks/useShiftReport';
 import { weekdayNames } from '../../utils/time.utils';
 import { VarianceValue } from '../ui/VarianceValue';
 
 interface ShiftReportTablesProps {
   report: ShiftReport;
+  /** Column sums, so the table foots without the reader re-adding it. */
+  totals: ReportTotals;
   locale: string;
   currency: string;
   labels: {
     subtitle: string;
     empty: string;
+    totals: string;
     byEmployee: string;
     byShift: string;
     outsideAnyShift: string;
@@ -40,7 +43,13 @@ interface ShiftReportTablesProps {
  * drawer — the note above the tables says so, because the alternative is an
  * owner reading it as a discrepancy.
  */
-export function ShiftReportTables({ report, locale, currency, labels }: ShiftReportTablesProps) {
+export function ShiftReportTables({
+  report,
+  totals,
+  locale,
+  currency,
+  labels,
+}: ShiftReportTablesProps) {
   const names = weekdayNames(locale);
   const isEmpty = report.by_employee.length === 0 && report.by_shift.length === 0;
 
@@ -49,12 +58,7 @@ export function ShiftReportTables({ report, locale, currency, labels }: ShiftRep
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      <p className="flex items-start gap-2 text-[12px] leading-relaxed text-ink-500">
-        <Info size={14} className="mt-0.5 shrink-0" />
-        {labels.subtitle}
-      </p>
-
+    <div className="grid gap-4 lg:grid-cols-2">
       <Card title={labels.byEmployee}>
         <Table
           head={
@@ -92,6 +96,22 @@ export function ShiftReportTables({ report, locale, currency, labels }: ShiftRep
               </Num>
             </tr>
           ))}
+          <tr className="border-t-2 border-border bg-subtle font-semibold">
+            <Td>
+              <span className="text-ink-900">{labels.totals}</span>
+            </Td>
+            <Num>{totals.shifts}</Num>
+            <Num>{totals.receipts}</Num>
+            <Num>
+              <span dir="ltr">
+                {formatMoneyGrouped(totals.sales)} {currency}
+              </span>
+            </Num>
+            <Td align="end">
+              <VarianceValue value={totals.variance} />
+            </Td>
+            <Num />
+          </tr>
         </Table>
       </Card>
 
@@ -191,6 +211,6 @@ function Td({ children, align = 'start' }: { children: React.ReactNode; align?: 
   );
 }
 
-function Num({ children }: { children: React.ReactNode }) {
+function Num({ children }: { children?: React.ReactNode }) {
   return <td className="px-4 py-2.5 text-end tabular-nums text-ink-700">{children}</td>;
 }

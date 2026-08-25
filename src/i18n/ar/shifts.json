@@ -264,7 +264,26 @@
       "difference": "الفرق",
       "shortShifts": "عجز"
     },
-    "shortShiftsHint": "الورديات التي ظهر فيها عجز عند العدّ."
+    "shortShiftsHint": "الورديات التي ظهر فيها عجز عند العدّ.",
+    "kpis": {
+      "totalSales": "إجمالي المبيعات",
+      "employees": "الموظفون",
+      "shifts": "الورديات",
+      "receipts": "الفواتير",
+      "netVariance": "صافي فرق النقد",
+      "vsPrevious": "{delta} مقارنةً بالفترة السابقة",
+      "noComparison": "اختر نطاقًا زمنيًا لمقارنة الفترات"
+    },
+    "charts": {
+      "salesByDay": "المبيعات حسب اليوم",
+      "varianceByEmployee": "فروق النقد حسب الموظف",
+      "varianceLegend": "تمتد الأعمدة من الصفر: العجز في اتجاه والزيادة في الاتجاه الآخر.",
+      "insufficient": "لا توجد بيانات كافية لرسم هذا بعد.",
+      "amount": "المبلغ",
+      "shiftsCount": "الورديات"
+    },
+    "totals": "الإجمالي",
+    "exportCsv": "تصدير CSV"
   },
   "toolbar": {
     "today": "اليوم",
