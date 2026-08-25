@@ -2,7 +2,8 @@
 
 import { SlidersHorizontal, X } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
-import { FilterChips } from '@/common/components';
+import { DateRangeChip, FilterChips } from '@/common/components';
+import { useI18n } from '@/providers/I18nProvider';
 import { Button } from '@/common/components/ui/button';
 import { DATE_PRESETS, type HistoryFilters as Filters } from '../../hooks/useHistoryFilters';
 import { ShiftSessionStatus } from '../../types/shifts.types';
@@ -46,6 +47,7 @@ export function HistoryFilterControls({
   labels,
   stacked = false,
 }: Props) {
+  const { locale } = useI18n();
   const isFiltered =
     filters.preset !== 'week' || filters.userId || filters.status || filters.varianceOnly;
 
@@ -61,26 +63,20 @@ export function HistoryFilterControls({
         />
       </Field>
 
-      {/* Explicit dates only matter once the presets have been stepped past. */}
+      {/* Explicit dates only matter once the presets have been stepped past.
+          Same range pill the debts and receipts filters use, so a date range
+          is picked the same way everywhere in the app. */}
       {filters.preset === 'custom' && (
-        <>
-          <Field label={labels.from} stacked={stacked}>
-            <input
-              type="date"
-              className="input"
-              value={filters.from ?? ''}
-              onChange={(e) => onChange({ from: e.target.value || undefined })}
-            />
-          </Field>
-          <Field label={labels.to} stacked={stacked}>
-            <input
-              type="date"
-              className="input"
-              value={filters.to ?? ''}
-              onChange={(e) => onChange({ to: e.target.value || undefined })}
-            />
-          </Field>
-        </>
+        <DateRangeChip
+          fromDate={filters.from ?? ''}
+          toDate={filters.to ?? ''}
+          onFromChange={(v) => onChange({ from: v || undefined })}
+          onToChange={(v) => onChange({ to: v || undefined })}
+          onClear={() => onChange({ from: undefined, to: undefined })}
+          locale={locale}
+          labels={{ from: labels.from, to: labels.to, clear: labels.clear }}
+          className={stacked ? 'w-full' : undefined}
+        />
       )}
 
       <Field label={labels.employee} stacked={stacked}>

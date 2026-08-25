@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { AlertTriangle, Loader2, X } from 'lucide-react';
-import { Button } from '@/common/components/ui/button';
+import { AlertTriangle, Loader2 } from 'lucide-react';
+import { DateRangeChip } from '@/common/components';
 import { useI18n } from '@/providers/I18nProvider';
 import { useShiftReport } from '../hooks/useShiftReport';
 import { ShiftReportTables } from './report/ShiftReportTables';
@@ -26,33 +26,25 @@ export function ReportTab() {
         <p className="mt-1 text-[13px] text-ink-500">{s.report.subtitle}</p>
       </header>
 
-      <div className="flex flex-wrap items-end gap-3">
-        <label className="flex min-w-32 flex-1 flex-col gap-1 sm:flex-none">
-          <span className="text-[12px] text-ink-500">{s.history.filters.from}</span>
-          <input
-            type="date"
-            className="input"
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
-          />
-        </label>
-        <label className="flex min-w-32 flex-1 flex-col gap-1 sm:flex-none">
-          <span className="text-[12px] text-ink-500">{s.history.filters.to}</span>
-          <input type="date" className="input" value={to} onChange={(e) => setTo(e.target.value)} />
-        </label>
-        {(from || to) && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setFrom('');
-              setTo('');
-            }}
-          >
-            <X size={14} />
-            {s.history.filters.clear}
-          </Button>
-        )}
+      {/* The same range pill as the debts, receipts and history filters — one
+          way to pick a date range across the app. */}
+      <div className="flex flex-wrap items-center gap-3">
+        <DateRangeChip
+          fromDate={from}
+          toDate={to}
+          onFromChange={setFrom}
+          onToChange={setTo}
+          onClear={() => {
+            setFrom('');
+            setTo('');
+          }}
+          locale={locale}
+          labels={{
+            from: s.history.filters.from,
+            to: s.history.filters.to,
+            clear: s.history.filters.clear,
+          }}
+        />
       </div>
 
       {isLoading ? (
