@@ -52,10 +52,6 @@
       "addBtn": "Add category"
     }
   },
-  "user": {
-    "name": "Al Waha Grocery",
-    "role": "Client"
-  },
   "portalSwitch": "Owner portal",
   "topbar": {
     "menuLabel": "Menu",
@@ -557,7 +553,8 @@
     }
   },
   "dashboard": {
-    "greeting": "Welcome, Al Waha Grocery",
+    "greeting": "Welcome, {name}",
+    "greetingFallback": "Welcome back",
     "subtitle": "Here's a quick look at your stock today.",
     "kpi": {
       "totalProducts": "Total products",

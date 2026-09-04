@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { useI18n } from '@/providers/I18nProvider';
+import { useAuth } from '@/features/auth';
+import { useShopSettings } from '@/features/settings/hooks/useSettings';
 import { KpiCard } from '@/features/admin/dashboard/components/KpiCard';
 import { CardShell } from '@/features/admin/dashboard/components/CardShell';
 import { ProductThumb } from '@/features/shared/products/components/ProductThumb';
@@ -104,6 +106,13 @@ export function ClientDashboardPage() {
   const { allItems, isLoading: isLoadingInv, error: invError } = useClientInventory();
   const { orders, isLoading: isLoadingOrders } = useClientOrders();
 
+  // The heading names the shop, not the person signed in — the same shop record
+  // the settings page edits. Until it arrives (or for a user with no shop) fall
+  // back to a plain welcome rather than flashing a name that is about to change.
+  const { user } = useAuth();
+  const { shop } = useShopSettings(user?.shopId);
+  const greeting = shop?.name ? d.greeting.replace('{name}', shop.name) : d.greetingFallback;
+
   const lowStockItems = allItems.filter(
     (i) => i.status === StockStatus.LOW_STOCK || i.status === StockStatus.OUT_OF_STOCK
   );
@@ -150,7 +159,7 @@ export function ClientDashboardPage() {
             className="text-[34px] font-medium tracking-[-0.02em] text-ink-900 leading-[1.1]"
             style={{ fontFamily: 'var(--font-serif)' }}
           >
-            {d.greeting}
+            {greeting}
           </h1>
           <p className="text-[14px] text-ink-600 mt-2">{d.subtitle}</p>
         </div>

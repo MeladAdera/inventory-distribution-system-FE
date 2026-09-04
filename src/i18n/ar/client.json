@@ -52,10 +52,6 @@
       "addBtn": "إضافة فئة"
     }
   },
-  "user": {
-    "name": "بقالة الواحة",
-    "role": "عميل"
-  },
   "portalSwitch": "بوابة المالك",
   "topbar": {
     "menuLabel": "القائمة",
@@ -557,7 +553,8 @@
     }
   },
   "dashboard": {
-    "greeting": "أهلاً، بقالة الواحة",
+    "greeting": "أهلاً، {name}",
+    "greetingFallback": "أهلاً بعودتك",
     "subtitle": "إليك نظرة سريعة على مخزونك اليوم.",
     "kpi": {
       "totalProducts": "إجمالي المنتجات",
