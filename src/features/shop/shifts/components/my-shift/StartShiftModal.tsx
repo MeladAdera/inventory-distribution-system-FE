@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
 import { Button } from '@/common/components/ui/button';
-import { isValidMoneyInput } from '@/common/utils/money';
+import { isValidCashCount } from '@/common/utils/money';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import type { OpenShiftInput } from '../../types/shifts.types';
 
@@ -56,7 +56,7 @@ export function StartShiftModal({
   async function handleSubmit() {
     const value = float.trim();
     if (!value) return setError(labels.errRequired);
-    if (!isValidMoneyInput(value)) return setError(labels.errInvalid);
+    if (!isValidCashCount(value)) return setError(labels.errInvalid);
 
     setError(null);
     try {

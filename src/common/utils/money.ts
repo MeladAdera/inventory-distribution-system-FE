@@ -109,6 +109,21 @@ export function isValidMoneyInput(value: string): boolean {
   return Number.isFinite(minor) && minor > 0;
 }
 
+/**
+ * True when the value is a COUNTED amount of cash the API will accept: >= 0 and
+ * at most 2 decimal places.
+ *
+ * Deliberately separate from `isValidMoneyInput`, which requires more than zero
+ * because paying nothing or pricing something at nothing is meaningless. A count
+ * is the opposite case: an empty drawer is a real observation, and the one at
+ * close is the most important reading there is — refusing it would stop an
+ * employee reporting a till that is empty when it should not be.
+ */
+export function isValidCashCount(value: string): boolean {
+  const minor = parseMoney(value);
+  return Number.isFinite(minor) && minor >= 0;
+}
+
 /** True when a money string is zero (or unparseable — treated as nothing owed). */
 export function isZeroMoney(value: string | number): boolean {
   const minor = parseMoney(value);
