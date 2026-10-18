@@ -6,6 +6,7 @@ import { inventoryApi } from '@/features/shared/inventory/api/inventory.api';
 import { productsApi } from '@/features/shared/products/api/products.api';
 import { categoriesApi } from '@/features/shared/categories/api/categories.api';
 import { useAuthStore } from '@/features/auth/store/authStore';
+import { fetchAllPages, ALL_PAGES_SIZE } from '@/common/api/fetchAllPages';
 import {
   StockStatus,
   type DisplayStockStatus,
@@ -31,15 +32,23 @@ export function useClientInventory() {
   // session wouldn't show up until a local mutation happened to invalidate the
   // cache. Forcing immediate staleness still shows the cached/persisted data
   // instantly, but always revalidates against the server in the background.
+  //
+  // Both lists are fetched in full (every page) rather than as one page of
+  // 100: a shop sees its own products plus the whole warehouse catalog, which
+  // is already past 140 rows, so a single page left items without their
+  // product lookup. Keep the inventory queryFn identical to the one in
+  // useClientOrderProducts — they share this cache key.
   const inventoryQuery = useQuery({
     queryKey: ['client-inventory'],
-    queryFn: () => inventoryApi.list({ limit: 100 }),
+    queryFn: () =>
+      fetchAllPages<InventoryItem>((page) => inventoryApi.list({ limit: ALL_PAGES_SIZE, page })),
     staleTime: 0,
   });
 
   const productsQuery = useQuery({
     queryKey: ['client-inventory-products'],
-    queryFn: () => productsApi.list({ limit: 100 }),
+    queryFn: () =>
+      fetchAllPages<Product>((page) => productsApi.list({ limit: ALL_PAGES_SIZE, page })),
     staleTime: 0,
   });
 

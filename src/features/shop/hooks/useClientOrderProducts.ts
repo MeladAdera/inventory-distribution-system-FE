@@ -8,6 +8,7 @@ import { ordersApi } from '@/features/shared/orders/api/orders.api';
 import { categoriesApi } from '@/features/shared/categories/api/categories.api';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { isAxiosError } from '@/common/utils/error.utils';
+import { fetchAllPages, ALL_PAGES_SIZE } from '@/common/api/fetchAllPages';
 import {
   ProductSource,
   StockStatus,
@@ -31,22 +32,27 @@ export function useClientOrderProducts() {
 
   // is_orderable filters out catalog-only listings; stock_status=IN_STOCK filters
   // out products the warehouse is flagged orderable for but currently has 0 of.
+  // Fetched in full (every page), not as one page of 100 — see useCatalog.
   const productsQuery = useQuery({
     queryKey: ['order-products'],
     queryFn: () =>
-      productsApi.list({
-        source: ProductSource.WAREHOUSE,
-        is_orderable: true,
-        stock_status: StockStatus.IN_STOCK,
-        limit: 100,
-      }),
+      fetchAllPages<Product>((page) =>
+        productsApi.list({
+          source: ProductSource.WAREHOUSE,
+          is_orderable: true,
+          stock_status: StockStatus.IN_STOCK,
+          limit: ALL_PAGES_SIZE,
+          page,
+        })
+      ),
   });
 
-  // Same query key + params as useClientInventory — one shared cache entry for
+  // Same query key + queryFn as useClientInventory — one shared cache entry for
   // GET /inventory so the order, sell, and inventory pages never drift apart.
   const inventoryQuery = useQuery({
     queryKey: ['client-inventory'],
-    queryFn: () => inventoryApi.list({ limit: 100 }),
+    queryFn: () =>
+      fetchAllPages<InventoryItem>((page) => inventoryApi.list({ limit: ALL_PAGES_SIZE, page })),
   });
 
   const categoriesQuery = useQuery({

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { productsApi } from '@/features/shared/products/api/products.api';
 import { inventoryApi } from '@/features/shared/inventory/api/inventory.api';
+import { fetchAllPages, ALL_PAGES_SIZE } from '@/common/api/fetchAllPages';
 import { ProductSource } from '@/features/shared/products/types/products.types';
 import type { InventoryItem } from '@/features/shared/inventory/types/inventory.types';
 import type { CatalogCategory, CatalogProduct } from '../types/catalog.types';
@@ -20,9 +21,15 @@ export function useCatalog() {
   // Products with a POST /inventory in flight — drives the per-card spinner
   const [addingIds, setAddingIds] = useState<Set<number>>(new Set());
 
+  // The warehouse catalog is bigger than one page (140+ seeded products plus
+  // whatever the admin adds), so a single-page fetch cut off the tail and the
+  // client saw 100 of 141 products. Fetch every page and merge.
   const catalogQuery = useQuery({
     queryKey: CATALOG_KEY,
-    queryFn: () => productsApi.list({ source: ProductSource.WAREHOUSE, limit: 100 }),
+    queryFn: () =>
+      fetchAllPages<CatalogProduct>((page) =>
+        productsApi.list({ source: ProductSource.WAREHOUSE, limit: ALL_PAGES_SIZE, page })
+      ),
   });
 
   // Patch one item in the cached catalog list in place — cheaper than a refetch,
