@@ -1,14 +1,19 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Menu, Languages, ChevronDown, LogOut, Bell, AlertTriangle, Inbox } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { getInitials, formatRelativeTime } from '@/common/utils/string.utils';
 import { useI18n } from '@/providers/I18nProvider';
 import { useAuth } from '@/features/auth';
-import { useNotifications, NotificationType } from '@/features/shared/notifications';
+import {
+  useNotifications,
+  NotificationType,
+  notificationHref,
+} from '@/features/shared/notifications';
+import type { Notification } from '@/features/shared/notifications';
 import { ShiftChip } from '@/features/shop/shifts/components/ShiftChip';
 
 const NOTIF_ICON: Record<NotificationType, typeof AlertTriangle> = {
@@ -33,6 +38,7 @@ export function ClientTopBar({ onMenuClick }: ClientTopBarProps) {
   const { t, locale, setLocale } = useI18n();
   const { logout } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
   const [notifOpen, setNotifOpen] = useState(false);
   const [avatarOpen, setAvatarOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -59,6 +65,16 @@ export function ClientTopBar({ onMenuClick }: ClientTopBarProps) {
     ? ((t.settings.profile.roles as Record<string, string>)[user.role] ?? user.role)
     : '';
   const initials = getInitials(clientName);
+
+  /** Marks the notification read and jumps to whatever it is about. */
+  function handleNotificationClick(n: Notification) {
+    if (!n.is_read) markRead(n.id).catch(() => {});
+    const href = notificationHref(n, pathname);
+    if (href) {
+      setNotifOpen(false);
+      router.push(href);
+    }
+  }
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -148,13 +164,17 @@ export function ClientTopBar({ onMenuClick }: ClientTopBarProps) {
                   notifications.map((n) => {
                     const Icon = NOTIF_ICON[n.type] ?? Inbox;
                     const color = NOTIF_COLOR[n.type] ?? 'text-ink-400';
+                    const href = notificationHref(n, pathname);
                     return (
                       <li
                         key={n.id}
-                        onClick={() => !n.is_read && markRead(n.id)}
+                        onClick={() => handleNotificationClick(n)}
                         className={cn(
-                          'flex items-start gap-3 px-4 py-3 border-b border-border last:border-0',
-                          !n.is_read && 'bg-amber-50 cursor-pointer hover:bg-amber-100'
+                          'flex items-start gap-3 px-4 py-3 border-b border-border last:border-0 transition-colors',
+                          (href || !n.is_read) && 'cursor-pointer',
+                          !n.is_read
+                            ? 'bg-amber-50 hover:bg-amber-100'
+                            : href && 'hover:bg-sand-100'
                         )}
                       >
                         <Icon size={18} className={cn('mt-0.5 shrink-0', color)} />

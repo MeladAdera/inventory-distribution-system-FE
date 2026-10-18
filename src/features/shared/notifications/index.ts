@@ -7,3 +7,6 @@ export { useNotifications } from './hooks/useNotifications';
 // Types
 export type { Notification, NotificationListParams } from './types/notifications.types';
 export { NotificationType } from './types/notifications.types';
+
+// Utils
+export { notificationHref } from './utils/notificationTarget';

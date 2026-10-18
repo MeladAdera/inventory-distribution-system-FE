@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PackagePlus } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
+import { useDeepLinkParam } from '@/common/hooks/useDeepLinkParam';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/ui/card';
 import { useProducts } from '@/features/shared/products/hooks/useProducts';
@@ -31,6 +32,18 @@ export function InventoryPage() {
   const [lowStockFilter, setLowStockFilter] = useState(false);
   const [restockItem, setRestockItem] = useState<InventoryItem | null>(null);
   const [stockInOpen, setStockInOpen] = useState(false);
+  const [searchSeed, setSearchSeed] = useState<string | undefined>(undefined);
+
+  // `/inventory?product=Sugar` — a low-stock notification lands on its own row.
+  // The payload carries the product name, not an id, so the search box is the hook.
+  const { value: productParam, clear: clearProductParam } = useDeepLinkParam('product');
+
+  useEffect(() => {
+    if (!productParam) return;
+    setSearchSeed(productParam);
+    setLowStockFilter(false);
+    clearProductParam();
+  }, [productParam, clearProductParam]);
 
   async function handleRestock(item: InventoryItem, qty: number, unitCost?: number) {
     try {
@@ -112,6 +125,7 @@ export function InventoryPage() {
         items={items}
         isLoading={isLoading}
         lowStockFilter={lowStockFilter}
+        searchSeed={searchSeed}
         onLowStockFilterChange={setLowStockFilter}
         onRestock={setRestockItem}
       />

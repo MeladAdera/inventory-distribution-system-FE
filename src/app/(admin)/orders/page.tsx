@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers/ToastProvider';
 import { usePermission } from '@/common/hooks/usePermission';
+import { useDeepLinkParam } from '@/common/hooks/useDeepLinkParam';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import { TransfersTableCard } from '@/features/shared/transfers/components/TransfersTableCard';
 import { TransferModal } from '@/features/shared/transfers/components/TransferModal';
@@ -17,7 +18,7 @@ import type { Shop } from '@/features/admin/shops/types/shops.types';
 
 const PAGE_SIZE = 10;
 
-export default function TransfersPage() {
+function TransfersPageContent() {
   const { t } = useI18n();
   const p = t.transfers;
   const toast = useToast();
@@ -54,6 +55,17 @@ export default function TransfersPage() {
 
   const { data: shopsData } = useTransferShops();
   const shops = (shopsData?.data ?? []) as Shop[];
+
+  // `/orders?order=4` — a notification about an order opens that order's detail.
+  const { value: orderParam, clear: clearOrderParam } = useDeepLinkParam('order');
+
+  useEffect(() => {
+    const id = Number(orderParam);
+    if (!orderParam || !Number.isInteger(id) || id <= 0) return;
+    setSelectedTransferId(id);
+    setDetailOpen(true);
+    clearOrderParam();
+  }, [orderParam, clearOrderParam]);
 
   // Client-side shop filter applied on top of server-side status filter
   const visibleTransfers = shopFilter
@@ -193,5 +205,15 @@ export default function TransfersPage() {
         }}
       />
     </div>
+  );
+}
+
+export default function Page() {
+  // The order deep link lives in `?order=`, so the page reads useSearchParams.
+  // Next requires that to sit under a Suspense boundary.
+  return (
+    <Suspense>
+      <TransfersPageContent />
+    </Suspense>
   );
 }

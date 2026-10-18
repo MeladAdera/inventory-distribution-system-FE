@@ -1,10 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { AlertTriangle, Inbox, Bell, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { useI18n } from '@/providers/I18nProvider';
-import { useNotifications, NotificationType } from '@/features/shared/notifications';
+import {
+  useNotifications,
+  NotificationType,
+  notificationHref,
+} from '@/features/shared/notifications';
+import type { Notification } from '@/features/shared/notifications';
 import { formatRelativeTime } from '@/common/utils/string.utils';
 
 const PAGE_LIMIT = 20;
@@ -27,6 +33,8 @@ const NOTIF_COLOR: Record<NotificationType, string> = {
 
 export function NotificationsPage() {
   const { t, locale } = useI18n();
+  const pathname = usePathname();
+  const router = useRouter();
   const n = t.notifications;
 
   const [filter, setFilter] = useState<Filter>('all');
@@ -53,6 +61,13 @@ export function NotificationsPage() {
   function handleFilterChange(f: Filter) {
     setFilter(f);
     setPage(1);
+  }
+
+  /** Marks the notification read and jumps to whatever it is about. */
+  function handleNotificationClick(item: Notification) {
+    if (!item.is_read) markRead(item.id).catch(() => {});
+    const href = notificationHref(item, pathname);
+    if (href) router.push(href);
   }
 
   const filters: { key: Filter; label: string }[] = [
@@ -143,13 +158,15 @@ export function NotificationsPage() {
             {items.map((item) => {
               const Icon = NOTIF_ICON[item.type] ?? Inbox;
               const colorClass = NOTIF_COLOR[item.type] ?? 'text-ink-400 bg-sand-100';
+              const href = notificationHref(item, pathname);
               return (
                 <li
                   key={item.id}
-                  onClick={() => !item.is_read && markRead(item.id)}
+                  onClick={() => handleNotificationClick(item)}
                   className={cn(
                     'flex items-start gap-3.5 px-5 py-4 border-b border-border last:border-0 transition-colors',
-                    !item.is_read && 'bg-amber-50 cursor-pointer hover:bg-amber-100'
+                    (href || !item.is_read) && 'cursor-pointer',
+                    !item.is_read ? 'bg-amber-50 hover:bg-amber-100' : href && 'hover:bg-sand-100'
                   )}
                 >
                   {/* Type icon */}

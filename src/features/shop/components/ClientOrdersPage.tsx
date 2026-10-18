@@ -1,11 +1,12 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Loader2, AlertTriangle, Download } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { useToast } from '@/providers';
 import { StatCard, StatCardGrid } from '@/common/components';
+import { useDeepLinkParam } from '@/common/hooks/useDeepLinkParam';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import { downloadCsv, dateStampedName } from '@/common/utils/csv.utils';
 import { OrderStatus } from '@/features/shared/orders/types/orders.types';
@@ -27,6 +28,17 @@ export function ClientOrdersPage() {
 
   const { order: selectedOrder, isLoading: isLoadingDetail } =
     useClientOrderDetail(selectedOrderId);
+
+  // `/client/orders?order=4` — a notification about an order opens that order's detail.
+  const { value: orderParam, clear: clearOrderParam } = useDeepLinkParam('order');
+
+  useEffect(() => {
+    const id = Number(orderParam);
+    if (!orderParam || !Number.isInteger(id) || id <= 0) return;
+    setSelectedOrderId(id);
+    setModalOpen(true);
+    clearOrderParam();
+  }, [orderParam, clearOrderParam]);
 
   const {
     orders,

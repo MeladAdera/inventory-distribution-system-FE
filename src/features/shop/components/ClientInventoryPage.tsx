@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { useI18n } from '@/providers/I18nProvider';
+import { useDeepLinkParam } from '@/common/hooks/useDeepLinkParam';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import { useToast } from '@/providers/ToastProvider';
 import { useAuthStore } from '@/features/auth/store/authStore';
@@ -147,6 +148,26 @@ export function ClientInventoryPage() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<StockFilter>('all');
   const [modalOpen, setModalOpen] = useState(false);
+
+  // `/client/inventory?product=Sugar` — a low-stock notification lands on the
+  // product itself: open the category holding it, then filter down to the name.
+  // The payload carries no product id, so the name is what we match on.
+  const { value: productParam, clear: clearProductParam } = useDeepLinkParam('product');
+
+  useEffect(() => {
+    if (!productParam || mergedCategories.length === 0) return;
+    const name = productParam.trim().toLowerCase();
+    const category = mergedCategories.find((cat) =>
+      cat.items.some((item) => item.product_name.toLowerCase() === name)
+    );
+    // Nothing to land on — leave the grid alone rather than filtering it to empty.
+    if (category) {
+      setSelectedCatId(category.id);
+      setQuery(productParam);
+      setFilter('all');
+    }
+    clearProductParam();
+  }, [productParam, mergedCategories, clearProductParam]);
 
   const hasChanges = Object.values(changes).some((v) => v !== 0);
   const selectedCat = mergedCategories.find((c) => c.id === selectedCatId) ?? null;

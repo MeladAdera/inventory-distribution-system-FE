@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Search, PackagePlus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/common/utils/cn';
 import { useI18n } from '@/providers/I18nProvider';
@@ -68,6 +68,8 @@ interface Props {
   items: InventoryItem[];
   isLoading: boolean;
   lowStockFilter: boolean;
+  /** Seeds the search box — a low-stock notification arrives with a product name. */
+  searchSeed?: string;
   onLowStockFilterChange: (v: boolean) => void;
   onRestock: (item: InventoryItem) => void;
 }
@@ -76,6 +78,7 @@ export function InventoryTable({
   items,
   isLoading,
   lowStockFilter,
+  searchSeed,
   onLowStockFilterChange,
   onRestock,
 }: Props) {
@@ -95,8 +98,16 @@ export function InventoryTable({
     return new Date(iso).toLocaleDateString(dateLocale, dateOptions);
   }
 
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(searchSeed ?? '');
   const [page, setPage] = useState(1);
+
+  // A later seed (a second low-stock notification) refills the box; typing after
+  // that stays untouched, because the seed only changes on a fresh deep link.
+  useEffect(() => {
+    if (!searchSeed) return;
+    setSearch(searchSeed);
+    setPage(1);
+  }, [searchSeed]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
