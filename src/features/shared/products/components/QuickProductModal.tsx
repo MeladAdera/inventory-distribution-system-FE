@@ -5,7 +5,12 @@ import { Loader2, Info } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
 import { useI18n } from '@/providers/I18nProvider';
 import { getErrorMessage } from '@/common/utils/error.utils';
-import { formatMoney, isValidMoneyInput, parseMoney } from '@/common/utils/money';
+import {
+  formatMoney,
+  isValidMoneyInput,
+  normalizeDecimalInput,
+  parseMoney,
+} from '@/common/utils/money';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { tokenUtils } from '@/features/auth/utils/token.utils';
 import { useCategories } from '@/features/shared/categories/hooks/useCategories';
@@ -178,7 +183,7 @@ export function QuickProductModal({
           <label className="mb-1.5 block text-[12px] font-medium text-ink-500">{q.buyPrice}</label>
           <input
             value={buyPrice}
-            onChange={(e) => setBuyPrice(e.target.value)}
+            onChange={(e) => setBuyPrice(normalizeDecimalInput(e.target.value))}
             inputMode="decimal"
             dir="ltr"
             placeholder="0.00"
@@ -197,7 +202,7 @@ export function QuickProductModal({
           <label className="mb-1.5 block text-[12px] font-medium text-ink-500">{q.sellPrice}</label>
           <input
             value={sellPrice}
-            onChange={(e) => setSellPrice(e.target.value)}
+            onChange={(e) => setSellPrice(normalizeDecimalInput(e.target.value))}
             inputMode="decimal"
             dir="ltr"
             placeholder="0.00"

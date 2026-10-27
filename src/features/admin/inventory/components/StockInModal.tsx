@@ -6,7 +6,7 @@ import { useI18n } from '@/providers/I18nProvider';
 import { Button } from '@/common/components/ui/button';
 import { Input } from '@/common/components/ui/input';
 import { Card, CardContent } from '@/common/components/ui/card';
-import { formatMoney } from '@/common/utils/money';
+import { formatMoney, normalizeDecimalInput } from '@/common/utils/money';
 import { ProductPicker } from '@/features/shared/products/components/ProductPicker';
 import { ProductSource } from '@/features/shared/products/types/products.types';
 import type { Product } from '@/features/shared/products/types/products.types';
@@ -214,13 +214,11 @@ export function StockInModal({ open, items, onClose, onConfirm }: Props) {
                 {si.unitCostLabel}
               </label>
               <input
-                type="number"
-                min="0"
-                step="0.01"
+                type="text"
                 inputMode="decimal"
                 dir="ltr"
                 value={costInput}
-                onChange={(e) => setCostInput(e.target.value)}
+                onChange={(e) => setCostInput(normalizeDecimalInput(e.target.value))}
                 placeholder="0.00"
                 className="w-full h-10 px-3 text-[13px] font-mono text-ink-900 bg-page border border-border rounded-lg outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />

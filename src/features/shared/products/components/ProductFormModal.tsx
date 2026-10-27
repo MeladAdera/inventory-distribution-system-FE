@@ -7,6 +7,7 @@ import { X, Check, Camera, Loader2, Trash2, AlertCircle } from 'lucide-react';
 import { useI18n } from '@/providers/I18nProvider';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import { cn } from '@/common/utils/cn';
+import { normalizeDecimalInput } from '@/common/utils/money';
 import {
   productFormSchema,
   productFormAddSchema,
@@ -396,10 +397,16 @@ export function ProductFormModal({
                 error={errors.price?.message ? p.form.errPrice : undefined}
               >
                 <input
-                  {...register('price', { valueAsNumber: true })}
-                  type="number"
-                  step="0.01"
-                  min="0"
+                  {...register('price', {
+                    setValueAs: (v) =>
+                      v === '' || v === null ? undefined : Number(normalizeDecimalInput(String(v))),
+                    // Show the Latin form too, so "٦٫٥" turns into "6.5" as it is typed
+                    onChange: (e) => {
+                      e.target.value = normalizeDecimalInput(e.target.value);
+                    },
+                  })}
+                  type="text"
+                  inputMode="decimal"
                   placeholder={p.form.pricePlaceholder}
                   className={cn(
                     ipt(!!errors.price),
@@ -417,11 +424,15 @@ export function ProductFormModal({
               >
                 <input
                   {...register('cost_price', {
-                    setValueAs: (v) => (v === '' || v === null ? undefined : Number(v)),
+                    setValueAs: (v) =>
+                      v === '' || v === null ? undefined : Number(normalizeDecimalInput(String(v))),
+                    // Show the Latin form too, so "٦٫٥" turns into "6.5" as it is typed
+                    onChange: (e) => {
+                      e.target.value = normalizeDecimalInput(e.target.value);
+                    },
                   })}
-                  type="number"
-                  step="0.01"
-                  min="0"
+                  type="text"
+                  inputMode="decimal"
                   placeholder={p.form.costPricePlaceholder}
                   className={cn(
                     ipt(!!errors.cost_price),

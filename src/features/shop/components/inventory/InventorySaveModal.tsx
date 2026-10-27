@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AlertTriangle, Loader2, TrendingDown, TrendingUp } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
-import { formatMoney } from '@/common/utils/money';
+import { formatMoney, normalizeDecimalInput } from '@/common/utils/money';
 import { ProductThumb } from '@/features/shared/products/components/ProductThumb';
 import type { EnrichedInventoryItem } from '../../types/clientInventory.types';
 import {
@@ -203,14 +203,15 @@ export function InventorySaveModal({
                         <div className="flex items-center gap-1.5">
                           <span className="text-[11px] text-ink-500">{labels.unitCostLabel}</span>
                           <input
-                            type="number"
-                            min="0"
-                            step="0.01"
+                            type="text"
                             inputMode="decimal"
                             dir="ltr"
                             value={costStr}
                             onChange={(e) =>
-                              setUnitCosts((prev) => ({ ...prev, [item.id]: e.target.value }))
+                              setUnitCosts((prev) => ({
+                                ...prev,
+                                [item.id]: normalizeDecimalInput(e.target.value),
+                              }))
                             }
                             placeholder="0.00"
                             className="w-20 px-2 py-1 text-[13px] font-mono text-ink-900 bg-page border border-border rounded-lg outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"

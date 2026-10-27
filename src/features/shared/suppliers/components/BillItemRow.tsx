@@ -1,7 +1,7 @@
 'use client';
 
 import { Trash2 } from 'lucide-react';
-import { formatMoney } from '@/common/utils/money';
+import { formatMoney, normalizeDecimalInput } from '@/common/utils/money';
 import type { BillDraftLine, BillDraftLineView } from '../hooks/useBillDraft';
 
 export interface BillItemLabels {
@@ -95,7 +95,7 @@ export function BillItemRow({
           </label>
           <input
             value={line.unitCost}
-            onChange={(e) => onUpdate({ unitCost: e.target.value })}
+            onChange={(e) => onUpdate({ unitCost: normalizeDecimalInput(e.target.value) })}
             inputMode="decimal"
             dir="ltr"
             placeholder="0.00"

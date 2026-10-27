@@ -40,6 +40,22 @@ export function formatMoneyGrouped(value: string | number): string {
 const MONEY_PATTERN = /^\d+(\.\d{1,2})?$/;
 
 /**
+ * Rewrite what an Arabic keyboard types into a plain Latin decimal:
+ * "٦٫٥" → "6.5", "8,5" → "8.5", "۱۲" → "12".
+ *
+ * Price inputs run this on every keystroke and are `type="text"`, not
+ * `type="number"`: a number input silently turns "٦٫٥" or "6,5" into an empty
+ * value before any handler sees it, so shop owners could not enter 6.5 at all.
+ */
+export function normalizeDecimalInput(raw: string): string {
+  return raw
+    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
+    .replace(/[٫,،]/g, '.')
+    .replace(/[^\d.]/g, '');
+}
+
+/**
  * Parse a money string into integer minor units: "50.00" → 5000, "3.3" → 330.
  * Returns NaN for anything unparseable, so callers can guard.
  *

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Modal } from '@/common/components/Modal';
-import { formatMoney } from '@/common/utils/money';
+import { formatMoney, normalizeDecimalInput } from '@/common/utils/money';
 import { ProductThumb } from '@/features/shared/products/components/ProductThumb';
 import type { EnrichedInventoryItem } from '../../types/clientInventory.types';
 
@@ -74,14 +74,12 @@ export function SetPriceModal({
         {labels.priceLabel}
       </label>
       <input
-        type="number"
-        min="0"
-        step="0.01"
+        type="text"
         inputMode="decimal"
         dir="ltr"
         autoFocus
         value={price}
-        onChange={(e) => setPrice(e.target.value)}
+        onChange={(e) => setPrice(normalizeDecimalInput(e.target.value))}
         placeholder="0.00"
         className="w-full px-3 py-2 text-[15px] font-mono text-ink-900 bg-page border border-border rounded-lg outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
