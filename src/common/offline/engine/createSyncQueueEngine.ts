@@ -41,6 +41,9 @@ export interface SyncQueueEngineConfig<TOp> {
   loadEntries: () => Promise<QueueEntry<TOp>[]>;
   saveEntries: (entries: QueueEntry<TOp>[]) => Promise<void>;
   processEntry: (op: TOp, ctx: ProcessContext<TOp>) => Promise<ProcessResult<TOp>>;
+  // Entries this returns false for are left untouched by a flush — e.g. ones
+  // that belong to a different signed-in account than the current one.
+  canProcess?: (op: TOp) => boolean;
 }
 
 export interface SyncQueueEngine<TOp> {
@@ -114,6 +117,7 @@ export function createSyncQueueEngine<TOp>(
         const entry = entries.find((e) => e.id === id);
         // Skip anything already resolved, in conflict (needs the user), or removed.
         if (!entry || entry.status === 'conflict') continue;
+        if (config.canProcess && !config.canProcess(entry.op)) continue;
 
         entry.status = 'syncing';
         notify();

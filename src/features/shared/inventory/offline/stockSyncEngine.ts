@@ -18,6 +18,8 @@ import { isAxiosError, getErrorMessage } from '@/common/utils/error.utils';
 import { inventoryApi } from '@/features/shared/inventory/api/inventory.api';
 import { receiptsApi } from '@/features/shared/receipts/api/receipts.api';
 import type { InventoryItem } from '@/features/shared/inventory/types/inventory.types';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import { tokenUtils } from '@/features/auth/utils/token.utils';
 
 // Lives in shared/inventory (not features/shop) since admin warehouse inventory
 // could reuse this queue later.
@@ -221,6 +223,17 @@ async function processStockSave(
   return { status: hasConflict ? 'conflict' : 'done', op: next };
 }
 
+// ── Shop ownership ──────────────────────────────────────────────────────────
+// The queue outlives a session: sales queued offline by one shop may still be
+// waiting when a different shop signs in on the same device. Replayed under
+// that shop's token they would be booked against its stock and drawer, so an
+// entry only syncs — and only shows in the banners — for the shop that made it.
+// The others wait, untouched, until that shop signs in again. Entries without
+// a shopId predate this check and keep the old behaviour.
+function belongsToShop(op: StockSaveOp, shopId: number | undefined): boolean {
+  return op.shopId === undefined || op.shopId === shopId;
+}
+
 // ── Engine + read-model instances ───────────────────────────────────────────
 const storage = createQueueStorage<StockSaveOp>(QUEUE_KEY);
 const engine = createSyncQueueEngine<StockSaveOp>({
@@ -228,6 +241,8 @@ const engine = createSyncQueueEngine<StockSaveOp>({
   loadEntries: storage.loadEntries,
   saveEntries: storage.saveEntries,
   processEntry: processStockSave,
+  // The token, not the auth store: a flush can run before /auth/me has loaded.
+  canProcess: (op) => belongsToShop(op, tokenUtils.getShopId()),
 });
 const useQueueStore = createSyncQueueStore<StockSaveOp>();
 
@@ -359,8 +374,10 @@ export interface StockSyncSummary {
 }
 
 export function useStockSyncQueue(): StockSyncSummary {
-  const entries = useQueueStore((s) => s.entries);
+  const allEntries = useQueueStore((s) => s.entries);
+  const shopId = useAuthStore((s) => s.user?.shopId);
   return useMemo(() => {
+    const entries = allEntries.filter((e) => belongsToShop(e.op, shopId));
     const itemStatus = new Map<number, SyncItemStatus>();
     let pendingCount = 0;
     let conflictCount = 0;
@@ -379,7 +396,7 @@ export function useStockSyncQueue(): StockSyncSummary {
       hasPending: pendingCount > 0,
       hasConflicts: conflictCount > 0,
     };
-  }, [entries]);
+  }, [allEntries, shopId]);
 }
 
 export function useStockSyncAuthRequired(): boolean {
