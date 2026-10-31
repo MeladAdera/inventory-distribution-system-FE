@@ -105,12 +105,19 @@ export function useSupplierDetail(id: number | null, options: SupplierDetailOpti
     // up and `avg_cost` is re-blended on every line. Inventory and the products
     // catalog have to be invalidated too, or the inventory page keeps showing
     // pre-delivery quantities until something else happens to refetch it.
+    // The shop and admin inventory pages cache under their own keys.
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['suppliers'], refetchType: 'all' }),
         queryClient.invalidateQueries({ queryKey: ['analytics'], refetchType: 'all' }),
         queryClient.invalidateQueries({ queryKey: ['inventory'], refetchType: 'all' }),
         queryClient.invalidateQueries({ queryKey: ['products'], refetchType: 'all' }),
+        queryClient.invalidateQueries({ queryKey: ['client-inventory'], refetchType: 'all' }),
+        queryClient.invalidateQueries({
+          queryKey: ['client-inventory-products'],
+          refetchType: 'all',
+        }),
+        queryClient.invalidateQueries({ queryKey: ['admin-inventory'], refetchType: 'all' }),
       ]);
     },
   });

@@ -248,9 +248,12 @@ export function ClientInventoryPage() {
     }
   }
 
-  // Invalidate the internal inventory categories cache after any category mutation
+  // Invalidate the internal inventory categories cache after any category mutation.
+  // The inventory rows too: the groups take their name from each row's joined
+  // category_name, so a rename would otherwise keep showing the old one.
   async function invalidateInvCategories() {
     await queryClient.invalidateQueries({ queryKey: ['client-inventory-categories'] });
+    await queryClient.invalidateQueries({ queryKey: ['client-inventory'] });
   }
 
   const handleCategoryAdd = async (data: CreateCategoryInput): Promise<{ id: number }> => {

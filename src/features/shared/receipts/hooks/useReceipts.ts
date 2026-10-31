@@ -55,12 +55,15 @@ export function useReceiptDetail(id: number | null) {
   });
 
   // Cancelling restocks the items and drops the receipt out of the profit
-  // figures, so the inventory and analytics caches go stale too.
+  // figures, so the inventory and analytics caches go stale too — including the
+  // shop and admin inventory pages, which cache under their own keys.
   const cancelMutation = useMutation({
     mutationFn: (reason?: string) => receiptsApi.cancel(id!, reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['receipts'], refetchType: 'all' });
       queryClient.invalidateQueries({ queryKey: ['inventory'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['client-inventory'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['admin-inventory'], refetchType: 'all' });
       queryClient.invalidateQueries({ queryKey: ['analytics'], refetchType: 'all' });
     },
   });
