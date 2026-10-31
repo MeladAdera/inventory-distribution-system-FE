@@ -33,9 +33,10 @@ export function SetPriceModal({
 }: SetPriceModalProps) {
   const [price, setPrice] = useState('');
 
-  // Prefill with the current selling price whenever a new item is opened.
+  // Start empty so the new price can be typed straight away; the current
+  // selling price stays visible as the placeholder.
   useEffect(() => {
-    if (open && item) setPrice(formatMoney(item.sale_price));
+    if (open && item) setPrice('');
   }, [open, item]);
 
   if (!item) return null;
@@ -80,7 +81,7 @@ export function SetPriceModal({
         autoFocus
         value={price}
         onChange={(e) => setPrice(normalizeDecimalInput(e.target.value))}
-        placeholder="0.00"
+        placeholder={formatMoney(item.sale_price)}
         className="w-full px-3 py-2 text-[15px] font-mono text-ink-900 bg-page border border-border rounded-lg outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
 

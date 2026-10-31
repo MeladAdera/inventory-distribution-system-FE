@@ -78,7 +78,8 @@ export function ProductFormModal({
       name: '',
       description: '',
       barcode: '',
-      price: 0,
+      // Empty, not 0 — otherwise the user has to delete a "0" before typing
+      price: undefined,
       category_id: 0,
       initialQuantity: 0,
     },
@@ -104,7 +105,7 @@ export function ProductFormModal({
         name: '',
         description: '',
         barcode: '',
-        price: 0,
+        price: undefined,
         category_id: defaultCategoryId ?? 0,
         is_orderable: true,
       });
