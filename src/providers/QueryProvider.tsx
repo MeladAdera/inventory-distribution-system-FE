@@ -4,7 +4,7 @@ import { QueryClient, defaultShouldDehydrateQuery } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import { ReactNode, useState } from 'react';
-import { idbStorage } from '@/common/offline/storage/idbStorage';
+import { idbStorage, QUERY_CACHE_STORAGE_KEY } from '@/common/offline/storage/idbStorage';
 
 // Only these query caches are persisted to IndexedDB for offline use.
 // Extend this list as more pages gain offline support.
@@ -37,7 +37,7 @@ export function QueryProvider({ children }: { children: ReactNode }) {
   const [persister] = useState(() =>
     createAsyncStoragePersister({
       storage: idbStorage,
-      key: 'offline-query-cache',
+      key: QUERY_CACHE_STORAGE_KEY,
     })
   );
 

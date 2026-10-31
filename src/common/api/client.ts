@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { tokenUtils } from '@/features/auth/utils/token.utils';
+import { clearUserCaches } from '@/common/offline/storage/clearUserCaches';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -95,6 +96,8 @@ apiClient.interceptors.response.use(
         // Refresh failed (or reuse-detected) — clear every token store and force re-login
         useAuthStore.getState().clearAuth();
         tokenUtils.clearTokens();
+        // In-memory cache goes with the page reload below; drop the stored copies.
+        await clearUserCaches();
         if (typeof window !== 'undefined') {
           window.location.href = '/login';
         }
