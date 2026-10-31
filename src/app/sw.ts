@@ -7,8 +7,13 @@ import {
   NetworkFirst,
   NetworkOnly,
   Serwist,
-  StaleWhileRevalidate,
+  type SerwistPlugin,
 } from 'serwist';
+import {
+  API_CACHE_NAME,
+  API_OTHER_CACHE_NAME,
+  LEGACY_API_CACHE_NAMES,
+} from '../common/offline/storage/cacheNames';
 
 // Serwist injects the precache manifest here at build time.
 declare global {
@@ -31,6 +36,48 @@ const API_ORIGIN = (() => {
 
 const isApiRead = /\/(inventory|products|categories)/;
 
+// Who a request is for, read from the bearer token's payload ("<sub>.<shopId>").
+// Not verified — the server does that. It only has to tell sessions apart, so
+// one user's cached response is never served to another user or shop on the
+// same device (the Cache API keys on URL alone, not on the Authorization header).
+// No token → "anon": the server only answers those with public data (images).
+function requestOwner(request: Request): string {
+  const token = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+  if (!token) return 'anon';
+  try {
+    const part = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(part)) as { sub?: unknown; shopId?: unknown };
+    if (payload.sub === undefined || payload.sub === null) return 'unknown';
+    return `${payload.sub}.${payload.shopId ?? 'none'}`;
+  } catch {
+    return 'unknown';
+  }
+}
+
+const perUserCacheKey: SerwistPlugin = {
+  cacheKeyWillBeUsed: async ({ request }) => {
+    const url = new URL(request.url);
+    url.searchParams.set('__sw_owner', requestOwner(request));
+    return url.href;
+  },
+  // A token we couldn't read is never written, so it can never be matched.
+  cacheWillUpdate: async ({ request, response }) =>
+    requestOwner(request) === 'unknown' ? null : response,
+};
+
+// A gateway error means the API itself was not reached (proxy up, backend
+// down) — treat it like a network failure so NetworkFirst falls back to cache.
+// Other errors (401, 404, 500) pass through: the app has to see them, e.g. the
+// 401 → refresh → retry interceptor.
+const gatewayErrorsAsNetworkFailure: SerwistPlugin = {
+  fetchDidSucceed: async ({ response }) => {
+    if (response.status === 502 || response.status === 503 || response.status === 504) {
+      throw new Error(`Gateway error ${response.status}`);
+    }
+    return response;
+  },
+};
+
 const runtimeCaching: RuntimeCaching[] = [
   // Page navigations: NetworkFirst so the app shell still loads cold-offline from cache.
   {
@@ -44,13 +91,45 @@ const runtimeCaching: RuntimeCaching[] = [
       ],
     }),
   },
-  // Inventory/products/categories GET reads from the API: serve cached instantly, revalidate.
+  // The connectivity probe (useOnlineStatus) asks with cache: 'no-store' — it
+  // has to see the real network, or a cached answer reads as "online".
+  {
+    matcher: ({ url, request }) => url.origin === API_ORIGIN && request.cache === 'no-store',
+    handler: new NetworkOnly(),
+  },
+  // Inventory/products/categories GET reads from the API: NetworkFirst, so a
+  // refetch right after a save returns the new data instead of the copy cached
+  // before it. The cache is only the fallback for offline, a failed request,
+  // or no answer within 3s (the network response still updates the cache when
+  // it lands). Instant first paint comes from the persisted React Query cache.
   {
     matcher: ({ url, request }) =>
       request.method === 'GET' && url.origin === API_ORIGIN && isApiRead.test(url.pathname),
-    handler: new StaleWhileRevalidate({
-      cacheName: 'api-inventory',
+    handler: new NetworkFirst({
+      cacheName: API_CACHE_NAME,
+      networkTimeoutSeconds: 3,
       plugins: [
+        gatewayErrorsAsNetworkFailure,
+        perUserCacheKey,
+        new CacheableResponsePlugin({ statuses: [0, 200] }),
+        new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 24 * 60 * 60 }),
+      ],
+    }),
+  },
+  // Every other API GET (/auth/me, shifts, customers, receipts…). Without this
+  // rule they fall to defaultCache's cross-origin rule, which caches by URL
+  // alone — one user's /auth/me could then be served to the next one offline.
+  // Same per-user keying; keeps that rule's 10s timeout, since slower reports
+  // (analytics) shouldn't fall back to a cached copy after only 3s. The offline
+  // cold start depends on this: AuthProvider sends a failed /auth/me to /login.
+  {
+    matcher: ({ url, request }) => request.method === 'GET' && url.origin === API_ORIGIN,
+    handler: new NetworkFirst({
+      cacheName: API_OTHER_CACHE_NAME,
+      networkTimeoutSeconds: 10,
+      plugins: [
+        gatewayErrorsAsNetworkFailure,
+        perUserCacheKey,
         new CacheableResponsePlugin({ statuses: [0, 200] }),
         new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 24 * 60 * 60 }),
       ],
@@ -75,3 +154,7 @@ const serwist = new Serwist({
 });
 
 serwist.addEventListeners();
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(Promise.all(LEGACY_API_CACHE_NAMES.map((name) => caches.delete(name))));
+});

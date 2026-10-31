@@ -34,6 +34,9 @@ async function probe(): Promise<boolean> {
     const token = tokenUtils.getAccessToken();
     await fetch(`${base}/inventory?limit=1`, {
       method: 'GET',
+      // Never answered from a cache: the service worker passes no-store
+      // requests straight to the network (see sw.ts), so this sees the truth.
+      cache: 'no-store',
       signal: controller.signal,
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
