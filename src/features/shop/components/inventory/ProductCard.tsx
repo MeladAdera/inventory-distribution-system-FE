@@ -29,7 +29,8 @@ interface ProductCardProps {
   onOrderMore: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
-  onEditPrice?: () => void;
+  /** Opens the product's details panel (selling price, minimum quantity, info). */
+  onOpenDetails: () => void;
   // Set when this item has an unsynced change waiting in the offline queue.
   syncStatus?: SyncItemStatus;
   /** Lucide icon name from the item's category; shown as a placeholder when there's no photo. */
@@ -44,7 +45,7 @@ export function ProductCard({
   onOrderMore,
   onEdit,
   onDelete,
-  onEditPrice,
+  onOpenDetails,
   syncStatus,
   categoryIcon,
 }: ProductCardProps) {
@@ -70,20 +71,35 @@ export function ProductCard({
 
   return (
     <Card className="overflow-hidden">
-      <ProductBanner
-        id={item.product_id}
-        imageUrl={item.image_url}
-        height="h-32"
-        categoryIcon={categoryIcon}
-      />
+      {/* Photo and name open the details panel. The stepper below stays its own
+          target, so adjusting stock never opens it by accident. The name is the
+          keyboard/screen-reader entry; the photo is a pointer-only shortcut. */}
+      <button
+        type="button"
+        onClick={onOpenDetails}
+        tabIndex={-1}
+        aria-hidden
+        className="block w-full"
+      >
+        <ProductBanner
+          id={item.product_id}
+          imageUrl={item.image_url}
+          height="h-32"
+          categoryIcon={categoryIcon}
+        />
+      </button>
 
       <CardContent className="p-3 flex flex-col gap-2">
         {/* Name + actions */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex flex-col gap-1 min-w-0 flex-1">
-            <p className="text-[14px] font-semibold text-ink-900 leading-snug truncate">
+            <button
+              type="button"
+              onClick={onOpenDetails}
+              className="text-start text-[14px] font-semibold text-ink-900 leading-snug truncate hover:text-amber-700 transition-colors"
+            >
               {item.product_name}
-            </p>
+            </button>
             {syncStatus === 'pending' && (
               <span className="inline-flex items-center gap-1 self-start px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
                 <RefreshCw size={9} className="animate-spin" />
@@ -144,21 +160,17 @@ export function ProductCard({
           </div>
         </div>
 
-        {/* Selling price — tap to edit (per-shop, applies to local + warehouse) */}
-        {onEditPrice && (
-          <button
-            onClick={onEditPrice}
-            className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg border border-border bg-paper hover:bg-sand-100 transition-colors"
-          >
-            <span className="text-[11px] text-ink-500">{labels.price}</span>
-            <span className="flex items-center gap-1.5">
-              <span className="font-mono text-[13px] font-semibold text-ink-900">
-                {formatMoney(item.sale_price)}
-              </span>
-              <Pencil size={11} className="text-ink-400" />
-            </span>
-          </button>
-        )}
+        {/* Selling price (per shop) — shown at a glance, edited in the details panel */}
+        <button
+          type="button"
+          onClick={onOpenDetails}
+          className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg border border-border bg-paper hover:bg-sand-100 transition-colors"
+        >
+          <span className="text-[11px] text-ink-500">{labels.price}</span>
+          <span className="font-mono text-[13px] font-semibold text-ink-900">
+            {formatMoney(item.sale_price)}
+          </span>
+        </button>
 
         {/* Adjustment stepper — full-width pill */}
         <div className="pt-1.5 border-t border-border">

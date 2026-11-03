@@ -20,3 +20,10 @@ export const updateSalePriceSchema = z.object({
     .positive()
     .refine((v) => Number(v.toFixed(2)) === v, { message: 'Max 2 decimal places' }),
 });
+
+// Mirrors the backend DTO: whole number, 0 – 1,000,000 (0 = alert only at zero).
+export const MAX_LOW_STOCK_THRESHOLD = 1_000_000;
+
+export const updateLowStockThresholdSchema = z.object({
+  lowStockThreshold: z.number().int().min(0).max(MAX_LOW_STOCK_THRESHOLD),
+});

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -20,6 +20,8 @@ import { useDeepLinkParam } from '@/common/hooks/useDeepLinkParam';
 import { getErrorMessage } from '@/common/utils/error.utils';
 import { useToast } from '@/providers/ToastProvider';
 import { useAuthStore } from '@/features/auth/store/authStore';
+import { UserRole } from '@/features/auth/types/enums';
+import { useOnlineStatus } from '@/common/offline/connectivity/useOnlineStatus';
 import { StockStatus } from '@/features/shared/products/types/products.types';
 import { TypewriterText } from '@/common/components/TypewriterText';
 import { useCategories } from '@/features/shared/categories/hooks/useCategories';
@@ -36,14 +38,15 @@ import {
 } from '@/features/shared/inventory/offline/stockSyncEngine';
 import { useOpenShift } from '@/features/shop/shifts/hooks/useOpenShift';
 import { useClientInventory } from '../hooks/useClientInventory';
+import { useInventoryItemSettings } from '../hooks/useInventoryItemSettings';
 import { CategoryCard } from './inventory/CategoryCard';
 import { ProductCard } from './inventory/ProductCard';
 import { InventorySaveModal } from './inventory/InventorySaveModal';
-import { SetPriceModal } from './inventory/SetPriceModal';
+import { ProductDetailsDrawer } from './inventory/ProductDetailsDrawer';
 import type {
   StockFilter,
   InventoryCategory,
-  EnrichedInventoryItem,
+  InventoryItemSettingsChanges,
 } from '../types/clientInventory.types';
 import type {
   Category,
@@ -78,10 +81,15 @@ export function ClientInventoryPage() {
 
   const { user } = useAuthStore();
   const shopId = user?.shopId;
+  // Employees can view a product's details but not change its price or minimum
+  // quantity — both endpoints are 403 for them.
+  const isOwner = user?.role === UserRole.SHOP_OWNER;
+  const isOnline = useOnlineStatus();
 
   const [isSaving, setIsSaving] = useState(false);
 
   const { categories: invCategories, allItems, isLoading, error } = useClientInventory();
+  const { saveSettings, isSaving: isSavingSettings } = useInventoryItemSettings();
 
   // Only for stamping the drawer onto a stock decrease — this page is not gated
   // on a shift, since counting stock is not selling.
@@ -141,8 +149,8 @@ export function ClientInventoryPage() {
 
   const [catModal, setCatModal] = useState<CatModal>({ type: 'none' });
   const [prodModal, setProdModal] = useState<ProdModal>({ type: 'none' });
-  const [priceItem, setPriceItem] = useState<EnrichedInventoryItem | null>(null);
-  const [isSavingPrice, setIsSavingPrice] = useState(false);
+  // The id, not a snapshot: the panel then shows the refetched row after a save.
+  const [detailsId, setDetailsId] = useState<number | null>(null);
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
   const [changes, setChanges] = useState<Record<number, number>>({});
   const [query, setQuery] = useState('');
@@ -170,6 +178,7 @@ export function ClientInventoryPage() {
   }, [productParam, mergedCategories, clearProductParam]);
 
   const hasChanges = Object.values(changes).some((v) => v !== 0);
+  const detailsItem = allItems.find((i) => i.id === detailsId) ?? null;
   const selectedCat = mergedCategories.find((c) => c.id === selectedCatId) ?? null;
   const catItems = selectedCat?.items ?? [];
 
@@ -299,22 +308,21 @@ export function ClientInventoryPage() {
     await invalidateInvProducts();
   };
 
-  // Per-shop selling price → PATCH /inventory/:id/price. Throws on failure so the
-  // modal keeps the input for retry (incl. a 403 if the row isn't this shop's).
-  async function handleUpdateSalePrice(salePrice: number) {
-    if (!priceItem) return;
-    setIsSavingPrice(true);
+  // Per-shop selling price + minimum quantity. Throws on failure so the panel
+  // keeps the inputs for retry (incl. a 403 if the row isn't this shop's).
+  async function handleSaveSettings(settings: InventoryItemSettingsChanges) {
+    if (detailsId === null) return;
     try {
-      await inventoryApi.updateSalePrice(priceItem.id, { salePrice });
-      await queryClient.invalidateQueries({ queryKey: ['client-inventory'] });
-      toastSuccess(inv.priceModal.toastSuccess);
+      await saveSettings({ id: detailsId, changes: settings });
+      toastSuccess(inv.details.toastSuccess);
     } catch (err) {
       toastError(getErrorMessage(err));
       throw err;
-    } finally {
-      setIsSavingPrice(false);
     }
   }
+
+  // Stable — the drawer's focus handling re-runs whenever onClose changes.
+  const closeDetails = useCallback(() => setDetailsId(null), []);
 
   const handleProductEdit = async (id: number, data: UpdateProductInput) => {
     await updateProduct({ id, data });
@@ -546,7 +554,7 @@ export function ClientInventoryPage() {
                       price: inv.price,
                     }}
                     onOrderMore={() => router.push(`/client/order?product=${item.product_id}`)}
-                    onEditPrice={() => setPriceItem(item)}
+                    onOpenDetails={() => setDetailsId(item.id)}
                     onEdit={
                       localProd
                         ? () => setProdModal({ type: 'edit', product: localProd })
@@ -604,21 +612,21 @@ export function ClientInventoryPage() {
         }}
       />
 
-      <SetPriceModal
-        open={priceItem !== null}
-        item={priceItem}
-        onClose={() => setPriceItem(null)}
-        onSave={handleUpdateSalePrice}
-        isSaving={isSavingPrice}
+      <ProductDetailsDrawer
+        item={detailsItem}
+        onClose={closeDetails}
+        categoryIcon={selectedCat?.icon}
+        isOwnProduct={detailsItem ? localProductMap.has(detailsItem.product_id) : false}
+        canEdit={isOwner}
+        isOnline={isOnline}
+        isSaving={isSavingSettings}
+        onSave={handleSaveSettings}
         labels={{
-          title: inv.priceModal.title,
-          priceLabel: inv.priceModal.priceLabel,
-          catalogDefault: inv.priceModal.catalogDefault,
-          avgCost: inv.priceModal.avgCost,
-          profitPerUnit: inv.priceModal.profitPerUnit,
-          margin: inv.priceModal.margin,
-          save: inv.priceModal.save,
-          cancel: inv.priceModal.cancel,
+          ...inv.details,
+          currentQty: inv.currentQty,
+          statusEnough: inv.statusEnough,
+          statusLow: inv.statusLow,
+          statusOut: inv.statusOut,
         }}
       />
 

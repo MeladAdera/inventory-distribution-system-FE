@@ -6,6 +6,7 @@ import type {
   AdjustInventoryInput,
   InventoryListParams,
   UpdateSalePriceInput,
+  UpdateLowStockThresholdInput,
 } from '../types/inventory.types';
 
 export const inventoryApi = {
@@ -46,6 +47,13 @@ export const inventoryApi = {
   // 403 if the row isn't the caller's shop.
   updateSalePrice: async (id: number, data: UpdateSalePriceInput) => {
     const response = await apiClient.patch(`/inventory/${id}/price`, data);
+    return response.data;
+  },
+
+  // Shop-owner scoped: sets this shop's minimum quantity for the row. Per shop —
+  // other shops stocking the same product keep their own. 403 if not the caller's shop.
+  updateLowStockThreshold: async (id: number, data: UpdateLowStockThresholdInput) => {
+    const response = await apiClient.patch(`/inventory/${id}/threshold`, data);
     return response.data;
   },
 };

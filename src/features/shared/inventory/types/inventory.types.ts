@@ -53,3 +53,8 @@ export interface AddInventoryInput {
 export interface UpdateSalePriceInput {
   salePrice: number;
 }
+
+export interface UpdateLowStockThresholdInput {
+  /** Whole number, 0 – 1,000,000. 0 = alert only when the item runs out. */
+  lowStockThreshold: number;
+}

@@ -94,6 +94,7 @@ export function useClientInventory() {
         product_id: item.product_id,
         product_name: item.product_name ?? product?.name ?? 'Unknown',
         barcode: product?.barcode ?? undefined,
+        description: product?.description ?? null,
         current_quantity: qty,
         price: product?.price ?? '0',
         sale_price: item.sale_price ?? product?.price ?? '0',

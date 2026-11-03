@@ -5,6 +5,7 @@ export interface EnrichedInventoryItem {
   product_id: number;
   product_name: string;
   barcode?: string;
+  description: string | null;
   current_quantity: number;
   /** Catalog / list default price from the product (reference only; not the sale price). */
   price: string;
@@ -30,3 +31,9 @@ export interface InventoryCategory {
 }
 
 export type StockFilter = 'all' | 'low' | 'out';
+
+/** Per-shop settings on one inventory row. Only the fields being changed are present. */
+export interface InventoryItemSettingsChanges {
+  salePrice?: number;
+  lowStockThreshold?: number;
+}
