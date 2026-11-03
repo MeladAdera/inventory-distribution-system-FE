@@ -110,6 +110,13 @@ Controls the **delta** (qty to add from back-stock), not the absolute qty.
 // max = item.backStock → plus disabled at max
 ```
 
+### Product details panel
+
+Tapping a card's photo, name or price row opens `ProductDetailsDrawer` — the product's full
+details plus the per-shop **selling price** and **minimum quantity** (low-stock threshold).
+Shop owners can edit both; employees see them read-only. Details:
+[product-details-and-min-quantity.md](../product-details-and-min-quantity.md).
+
 ### `InvStatusBadge` (local)
 
 | Status | Style |
@@ -240,6 +247,8 @@ Positioned above the bottom nav to avoid overlap:
 | Load inventory | `GET /inventory?limit=100` | Returns paginated; hook reads `data.data.data` |
 | Load products | `GET /products?limit=100` | Joined in `useMemo` for category + barcode |
 | Save changes | `PATCH /inventory/:id` | One call per changed item; uses `adjustment` field |
+| Set selling price | `PATCH /inventory/:id/price` | From the details panel; shop owner only |
+| Set minimum quantity | `PATCH /inventory/:id/threshold` | From the details panel; shop owner only; `0` – `1,000,000` |
 
 Response envelope: `{ success, data: { data: [], total, page, limit, totalPages } }`
 

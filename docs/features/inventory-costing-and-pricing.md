@@ -84,9 +84,13 @@ Both modals then render the same three-part control: the cost input, an `Avg cos
 
 ### Where price is edited (FE)
 
-- Each `ProductCard` shows the current selling price with a tap-to-edit affordance → opens `SetPriceModal`.
-- `SetPriceModal` prefills the current `sale_price`, shows the catalog default for reference, and computes **live profit-per-unit + margin %** from `avg_cost` (turns red on a loss).
-- On save → `PATCH /inventory/:id/price`, then the inventory cache is invalidated. A `403` (row not owned by the shop) surfaces as a toast; the modal keeps the input for retry.
+> **Updated 2026-11-04:** `SetPriceModal` was removed. The selling price is now edited in the
+> product **details panel**, next to the per-shop minimum quantity — see
+> [product-details-and-min-quantity.md](product-details-and-min-quantity.md).
+
+- Each `ProductCard` shows the current selling price (read-only); tapping the card's photo, name or price row opens `ProductDetailsDrawer`.
+- The panel's price input starts empty with the current `sale_price` as the placeholder, shows the catalog default for reference, and computes **live profit-per-unit + margin %** from `avg_cost` (turns red on a loss). Shop owners only — employees see the price read-only.
+- On save → `PATCH /inventory/:id/price` (only when the price changed), then the inventory cache is invalidated. A `403` (row not owned by the shop) surfaces as a toast; the panel keeps the input for retry.
 - `ProductFormModal` no longer exposes a price field on **edit** (it only set the catalog default, which does nothing to sales). Price stays on **create** as the seed.
 
 ---
@@ -125,8 +129,8 @@ Because profit reports read only the receipt/order snapshots, analytics needed *
 | hook | `src/features/shop/hooks/useClientInventory.ts` | enrich `avg_cost` / `sale_price` |
 | offline | `src/features/shared/inventory/offline/stockSyncEngine.ts` | `unitCost` snapshot + replay + reconcile invalidation |
 | ui | `src/features/shop/components/inventory/InventorySaveModal.tsx` | per-line cost input, preview, warning; receipt rows show `sale_price` |
-| ui | `src/features/shop/components/inventory/SetPriceModal.tsx` | **new** — selling-price editor with live margin |
-| ui | `src/features/shop/components/inventory/ProductCard.tsx` | price display + edit affordance |
+| ui | `src/features/shop/components/inventory/SetPriceModal.tsx` | selling-price editor with live margin — **removed 2026-11-04**, replaced by `ProductDetailsDrawer` |
+| ui | `src/features/shop/components/inventory/ProductCard.tsx` | price display (opens the details panel) |
 | ui | `src/features/shop/components/ClientInventoryPage.tsx` | wires cost + price modals, invalidation, 403 handling |
 | ui | `src/features/shared/products/components/ProductFormModal.tsx` | price field create-only for shop users; the warehouse admin keeps it on edit (see [catalog-vs-orderable.md](catalog-vs-orderable.md)) |
 | util | `src/features/admin/inventory/utils/inventoryCost.ts` | **new** — `parseCost`, `defaultCostInput`, `blendedAvg`, `COST_DEVIATION_WARN` |
@@ -146,17 +150,8 @@ Because profit reports read only the receipt/order snapshots, analytics needed *
 
 // per-shop selling price
 "price": "Price",
-"priceModal": {
-  "title": "Set selling price",
-  "priceLabel": "Selling price",
-  "catalogDefault": "Catalog default",
-  "avgCost": "Avg cost",
-  "profitPerUnit": "Profit / unit",
-  "margin": "margin",
-  "save": "Save",
-  "cancel": "Cancel",
-  "toastSuccess": "Selling price updated"
-}
+// "priceModal" was replaced by "details" (2026-11-04) — keys listed in
+// product-details-and-min-quantity.md
 ```
 
 Arabic equivalents added in `src/i18n/ar/client.json`.

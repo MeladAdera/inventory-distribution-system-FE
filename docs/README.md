@@ -31,6 +31,7 @@ docs/
 │   ├── catalog-vs-orderable.md           # Shared — is_orderable across products/inventory/orders/KPI
 │   ├── category-icons.md                 # Shared — category Lucide icon as product placeholder
 │   ├── receipt-cancellation.md           # Shared — cancel a receipt, restock, reason trail
+│   ├── product-details-and-min-quantity.md # Client — tap-card details panel, per-shop min qty + price
 │   ├── admin/             # Admin portal (WAREHOUSE_ADMIN / EMPLOYEE)
 │   │   ├── admin-layout-shell.md
 │   │   ├── dashboard.md
@@ -122,6 +123,7 @@ Check `docs/api/` folder:
 | Client Dashboard | [client-dashboard.md](features/client/client-dashboard.md) | ✅ CLIENT-002 Complete (mock data) |
 | Client Inventory | [client-inventory.md](features/client/client-inventory.md) | ✅ CLIENT-003 Complete (mock data) |
 | Offline PWA (Client Inventory) | [offline-pwa.md](features/offline-pwa.md) | ✅ Implemented — device/DevTools verification pending |
+| Product Details & Minimum Quantity | [product-details-and-min-quantity.md](features/product-details-and-min-quantity.md) | ✅ Phase 1 complete — details panel, per-shop min qty + price; phase 2 (edit/delete in panel) pending |
 | Browse Catalog | [client-catalog.md](features/client/client-catalog.md) | ✅ Complete — API integrated |
 | Order Products | [client-order.md](features/client/client-order.md) | ✅ CLIENT-004 Complete — API integrated, typed quantities |
 | My Orders | [client-orders.md](features/client/client-orders.md) | ✅ CLIENT-005 Complete — API integrated |
