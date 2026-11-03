@@ -57,8 +57,10 @@ export function Drawer({ open, onClose, title, children, footer }: DrawerProps) 
 
   if (!open) return null;
 
+  // z-110: above the sticky top bars (z-100). At z-50 the top bar painted over
+  // the panel's header — hiding the × in RTL — and was left undimmed.
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-110">
       <div
         className="absolute inset-0 animate-fade-in bg-ink-900/28"
         onClick={onClose}

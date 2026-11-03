@@ -51,7 +51,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+      {/* Above every overlay (Drawer is z-110) so an error raised from inside
+          an open drawer is not hidden behind its panel. */}
+      <div className="fixed bottom-4 right-4 z-120 flex flex-col gap-2">
         {toasts.map((toast) => (
           <div
             key={toast.id}
