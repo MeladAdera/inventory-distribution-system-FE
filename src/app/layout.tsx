@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Providers } from '@/providers';
+import { IS_DEMO } from '@/common/constants/demo.constants';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -26,7 +27,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl">
+    <html lang={IS_DEMO ? 'en' : 'ar'} dir={IS_DEMO ? 'ltr' : 'rtl'}>
       <body>
         <Providers>{children}</Providers>
       </body>

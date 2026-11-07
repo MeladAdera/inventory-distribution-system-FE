@@ -6,10 +6,12 @@ import { QueryProvider } from './QueryProvider';
 import { AuthProvider } from './AuthProvider';
 import { ToastProvider } from './ToastProvider';
 import { OfflineSyncProvider } from './OfflineSyncProvider';
+import { DemoBanner } from '@/common/components/DemoBanner';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <I18nProvider>
+      <DemoBanner />
       <QueryProvider>
         <AuthProvider>
           <ToastProvider>

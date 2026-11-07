@@ -1,5 +1,5 @@
 {
-  "brand": { "name": "Alyamn", "sub": "Inventory" },
+  "brand": { "name": "Inventory Demo", "sub": "Warehouse portal" },
   "sections": { "main": "Main", "manage": "Manage" },
   "nav": {
     "dashboard": "Dashboard",

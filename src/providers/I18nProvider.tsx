@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { translations, type Locale, type AppTranslations } from '@/i18n';
+import { IS_DEMO } from '@/common/constants/demo.constants';
 
 interface I18nContextValue {
   locale: Locale;
@@ -13,7 +14,7 @@ interface I18nContextValue {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>('ar');
+  const [locale, setLocale] = useState<Locale>(IS_DEMO ? 'en' : 'ar');
 
   useEffect(() => {
     document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';

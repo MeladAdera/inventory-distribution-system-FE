@@ -9,6 +9,7 @@ import { useLogin } from '@/features/auth/hooks/useLogin';
 import { useI18n } from '@/providers/I18nProvider';
 import { Button, FormField, LoadingSpinner, ErrorAlert, PasswordInput } from '@/common/components';
 import { ROUTES } from '@/common/constants/app.constants';
+import { DEMO_ACCOUNTS, DEMO_PASSWORD, IS_DEMO } from '@/common/constants/demo.constants';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,6 +26,11 @@ export default function LoginPage() {
       router.replace('/dashboard');
     }
   }, [isAuthenticated, router]);
+
+  const fillDemoAccount = (email: string) => {
+    form.setValue('email', email, { shouldValidate: true });
+    form.setValue('password', DEMO_PASSWORD, { shouldValidate: true });
+  };
 
   return (
     <div>
@@ -64,14 +70,16 @@ export default function LoginPage() {
             />
           </FormField>
 
-          <div className="flex justify-end">
-            <Link
-              href={ROUTES.FORGOT_PASSWORD}
-              className="text-sm text-ink-500 transition-colors hover:text-ink-900"
-            >
-              {t.auth.login.forgot_link}
-            </Link>
-          </div>
+          {!IS_DEMO && (
+            <div className="flex justify-end">
+              <Link
+                href={ROUTES.FORGOT_PASSWORD}
+                className="text-sm text-ink-500 transition-colors hover:text-ink-900"
+              >
+                {t.auth.login.forgot_link}
+              </Link>
+            </div>
+          )}
 
           <Button
             type="submit"
@@ -83,6 +91,27 @@ export default function LoginPage() {
             {isLoading ? t.auth.login.submitting : t.auth.login.submit}
           </Button>
         </form>
+
+        {IS_DEMO && (
+          <div className="mt-6 border-t border-border pt-5">
+            <p className="text-sm font-medium text-ink-900">{t.auth.login.demo.heading}</p>
+            <p className="mt-1 text-xs text-ink-500">
+              {t.auth.login.demo.hint} <span className="font-mono">{DEMO_PASSWORD}</span>
+            </p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {DEMO_ACCOUNTS.map(({ email, role }) => (
+                <button
+                  key={email}
+                  type="button"
+                  onClick={() => fillDemoAccount(email)}
+                  className="rounded-lg border border-border bg-page px-3 py-2 text-sm text-ink-700 transition-colors hover:border-ink-500 hover:text-ink-900"
+                >
+                  {t.auth.login.demo[role]}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <Link
