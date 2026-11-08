@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosError } from 'axios';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { tokenUtils } from '@/features/auth/utils/token.utils';
 import { clearUserCaches } from '@/common/offline/storage/clearUserCaches';
+import { IS_DEMO } from '@/common/constants/demo.constants';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -11,7 +12,8 @@ if (!API_URL) {
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_URL,
-  timeout: 10000,
+  // The demo backend sleeps when idle and needs a few seconds to wake.
+  timeout: IS_DEMO ? 30000 : 10000,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

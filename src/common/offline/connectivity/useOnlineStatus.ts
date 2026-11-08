@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from 'react';
 import { tokenUtils } from '@/features/auth/utils/token.utils';
+import { IS_DEMO } from '@/common/constants/demo.constants';
 
 // Shared connectivity state. `navigator.onLine` alone is unreliable (it reports
 // "online" for a connected-but-dead network), so we combine it with a periodic
@@ -29,7 +30,8 @@ async function probe(): Promise<boolean> {
   const base = process.env.NEXT_PUBLIC_API_URL;
   if (!base) return true;
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 4000);
+  // The demo backend sleeps when idle; a short probe would mark it offline while it wakes.
+  const timer = setTimeout(() => controller.abort(), IS_DEMO ? 15000 : 4000);
   try {
     const token = tokenUtils.getAccessToken();
     await fetch(`${base}/inventory?limit=1`, {
